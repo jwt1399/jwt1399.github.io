@@ -37,7 +37,7 @@ pip3 install django==1.11.28  #3.0.5
 ### 生成requirements.txt
 
 ```bash
-pip3 freeze > requirement.txt #生成项目所包含模块清单
+pip3 freeze > requirements.txt #生成项目所包含模块清单
 
 pip3 install -r requirements.txt #一键安装上方文档中的模块
 ```
@@ -598,7 +598,7 @@ def index(request):
 
 至此，就是redis的所有内容，大家可以在django中通过redis进行存取值，在后续的项目开发中可以用他来完成短信验证码过期的功能。
 
-以后关于redis还会讲很多其他高级的知识点，参见：
+关于redis其他高级的知识点，参见：
 
 - https://pythonav.com/wiki/detail/3/33/
 - https://www.cnblogs.com/wupeiqi/articles/5132791.html
@@ -650,5 +650,240 @@ return render(request, 'app02/register.html')#调用app02的模板
 ## 目录和代码重构
 
 - 模板导航
+
 - 注册页面样式
+
 - ModelForm放到forms目录
+
+![image-20200417090820554](../images/Django%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98/image-20200417090820554.png)
+
+## 1.实现注册
+
+### 1.1展示注册页面
+
+#### 1.1.1创建web的应用&注册
+
+#### 1.1.2模板文件路径处理
+
+#### 1.1.3母板准备
+
+```html
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'plugin/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugin/font-awesome/css/font-awesome.min.css' %}">
+    {% block css %}{% endblock %}
+</head>
+<body>
+
+{% block content %}{% endblock %}
+<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+<script src="{% static 'plugin/bootstrap/js/bootstrap.min.js' %}"></script>
+{% block js %}{% endblock %}
+</body>
+</html>
+```
+
+#### 1.1.4 URL准备
+
+
+
+#### 1.1.5注册页面显示
+
+```html
+{% extends 'layout/basic.html' %}
+{% load static %}
+
+{% block title %} 用户注册 {% endblock %}
+
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/account.css' %}">
+    <style>
+        .error-msg {
+            color: red;
+            position: absolute;
+            font-size: 13px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    <div class="account">
+        <div class="title">用户注册</div>
+        <form id="regForm" method="POST" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == 'code' %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <div class="row">
+                            <div class="col-xs-7">
+                                {{ field }}
+                                <span class="error-msg"></span>
+                            </div>
+                            <div class="col-xs-5">
+                                <input id="btnSms" type="button" class="btn btn-default" value="点击获取验证码">
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        <span class="error-msg"></span>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="row">
+                <div class="col-xs-3">
+             <input id="btnSubmit" type="button" class="btn btn-primary" value="注  册"/>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+{% block js %}
+
+{% endblock %}
+```
+
+
+
+### 1.2点击获取验证码
+
+#### 1.2.1按钮绑定点击事件
+
+```javascript
+{% block js %}
+    <script>
+        // 页面框架加载完成之后自动执行函数
+        $(function () {
+            bindClickBtnSms();//点击获取验证码的按钮绑定事件
+            bindClickSubmit();
+        });
+    </script>
+{% endblock %}
+```
+
+#### 1.2.2获取手机号
+
+```javascript
+// 找到输入框的ID，根据ID获取值，默认id为id_name
+var mobilePhone = $('#id_mobile_phone').val();// 获取用户输入的手机号
+```
+
+#### 1.2.3发送ajax
+
+```javascript
+// 发送ajax请求，把手机号发送过去
+$.ajax({
+    url: "{% url 'send_sms' %}", // 等价于 /send/sms/
+    type: "GET",
+    data: {mobile_phone: mobilePhone, tpl: "register"},
+    dataType: "JSON", // 将服务端返回的数据反序列化为字典
+    success: function (res) {
+        // ajax请求发送成功之后，自动执行的函数； res就是后端返回的值
+        if (res.status) {
+            sendSmsRemind();
+        } else {
+            // 错误信息
+            // console.log(res); // {status:False, error:{ mobile_phone: ["错误信息"，],code: ["错误信息"，] }  }
+            $.each(res.error, function (key, value) {
+                $("#id_" + key).next().text(value[0]);
+            })
+        }
+    }
+})
+```
+
+
+
+#### 1.2.4手机号校验
+
+●不能为空
+●格式正确
+●没有注册过
+
+#### 1.2.4手机号校验
+
+#### 1.2.5验证通过
+
+- 发送验证码
+- 将短信保存到redis中（60s）
+
+#### 1.2.6 成功失败
+
+- 失败，错误信息
+
+- 成功，倒计时
+
+  - disable属性
+
+    ```javascript
+    $('#btnSms').prop('disabled', true);//添加disabled属性，不可操作
+    $('#btnSms').prop('disabled', false);//添加disabled属性，可操作
+    ```
+
+  - 定时器
+
+    ```javascript
+    var obj = setInterval(function () {
+        	console.log(123);
+    }, 1000) //每1000毫秒出现一次123
+    
+    clearInterval(obj); //清楚定时器
+    ```
+    
+  - 60秒定时器
+  
+  ```javascript
+  var time = 60 
+  var obj = setInterval(function () {
+      time = time - 1;
+      if(time < 1){
+          clearInterval(obj);
+      }
+  }, 1000) 
+  ```
+  
+- 实现
+
+  ```javascript
+  //倒计时60
+  function sendSmsRemind() {
+      var $smsBtn = $('#btnSms');
+      $smsBtn.prop('disabled', true); // 禁用
+      var time = 60;
+      var remind = setInterval(function () {
+          $smsBtn.val(time + '秒重新发送');
+          time = time - 1;
+          if (time < 1) {
+              clearInterval(remind);
+              $smsBtn.val('点击获取验证码').prop('disabled', false);
+          }
+      }, 1000)
+  
+      }
+  ```
+```
+  
+  
+
+### 1.3点击注册
+
+●发送短信
+●将短信保存到redis中(60s)
+
+
+
+
+```

@@ -2,7 +2,7 @@
 title: Python模块-Requests学习与CTF和AWD实战
 author: 简文涛
 categories:
-  - Python
+  - CTF
 tags:
   - Requests
 comments: true

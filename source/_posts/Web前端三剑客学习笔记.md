@@ -1,18 +1,22 @@
 ---
-https://www.runoob.com/wp-content/uploads/2013/08/VlwVi.pnghttps://www.runoob.com/wp-content/uploads/2013/08/VlwVi.pngtitle: Web前端三剑客学习笔记(更新中)
-author: 简文涛
+title:  Web前端三剑客学习笔记
+author:  简文涛
 categories:
   - Web
 tags:
   - 前端
-comments: true
-abbrlink: 38162
-date: 2019-08-10 12:57:08
-updated: 2020-2-25 12:57:08
-img: 'https://i.loli.net/2020/02/25/LxPXSUjV5IiFC4a.png'
+comments:  true
+abbrlink:  38162
+date:  2019-08-10 12:57:08
+updated:  2020-2-25 12:57:08
+img:  'https://i.loli.net/2020/02/25/LxPXSUjV5IiFC4a.png'
 ---
+
+
 ![](https://i.loli.net/2020/02/25/LxPXSUjV5IiFC4a.png)
+
 ## 前言
+
 一直没有系统的学习`HTML`,`CSS`,`JS`都是东学一点，西学一点，想着暑假得空，便系统的学习下吧，故于此记录之。
 
 2020.2.25更新：由于本专业开设了`《web应用开发》`课，于是乎本文档得到了进一步完善。
@@ -983,14 +987,14 @@ border:5px solid blue;
 
 ### 5 复合选择器
 
-| **类型**       | **基本语法**                      | **说明**                                                     |
-| -------------- | --------------------------------- | ------------------------------------------------------------ |
-| **并集选择器** | **E1,  E2, E3 {property: value}** | **多个选择器使用相同样式**                                   |
-| **交集选择器** | **E.myclass**     **E#myid**      | **选择类名为** **class** **或 ** **id** **为** **myid** **的** **E元素** |
-| **包含选择器** | **E  F**                          | **选择所有被E元素包含的F元素。**                             |
-| **子选择器**   | **E>F**                           | **选择所有作为E元素的子元素 F。**                            |
-| **相邻选择器** | **E+F**                           | **选择紧贴在E元素之后F元素。**                               |
-| **兄弟选择器** | **E**~**F**                       | **选择E元素后的所有兄弟元素F。**                             |
+| **类型**       | **基本语法**                      | **说明**                                     |
+| -------------- | --------------------------------- | -------------------------------------------- |
+| **并集选择器** | **E1,  E2, E3 {property: value}** | **多个选择器使用相同样式**                   |
+| **交集选择器** | **E.myclass**     **E#myid**      | **选择类名为my class或 id 为 myid 的 E元素** |
+| **包含选择器** | **E  F**                          | **选择所有被E元素包含的F元素。**             |
+| **子选择器**   | **E>F**                           | **选择所有作为E元素的子元素 F。**            |
+| **相邻选择器** | **E+F**                           | **选择紧贴在E元素之后F元素。**               |
+| **兄弟选择器** | **E**~**F**                       | **选择E元素后的所有兄弟元素F。**             |
 
 #### 5.1 并集选择器
 
@@ -1922,9 +1926,492 @@ border详细：https://www.runoob.com/css/css-border.html
 
 padding详细：https://www.runoob.com/css/css-padding.html
 
-
+### CSS布局
 
 ## 三、JavaScript
 
 > JavaScript是一种属于网络的脚本语言,已经被广泛用于Web应用开发,常用来为网页添加各式各样的动态功能,为用户提供更流畅美观的浏览效果。
 
+### 用法
+
+HTML 中的脚本必须位于 `<script> 与 </script>` 标签之间。
+
+**内嵌脚本：**
+
+`<script>`标签放置在 HTML 页面的` <body>`或 `<head> `部分中。
+
+```javascript
+<head>
+<script language="javascript">
+	alert("我的第一个 JavaScript");
+</script>
+</head>
+```
+
+**链接外部js脚本**:
+
+```javascript
+<script src="js/welcome.js" type="text/javascript"> </script>
+```
+
+### 函数
+
+```javascript
+function abs(x) {
+    if (x >= 0) {
+        return x;
+    } else {
+        return -x;
+    }
+}
+```
+
+上述`abs()`函数的定义如下：
+
+- `function`指出这是一个函数定义；
+- `abs`是函数的名称；
+- `(x)`括号内列出函数的参数，多个参数以`,`分隔；
+- `{ ... }`之间的代码是函数体，可以包含若干语句，甚至可以没有任何语句。
+
+### BOM
+
+> 浏览器对象模型(**Browser Object Model**)提供了用户与浏览器对象之间交互和操作的接口。在BOM中，对象之间存在层次关系，window为顶层对象，所有其它对象都是window的子对象。
+
+#### BOM 主要对象
+
+**window:** BOM的核心，顶层对象，负责与浏览器交互的操作
+**document:** 代表浏览器载入的文档(如HTML文件)
+**navigator:**  包含浏览器信息(HTML5新增geolocation属性)
+**history:** 包含浏览窗口访问过的URL
+**location:** 包含当前文档URL的信息
+**screen:** 包含客户端屏幕信息（移动设备特别需要）
+**本地存储:**localStorage和sessionStorage（HTML5新增）
+**离线应用:**（HTML5新增）
+
+### **Window** 对象
+
+##### 打开、关闭、调整窗口
+
+```js
+window.open();//打开空白窗口
+
+window.open('http://www.baidu.html');
+
+window.close();//关闭窗口
+```
+
+##### 警告、确认、输入对话框
+
+| **方法**  | **描述**                                         |
+| --------- | ------------------------------------------------ |
+| alert()   | 显示带有一段消息和一个确认按钮的警告框。         |
+| confirm() | 显示带有一段消息以及确认按钮和取消按钮的对话框。 |
+| prompt()  | 显示可提示用户输入的对话框，并返回用户输入信息。 |
+
+**altert(text)**
+
+```javascript
+<script>
+	alert("测试一哈");
+</script>
+```
+
+**confirm(text)**
+
+```javascript
+<script>
+	var r=confirm("Press a button");
+ 	 if (r==true)
+   	     alert("You pressed OK!");  
+  	else    
+ 	    alert("You pressed Cancel!") ;
+</script>
+```
+
+**prompt(text,default)**
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=GBK" />
+	<title> 输入对话框 </title>
+</head>
+<body>
+	你的名字是：<span id="name"></span>
+	<script type="text/javascript">
+		name = prompt("请输入你的名字：","简简");
+		document.getElementById("name").innerHTML = name;
+	</script>
+</body>
+</html>
+```
+
+### document **对象**
+
+| 属性            | 描述                                    |
+| :-------------- | :-------------------------------------- |
+| body            | 返回 <body> 元素                        |
+| forms           | 返回所有表单元素对象，可当成数组来使用  |
+| cookie          | 设置或返回与当前文档有关的所有 cookie。 |
+| domain          | 返回当前文档的域名。                    |
+| lastModified    | 返回文档被最后修改的日期和时间。        |
+| referrer        | 返回载入当前文档的文档的 URL。          |
+| title           | 返回当前文档的标题。                    |
+| URL             | 返回当前文档的 URL。                    |
+| readyState      | 返回文档的（加载）状态                  |
+| documentElement | 返回文档根节点，<html>                  |
+| images          | 返回所有Image对象，<img>                |
+
+```javascript
+<script>
+    alert(document.cookie);
+	write(document.URL);
+</script>;
+```
+#### document.forms的用法
+
+| 代码                        | 作用                                                      |
+| --------------------------- | --------------------------------------------------------- |
+| document.forms              | 表示获取当前页面的所有表单                                |
+| document.forms[0]           | 表示获取当前页面的第一个表单                              |
+| document.forms['user_form'] | 表示获取当前页面的name="user_form"的表单                  |
+| document.forms[0].submit()  | 表示提交第一个form表单  提交到form里面的 action指向的地方 |
+
+#### document 对象方法
+
+| 方法                                                         | 描述                                                         |
+| :----------------------------------------------------------- | :----------------------------------------------------------- |
+| [close()](https://www.w3school.com.cn/jsref/met_doc_close.asp) | 关闭用 document.open() 方法打开的输出流，并显示选定的数据。  |
+| [getElementById()](https://www.w3school.com.cn/jsref/met_doc_getelementbyid.asp) | 返回对拥有指定 id 的第一个对象的引用。                       |
+| [getElementsByName()](https://www.w3school.com.cn/jsref/met_doc_getelementsbyname.asp) | 返回带有指定名称的对象集合。                                 |
+| [getElementsByTagName()](https://www.w3school.com.cn/jsref/met_doc_getelementsbytagname.asp) | 返回带有指定标签名的对象集合。                               |
+| [open()](https://www.w3school.com.cn/jsref/met_doc_open.asp) | 打开一个流，以收集来自任何 document.write() 或 document.writeln() 方法的输出。 |
+| [write()](https://www.w3school.com.cn/jsref/met_doc_write.asp) | 向文档写 HTML 表达式 或 JavaScript 代码。                    |
+| [writeln()](https://www.w3school.com.cn/jsref/met_doc_writeln.asp) | 等同于 write() 方法，不同的是在每个表达式之后写一个换行符。  |
+
+```javascript
+<script>   
+    var a=1,b=2;
+    document.write("<h1>a+b</h1>");
+    document.write("=");
+    document.writeln(a+b);
+</script>
+```
+
+### location 对象
+
+| 属性              | 描述                                          |
+| :---------------- | :-------------------------------------------- |
+| location.hash     | 设置或返回从井号 (#) 开始的 URL（锚）。       |
+| location.host     | 设置或返回主机名和当前 URL 的端口号。         |
+| location.hostname | 设置或返回当前 URL 的主机名。                 |
+| location.href     | 设置或返回完整的 URL。                        |
+| location.pathname | 设置或返回当前 URL 的路径部分。               |
+| location.port     | 设置或返回当前 URL 的端口号。                 |
+| location.protocol | 设置或返回当前 URL 的协议。                   |
+| location.search   | 设置或返回从问号 (?) 开始的 URL（查询部分）。 |
+
+```javascript
+<script type="text/javascript">
+	var loc = window.location;
+	var locStr = "当前的location信息是:\n";
+	// 遍历location对象的全部属性
+	for (var propname in loc)
+	{
+		locStr += propname + ": " + loc[propname] + "\n"
+	}
+	alert(locStr);
+</script>
+```
+
+| 方法      | 描述                     |
+| :-------- | :----------------------- |
+| assign()  | 加载新的文档。           |
+| reload()  | 重新加载当前文档。       |
+| replace() | 用新的文档替换当前文档。 |
+
+```html
+<!doctype html>
+<html>
+<head>
+<title>location对象</title>
+</head>
+<body>
+<div id="typeMachine" onclick = "clcFun()">戳我啊</div>
+<script>
+	function clcFun () {
+		document.write(location.href);//打印出当前地址
+		//window.location.reload();//重新加载html文档
+		//window.location.href="http://www.baidu.com"//打开网页,方式1
+		//window.location.assign("http://www.baidu.com");//打开网页,方式2
+		//window.location.replace("http://www.baidu.com");//打开网页,方式3
+	}
+</script>
+</body>
+</html>
+```
+
+### History 对象
+
+| 属性、方法                                                   | 描述                                |
+| :----------------------------------------------------------- | :---------------------------------- |
+| [length](https://www.w3school.com.cn/jsref/prop_his_length.asp) | 返回浏览器历史列表中的 URL 数量。   |
+| [back()](https://www.w3school.com.cn/jsref/met_his_back.asp) | 加载 history 列表中的前一个 URL。   |
+| [forward()](https://www.w3school.com.cn/jsref/met_his_forward.asp) | 加载 history 列表中的下一个 URL。   |
+| [go()](https://www.w3school.com.cn/jsref/met_his_go.asp)     | 加载 history 列表中的某个具体页面。 |
+
+### Navigator 对象
+
+| 属性                                                         | 描述                                           |
+| :----------------------------------------------------------- | :--------------------------------------------- |
+| [appCodeName](https://www.w3school.com.cn/jsref/prop_nav_appcodename.asp) | 返回浏览器的代码名。                           |
+| [appMinorVersion](https://www.w3school.com.cn/jsref/prop_nav_appminorversion.asp) | 返回浏览器的次级版本。                         |
+| [appName](https://www.w3school.com.cn/jsref/prop_nav_appname.asp) | 返回浏览器的名称。                             |
+| [appVersion](https://www.w3school.com.cn/jsref/prop_nav_appversion.asp) | 返回浏览器的平台和版本信息。                   |
+| [browserLanguage](https://www.w3school.com.cn/jsref/prop_nav_browserlanguage.asp) | 返回当前浏览器的语言。                         |
+| [cookieEnabled](https://www.w3school.com.cn/jsref/prop_nav_cookieenabled.asp) | 返回指明浏览器中是否启用 cookie 的布尔值。     |
+| [cpuClass](https://www.w3school.com.cn/jsref/prop_nav_cpuclass.asp) | 返回浏览器系统的 CPU 等级。                    |
+| [onLine](https://www.w3school.com.cn/jsref/prop_nav_online.asp) | 返回指明系统是否处于脱机模式的布尔值。         |
+| [platform](https://www.w3school.com.cn/jsref/prop_nav_platform.asp) | 返回运行浏览器的操作系统平台。                 |
+| [systemLanguage](https://www.w3school.com.cn/jsref/prop_nav_systemlanguage.asp) | 返回 OS 使用的默认语言。                       |
+| [userAgent](https://www.w3school.com.cn/jsref/prop_nav_useragent.asp) | 返回由客户机发送服务器的 user-agent 头部的值。 |
+| [userLanguage](https://www.w3school.com.cn/jsref/prop_nav_userlanguage.asp) | 返回 OS 的自然语言设置。                       |
+
+#### Navigator 对象方法
+
+| 方法                                                         | 描述                                         |
+| :----------------------------------------------------------- | :------------------------------------------- |
+| [javaEnabled()](https://www.w3school.com.cn/jsref/met_nav_javaenabled.asp) | 规定浏览器是否启用 Java。                    |
+| [taintEnabled()](https://www.w3school.com.cn/jsref/met_nav_taintenabled.asp) | 规定浏览器是否启用数据污点 (data tainting)。 |
+
+### Screen 对象
+
+| 属性                                                         | 描述                                         |
+| :----------------------------------------------------------- | :------------------------------------------- |
+| [availHeight](https://www.w3school.com.cn/jsref/prop_screen_availheight.asp) | 返回显示屏幕的高度 (除 Windows 任务栏之外)。 |
+| [availWidth](https://www.w3school.com.cn/jsref/prop_screen_availwidth.asp) | 返回显示屏幕的宽度 (除 Windows 任务栏之外)。 |
+| [bufferDepth](https://www.w3school.com.cn/jsref/prop_screen_bufferdepth.asp) | 设置或返回调色板的比特深度。                 |
+| [colorDepth](https://www.w3school.com.cn/jsref/prop_screen_colordepth.asp) | 返回目标设备或缓冲器上的调色板的比特深度。   |
+| [deviceXDPI](https://www.w3school.com.cn/jsref/prop_screen_devicexdpi.asp) | 返回显示屏幕的每英寸水平点数。               |
+| [deviceYDPI](https://www.w3school.com.cn/jsref/prop_screen_deviceydpi.asp) | 返回显示屏幕的每英寸垂直点数。               |
+| [fontSmoothingEnabled](https://www.w3school.com.cn/jsref/prop_screen_fontsmoothingenabled.asp) | 返回用户是否在显示控制面板中启用了字体平滑。 |
+| [height](https://www.w3school.com.cn/jsref/prop_screen_height.asp) | 返回显示屏幕的高度。                         |
+| [logicalXDPI](https://www.w3school.com.cn/jsref/prop_screen_logicalxdpi.asp) | 返回显示屏幕每英寸的水平方向的常规点数。     |
+| [logicalYDPI](https://www.w3school.com.cn/jsref/prop_screen_logicalydpi.asp) | 返回显示屏幕每英寸的垂直方向的常规点数。     |
+| [pixelDepth](https://www.w3school.com.cn/jsref/prop_screen_pixeldepth.asp) | 返回显示屏幕的颜色分辨率（比特每像素）。     |
+| [updateInterval](https://www.w3school.com.cn/jsref/prop_screen_updateinterval.asp) | 设置或返回屏幕的刷新率。                     |
+| [width](https://www.w3school.com.cn/jsref/prop_screen_width.asp) | 返回显示器屏幕的宽度。                       |
+
+### DOM
+
+> **Document Object Model**简称DOM，采取直观、一致的方式对结构化文档（HTML、XML）进行模型化处理，形成一棵结构化的文档树。
+
+​	每个HTML文档被加载后都会在内存中初始化一个document对象，该对象存放整个网页HTML内容，从该对象中可获取页面任何元素，包括表单的各种信息。
+
+​	DOM为常用的HTML元素提供了一套完整的接口/类体系。从页面的document对象到每个常用的HTML元素，DOM模型都提供了对应的接口/类，每个接口/类都提供了相应的方法来操作DOM元素本身、属性及其子元素。
+
+![](https://i.loli.net/2020/05/13/vdJHBsp53oIOtrf.png)
+
+### DOM Event 对象
+
+| 属性                                                         | 此事件发生在何时...                  |
+| :----------------------------------------------------------- | :----------------------------------- |
+| [onabort](https://www.w3school.com.cn/jsref/event_onabort.asp) | 图像的加载被中断。                   |
+| [onblur](https://www.w3school.com.cn/jsref/event_onblur.asp) | 元素失去焦点。                       |
+| [onchange](https://www.w3school.com.cn/jsref/event_onchange.asp) | 当元素获取焦点，且值发生改变时触发。 |
+| [onclick](https://www.w3school.com.cn/jsref/event_onclick.asp) | 当用户点击某个对象时调用的事件句柄。 |
+| [ondblclick](https://www.w3school.com.cn/jsref/event_ondblclick.asp) | 当用户双击某个对象时调用的事件句柄。 |
+| [onerror](https://www.w3school.com.cn/jsref/event_onerror.asp) | 在加载文档或图像时发生错误。         |
+| [onfocus](https://www.w3school.com.cn/jsref/event_onfocus.asp) | 元素获得焦点。                       |
+| [onkeydown](https://www.w3school.com.cn/jsref/event_onkeydown.asp) | 某个键盘按键被按下。                 |
+| [onkeypress](https://www.w3school.com.cn/jsref/event_onkeypress.asp) | 某个键盘按键被按下并松开。           |
+| [onkeyup](https://www.w3school.com.cn/jsref/event_onkeyup.asp) | 某个键盘按键被松开。                 |
+| [onload](https://www.w3school.com.cn/jsref/event_onload.asp) | 一张页面或一幅图像完成加载。         |
+| [onmousedown](https://www.w3school.com.cn/jsref/event_onmousedown.asp) | 鼠标按钮被按下。                     |
+| [onmousemove](https://www.w3school.com.cn/jsref/event_onmousemove.asp) | 鼠标被移动。                         |
+| [onmouseout](https://www.w3school.com.cn/jsref/event_onmouseout.asp) | 鼠标从某元素移开。                   |
+| [onmouseover](https://www.w3school.com.cn/jsref/event_onmouseover.asp) | 鼠标移到某元素之上。                 |
+| [onmouseup](https://www.w3school.com.cn/jsref/event_onmouseup.asp) | 鼠标按键被松开。                     |
+| [onreset](https://www.w3school.com.cn/jsref/event_onreset.asp) | 重置按钮被点击。                     |
+| [onresize](https://www.w3school.com.cn/jsref/event_onresize.asp) | 窗口或框架被重新调整大小。           |
+| [onselect](https://www.w3school.com.cn/jsref/event_onselect.asp) | 文本被选中。                         |
+| [onsubmit](https://www.w3school.com.cn/jsref/event_onsubmit.asp) | 确认按钮被点击。                     |
+| [onunload](https://www.w3school.com.cn/jsref/event_onunload.asp) | 用户退出页面。                       |
+
+### JavaScript String 对象
+
+| 方法                                                         | 描述                                                 |
+| :----------------------------------------------------------- | :--------------------------------------------------- |
+| [anchor()](https://www.w3school.com.cn/jsref/jsref_anchor.asp) | 创建 HTML 锚。                                       |
+| [big()](https://www.w3school.com.cn/jsref/jsref_big.asp)     | 用大号字体显示字符串。                               |
+| [blink()](https://www.w3school.com.cn/jsref/jsref_blink.asp) | 显示闪动字符串。                                     |
+| [bold()](https://www.w3school.com.cn/jsref/jsref_bold.asp)   | 使用粗体显示字符串。                                 |
+| [charAt()](https://www.w3school.com.cn/jsref/jsref_charAt.asp) | 返回在指定位置的字符。                               |
+| [charCodeAt()](https://www.w3school.com.cn/jsref/jsref_charCodeAt.asp) | 返回在指定的位置的字符的 Unicode 编码。              |
+| [concat()](https://www.w3school.com.cn/jsref/jsref_concat_string.asp) | 连接字符串。                                         |
+| [fixed()](https://www.w3school.com.cn/jsref/jsref_fixed.asp) | 以打字机文本显示字符串。                             |
+| [fontcolor()](https://www.w3school.com.cn/jsref/jsref_fontcolor.asp) | 使用指定的颜色来显示字符串。                         |
+| [fontsize()](https://www.w3school.com.cn/jsref/jsref_fontsize.asp) | 使用指定的尺寸来显示字符串。                         |
+| [fromCharCode()](https://www.w3school.com.cn/jsref/jsref_fromCharCode.asp) | 从字符编码创建一个字符串。                           |
+| [indexOf()](https://www.w3school.com.cn/jsref/jsref_indexOf.asp) | 检索字符串。                                         |
+| [italics()](https://www.w3school.com.cn/jsref/jsref_italics.asp) | 使用斜体显示字符串。                                 |
+| [lastIndexOf()](https://www.w3school.com.cn/jsref/jsref_lastIndexOf.asp) | 从后向前搜索字符串。                                 |
+| [link()](https://www.w3school.com.cn/jsref/jsref_link.asp)   | 将字符串显示为链接。                                 |
+| [localeCompare()](https://www.w3school.com.cn/jsref/jsref_localeCompare.asp) | 用本地特定的顺序来比较两个字符串。                   |
+| [match()](https://www.w3school.com.cn/jsref/jsref_match.asp) | 找到一个或多个正则表达式的匹配。                     |
+| [replace()](https://www.w3school.com.cn/jsref/jsref_replace.asp) | 替换与正则表达式匹配的子串。                         |
+| [search()](https://www.w3school.com.cn/jsref/jsref_search.asp) | 检索与正则表达式相匹配的值。                         |
+| [slice()](https://www.w3school.com.cn/jsref/jsref_slice_string.asp) | 提取字符串的片断，并在新的字符串中返回被提取的部分。 |
+| [small()](https://www.w3school.com.cn/jsref/jsref_small.asp) | 使用小字号来显示字符串。                             |
+| [split()](https://www.w3school.com.cn/jsref/jsref_split.asp) | 把字符串分割为字符串数组。                           |
+| [strike()](https://www.w3school.com.cn/jsref/jsref_strike.asp) | 使用删除线来显示字符串。                             |
+| [sub()](https://www.w3school.com.cn/jsref/jsref_sub.asp)     | 把字符串显示为下标。                                 |
+| [substr()](https://www.w3school.com.cn/jsref/jsref_substr.asp) | 从起始索引号提取字符串中指定数目的字符。             |
+| [substring()](https://www.w3school.com.cn/jsref/jsref_substring.asp) | 提取字符串中两个指定的索引号之间的字符。             |
+| [sup()](https://www.w3school.com.cn/jsref/jsref_sup.asp)     | 把字符串显示为上标。                                 |
+| [toLocaleLowerCase()](https://www.w3school.com.cn/jsref/jsref_toLocaleLowerCase.asp) | 把字符串转换为小写。                                 |
+| [toLocaleUpperCase()](https://www.w3school.com.cn/jsref/jsref_toLocaleUpperCase.asp) | 把字符串转换为大写。                                 |
+| [toLowerCase()](https://www.w3school.com.cn/jsref/jsref_toLowerCase.asp) | 把字符串转换为小写。                                 |
+| [toUpperCase()](https://www.w3school.com.cn/jsref/jsref_toUpperCase.asp) | 把字符串转换为大写。                                 |
+| toSource()                                                   | 代表对象的源代码。                                   |
+| [toString()](https://www.w3school.com.cn/jsref/jsref_toString_string.asp) | 返回字符串。                                         |
+| trim()                                                       | 去除字符串两边的空空格                               |
+| [valueOf()](https://www.w3school.com.cn/jsref/jsref_valueOf_string.asp) | 返回某个字符串对象的原始值。                         |
+
+indexOf() 方法可返回某个指定的字符串值在字符串中首次出现的位置。
+
+lastIndexOf() 方法可返回一个指定的字符串值最后出现的位置，在一个字符串中的指定位置从后向前搜索。
+
+trim() 方法用于删除字符串的头尾空格。
+
+### JavaScript RegExp 对象
+
+| 方法                                                         | 描述                                               |
+| :----------------------------------------------------------- | :------------------------------------------------- |
+| [compile](https://www.w3school.com.cn/jsref/jsref_regexp_compile.asp) | 编译正则表达式。                                   |
+| [exec](https://www.w3school.com.cn/jsref/jsref_exec_regexp.asp) | 检索字符串中指定的值。返回找到的值，并确定其位置。 |
+| [test](https://www.w3school.com.cn/jsref/jsref_test_regexp.asp) | 检索字符串中指定的值。返回 true 或 false。         |
+
+test() 方法用于检测一个字符串是否匹配某个模式.
+
+```
+RegExpObject.test(string)
+```
+
+```javascript
+if(!(/^[1][3,4,5,7,8][0-9]{9}$/).test(tel))
+		alert("手机号格式错误！");
+
+if(!(/^[1][3,4,5,7,8]\d{9}$/).test(tel))
+		alert("手机号格式错误！");
+```
+
+表达式的意思是：
+
+1--以1为开头；
+
+2--第二位可为3,4,5,7,8,中的任意一位；
+
+3--[0-9]的数 \d代表数字
+
+4--9次[0-9]
+
+### 获得HTML元素节点
+
+>  为动态地修改HTML页面，首先需要获得HTML元素对象。
+
+•通过HTML标签的id属性：
+
+```javascript
+  var xEle=document.getElementById(“xElement”);
+   没有则返回null
+```
+
+•通过表单的name属性：
+
+```javascript
+  var nodeinp=document.form[0].user_name;
+```
+
+•通过CSS选择器：
+
+```javascript
+var node=document.querySelector(“#myColor_1”);
+   //返回一个node节点
+```
+
+### 修改HTML元素
+
+> 包括修改节点的内容、属性和CSS样式
+
+| **属性**           | **说明**                                   |
+| ------------------ | ------------------------------------------ |
+| **innerHTML**      | 设置或获取位于对象起始和结束标签内的 HTML  |
+| **outerHTML**      | 设置或获取对象及其内容的 HTML 形式         |
+| **innerText**      | 设置或获取位于对象起始和结束标签内的文本   |
+| **outerText**      | 设置(包括标签)或获取(不包括标签)对象的文本 |
+| **value**          | 设置或获取表单元素的value属性值            |
+| **options[index]** | 设置或获取表单中列表、下拉菜单的选项内容   |
+| **className**      | 修改HTML元素的CSS样式                      |
+| **style**          | 修改HTML元素的内联CSS样式                  |
+
+#### 修改HTML元素--内容
+
+![](https://i.loli.net/2020/05/13/r2cIvX6stAOU7Le.png)
+
+
+
+```html
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">  
+<title>innerHTML、outerHTML和innerText、outerHTML的区别</title>  
+   
+</head>   
+<body>   
+	　<ul>   
+    　　<li id="test_id1" onclick="innerHTMLDemo()">innerHTML效果.</li>   
+	　　<li id="test_id2" onclick="innerTextDemo()">innerText效果.</li>   
+	　　<li id="test_id3" onclick="outerHTMLDemo()">outerHTML效果.</li>   
+	　　<li id="test_id4" onclick="outerTextDemo()">outerText效果.</li>   
+	　</ul>  
+	
+	<script language="JavaScript" type="text/javascript">   
+　　//.innerHTML  
+　　function innerHTMLDemo()  
+　　{   
+　　　test_id1.innerHTML="<i><u>设置或获取位于对象起始和结束标签内的 HTML.</u></i>";   
+　　}   
+	　　//.innerText  
+　　function innerTextDemo()  
+　　{   
+　　　test_id2.innerText="<i><u>设置或获取位于对象起始和结束标签内的文本.</u></i>";   
+　　}   
+	　　//.outerHTML  
+　　function outerHTMLDemo()  
+　　{   
+	　　　test_id3.outerHTML="<font size=9pt color=red><i><u>设置或获取对象及其内容的 HTML 形式.</u></i></font>";   
+　　}  
+	　　//.outerText  
+　　function outerTextDemo()  
+  　{   
+　　　test_id4.outerText="<br></br><i><u>设置(包括标签)或获取(不包括标签)对象的文本.</u></i>";   
+　　}  
+　</script>    
+</body>   
+</html>  
+```
+
+
+
+
+
+
+
+
+
+参考：https://www.w3school.com.cn/

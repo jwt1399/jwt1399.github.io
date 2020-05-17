@@ -1,5 +1,5 @@
 ---
-keyititle: Python虚拟环境
+title: Python虚拟环境
 author: 简文涛
 categories:
   - Python
@@ -71,7 +71,8 @@ mkvirtualenv VM_name # VM_name 表示你的虚拟环境的名称
 ```bash
 mkvirtualenv -p python3 VM_name
 ```
-![image-20200406143604421.png](https://i.loli.net/2020/04/06/sOXyeLwzqWfAaEC.png)
+
+![](https://i.loli.net/2020/04/06/sOXyeLwzqWfAaEC.png)
 
 ###  6. 进入虚拟环境
 
@@ -79,7 +80,7 @@ mkvirtualenv -p python3 VM_name
 ```bash
 workon VM_name  
 ```
-![image-20200406141235211](https://i.loli.net/2020/04/06/HTWYtux3hVXaS1o.png)
+![](https://i.loli.net/2020/04/06/HTWYtux3hVXaS1o.png)
 
 ### 7. 退出当前虚拟环境
 
@@ -92,13 +93,13 @@ deactivate
 ```bash
 lsvirtualenv
 ```
-![5TV}X_~Z@WJ5@KT4[%]$%O2](https://i.loli.net/2020/04/06/GL6fjrBHRlp83uz.png)
+![](https://i.loli.net/2020/04/06/GL6fjrBHRlp83uz.png)
 
 - 进入虚拟环境目录
 ```bash
 cdvirtualenv
 ```
-![image-20200406141257764](https://i.loli.net/2020/04/06/A3DZN1hGkX5962F.png)
+![](https://i.loli.net/2020/04/06/A3DZN1hGkX5962F.png)
 
 - 进入虚拟环境的site-packages目录
 ```bash
@@ -109,7 +110,7 @@ cdsitepackages
 rmvirtualenv VM_name
 ```
 
-![image-20200406143815996](https://i.loli.net/2020/04/06/J3VAn7ySR6kcQ1o.png)
+![](https://i.loli.net/2020/04/06/J3VAn7ySR6kcQ1o.png)
 
 ## 二、windows用户
 
@@ -134,12 +135,12 @@ pip install virtualenvwrapper-win
 
 注：一定要重新打开一个cmd，不重新打开还是会建在`(C:/Users/xxx)`下`Env`文件夹下，如果还是不行的话，重启哈电脑就可以了
 
-![image-20200409101600769](https://i.loli.net/2020/04/09/xg3USrXAa6icpjb.png)
+![](https://i.loli.net/2020/04/09/xg3USrXAa6icpjb.png)
 
 #### 2.2 创建虚拟环境
 
 ```bash
-mkvirtualenv my_env
+mkvirtualenv -p python3 VM_name
 
 mkvirtualenv --python==D:\python\python.exe my_env #可以自己指定python路径
 ```
@@ -178,7 +179,7 @@ cdvirtualenv
 
 选择我们上面创建好的虚拟环境
 
-![image-20200406212847887](../images/Python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/image-20200406212847887.png)
+![](../images/Python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/image-20200406212847887.png)
 
 
 
@@ -203,12 +204,14 @@ virtualenv VM_name --python=='D:\python\python3.6.exe'
 ####  3.2 进入虚拟环境
 
 > 进入你的虚拟环境，命令行前会出现你的虚拟环境名称。
+
 ```bash
 cd 虚拟环境的Scripts目录 #cd py_envs/Vm_name/Scripts
 
 activate.bat #激活虚拟环境
 ```
-![image-20200406210729415](../images/Python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/image-20200406210729415.png)
+
+![](../images/Python%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/image-20200406210729415.png)
 
 #### 3.3 退出当前虚拟环境
 
@@ -220,4 +223,4 @@ deactivate.bat
 
 ## 三、Pycharm直接配置环境
 
-![image-20200406213530214](https://i.loli.net/2020/04/06/unmKz8C4iXtQy3w.png)
+![](https://i.loli.net/2020/04/06/unmKz8C4iXtQy3w.png)

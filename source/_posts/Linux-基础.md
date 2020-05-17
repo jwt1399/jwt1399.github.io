@@ -10,6 +10,7 @@ img: 'https://i.loli.net/2019/07/26/5d3acab782edb11928.jpg'
 permalink: linuxbasic
 abbrlink: 30369
 date: 2019-07-26 16:44:59
+updated: 2020-02-24 16:44:59
 ---
 
 ## 前言
@@ -17,6 +18,8 @@ date: 2019-07-26 16:44:59
 由于平常做CTF题经常会用到kali linux，但是作为安全小萌新的我，对linux简直是一无所知，惊羡于大佬仅用几条命令就能实现各种操作，于是乎我的linux学习之路就此开始。
 
 2020.2.24更新：由于本专业开设了`《Linux操作系统安全》`课，于是乎本文档得到了进一步完善。
+
+学习环境：Ubuntu 18.04
 
 ## 操作系统简介
 
@@ -149,26 +152,34 @@ source ~/.zshrc
 
 ![美化后](https://i.loli.net/2020/04/13/q4kBpujszaHe3ET.png)
 
-## Linux基础命令
-
->Linux命令大全:[菜鸟教程](https://www.runoob.com/linux/linux-command-manual.html)
-Linux命令快速查询：man.linuxde.net/
-
-### Linux快捷操作
+## Linux快捷键操作
 
 ```bash
 Ctrl+Alt+F1:Ubuntu进入纯命令模式
 Ctrl+Alt+F7:Ubuntu进入图形界面模式
 Ctrl+l:在文件夹中查看文件目录
 Ctrl+H:查看文件夹中隐藏文件
+
+#命令行的快捷键
 Ctrl -:终端缩小
 Ctrl Shift+:终端放大
+Ctrl+r:搜索你使用过的命令 #histoty打印你使用过的命令
+Ctrl+l:命令行清屏    #或者用clear  
+Ctrl+e:光标快速移到行尾
+Ctrl+z:把命令放入后台
+Ctrl+c:强制终止当前命令
 
 开机默认纯命令模式
  cd /etc/default  
  sudo gedit grub 
- 将#GRUB_TERMINAL=console中的#去掉
+将#GRUB_TERMINAL=console中的#去掉
 ```
+## Linux基础命令
+
+>Linux命令大全:[菜鸟教程](https://www.runoob.com/linux/linux-command-manual.html)
+Linux命令快速查询：man.linuxde.net/
+
+
 ### 切换目录命令
 
 ```bash
@@ -190,14 +201,13 @@ cd -：	切换到上一个所在目录
 ```bash
 1 mkdir 目录名称：新建目录  -p 创建多级目录 
 eg:mkdir test1/t1/t2
+
 2 ls或者ll（ll是ls -l的缩写，ll命令以看到该目录下的所有目录和文件的详细信息）：查看目录信息
 
 3 find 目录 参数：寻找目录（查）
 
 示例： 
-
 列出当前目录及子目录下所有文件和文件夹: find . 
-
 在/home目录下查找以.txt结尾的文件名:find /home -name "*.txt" 
 
 同上，但忽略大小写: find /home -iname "*.txt" 
@@ -687,16 +697,157 @@ sudo usermod  -G  sudo  jwt  #添加用户jwt进入组sudo
 sudo gpasswd -a jwt  sudo    #添加用户jwt进入组sudo
 ```
 
-## 设备管理
+## Linux设备管理
+
+#### 基础命令
+
+```bash
+fdisk -l #磁盘及分区管理工具，在硬盘设备中创建、删除、更改分区等操作通过fdisk命令进行
+
+mkfs #将硬盘分区后，使用mkfs（Make Filesystem，创建文件系统）命令可对其进行格式化。
+# mkfs  -t  ext3  /dev/hdb1
+
+fsck #扫描磁盘问题
+
+df #命令功能是检查文件系统的磁盘空间占用情况。
+
+du #统计目录（或文件）所占磁盘空间的大小。-a显示每个子文件的磁盘占用量 -s 统计总磁盘占用量
+# du -a /home/user/dir
+
+quota #命令可以显示磁盘已使用的空间与限制
+
+mount #命令可以实现对存储设备的挂载
+mount -t 
+示例：挂载u盘设备（假设u盘标识为sdb1）到/mnt/usb目录。
+#mount  /dev/sdb1  /mnt/usb
+```
+
+### 使用cifs在Linux上挂载Windows共享
+
+#### **方法一**：使用命令进行挂载
+
+1.查看Windows的IP:**ipconfig**，我的ip是192.168.137.1
+
+2.在Windows上建立共享文件
+
+![](https://i.loli.net/2020/04/21/78HuMbGZnemYV2q.png)
+
+3.在linux上新建要挂载到的文件夹 我是建在`~/Win-Share`
+
+4.在linux上执行挂载语句
+
+```bash
+sudo mount -t cifs -o username='Win用户名',password='登录密码',uid=jwt,gid=jwt //192.168.137.1/Ubuntu-Share/ ~/Win-Share
+
+
+# username,password是windows登录用户名密码，一定不能输错。
+# //192.168.137.1/Ubuntu-Share/ 就是windows要的共享文件夹
+# ~/Win-Share是linux将共享文件夹要挂载到的地方，可任意定位置
+# uid和gid也可以不要，uid和gid查看方法：命令行执行"id"命令
+
+sudo apt install cifs-utils #没有cifs执行这个命令安装
+sudo mount -t c(table) #查看是否有cifs
+```
+
+5.取消挂载
+
+```bash
+sudo umount ~/Win-Share
+```
+
+6.查看挂载信息
+
+```bash
+$ mount | grep Win-Share
+//192.168.137.1/Ubuntu-Share/ on /home/jwt/Win-Share type cifs (rw,relatime,vers=default,cache=strict,username=admin,domain=,uid=0,noforceuid,gid=0,noforcegid,addr=192.168.137.1,file_mode=0755,dir_mode=0755,soft,nounix,serverino,mapposix,rsize=1048576,wsize=1048576,echo_interval=60,actimeo=1)
+```
+
+#### 挂载时遇见的错误
+
+我执行时遇到了`无法以只读方式挂载`的错误，排查之后是我的用户名错了
+
+![](https://i.loli.net/2020/04/21/tuOR845TNiShLCf.png)
+
+查看Win用户`net user`,我开始使用Administrator，一直报错，换成admin成功了，所以用户名和密码一定不要输错了
+
+![](https://i.loli.net/2020/04/21/KUmtpdRrTvs9F7k.png)
+
+#### 方法二：手动挂载
+
+打开文件，点击其他位置，在连接到服务输入`smb://ip/win共享文件夹`,点击连接输入win用户名和密码
 
 ```
-fdisk -l
+smb://192.168.137.1/ubuntu-share/
+```
+
+![](https://i.loli.net/2020/04/21/D7KCcizMoEIYVsx.png)
+
+### 挂载光盘文件 iso
+
+1.	制作光盘镜像文件
+2.	挂载该文件
+
+```
+#流程
+1.	将文件和目录制作成光盘镜像文件，执行下面的命令。
+#mkisofs -r -J -V tt  -o ~/Desktop/tt.iso ~/Desktop/exam
+2.	将新的光盘镜像加载
+sudo mount -t iso9660 -o loop ~/Desktop/tt.iso  ~/Desktop/tTest
+```
+
+### 综合案例
+
+> 新增加一个磁盘，对磁盘进行分区，格式化分区，挂载分区，并给该磁盘进行配额。指定用户限额流程：
+
+流程：
+1.	虚拟机 -->设置-->添加磁盘  重启Ubuntu （模拟服务器接了一个新硬盘）
+2.	查看分区信息，虚拟机新建分区
+3.	dfisk 进行分区
+4.	格式化新分区
+5.	新建挂载点  sudo mkdir /home/newdisk
+6.	将分区挂载到 挂载点 sudo mount /dev/sdb1  /home/newDisk.
+
+配额设置：
+
+1.	mount 将磁盘重新挂载到用户配额和组配额 sudo mount -o remount,usrquota,grpquota  /home/newDisk
+2.	检查是否挂载到配额 mount | grep sdb1
+3.	查看配额信息  quatocheck -avug
+4.	开启配额 （服务） sudo quotaon -vug  /home/newDisk
+5.	给用户分配配额。 Sudo edquota -u zj    Ctrl + O, ctrl+m ,ctrl+x
+6.	给组分配陪  Sudo edquota -g zj   (硬限制>软限制）
+7.	 查看配额 sudo quota -uvs zj
+8.	测试
+
+## Linux进程管理
+
+```bash
+#查看进程
+ps  静态的
+top 动态的
+```
+
+ps-显示当前进程的状态
+
+```bash
+
+ps -l  #将目前属于您自己这次登入的 PID 与相关信息列示出来，长格式显示更加详细的信息；
+ps -a  #显示一个终端的所有进程，除会话引线外； tty:终端
+ps -A  #显示所有进程信息
+ps –u root #指定用户的所有进程信息
+ps -e  #显示所有进程信息
+
+ps aux ##查看系统中所有的进程显示所有包含其他使用者的行程
+ps -axjf #以程序树的方式显示
+ps -eLf #显示线程信息
+ps -a | wc -l #统计行数
+ps -ef | grep queue | grep -v grep | wc -l #查找含有queue关键词的进程（-v去掉grep本身），输出找到的进程数量。
+ps -aux | awk '$2~/S/ {print $0}' #统计sleep状态的进程
+#统计终端为tty1的所有进程
+ps aux | awk '$7~/tty1/' | wc -l   #$7表示tty在ps aux 数据的第7列 #  ~/tty1/ 表示包含tty1的
 
 ```
 
-
-
-## linux查看系统信息命令
+## Linux查看系统信息命令
 
 ````bash
 uname -a # 查看内核/操作系统/CPU信息 
@@ -738,8 +889,6 @@ chkconfig –list | grep on # 列出所有启动的系统服务程序
 rpm -qa # 查看所有安装的软件包
 ````
 
-
-
 ## 其他常用命令
 
 ```bash
@@ -780,6 +929,51 @@ gnome-session-quit：注销
 
 logout:注销（纯命令模式下）
 ```
+
+## Linux日志管理
+
+> 日志文件所处的位置都在**/var/log**目录下
+
+```bash
+alternatives.log   -更新替代信息都记录在这个文件中
+kern.log    –包含内核产生的日志，有助于在定制内核时解决问题。
+apport.log  -应用程序崩溃记录
+apt/  用apt-get安装卸载软件的信息
+auth.log  -登录认证log
+boot.log  -包含系统启动时的日志。
+wtmp  —包含登录信息。使用wtmp可以找出谁正在登陆进入系统，谁使用命令显示这个文件或信息等。
+btmp    -记录所有失败启动信息
+dist-upgrade  -dist-upgrade更新方式的信息
+dpkg.log   - 包括安装或dpkg命令清除软件包的日志。
+fontconfig.log -与字体配置有关的log。
+lastlog —记录所有用户的最近信息。这不是一个ASCII文件，因此需要用lastlog命令查看内容。
+faillog –包含用户登录失败信息。此外，错误登录命令也会记录在本文件中。
+```
+
+Linux系统中的有三个主要的日志子系统
+
+1.连接时间日志子系统 utmp、wtmp和lastlog
+
+2.进程统计日志子系统
+
+3.错误日志子系统
+
+**less  --主要用来查看日志**
+
+```bash
+G:跳转到末尾
+/字符串：向下搜索"字符串"的功能
+?字符串：向上搜索"字符串"的功能
+n：重复前一个搜索（与 / 或 ? 有关）
+N：反向重复前一个搜索（与 / 或 ? 有关）
+q: 退出
+空格键 滚动一页
+回车键 滚动一行
+```
+
+**free** 内存查看命令 
+
+**Lastcomm** 可以监测系统中任何时候执行的命令
 
 
 

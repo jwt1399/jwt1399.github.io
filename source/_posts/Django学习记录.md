@@ -32,7 +32,7 @@ permalink:
 `Views`：负责接收请求、获取数据、返回结果
 `Templates`：负责呈现内容到浏览器
 
-![image-20200406184347779](https://i.loli.net/2020/04/06/w5ovMLIDgTVWzJ6.png)
+![](https://i.loli.net/2020/04/06/w5ovMLIDgTVWzJ6.png)
 
 ### 3 Django-目录结构
 
@@ -95,7 +95,7 @@ python manage.py runserver
 
 有可能创建之后，没有自动帮你选好解释器(虚拟环境)，你可以自己到设置中配置
 
-![](https://i.loli.net/2020/04/06/pDkZdj7q9wXSe5F.png)
+![选择项目解释器](../images/Django%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/UXYfWjABkEragq3.png)
 
 ## 四、本地配置
 
@@ -152,7 +152,7 @@ urlpatterns = [
 | 属性                       | 描述                                                         |
 | -------------------------- | ------------------------------------------------------------ |
 | AutoField                  | 一个自动增长的IntegerField，一般不直接使用，Django会自动给每张表添加一个自增的primary key |
-| BooleanField               | True/False，默认的widget 是 CheckboxInput。                  |
+| **BooleanField**           | True/False，默认的widget 是 CheckboxInput。                  |
 | BinaryField                | 存储二进制数据。不能使用 filter 函数获得 QuerySet            |
 | BigIntegerField            | 64位整数                                                     |
 | **CharField**              | **存储字符串。必须有max_length参数指定长度**                 |
@@ -166,17 +166,17 @@ urlpatterns = [
 | FileField                  | 文件上传，不支持 primary_key 和 unique，否则会报 TypeError 异常。 |
 | FloatField                 | float 单精度浮点数                                           |
 | ImageField                 | 加上图片合法性验证功能的FileField，需要安装 PIL 或者 Pillow 模块 |
-| IntegerField               | 整数，默认的组件是TextInput。                                |
+| **IntegerField**           | 整数，默认的组件是TextInput。                                |
 | IPAddressField             | IP地址，字符串类型，如 127.0.0.1。默认组件是 TextInput。     |
 | **TextField**              | **大文本，巨长的文本。默认的组件是Textarea**                 |
-| URLField                   | 加了 URL 合法性验证的 CharField。                            |
+| **URLField**               | 加了 URL 合法性验证的 CharField。                            |
 
 ### Field 选项
 
 | 选项             | 描述                                                         |
 | ---------------- | ------------------------------------------------------------ |
 | null             | boolean 值，默认为false。TURE=将NULL空值存储到数据库中       |
-| blank            | boolean 值，该字段是否可以为空。如果为假，则必须有值。       |
+| **blank**        | boolean 值，该字段是否可以为空。如果为假，则必须有值。       |
 | choices          | 元组值，一个用来选择值的2维元组。第一个值是实际存储的值，第二个用来方便进行选择。如SEX_CHOICES=((‘F’,’Female’),(‘M’,’Male’),) |
 | db_column        | string 值，指定当前列在数据库中的名字，不设置，将自动采用model字段名 |
 | db_index         | boolean 值，如果为True将为此字段创建索引                     |
@@ -442,17 +442,16 @@ class RegisterForms(forms.Form):
 
 ### Form输出选项
 
-```
-{{ form.as_table }}：以表格形式加载表单元素
 
-{{ form.as_p }}：以段落形式加载表单元素
+- {{ form.as_table }}：以表格形式加载表单元素
 
-{{ form.as_ul }：以列表形式加载表单元素
-```
+- {{ form.as_p }}：以段落形式加载表单元素
+
+- {{ form.as_ul }}：以列表形式加载表单元素
 
 ### 使用实例
 
-在`app`中新建`forms.py`,并添加
+**在`app`中新建`forms.py`,并添加**
 
 ```python
 from django import forms
@@ -606,28 +605,51 @@ password = forms.CharField(label='密码',widget=forms.PasswordInput(attrs={'cla
 
 
 
-## 九、数据库
+## 九、mysql数据库
 
-### 安装
+### linux安装
 
 ```bash
 sudo apt-get install mysql-server #服务器
 sudo apt-get install mysql-client #客户端
 ```
 
+### widows 安装
+
+请参考：[win10安装MySql教程](https://www.cnblogs.com/xiaokang01/p/12092160.html)
+
 ### 使用
 
 ```mysql
+#linux
 service mysql start            #启动
-service mysql start stop       #停止
-service mysql start restart    #重启
+service mysql  stop            #停止
+service mysql restart          #重启
+
+#windows
+cd C:\Program Files\MySQL\MySQL Server 8.0\bin #mysql默认安装目录
+net start mysql80   #启动 我的服务器名称是MySQL80
+net stop  mysql80   #停止
+#服务器名称查看：打开【控制面板】，选择【系统和安全】，然后选择【管理工具】，再选择【服务】,找到MySQL
 ```
 
 ### 连接
 
 ```mysql
-sudo mysql -uroot p 
-#默认密码为空，回车就可以，必须加sudo,不加会报错，应该为还没设root密码，这是个坑点，下步设完就不加sudo
+sudo mysql -uroot -p 
+#默认密码为空，回车就可以，如果不是root用户，必须加sudo,不加会报错，应该为还没设root密码，这是个坑点，下步设完就不加sudo
+```
+
+**如果密码不正确或忘记密码**
+
+```bash
+cat /etc/mysql/debian.cnf 
+ 	#user=debian-sys-maint
+	#password=cwgoq56yTmCFvZBh
+	#使用账号debian-sys-maint和对应的password值进行登录
+	
+mysql -udebian-sys-maint -pcwgoq56yTmCFvZBh
+ #成功登录进mysql,然后执行下面步骤↓修改root密码
 ```
 
 ### 设置数据库root密码
@@ -637,15 +659,17 @@ update mysql.user set authentication_string=PASSWORD('你的密码'),plugin='mys
 
 flush privileges;
 
+exit
+
 service mysql start restart
 ```
 
 ### 创建数据库
 
 ```mysql
-create database my_db;
-
 create database my_db charset='utf8'; #最好使用该方法，修改编码才可以在数据库存中文
+
+create database my_db;
 ```
 
 ### 删除数据库
@@ -729,7 +753,7 @@ mysql> select * from students; #查看students表
 
 ## 十、Django连接数据库
 
-### 1 连接方法
+### 连接方法
 
 在`setting.py`中配置
 
@@ -746,7 +770,9 @@ DATABASES = {
 }
 ```
 
-下载解释器
+**下载解释器**
+
+- 方法一:
 
 ```bash
 pip3 install pymysql
@@ -779,18 +805,49 @@ if version < (1, 3, 3):
     raise ImproperlyConfigured("mysqlclient 1.3.3 or newer is required; you have %s" % Database.__version__)
 ```
 
-### 2 从数据库中获取所有数据
+- 方法二：
+
+```bash
+​```
+sudo apt install libmysqlclient-dev
+pip install mysqlclient
+​```
+```
+
+## 十一、Pycharm连接数据库
+
+![image-20200418213639910](../images/Django%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20200418213639910.png)
+
+> 如果连接MySQL报错：Server returns invalid timezone. Go to 'Advanced' tab and set 'serverTimezone' property manually.
+>
+> 服务器返回无效时区。转到“高级”选项卡并手动设置“serverTimezone”属性。
+
+**解决办法**：
+
+```mysql
+mysql -u root -p
+
+mysql>show variables like '%time_zone%';
+
+mysql>set global time_zone='+8:00';
+
+#每次重启服务都要重新配置一遍。
+解决：mysql>set persist time_zone='+8:00';
+```
+## 十二、取用数据库中数据
+
+### 1 从数据库中获取所有数据
 
 > objects.all()
 
 在`view.py`中添加
 
 ```python
-from .models import UserInfo
+from .models import UserInfo #导入model
 def index(request):
-    userinfo_list = UserInfo.objects.all()
+    userinfo_list = UserInfo.objects.all()#取出所有数据
     context = {
-        'userinfos':userinfo_list,
+        'userinfos':userinfo_list,#传给模板
     }
     return render(request,'index.html',context)
 ```
@@ -814,6 +871,10 @@ def index(request):
 ```
 
 ![](https://i.loli.net/2020/04/10/TC2cIkgxFXZEaKj.png)
+
+### 2 从数据库中获取第一条数据
+
+> objects.first()
 
 ### 3 从数据库中获取一条数据
 
@@ -851,20 +912,62 @@ def index(request):
 ![](https://i.loli.net/2020/04/11/Gyb5QAnOwFqlm3P.png)
 
 
-
 ### 4 从数据库中获取匹配数据
 
 > objects.filter(**kwargs) 从数据库的取得匹配的结果，返回一个对象列表，如果记录不存在的话，它会返回[]
 
 
+## 十二、Django-后台
 
+###  应用注册
 
+若要把app应用显示在后台管理中，需要在`admin.py`中注册。注册有两种方式，`普通注册和使用装饰器注册`
 
-## 十一、安装SimpleUi后台
+**普通注册方法**
 
-Django自带的后台太丑了，所以可以安装一个SimpleUi
+打开admin.py文件，如下代码：
 
-安装
+```python
+from django.contrib import admin
+from blog.models import Blog
+  
+#Blog模型的管理器
+class BlogAdmin(admin.ModelAdmin):
+    list_display=('id', 'caption', 'author', 'publish_time')
+     
+#在admin中注册绑定
+admin.site.register(Blog, BlogAdmin)
+```
+
+上面方法是将管理器和注册语句分开。有时容易忘记写注册语句，或者模型很多，不容易对应。
+
+**装饰器注册**
+
+该方式比较方便，推荐用这种方式。
+
+```python
+from django.contrib import admin
+from blog.models import Blog
+  
+#Blog模型的管理器
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    list_display=('id', 'caption', 'author', 'publish_time')
+```
+
+参考： [DJANGO ADMIN 一些有用的设置](https://www.cnblogs.com/wumingxiaoyao/p/6928297.html)
+
+### 安装SimpleUi后台
+
+Django自带的后台不太好看，SimpleUi官方介绍说SimpleUi是一个更符合国人审美和使用习惯的一个主题
+
+**官方后台与simpleui后台对比**
+
+![原生Django后台](https://i.loli.net/2020/04/27/FljogHwX583N9za.png)
+
+![simpleui后台](https://i.loli.net/2020/04/27/45gyTBuqQMWv8Y2.png)
+
+**安装**
 
 ```
 pip install django-simpleui
@@ -889,9 +992,9 @@ pip install django-simpleui
   ]
 ```
 
-### 修改后台名称
+#### 修改后台名称
 
-在urls.py 里面添加 
+在urls.py或者admin.py 里面添加 
 
 ```python
 from django.contrib import admin
@@ -899,7 +1002,7 @@ admin.site.site_header = '简简'
 admin.site.site_title = '简简 后台管理'
 ```
 
-### 修改logo
+#### 修改logo
 
 在setting.py 里面添加 
 
@@ -907,11 +1010,303 @@ admin.site.site_title = '简简 后台管理'
 SIMPLEUI_LOGO = 'logo链接'
 ```
 
-### 首页-跳转地址
-
-```
-SIMPLEUI_INDEX = 'https://jwt1399.top'
-```
-
 详细请看：[SimpleUi快速上手](https://simpleui.88cto.com/docs/simpleui/QUICK.html#目录)
 
+### Django Admin后台显示 多对多字段
+
+**models代码背景**【 tag是多对多字段：一个tag可以对应多个文章，多个tag可以都对应一个文章】
+
+```python
+class Tag(models.Model):
+	name = models.CharField(max_length=20, verbose_name="标签名称")
+ 
+class Article(models.Model):
+	tag = models.ManyToManyField(Tag, verbose_name="标签")
+```
+
+**admin.py中定义函数**
+
+```python
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ['add_time','title','category','show_tag']
+    
+    '''展示文章的所有tag'''
+    def show_tag(self, obj):
+        return [t.name for t in obj.tag.all()]
+    show_tags.short_description = "标签"  # 设置后台表头
+    filter_horizontal = ('tag',) #可选项（文章标签选择时的显示样式)
+    
+```
+
+![](https://i.loli.net/2020/04/22/VPlfaM3vrinNgTS.png)
+
+### Django 模板 显示 多对多字段
+
+ **视图 views.py文件**
+
+```python
+def Index(request):
+    """首页展示"""
+    # 取出所有博客文章
+    all_articles = Article.objects.all()
+    # 需要传递给模板（templates）的对象
+    context = {'all_articles': all_articles}
+    # render函数：载入模板，并返回context对象
+    return render(request, 'index.html',context)
+```
+
+**在模板中显示所有标签**
+
+```python
+{% for article in article.tag.all %} #循环显示所有文章
+      {% for tag in article.tag.all %} #循环显示一个文章的所有标签
+                   {{tag}}  
+       {% endfor %}
+{% endfor%}
+```
+
+参考：https://www.cnblogs.com/xmdykf/p/11403000.html#
+
+### Django-utils实现后台图片和图标预览
+
+参考：[探索Django utils](https://cloud.tencent.com/developer/article/1372105)
+
+**利用`django.utils.html`转义实现图标预览**
+
+1.在`model.py`中定义图标预览函数
+
+```python
+from django.utils.html import format_html
+
+class Category(models.Model):
+    icon = models.CharField(max_length=30, default='fas fa-home',verbose_name='菜单图标')
+	#后台图标预览
+    def icon_data(self):#要引入Font Awesome Free 5.11.1
+        return format_html('<i class="{}"></i>',self.icon) #转化为<i class="{self.icon}"></i>
+    icon_data.short_description = '图标预览'# 设置后台显示表头
+
+```
+
+2.在`admin.py`中注册
+
+```python
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['icon','icon_data']#在列表页显示的条目
+    list_editable = ['icon'] #在列表页即可修改
+```
+
+<img src="../images/Django%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20200422214552974.png"  />
+
+**利用`django.utils.html`转义实现图片预览**
+
+1.在`model.py`中定义图片预览函数
+
+```python
+class Article(models.Model):
+    title = models.CharField(max_length=50, verbose_name='文章标题')
+    cover = models.URLField(max_length=200, default='https://i.loli.net/2020/04/23/lJLjEtbs2NFwynQ.jpg', verbose_name='文章封面')
+	#后台图片预览
+    def cover_preview(self):
+        return format_html('<img src="{}" width="200px" height="150px"/>',self.cover,)
+    cover_preview.short_description = '文章封面预览'
+```
+
+2.在`admin.py`中注册
+
+```python
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    #设置要显示在后台列表中的字段
+    list_display = ('title','cover_preview',)#【在列表页预览图片】
+    list_display_links = ('title',) #设置哪些字段可以点击进入编辑界面
+    readonly_fields = ('cover_preview',)#只读字段，添加该字段才能在后台编辑页预览封面，否则报错
+    fieldsets = (  #后台文章编辑页面排版
+        ('编辑文章', {#【在编辑页页预览图片】
+            'fields': ('title',,'cover','cover_preview',)
+        })
+    )
+```
+
+
+
+![列表页预览图片](https://i.loli.net/2020/04/26/b9oHsAZfVQ45Dy3.png)
+
+![编辑页预览图片](https://i.loli.net/2020/04/26/jIDYyWidPUkXr5B.png)
+
+### 后台引入django-import-export
+
+**安装插件**
+
+```bash
+pip install django-import-export
+```
+
+**在`settings.py`注册**
+
+```python
+INSTALLED_APPS = (
+    ...
+    'import_export',
+)
+```
+
+还有一个可选的配置，我通常这样添加:
+
+```python
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+```
+
+默认值为False。它确定库是否会在数据导入中使用数据库事务，以确保安全。
+
+ **在Django后台中使用**
+
+在`admin.py`里使用`ImportExportModelAdmin`，而不是`admin.ModelAdmin`
+
+```javascript
+from import_export.admin import ImportExportModelAdmin
+from django.contrib import admin
+from .models import Person
+@admin.register(Person)
+class PersonAdmin(ImportExportModelAdmin):
+    pass
+```
+
+添加之后刷新页面你就会看到导入和导出按钮。
+
+参考：[django-import-export插件使用教程](https://cloud.tencent.com/developer/article/1445272)
+
+## 引入MarkDown
+
+markdown编辑器：[django-mdeditor](https://github.com/pylixm/django-mdeditor)
+
+markdown前台解析：
+
+[Mistune](https://github.com/lepture/mistune)
+
+[Python-markdown](https://github.com/Python-Markdown/markdown)
+
+推荐使用Mistune，解析速度比Python- markdown快
+
+1.在你的应用目录下新建一个名为`templatetags`的文件夹，并在其之下新建两个`Python`文件：`__init__.py`(使`templatetags`成为一个包)和`blog_tags.py`。编辑`blog_tags.py`文件：
+
+```python
+import re
+from random import randint
+from django import template
+from django.template.defaultfilters import stringfilter
+
+register = template.Library()
+
+@register.simple_tag()
+def random_num():
+    return randint(1, 10)
+
+
+@register.filter(is_safe=True)
+@stringfilter
+def custom_markdown(content):
+    code_list = re.findall(r'<pre><code class="lang-(.*)">', content, re.M)
+    for code in code_list:
+        content = re.sub(r'<pre><code class="(.*)">',
+                         '<pre class="language-{code}"><code class="language-{code}">'.format(code=code.lower()), content,1)
+    return content
+```
+
+2.在views.py中
+
+```python
+from django.shortcuts import render
+from .models import Article
+import mistune
+def article_detail(request,id):
+    """文章详情页"""
+    # 取出相应的文章
+    article = Article.objects.get(id=id)
+    #前台MK解析
+    mk = mistune.Markdown()
+    output = mk(article.content)
+    # 需要传递给模板的对象
+    context = {
+        'article':article,
+        'article_detail_html': output,
+    }
+    # 载入模板，并返回context对象
+    return render(request,'article_detail.html',context)
+```
+
+3.在模板文件中：
+
+```python
+{% load blog_tag %}
+{{ article_detail_html | custom_markdown | safe }}
+```
+
+### 全局变量
+
+我们经常在html中使用{{ article.name }}这样的模板变量，这些变量是我们在视图函数中提前定义好的变量，通过render()等方法传递到模板中。
+
+但是，还有一类变量，不需要使用render()传递到模板中，也能在html中使用该变量，像这样的变量，就叫做全局变量。
+
+1.定义你自己的全局变量，我定义在`view.py`中,你可以定义在任何文件，但是在第二步中注册路径相应要修改
+
+```python
+def global_setting(request):
+    """
+    全局变量
+    """
+    category_nav = Category.objects.filter(add_menu=True).order_by('index')
+    return {
+        'category_nav': category_nav
+    }
+```
+
+**2.修改`settings.py`中的全局变量`TEMPLATES`**
+
+```python
+'context_processors': [
+    'django.template.context_processors.debug',
+    'django.template.context_processors.request',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+    'blog.views.global_setting',#自定义的全局变量
+],
+```
+
+添加模版全局变量之后，我们可以在任意位置渲染模版页面无需再手动写相关代码即可使用该变量
+
+参考：[Django模板设置全局变量(默认变量)](https://blog.csdn.net/weixin_42134789/article/details/81239605)
+
+
+
+
+
+模型调用：https://www.cnblogs.com/wwg945/articles/8636669.html
+
+后台图标：https://www.mscto.com/python/174379.html
+
+##### mysql部署问题
+
+部署docker是到这样一个问题，开启容器时***提示本地3306端口被占用\***，于是就使用这条命令查了下端口使用情况：
+
+```
+fuser -v -n tcp 3306
+```
+
+发现确实被占用了，于是用
+
+```bash
+kill -s 9 pid
+```
+
+
+把占用的进程干掉，再次查看是发现还在占用，于是发现是***本地的MySQL服务\*** 开着，就通过：
+
+```bash
+service mysqld stop(5.0版本是mysqld)
+
+service mysql stop(5.5.7版本之后是mysql)
+```
+
+把MySQL服务关掉，发现这时端口3306 已经被释放了

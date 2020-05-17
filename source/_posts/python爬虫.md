@@ -17,6 +17,10 @@ keywords: python基础,python爬虫
 
 <center><font color=pink size=8>Python爬虫学习</font></center>
 
+## 前言
+
+爬虫学习暂时咕咕了。。。，等有空再继续更新
+
 ## 一、基础知识准备
 
 > Python基础语法还是很简单的，我通过一个个简单的小段代码来进行学习，所需掌握的知识点都包含在这段段代码中，每段代码都有相应详细注释，如果你有其他语言的基础那么Python基础就是轻轻松松的事。
@@ -674,7 +678,7 @@ if __name__ == "__main__": # main函数用于测试程序
 
 ![image-20200327113957848](https://i.loli.net/2020/03/27/bI84MCajdFuvZJw.png)
 
-#### 2.2 爬取[豆瓣top250](https://movie.douban.com/top250?start=)所有的10页数据数据
+#### 2.2 爬取[豆瓣top250](https://movie.douban.com/top250?start=)前10页数据
 
 ```python
 #-*- coding =utf-8 -*-
@@ -764,7 +768,7 @@ print(bs)
 #输出网页中title标签中的内容
 print(bs.title.string)
 ```
-#### 3.2 BeautifulSoup4主要解析器，以及优缺点
+#### 3.2 BeautifulSoup4主要解析器
 
 | 解析器           | 使用方法                                                     | 优势                                                      | 劣势                                          |
 | ---------------- | ------------------------------------------------------------ | --------------------------------------------------------- | --------------------------------------------- |
@@ -773,7 +777,7 @@ print(bs.title.string)
 | lxml XML 解析器  | BeautifulSoup(markup, ["lxml-xml"]) BeautifulSoup(markup, "xml") | 速度快 唯一支持XML的解析器                                | 需要安装C语言库                               |
 | html5lib         | BeautifulSoup(markup, "html5lib")                            | 最好的容错性，以浏览器的方式解析文档，生成HTML5格式的文档 | 速度慢、不依赖外部扩展                        |
 
-#### 3.2  BS4四大对象种类 
+#### 3.2  BS4四大对象种类
 
 > BeautifulSoup4将复杂HTML文档转换成一个复杂的树形结构,每个节点都是Python对象,所有对象可以归纳为4种
 

