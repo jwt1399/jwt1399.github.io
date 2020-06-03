@@ -5,10 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     <meta name="keywords" content="靶机：WinXPenSP3, 简简,简简博客,简简的博客,信息安全,CTF,渗透测试,Web,网络安全">
-    <meta name="description" content="WinXPenSP3靶机安装与配置靶机下载地址：
-链接：https://pan.baidu.com/s/1nbfWENuK6kDNgd-OR_6SAA提取码：hhe8
-安装&amp;amp;配置：
-1.下载好压缩包解压，导入VWware，启动Win">
+    <meta name="description" content="这是《Metasploit渗透测试魔鬼训练营》中的靶机，包含MS08-067、MS17-010(永恒之蓝)、MS09-001等漏洞。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -33,9 +30,9 @@
     
     <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
     
+<link rel="alternate" href="/atom.xml" title="简简" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简简" type="application/atom+xml">
-</head>
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -591,7 +588,7 @@
 </tr>
 <tr>
 <td>Nessus</td>
-<td></td>
+<td>8.10.0</td>
 </tr>
 </tbody></table>
 <h2 id="目标-amp-任务"><a href="#目标-amp-任务" class="headerlink" title="目标&amp;任务"></a>目标&amp;任务</h2><p>1.探测靶机WinXPenSP3的漏洞&amp;利用</p>
@@ -599,7 +596,7 @@
 <p>3.提权&amp;持久化：增加Administrators权限用户，攻击机监听端口等待反弹shell，上传木马客服端程序，添加注册表信息，设置木马程序开机自启动等。</p>
 <h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测目标"><a href="#1-探测目标" class="headerlink" title="1.探测目标"></a>1.探测目标</h3><pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> arp-scan -l<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603105438832.png" alt></p>
-<p>获得靶机iIP: <code>192.168.1.102</code></p>
+<p>获得靶机IP: <code>192.168.1.102</code></p>
 <h3 id="2-探测开放端口"><a href="#2-探测开放端口" class="headerlink" title="2.探测开放端口"></a>2.探测开放端口</h3><pre><code>nmap -sV -p- 192.168.1.102</code></pre><p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603110750442.png" alt></p>
 <p>开放了端口<code>139，445</code>，这是<code>SMB协议</code>使用的端口，那么后面我们可以尝试使用nmap扫描smb相关漏洞</p>
 <blockquote>
@@ -617,7 +614,7 @@
 <p>2.获取smb-check-vulns.nse，放入<code>/usr/share/nmap/scripts/</code>【nmap存放漏洞匹配文件的目录】</p>
 <p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603112358613.png" alt></p>
 <h3 id="2-使用Nessus扫描漏洞"><a href="#2-使用Nessus扫描漏洞" class="headerlink" title="2.使用Nessus扫描漏洞"></a>2.使用Nessus扫描漏洞</h3><p>通过Nessus扫面的漏洞报告，对各个漏洞逐一利用。</p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603112121311.png" alt></p>
+<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603191541811.png" alt></p>
 <h2 id="三、漏洞利用-amp-提权"><a href="#三、漏洞利用-amp-提权" class="headerlink" title="三、漏洞利用&amp;提权"></a>三、漏洞利用&amp;提权</h2><h3 id="MS08-067"><a href="#MS08-067" class="headerlink" title="MS08-067"></a>MS08-067</h3><h4 id="MS08-067-漏洞利用"><a href="#MS08-067-漏洞利用" class="headerlink" title="MS08-067-漏洞利用"></a>MS08-067-漏洞利用</h4><p>1）首先运行metasploit，使用search ms08-067寻找可利用的漏洞点</p>
 <pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> msfdb init <span class="token operator">&amp;&amp;</span> msfconsole
 search MS08-067<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
@@ -686,7 +683,7 @@ shell<span aria-hidden="true" class="line-numbers-rows"><span></span><span></spa
 <p>使用hashdump来查看系统用户名和密码的hash值，如果密码简单，可以通过爆破hash来得到登录密码。</p>
 <p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image046.jpg" alt></p>
 <p>对靶机发起了拒绝服务攻击</p>
-<h3 id="MS17-010"><a href="#MS17-010" class="headerlink" title="MS17-010"></a>MS17-010</h3><p>跟上面漏洞利用差不多</p>
+<h3 id="MS17-010-永恒之蓝"><a href="#MS17-010-永恒之蓝" class="headerlink" title="MS17-010(永恒之蓝)"></a>MS17-010(永恒之蓝)</h3><p>跟上面漏洞利用差不多</p>
 <p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image002-1591158343850.jpg" alt></p>
 <p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image004-1591158343851.jpg" alt></p>
 <p>成功getshell，后续操作跟前面一样</p>
@@ -1223,10 +1220,7 @@ run 或者 exploit<span aria-hidden="true" class="line-numbers-rows"><span></spa
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            WinXPenSP3靶机安装与配置靶机下载地址：
-链接：https://pan.baidu.com/s/1nbfWENuK6kDNgd-OR_6SAA提取码：hhe8
-安装&amp;配置：
-1.下载好压缩包解压，导入VWware，启动Win
+                            这是《Metasploit渗透测试魔鬼训练营》中的靶机，包含MS08-067、MS17-010(永恒之蓝)、MS09-001等漏洞。
                         
                     </div>
                     <div class="publish-info">
@@ -1485,7 +1479,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">140k</span>&nbsp;字
+                class="white-color">140.1k</span>&nbsp;字
             
             
             
