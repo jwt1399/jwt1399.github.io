@@ -517,21 +517,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-06-03
+                    2020-06-08
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    10.3k
+                    10.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    44 分
+                    45 分
                 </div>
                 
 				
@@ -1096,7 +1096,26 @@ database_name<span class="token punctuation">(</span><span class="token punctuat
 <h2 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h2><p>待更。。。</p>
 <h2 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h2><p>待更。。。</p>
 <h2 id="Cookie-注入"><a href="#Cookie-注入" class="headerlink" title="Cookie 注入"></a>Cookie 注入</h2><p>待更。。。</p>
-<h2 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h2><p>待更。。。</p>
+<h2 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h2><blockquote>
+<p>宽字节注入是利用mysql的一个特性，<code>mysql在使用GBK编码的时候，会认为两个字符是一个汉字</code>【前一个ascii码要大于<code>128</code>，才到汉字的范围】</p>
+</blockquote>
+<p>在PHP配置文件中<code>magic_quotes_gpc=On</code>或者使用<code>addslashes</code>函数，<code>icov</code>函数,<code>mysql_real_escape_string</code>函数、<code>mysql_escape_string</code>函数等，提交的参数中如果带有单引号<code>&#39;</code>，就会被自动转义<code>\&#39;</code>，这样就使得多数注入攻击无效。</p>
+<p>当输入单引号，假设这里我们使用<code>addslashes</code>转义，对应的url编码是：<br><strong><code>&#39;</code> –&gt;<code>\&#39;</code>–&gt; <code>%5c%27</code></strong><br>当在前面引入一个ASCII大于128的字符【比如%df】，url编码变为：<br><strong><code>%df&#39;</code> –&gt; <code>%df\&#39;</code> –&gt; <code>(%df%5C)%27</code>–&gt;<code>(数据库GBK)</code>–&gt;<code>運&#39;</code></strong></p>
+<table>
+<thead>
+<tr>
+<th>%5c%27</th>
+<th>%df%5C%27</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200608094626.png" alt></td>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200608094630.png" alt></td>
+</tr>
+</tbody></table>
+<p>前端输入<strong><code>%df&#39;</code></strong>时首先经过上面<strong><code>addslashes</code></strong>函数和浏览器<strong><code>url编码</code></strong>转义变成了<strong><code>%df%5c%27</code></strong></p>
+<p>因为数据库使用<code>GBK</code>编码的话，<strong>%df%5C会被当作一个汉字处理,转换成了汉字”運”</strong>，从而使<code>%27</code>（单引号）逃出生天，成功绕过,利用这个特性从而可实施SQL注入的利用。</p>
+<h2 id="XFF注入"><a href="#XFF注入" class="headerlink" title="XFF注入"></a>XFF注入</h2><p>待更。。。</p>
 <h2 id="读写文件"><a href="#读写文件" class="headerlink" title="读写文件"></a>读写文件</h2><h4 id="读取文件函数"><a href="#读取文件函数" class="headerlink" title="读取文件函数"></a>读取文件函数</h4><p><code>load_file（file_name）</code>：读取文件并返回该文件内容作为一个字符串。</p>
 <p><strong>使用前提：</strong></p>
 <ul>
@@ -2204,7 +2223,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">145.8k</span>&nbsp;字
+                class="white-color">146.1k</span>&nbsp;字
             
             
             
