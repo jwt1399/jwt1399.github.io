@@ -1,5 +1,5 @@
 ---
-title: Django学习记录(更新中)
+title: Django学习记录
 author: 简简
 categories:
   - Python
@@ -38,20 +38,24 @@ permalink:
 
 ![Django-目录结构](https://i.loli.net/2020/04/06/A4xUOpmtLgTKIof.png)
 
-## 二、Linux 构建项目
+## 二、构建项目
 
-### 1 创建虚拟环境
+### 1）inux 构建项目
+
+#### 1 创建虚拟环境
 
 创建项目是要先进入创建的虚拟环境中
 
-> 虚拟环境让每一个Python项目有独立的运行环境,具体使用方法请看我另外一篇文章[Python虚拟环境]()
+> 虚拟环境让每一个Python项目有独立的运行环境,具体使用方法请看我另外一篇文章[Python虚拟环境](https://jwt1399.top/posts/26224.html)
+>
+> 因此最后使用python虚拟环境
 
 ```bash
 mkvirtualenv -p python3 my_django #创建名为my_django的虚拟环境
 
-pip3 install Djiango #下载Django
+pip3 install Djiango #下载Django 如果下载失败请将pip更换为国内源
 ```
-### 2 创建项目
+#### 2 创建项目
 
 ```python
 django-admin startproject <Project_Name> 
@@ -65,15 +69,15 @@ django-admin startproject <Project_Name>
 - `settings.py `：该 Django 项目的设置或配置。 查看并理解这个文件中可用的设置类型及其默认值。
 - `urls.py`：Django项目的URL设置。 可视其为你的django网站的目录。 
 
-### 3 创建APP
+#### 3 创建APP
 
 ```python
 python manage.py startapp <App_Name>
 ```
 > Note:创建app时，必须在项目目录下、
-### 4 运行Django服务器
+#### 4 运行Django服务器
 
-```python
+```bash
 python manage.py runserver
 ```
 
@@ -81,13 +85,40 @@ python manage.py runserver
 
 ![第一次成功运行界面](https://i.loli.net/2020/04/06/VrGd7mNKaunvFxU.png)
 
-### 5 总结
+#### 5 总结
 
 ![总结](https://i.loli.net/2020/04/06/4NmXKW2tBxsFc1l.png)
 
+### 2）Windows构建项目
 
+> 虚拟环境让每一个Python项目有独立的运行环境,具体使用方法请看我另外一篇文章[Python虚拟环境](https://jwt1399.top/posts/26224.html)
+>
+> 因此最后使用python虚拟环境
 
-## 三、PyCharm构建项目
+#### 创建虚拟环境：bug
+
+```bash
+mkvirtualenv -p python3 bug
+
+pip3 install django  #如果下载失败请将pip更换为国内源
+或者指定下载对应版本
+pip3 install django==3.0.5  
+
+#查看Django版本
+django-admin --version
+```
+
+![image-20200417100352149](../images/Django-bug%E9%A1%B9%E7%9B%AE/image-20200417100352149.png)
+
+#### 创建django项目：bug
+
+![创建django项目](../images/Django-bug%E9%A1%B9%E7%9B%AE/image-20200417100628433.png)
+
+#### 选择项目解释器: bug
+
+![选择项目解释器](https://i.loli.net/2020/04/18/UXYfWjABkEragq3.png)
+
+### 3）PyCharm构建项目
 
 可以使用PyCharm直接一步到位，但是还是要了解上方命令构建的方式
 
@@ -97,7 +128,7 @@ python manage.py runserver
 
 ![选择项目解释器](../images/Django%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/UXYfWjABkEragq3.png)
 
-## 四、本地配置
+## 三、本地配置
 
 > 本地配置local_settings会重写默认settings中的配置
 
@@ -114,12 +145,15 @@ except ImportError:
 
 ```python
 # local_setting.py
-LANGUAGE_CODE = 'zh_hans'
+LANGUAGE_CODE = 'zh-hans'
+
+TIME_ZONE = 'Asia/Shanghai'
+
 ```
 
 注意：给别人代码时不要给local_setting,里面包含个人的配置
 
-## 五、URL
+## 四、URL
 
 ### path()语法
 
@@ -137,13 +171,61 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path(route='index/',view=views.index,name='index'，{'foo':'bar'}),
+    path(route='index/',view=views.index,name='index',{'foo':'bar'}),
    
-    path('index/', views.index),#可以这样简写
+    path('index/', views.index,name='index'),#可以这样简写
 ]
 ```
 
+## 五、View
 
+在 Django 中，视图(view)对 WEB 请求进行回应，视图就是一个 Python 函数，被定义在 `views.py` 中
+视图接收 reqeust 对象作为第一个参数，包含了请求的信息
+
+```python
+from django.http import HttpResponse
+    def index(request):
+          return HttpResponse("Hello World!")
+```
+
+说明：
+第二行引入 HttpResponse，它是用来向网页返回内容。
+
+1. index()函数第一个参数必须是 request，与网页发来的请求有关，request 变量里面包含 get 或 post 的内容，用户浏览器，系统等信息在里面 。
+2. 函数返回了一个 HttpResponse 对象，最终显示几个字到网页上。
+
+**使用render方式渲染模板**
+
+```python
+from django.shortcuts import render
+
+# 导入数据模型ArticlePost
+from .models import ArticlePost
+
+def article_list(request):
+    # 取出所有博客文章
+    articles = ArticlePost.objects.all()
+    # 需要传递给模板（templates）的对象
+    context = { 'articles': articles }
+    # render函数：载入模板，并返回context对象
+    return render(request, 'article/list.html', context)
+```
+
+分析如下：
+
+- `from .models import ArticlePost`从`models.py`中导入`ArticlePost`数据类
+- `ArticlePost.objects.all()`是数据类的方法，可以获得所有的对象（即博客文章），并传递给`articles`变量
+- `context`定义了需要传递给**模板**的上下文，这里即`articles`
+
+- 最后返回了`render`函数。它的作用是结合模板和上下文，并返回渲染后的HttpResponse对象。通俗的讲就是把context的内容，加载进模板，并通过浏览器呈现。
+
+`render`的变量分解如下：
+
+- request是固定的`request`对象，照着写就可以
+- `article/list.html`定义了模板文件的位置、名称
+- `context`定义了需要传入模板文件的上下文
+
+视图函数这样就写好了。
 
 ## 六、Model
 
@@ -224,7 +306,7 @@ admin.site.register(UserInfo,StudentsAdmin)
 
 生成迁移文件并映射，Django会根据指定的数据库自动生成sql语句
 
-```
+```bash
 python manage.py makemigrations
 
 python manage.py migrate
@@ -232,7 +314,7 @@ python manage.py migrate
 
 创建后台用户，创建了才可以登录后台
 
-```
+```bash
 python manage.py createsuperuser
 ```
 
@@ -711,8 +793,6 @@ alter table my_tables character set utf8; #修改表编码
 | Not null       | 不能为空         |
 | foreign key    | 指定关键表的外键 |
 
-
-
 ```mysql
 mysql> use my_db #使用my_db数据库
 Database changed
@@ -751,9 +831,34 @@ mysql> select * from students; #查看students表
 1 row in set (0.01 sec)
 ```
 
+### docker部署mysql问题
+
+docker部署时到这样一个问题，开启容器时**提示本地3306端口被占用**，于是就使用这条命令查了下端口使用情况：
+
+```
+fuser -v -n tcp 3306
+```
+
+发现确实被占用了，于是用
+
+```bash
+kill -s 9 pid
+```
+
+
+把占用的进程干掉，再次查看是发现还在占用，于是发现是***本地的MySQL服务\*** 开着，就通过：
+
+```bash
+service mysqld stop(5.0版本是mysqld)
+
+service mysql stop(5.5.7版本之后是mysql)
+```
+
+把MySQL服务关掉，发现这时端口3306 已经被释放了
+
 ## 十、Django连接数据库
 
-### 连接方法
+**连接方法**
 
 在`setting.py`中配置
 
@@ -834,6 +939,7 @@ mysql>set global time_zone='+8:00';
 #每次重启服务都要重新配置一遍。
 解决：mysql>set persist time_zone='+8:00';
 ```
+
 ## 十二、取用数据库中数据
 
 ### 1 从数据库中获取所有数据
@@ -916,8 +1022,7 @@ def index(request):
 
 > objects.filter(**kwargs) 从数据库的取得匹配的结果，返回一个对象列表，如果记录不存在的话，它会返回[]
 
-
-## 十二、Django-后台
+## 十三、Django-后台
 
 ###  应用注册
 
@@ -1177,7 +1282,7 @@ class PersonAdmin(ImportExportModelAdmin):
 
 参考：[django-import-export插件使用教程](https://cloud.tencent.com/developer/article/1445272)
 
-## 引入MarkDown
+### 引入MarkDown
 
 markdown编辑器：[django-mdeditor](https://github.com/pylixm/django-mdeditor)
 
@@ -1278,35 +1383,61 @@ def global_setting(request):
 
 参考：[Django模板设置全局变量(默认变量)](https://blog.csdn.net/weixin_42134789/article/details/81239605)
 
+## 十四、其他操作
 
-
-
-
-模型调用：https://www.cnblogs.com/wwg945/articles/8636669.html
-
-后台图标：https://www.mscto.com/python/174379.html
-
-##### mysql部署问题
-
-部署docker是到这样一个问题，开启容器时***提示本地3306端口被占用\***，于是就使用这条命令查了下端口使用情况：
-
-```
-fuser -v -n tcp 3306
-```
-
-发现确实被占用了，于是用
+### 生成requirements.txt
 
 ```bash
-kill -s 9 pid
+pip3 freeze > requirement.txt #生成项目所包含模块清单
+
+pip3 install -r requirements.txt #一键安装上方文档中的模块
 ```
 
-
-把占用的进程干掉，再次查看是发现还在占用，于是发现是***本地的MySQL服务\*** 开着，就通过：
+###  上传git仓库：
 
 ```bash
-service mysqld stop(5.0版本是mysqld)
+github上新建仓库
+#首次本地执行：
+git init
+git add .
+git commit -m "xxxxxxxx"
+git remote add origin https://github.com/jwt1399/仓库名.git
+git push -u origin master
 
-service mysql stop(5.5.7版本之后是mysql)
+#以后执行上传：
+git add .
+git commit -m "xxxxx"
+git push -u origin master
+#不想上传的文件，写在`.gitignore`中
 ```
 
-把MySQL服务关掉，发现这时端口3306 已经被释放了
+### CSRF
+
+> django为用户实现防止跨站请求伪造的功能，通过中间件 django.middleware.csrf.CsrfViewMiddleware 来完成。而对于django中设置防跨站请求伪造功能有分为全局和局部。
+
+**全局：**
+
+中间件 django.middleware.csrf.CsrfViewMiddleware【在setting.py的MIDDLEWARE中】
+
+想取消直接注释这条语句
+
+**局部：**
+
+@csrf_protect，为当前函数强制设置防跨站请求伪造功能，即便settings中没有设置全局中间件。
+
+@csrf_exempt，取消当前函数防跨站请求伪造功能，即便settings中设置了全局中间件。
+
+在views.py中添加,@csrf_exempt添加到对应函数上
+
+```python
+from django.views.decorators.csrf import  csrf_exempt,csrf_protect
+
+@csrf_exempt #加上这个就不受CSRF保护，标识一个视图可以被跨域访问
+def post(request):
+        return HttpResponse("hi")
+
+```
+
+
+
+参考：[Django进阶之CSRF](https://www.cnblogs.com/zhaof/p/6281482.html)

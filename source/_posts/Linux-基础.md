@@ -90,9 +90,7 @@ Linux文件系统的结构层次鲜明，就像一棵倒立的树，最顶层是
 
 *   **/var：** 用于存放运行时需要改变数据的文件，也是某些大文件的溢出区，比方说各种服务的日志文件（系统启动日志等。）等；
 
-* **/lost+found：** 这个目录平时是空的，系统非正常关机而留下“无家可归”的文件（windows下叫什么.chk）就在这里。  
-
-  
+*   **/lost+found：** 这个目录平时是空的，系统非正常关机而留下“无家可归”的文件（windows下叫什么.chk）就在这里。  
 ##   Ubuntu 18.04 美化
 
 ### 安装美化工具gnome-tweak-tool
@@ -618,7 +616,6 @@ groupadd 选项 用户组 :增加一个新的用户组
 
 groupadd -g 343 newgroup
 #新建一个ID为343的组
-
 ```
 
 **groupadd命令的常用选项**
@@ -787,7 +784,7 @@ smb://192.168.137.1/ubuntu-share/
 1.	制作光盘镜像文件
 2.	挂载该文件
 
-```
+```bash
 #流程
 1.	将文件和目录制作成光盘镜像文件，执行下面的命令。
 #mkisofs -r -J -V tt  -o ~/Desktop/tt.iso ~/Desktop/exam
@@ -829,7 +826,6 @@ top 动态的
 ps-显示当前进程的状态
 
 ```bash
-
 ps -l  #将目前属于您自己这次登入的 PID 与相关信息列示出来，长格式显示更加详细的信息；
 ps -a  #显示一个终端的所有进程，除会话引线外； tty:终端
 ps -A  #显示所有进程信息
@@ -975,11 +971,244 @@ q: 退出
 
 **Lastcomm** 可以监测系统中任何时候执行的命令
 
+## Linux文本处理三剑客--grep、sed、awk
+
+请看我另外一篇文章：https://jwt1399.top/posts/22718.html
+
+## Linux下Shell编程
+
+```shell
+#!/bin/bash
+echo "开始学习shell !"
+```
+
+`#!`(Shebang) 告诉系统这个脚本需要什么解释器来执行，即使用哪一种 Shell。
+
+### 运行方法
+
+```bash
+chmod +x ./test.sh  #使脚本具有执行权限
+./test.sh  #执行脚本
+```
+
+### 文件表达式
+
+```shell
+-e filename 如果 filename存在，则为真
+-d filename 如果 filename为目录，则为真 
+-f filename 如果 filename为常规文件，则为真
+-L filename 如果 filename为符号链接，则为真
+-r filename 如果 filename可读，则为真 
+-w filename 如果 filename可写，则为真 
+-x filename 如果 filename可执行，则为真
+-s filename 如果文件长度不为0，则为真
+-h filename 如果文件是软链接，则为真
+filename1 -nt filename2 如果 filename1比 filename2新，则为真。
+filename1 -ot filename2 如果 filename1比 filename2旧，则为真。
+```
+
+### 整数变量表达式
+
+```shell
+-eq 等于
+-ne 不等于
+-gt 大于
+-ge 大于等于
+-lt 小于
+-le 小于等于
+```
+
+### 字符串变量表达式
+
+```shell
+if  [ $a = $b ]                 如果string1等于string2，则为真,字符串允许使用赋值号做等号           if  [ $string1 !=  $string2 ]   如果string1不等于string2，则为真       
+if  [ -n $string  ]             如果string 非空(非0），返回0(true)  
+if  [ -z $string  ]             如果string 为空，则为真
+if  [ $sting ]                  如果string 非空，返回0 (和-n类似) 
+if  [ ! 表达式 ]				  逻辑非 !    条件表达式的相反
+if  [ ! -d $num ]               如果不存在目录$num
+if  [ 表达式1  –a  表达式2 ]      逻辑与 –a     条件表达式的并列
+if  [ 表达式1  –o 表达式2 ]       逻辑或 -o     条件表达式的或
+```
+
+### 特殊变量
+
+| $#   | 传递到脚本的参数个数                                         |
+| ---- | ------------------------------------------------------------ |
+| $*   | 以一个单字符串显示所有向脚本传递的参数。 如"$*"用「"」括起来的情况、以"$1 $2 … $n"的形式输出所有参数。 |
+| $$   | 脚本运行的当前进程ID号                                       |
+| $!   | 后台运行的最后一个进程的ID号                                 |
+| $@   | 与$*相同，但是使用时加引号，并在引号中返回每个参数。 如"$@"用「"」括起来的情况、以"$1" "$2" … "$n" 的形式输出所有参数。 |
+| $-   | 显示Shell使用的当前选项，与[set命令](https://www.runoob.com/linux/linux-comm-set.html)功能相同。 |
+| $?   | 显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误。 |
+
+### Shell算术运算
+
+**1、expr expression**
+
+```sh
+eg：expr  $a + $b
+```
+
+注意：在使用expr时，运算符前后要有空格，且乘法要用`\`转义，即`\*`的形式。
+
+**2、$((expression))**
+
+```shell
+eg: $((a+b))
+```
+
+**3、let命令**
+
+```shell
+eg: let c=a+b
+```
+
+### if语句
+
+```shell
+if condition1
+then
+	command1
+elif condition2
+	command2
+else
+	commandN
+fi
+```
+
+### for语句
+
+```shell
+#C风格的for
+for var in item1 item2 ... itemN
+do
+	command1
+	command2
+	...
+	commandN
+done
+```
+
+```shell
+for (( EXP1; EXP2; EXP3 ))
+do
+	command1
+	command2
+	command3
+done
+```
+
+**循环常见场景：**
+
+写成一行do前面要加分号
+
+```shell
+#1、有限数字（用空格隔开）
+for i in 1 2 3 4 5;do echo $i ;done　
+
+#2、序列数据（seq 开始 步长 最后） ---步长默认1
+for i in $(seq 1 3 100); do echo $i ;done
+
+#3、命令结果（默认空格为分隔符）
+for i in `cat 01.txt`;do echo $i ;done
+for i in `ls | grep "heh"`;do echo $i ;done
+
+#4、语法循环（类似C，注意为双括号,分号隔开）
+for ((i=1;i<3;i+=2));do echo i ;done
+for ((;;);do echo"无限循环";done
+
+```
+
+### while语句
+
+```shell
+while [ condition ]
+do
+	command
+done
+```
+### until语句
+
+until语句与while语句一样，都是循环语句，但处理方式正好相反，即`当判断条件为真时，循环停止`。
+
+```shell
+until condition
+do
+	command
+done
+```
+
+### case语句
+
+case的语法和C family语言差别很大，它需要一个esac（就是case反过来）作为结束标记，每个case分支用右圆括号，用两个分号表示break
+
+```shell
+#!/bin/bash
+echo "please enter the number of the week:"
+read number
+case $number in
+ 1) echo "Monday";;
+ 2) echo "Tuesday";;
+ 3) echo "Wednsday";;
+ 4) echo "Thursday";;
+ 5) echo "Friday";;
+ 6) echo "saturday";;
+ 7) echo "Sunday";;
+ *) echo "your enter must be in 1-7.";;
+esac
+```
+
+case支持合并匹配模式，即在每一个模式中，可以使用通配符或逻辑符号。
+
+```shell
+#! /bin/bash
+echo "please input score:"
+read score
+let score/=10
+case $score in
+0|1|2|3|4|5) echo "不及格";;
+6) echo "及格";;
+7|8) echo "良好";;
+9|10) echo "优秀";;
+*) echo "错误";;
+esac
+```
+
+### Shell 函数
+
+```shell
+[ function ] funname [()]
+{
+    action;
+    [return int;]
+}
+```
+
+可以带function funname() 定义，也可以直接funname() 定义,不带任何参数。
+
+示例：
+
+```shell
+add()
+{
+	echo "input a:"
+	read a
+	echo "input b:"
+	read b
+	echo -n "a+b="
+	return $(($a+$b))
+}
+add
+exho $?
+```
+
 
 
 参考：
 [CS基础：Linux基础（1）](https://mp.weixin.qq.com/s/C8kv8itPU1wHYGaH3tG9zg)
 [CS基础：Linux基础（2）](https://mp.weixin.qq.com/s/-eANH2n_IDo6ojyP3RdeDA)
+
 
 
 

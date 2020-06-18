@@ -11,7 +11,9 @@ abbrlink: 49954
 date: 2019-07-17 16:46:00
 ---
 ![RSA.png](https://i.loli.net/2019/07/17/5d2ee0c13f66b76353.png)
+
 ## openssl
+
 >OpenSSL 是一个开源项目，其组成主要包括一下三个组件：
     openssl：多用途的命令行工具
     libcrypto：加密算法库
@@ -22,42 +24,43 @@ date: 2019-07-17 16:46:00
 RSA PEM文件格式
 
 **1**.PEM私钥格式文件
-```php
+```
 -----BEGIN RSA PRIVATE KEY-----
 -----END RSA PRIVATE KEY-----
 ```
 
 **2**. PEM公钥格式文件
-```php
+```
 -----BEGIN PUBLIC KEY-----
 -----END PUBLIC KEY-----
 ```
 **3**. PEM RSAPublicKey公钥格式文件
-```php
+
+```
 -----BEGIN RSA PUBLIC KEY-----
 -----END RSA PUBLIC KEY-----
 ```
 **OpenSSL密钥相关命令**
 **1**. 生成密钥
-```php
+```bash
 openssl genrsa -out key.pem 1024
     -out 指定生成文件，此文件包含公钥和私钥两部分，所以即可以加密，也可以解密
     1024 生成密钥的长度
 ```
 **2**. 提取PEM格式公钥
-```php
+```bash
 openssl rsa -in key.pem -pubout -out pubkey.pem
     -in 指定输入的密钥文件
     -out 指定提取生成公钥的文件(PEM公钥格式)
 ```
 **3**. 提取PEM RSAPublicKey格式公钥
-```php
+```bash
 openssl rsa -in key.pem -RSAPublicKey_out -out pubkey.pem
     -in 指定输入的密钥文件
     -out 指定提取生成公钥的文件(PEM RSAPublicKey格式)
 ```
 **4**. 公钥加密文件
-```php
+```bash
 openssl rsautl -encrypt -in input.file -inkey pubkey.pem -pubin -out output.file
     -in 指定被加密的文件
     -inkey 指定加密公钥文件
@@ -65,14 +68,14 @@ openssl rsautl -encrypt -in input.file -inkey pubkey.pem -pubin -out output.file
     -out 指定加密后的文件
 ```
 **5**. 私钥解密文件
-```php
+```bash
 openssl rsautl -decrypt -in input.file -inkey key.pem -out output.file
     -in 指定需要解密的文件
     -inkey 指定私钥文件
     -out 指定解密后的文件
 ```
 **ras** 的用法如下：
-```php
+```bash
 openssl rsa [-inform PEM|NET|DER] [-outform PEM|NET|DER] [-in filename] [-passin arg] [-out filename] [-passout arg]
        [-sgckey] [-des] [-des3] [-idea] [-text] [-noout] [-modulus] [-check] [-pubin] [-pubout] [-engine id]</pre>
 
@@ -88,23 +91,23 @@ openssl rsa [-inform PEM|NET|DER] [-outform PEM|NET|DER] [-in filename] [-passin
 
 ## rsatool
 **安装**：
-```php
+```bash
 git clone https://github.com/ius/rsatool.git
 cd rsatool  //进入这个目录
 python setup.py install
 ```
 提供模数和私有指数，PEM输出到key.pem：
-```php
+```bash
 python rsatool.py -f PEM -o key.pem -n 13826123222358393307 -d 9793706120266356337
 ```
 提供两个素数，DER输出到key.der：
-```php
+```bash
 python rsatool.py -f DER -o key.der -p 4184799299 -q 3303891593
 ```
 项目地址:https://github.com/ius/rsatool
 ## RsaCtfTool
 **安装**：
-```php
+```bash
 安装之前必须先安装这四个库(PyCrypto,GMPY2,SymPy,requests)
 
 git clone https://github.com/Ganapati/RsaCtfTool.git 
@@ -115,23 +118,23 @@ pip install -r requirements.txt
 ```
 **用法一**：已知公钥(自动求私钥) –publickey，密文 —-uncipherfile。
 将文件解压复制到RsaCtfTool里：
-```php
+```bash
 python RsaCtfTool.py --publickey 公钥文件 --uncipherfile 加密的文件
 ```
 ![](https://i.loli.net/2019/07/17/5d2ee417c580785483.png)
 **用法二**：已知公钥求私钥。
-```php
+```bash
 RsaCtfTool.py --publickey 公钥文件 --private
 ```
 ![](https://i.loli.net/2019/07/17/5d2ee3dc1bc6f77134.png)
 **用法三**：密钥格式转换——把PEM格式的公钥转换为n，e
-```php
+```bash
 python RsaCtfTool.py --dumpkey --key 公钥文件
 umpkey --key 公钥文件
 ```
 ![](https://i.loli.net/2019/07/17/5d2ee3b44a24342430.png)
 **用法四**：密钥格式转换——把n,e转换为PEM格式
-```php
+```bash
 python RsaCtfTool.py --createpub -n 782837482376192871287312987398172312837182 -e 65537
 ```
 ![](https://i.loli.net/2019/07/17/5d2ee35e11f2039360.png)

