@@ -8,7 +8,7 @@ layout: "about"
 <html>
 <head>
 <meta charset="utf-8">
-<title>无标题文档</title>
+<title>简历</title>
 </head>
 <body>
 <h1 align="center">简文涛</h1>
@@ -38,14 +38,15 @@ layout: "about"
 <li>熟悉Windows、Linux、MacOS、IOS、Android等系统的开关机</li>
 <li>求一份吃得饱的工作！(•́ ₃ •̀)</li>
 <li>哈哈哈，好啦，下面才是重点！！！😁😁😁</li>
-<li>熟悉Web基础漏洞, sql注入、Xss攻击、命令注入、CSRF攻击、上传漏洞等</li>
-<li>熟悉Linux操作系统命令使用及其相关配置，了解docker基础使用</li>
-<li>熟悉SQLserver、MySQL数据库的基础配置和使用，能尝试简单的数据库注入攻击</li>
-<li>熟悉Nmap、Burpsuite、AWVS、Nessus、OWASP ZAP、Wireshark、SQLmap等常见安全工具使用</li>
-<li>掌握Apache、ISS、nginx等Web服务器的搭建及配置</li> 
+<li>熟悉Web基础漏洞, Sql注入、Xss攻击、命令注入、CSRF攻击、上传漏洞等</li>
+<li>熟悉Linux操作系统命令使用及其相关配置，掌握docker的相关使用</li>
+<li>熟悉SQLserver、MySQL数据库的基础配置和使用，能进行数据库注入攻击</li>
+<li>熟悉Nmap、Burpsuite、Metasploit、AWVS、Nessus、Wireshark、SQLmap等常见安全工具使用</li>
+<li>掌握Apache、ISS、Nginx等Web服务器的搭建及配置</li> 
 <li>掌握计算机网络、操作系统、密码学、网络协议分析等基础网络安全知识</li>
 <li>掌握C++、C、Python、Java，并能够写出简单的测试脚本</li>
 <li>掌握HTML、CSS、JS、Bootstrap等前端基础知识，了解python-Django框架</li>
+<li>了解PHP、JSP、python-Django框架</li>
 <li>具有一定的CTF比赛经验</li>
 <li>具有良好的文档编辑能力、学习能力、沟通能力、抗压能力</li>
 </ul>
@@ -56,6 +57,8 @@ layout: "about"
 </blockquote>
 <ul>
 <li><p>未完待续...</p></li>
+<li>
+<p>2020.06——中国大学生计算机设计大赛四川省级赛——所属领域：密码学、微课与教学辅助——Rank：二等奖&推选进国赛</p>    
 <li>
 <p>2020.05——全国信息安全与对抗技术竞赛——所属领域：Web安全、逆向工程、二进制、密码学——Rank：全国二等奖</p>
 </li>    
@@ -94,6 +97,8 @@ layout: "about"
 <li style="color:gray"><s>2020——ISCC</s></li>
 <li style="color:gray"><s>2020——网鼎杯</s></li>
 </ul>
+
+
 <h1 id="主要获奖"><a href="#主要获奖" class="headerlink" title="主要获奖"></a>主要获奖</h1>
 <blockquote>
   <p> <b>本科阶段</b></p>
@@ -101,6 +106,7 @@ layout: "about"
 <p><b>学术竞赛类获奖：</b></p>
 <ul>
 <li>未完待续...</li>
+<li>2020——中国大学生计算机设计大赛四川省级赛二等奖</li> 
 <li>2020——全国信息安全与对抗技术竞赛二等奖</li>    
 <li>2019——四川省信息安全技术大赛一等奖 </li>
 <li>2019——全国大学生信息安全竞赛创新实践能力赛赛区二等奖</li>
@@ -136,6 +142,7 @@ layout: "about"
 </ul>
 <h1 id="工作实践"><a href="#工作实践" class="headerlink" title="工作实践"></a>工作实践</h1>
 <p>在校期间自2017-至今担任班长、2019.12月转正成为正式党员，担任过一小段时间党支部副书记、2018年加入网络安全实验室,学长学姐们相继考研、实习，继而担任实验室web组长(但实际上并没有做出任何贡献，整日划水)</p>
+
 
 <h1 id="个人评价"><a href="#个人评价" class="headerlink" title="个人评价"></a>个人评价</h1>
 <p>热爱信息安全，尤爱Web安全，加入实验室担任Web安全组长，携队员参加CTF比赛，培养了我组织能力和强烈的团队意识。大学期间成绩专业第一，具有较强的学习和自学能力；大学期间担任班长，锻炼了管理能力，自我决策能力，以及解决问题的能力，抗压能力和责任感。</p>
