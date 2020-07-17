@@ -526,14 +526,14 @@ HTTP是Hyper Text Transfer">
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.7k
+                    3.4k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    10 分
+                    13 分
                 </div>
                 
 				
@@ -647,8 +647,55 @@ Hint If you got [HTTP Method Not Allowed] Error,you should requests index.php</c
 <p>cookie和session的区别：cookie是存在于客户端的，而session是存在于服务器端的</p>
 <p><code>cookie：</code>web服务所使用的HTTP服务是无状态的。这就意味着，服务器无法分辨收到的请求是属于哪一个用户的，需要通过cookie来对用户的身份进行标识了，用户每次对服务器发起请求时，都带上自己独有的cookie，服务器通过读取cookie信息，识别用户。</p>
 <p><code>session：</code>session和cookie的作用有点类似，都是为了存储用户相关的信息。存储在服务器的数据会更加的安全，不容易被窃取。但存储在服务器也有一定的弊端，就是会占用服务器的资源。</p>
-<h4 id="基础认证"><a href="#基础认证" class="headerlink" title="基础认证"></a>基础认证</h4><p>待更。。。</p>
-<h4 id="响应包源代码"><a href="#响应包源代码" class="headerlink" title="响应包源代码"></a>响应包源代码</h4><p>待更。。。</p>
+<h4 id="基础认证"><a href="#基础认证" class="headerlink" title="基础认证"></a>基础认证</h4><p><strong>题目考点：HTTP 基础认证、爆破</strong></p>
+<blockquote>
+<p>在HTTP中，基本认证（英语：Basic access authentication）是允许http用户代理（如：网页浏览器）在请求时，提供 用户名 和 密码 的一种方式。详情请查看 <a href="https://zh.wikipedia.org/wiki/HTTP基本认证" target="_blank" rel="noopener">https://zh.wikipedia.org/wiki/HTTP基本认证</a></p>
+</blockquote>
+<p><strong>HTTP基本认证的过程:</strong></p>
+<p>①<code>请求：</code>客户端发送<code>HTTP Request</code>给服务器</p>
+<p>②<code>质询：</code>因为request中没有包含Authorization header或者错误包含, 服务器会返回一个<code>401 Unauthozied</code>给客户端，并且在<code>Response</code>的 header “<code>WWW-Authenticate</code>“ 中添加信息。</p>
+<p>③<code>授权：</code>客户端输入用户名和密码并用base64加密后，放在<code>Authorization header</code> 中发送给服务器。</p>
+<p>④<code>成功：</code>服务器将<code>Authorization header</code>中的用户名密码取出，进行验证， 如果验证通过，将根据请求，发送资源给客户端</p>
+<table>
+<thead>
+<tr>
+<th>打开链接</th>
+<th>点击click,需要用户名和密码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717155458.png" alt></td>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717155508.png" alt></td>
+</tr>
+</tbody></table>
+<p>随便输个账号密码（账号jwt 密码 123），使用BurpSuite 抓包</p>
+<p>①<code>请求：</code>发送<code>HTTP Request</code>给服务器</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717155508.png" alt></p>
+<p>②<code>质询：</code>因为request中错误包含Authorization header, 服务器会返回一个<code>401 Unauthozied</code>给客户端，并且在<code>Response</code>的 header “<code>WWW-Authenticate</code>“ 中添加信息。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162814.png" alt></p>
+<p>得到提示 <code>Do u konw admin ?</code>，于是猜测账号是 <code>admin</code> , 应该就是HTTP 请求头部的 Authorization 字段中的账号密码错误，需要我们爆破，题目也给了字典</p>
+<pre><code>Authorization: Basic and0OjEyMw==
+
+Basic表示是「基础认证」, 后面的 and0OjEyMw== 用 base64 解码后是 jwt:123 , 也就是我们之前输入的账号和密码
+根据提示，容易猜测用户名为 admin ，那么 Authorization 头字段的格式就应该为
+Authorization: Basic base64(admin:密码)</code></pre><p>③<code>授权：</code>客户端输入用户名和密码并用base64加密后，放在<code>Authorization header</code> 中发送给服务器。</p>
+<p>1.将报文发送到 <code>Intruder</code>, 将 <code>Basic</code> 后面 <code>base64</code> 部分添加为 <code>payload position</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162830.png" alt></p>
+<p>2.在 <code>有效载荷</code> 选项卡下，选择 <code>有效载荷集</code> 为 <code>运行时文件</code>, 然后在 <code>有效载荷</code> 中点击 <code>文件选择</code> 加载密码字典</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162836.png" alt></p>
+<p>3.有效负载处理<code>-&gt;</code>添加<code>-&gt;</code> 添加前缀<code>-&gt;</code> 输入 <code>admin:</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162847.png" alt></p>
+<p>4.有效负载处理<code>-&gt;</code>添加<code>-&gt;</code> 编码<code>-&gt;</code> Base64编码</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162847.png" alt></p>
+<p>5.<code>有效载荷编码</code> 取消勾选的 <code>URL编码这些字符</code>, 不取消的话 base64 之后的 <code>=</code> 会被转成 <code>%3d</code> ，这样就爆不出密码</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162857.png" alt></p>
+<p>6.点击<code>开始攻击</code> ，然后点击 <code>状态</code> 排序，看到状态码出现 200 的，即爆破成功</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162916.png" alt></p>
+<p>7.查看 <code>Response</code> 得到 flag</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717162913.png" alt></p>
+<h4 id="响应包源代码"><a href="#响应包源代码" class="headerlink" title="响应包源代码"></a>响应包源代码</h4><p><strong>题目考点：HTTP响应包源代码查看</strong></p>
+<p>1.打开题目，发现界面为一贪吃蛇小游戏界面，根据题目提示，应该与响应包有关</p>
+<p>2.F12审查元素，直接在响应包中发现flag</p>
 <h2 id="信息泄露"><a href="#信息泄露" class="headerlink" title="信息泄露"></a>信息泄露</h2><h3 id="目录遍历"><a href="#目录遍历" class="headerlink" title="目录遍历"></a>目录遍历</h3><p>打开网站，提示点击寻找flag,之后会跳转到<code>flag_in_here</code>这个目录，挨个对里面的目录进行寻找,就能找到flag</p>
 <h3 id="PHPINFO"><a href="#PHPINFO" class="headerlink" title="PHPINFO"></a>PHPINFO</h3><p>打开题目之后提示让点击查看phpinfo，然后Ctrl+F搜索flag，就找到了</p>
 <h3 id="备份文件下载"><a href="#备份文件下载" class="headerlink" title="备份文件下载"></a>备份文件下载</h3><h4 id="网站备份"><a href="#网站备份" class="headerlink" title="网站备份"></a>网站备份</h4><blockquote>
@@ -657,7 +704,7 @@ Hint If you got [HTTP Method Not Allowed] Error,you should requests index.php</c
 <p>常见的网站源码备份文件后缀</p>
 <p>list2 = [‘tar’, ‘tar.gz’, ‘zip’, ‘rar’]</p>
 </blockquote>
-<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># python3</span>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true">#python3</span>
 <span class="token keyword">import</span> requests
 <span class="token comment" spellcheck="true"># url1为被扫描地址，后不加‘/’</span>
 url1 <span class="token operator">=</span> <span class="token string">'http://challenge-3d8be6a2b5195774.sandbox.ctfhub.com:10080'</span>
@@ -696,10 +743,12 @@ list2 <span class="token operator">=</span> <span class="token punctuation">[</s
 ④.git/refs/stash 工作进度的临时保存
 ⑤.git/info/packs packs文件提取恢复<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h4><p>1.使用dirsearch工具扫描网站目录，发现git泄露.git/logs/HEAD，在git中是存储历史记录的</p>
-<pre class="line-numbers language-bash"><code class="language-bash">python3 dirsearch.py -u <span class="token string">"http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080"</span> -e *<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>2.使用GitHack工具克隆目标源代码到本地</p>
-<pre class="line-numbers language-bash"><code class="language-bash">python GitHack.py http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080/.git/<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>3.执行<code>git log</code>查看commit历史记录  可以看到当前版本是remove flag，我们要的flag在add flag中</p>
+<p>​```bash<br>python3 dirsearch.py -u “<a href="http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080&quot;" target="_blank" rel="noopener">http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080&quot;</a> -e *</p>
+<pre><code>
+2.使用GitHack工具克隆目标源代码到本地
+
+```bash
+python GitHack.py http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080/.git/</code></pre><p>3.执行<code>git log</code>查看commit历史记录  可以看到当前版本是remove flag，我们要的flag在add flag中</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200716180358.png" alt></p>
 <p>4.方法1：使用<code>git diff</code>直接与 <code>add flag (e2f0)</code> 这次提交进行差异比对</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200716180418.png" alt></p>
@@ -1263,49 +1312,52 @@ curl http://challenge-a6460a92a6b0ee37.sandbox.ctfhub.com:10080/.hg/store/data/f
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/60046.html">
+                <a href="/posts/30333.html">
                     <div class="card-image">
                         
-                        <img src="https://i.loli.net/2019/07/17/5d2eee078bec383668.png" class="responsive-img" alt="CTFHub-技能树-Web(更新中)">
+                        <img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200717165841.jpg" class="responsive-img" alt="SQLi-LABS学习笔记(更新中)">
                         
-                        <span class="card-title">CTFHub-技能树-Web(更新中)</span>
+                        <span class="card-title">SQLi-LABS学习笔记(更新中)</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            最近一段时间一直在复习Web基础知识，光看生硬的知识点也无趣，就想着边刷题边复习吧，正好看到群里在推荐CTFHub这个平台，于是我就开始刷CTFHub技能树啦🎈
-Web前置技能HTTP协议
-HTTP是Hyper Text Transfer
+                            SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习过，希望这次可以坚持下去吧~~    
+Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
+?id=1 and 1=1
+
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-07-14
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-07-17
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/CTF/" class="post-category">
-                                    CTF
+                            <a href="/categories/Web/" class="post-category">
+                                    Web
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Write-up/">
-                        <span class="chip bg-color">Write-up</span>
+                    <a href="/tags/SQL注入/">
+                        <span class="chip bg-color">SQL注入</span>
+                    </a>
+                    
+                    <a href="/tags/靶场/">
+                        <span class="chip bg-color">靶场</span>
                     </a>
                     
                 </div>
@@ -1540,7 +1592,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">164.1k</span>&nbsp;字
+                class="white-color">165.8k</span>&nbsp;字
             
             
             
