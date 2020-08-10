@@ -479,14 +479,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    15.7k
+                    16k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    63 分
+                    64 分
                 </div>
                 
 				
@@ -923,12 +923,30 @@ $html.="<a href='{$message}'> 阁下自己输入的url还请自己点一下吧</
 <p><strong>实例演示：</strong></p>
 <p>例如，我们让用户 allen 点击一下上面这个 Payload 链接</p>
 <p>1、allen用户登录，查看个人信息</p>
-<p><img src="../images/Pikachu%E6%BC%8F%E6%B4%9E%E5%B9%B3%E5%8F%B0%E9%80%9A%E5%85%B3%E8%AE%B0%E5%BD%95/image-20200807180227057.png" alt></p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807201741.png" alt></p>
 <p>2、allen用户点击上面我们构造的Payload</p>
 <p>3、再次查看信息，发现allen的性别、手机、住址、邮箱，已经修改为我上面 Payload 中定义的数据了，成功实现 CSRF 攻击</p>
-<p><img src="../images/Pikachu%E6%BC%8F%E6%B4%9E%E5%B9%B3%E5%8F%B0%E9%80%9A%E5%85%B3%E8%AE%B0%E5%BD%95/image-20200807180440667.png" alt></p>
-<h3 id="CSRF-post"><a href="#CSRF-post" class="headerlink" title="CSRF(post)"></a>CSRF(post)</h3><p>待更。。。</p>
-<h3 id="CSRF-Token"><a href="#CSRF-Token" class="headerlink" title="CSRF Token"></a>CSRF Token</h3><p>待更。。。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200807201741.png" alt></p>
+<h3 id="CSRF-post"><a href="#CSRF-post" class="headerlink" title="CSRF(post)"></a>CSRF(post)</h3><p>抓包发现，请求通过POST方式提交，从而无法像前面一样通过伪造URL来进行攻击</p>
+<p>详细利用过程请参考：<a href="https://www.naraku.cn/posts/25.html" target="_blank" rel="noopener">Pikachu漏洞靶场系列之CSRF</a></p>
+<p>CSRFTester下载地址：<a href="https://wiki.owasp.org/images/0/08/CSRFTester-1.0.zip" target="_blank" rel="noopener">https://wiki.owasp.org/images/0/08/CSRFTester-1.0.zip</a></p>
+<h3 id="CSRF-Token"><a href="#CSRF-Token" class="headerlink" title="CSRF Token"></a>CSRF Token</h3><p>原理：CSRF的主要问题是敏感操作的链接容易被伪造。而只要在每次请求时都增加一个随机码<code>Token</code>，后台每次都对这个随机码进行验证，则可以有效地防止CSRF</p>
+<p>在源码<code>token_get_edit.php</code>中看到，每次刷新页面，都会调用<code>set_token()</code>函数，该函数会把<code>SESSION</code>中<code>Token</code>销毁，然后生成一个新的<code>Token</code>，并将这个<code>Token</code>传到前端表单中</p>
+<pre class="line-numbers language-php+HTML"><code class="language-php+HTML"><div id="per_info">
+   <form method="get">
+   <h1 class="per_title">hello,{$name},欢迎来到个人会员中心 | <a style="color:bule;" href="token_get.php?logout=1">退出登录</a></h1>
+   <p class="per_name">姓名:{$name}</p>
+   <p class="per_sex">性别:<input type="text" name="sex" value="{$sex}"/></p>
+   <p class="per_phone">手机:<input class="phonenum" type="text" name="phonenum" value="{$phonenum}"/></p>    
+   <p class="per_add">住址:<input class="add" type="text" name="add" value="{$add}"/></p> 
+   <p class="per_email">邮箱:<input class="email" type="text" name="email" value="{$email}"/></p>
+
+   <input type="hidden" name="token" value="{$_SESSION['token']}" />
+
+   <input class="sub" type="submit" name="submit" value="submit"/>
+   </form>
+</div><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>当每次提交表单时，这个<code>Token</code>值就会传到后台与<code>SESSION</code>中的<code>Token</code>进行比较，若不相等，此次表单则提交失败。所以黑客由于不能得知用户当前的<code>Token</code>值，从而无法进行CSRF攻击。</p>
 <h3 id="CSRF防范"><a href="#CSRF防范" class="headerlink" title="CSRF防范"></a>CSRF防范</h3><ul>
 <li>对敏感信息的操作增加安全的token；</li>
 <li>对敏感信息的操作增加安全的验证码；</li>
@@ -2581,7 +2599,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">178.6k</span>&nbsp;字
+                class="white-color">182.9k</span>&nbsp;字
             
             
             
