@@ -580,14 +580,14 @@ git clone https://github.com/maurosor">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-08-24
+                    2020-09-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.5k
+                    5.2k
                 </div>
                 
 
@@ -943,6 +943,59 @@ curl -v https://www.example.com
 <span class="token comment" spellcheck="true">#-X参数指定 HTTP 请求的方法。</span>
 curl -X POST https://www.example.com<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>更多详细请看：<a href="http://www.ruanyifeng.com/blog/2019/09/curl-reference.html" target="_blank" rel="noopener">curl 的用法指南</a></p>
+<h2 id="SSH端口转发"><a href="#SSH端口转发" class="headerlink" title="SSH端口转发"></a>SSH端口转发</h2><h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p><strong>端口转发前服务器必须做如下配置：</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#1.允许任何人连接到转发的端口</span>
+vim /etc/ssh/sshd_config
+将<span class="token comment" spellcheck="true">#GatewayPorts no 修改为 GatewayPorts yes</span>
+
+<span class="token comment" spellcheck="true">#2.重启ssh服务</span>
+<span class="token function">service</span> sshd restart
+或者
+systemctl restart sshd<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p> <strong>SSH语法：</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span> <span class="token punctuation">[</span>options<span class="token punctuation">]</span> <span class="token punctuation">[</span>-l login_name<span class="token punctuation">]</span><span class="token punctuation">[</span>user@<span class="token punctuation">]</span>hostname <span class="token punctuation">[</span>command<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>创建SSH隧道的常用参数如下：</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash">-C：压缩数据传输
+-f：将SSH传输转入后台执行，不占当前的Shell,通常和-N连用
+-N：只希望建立隧道，而不会在远程主机上执行任何指令
+-T：只希望建立隧道，因而不需要创建虚拟终端
+-g：允许远程主机连接本地用于转发的端口
+-L：本地端口转发
+-R：远程端口转发
+-D：动态转发
+-P：指定SSH端口
+-q 安静模式，不输出错误/警告信息<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="本地端口转发"><a href="#本地端口转发" class="headerlink" title="本地端口转发"></a>本地端口转发</h3><p>构成条件：本地网无法访问私网，本地网可以访问云服务器，云服务器可以访问私网</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200906105347.png" alt="本地端口转发"></p>
+<p><strong>将本地机的某个端口转发到远端目标机器的指定端口：</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span>  -CfNg -L 本地IP:本地port:私网IP:私网port 服务器用户名@服务器IP<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>实例</strong></p>
+<blockquote>
+<p><strong>场景描述：</strong>云服务器上有一个Web服务，端口8080，但是安全组没有开放8080端口，因此本地无法访问该服务，怎样才能让本地访问到Web服务呢？</p>
+</blockquote>
+<p>首先确保服务器进行了前面的端口转发前配置(打开GatewayPorts)，然后执行下方命令</p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span>  -CfNg -L 192.168.137.1:8088:localhost:8080 root@139.224.112.182<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>运行命令，输入密码后，本地访问 <code>192.168.137.1:8088</code>或者 <code>localhost:8088</code>就可以访问到云服务器的 Web 服务</p>
+<h3 id="远程端口转发"><a href="#远程端口转发" class="headerlink" title="远程端口转发"></a>远程端口转发</h3><p>构成条件：本地网无法访问私网，本地网可以访问云服务器，私网也可以访问云服务器</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200906105357.png" alt="远程端口转发"></p>
+<p><strong>将远程主机(服务器)的某个端口转发到目标机器的指定端口：</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span>  -CfNg -R 远程IP:服务器port:内网IP:内网port  服务器用户名@服务器IP<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>实例</strong></p>
+<blockquote>
+<p><strong>场景描述：</strong>本地主机运行了一个Web服务，端口为80，怎么让其他人也能访问这个Web服务？</p>
+</blockquote>
+<p>首先确保服务器进行了前面的端口转发前配置(打开GatewayPorts)，然后服务器安全组打开8088端口，然后执行下方命令</p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span> -CfNg -R 0.0.0.0:8088:192.168.137.1:80 root@139.224.112.182
+
+<span class="token comment" spellcheck="true"># 0.0.0.0表示vps上监听所有地址，即所有人可访问</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>运行命令，输入密码后，其他人访问 <code>139.224.112.182:8088</code> 就可以访问到我本地的 Web 服务了</p>
+<p><strong>其他相关命令:</strong></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">netstat</span> -anp<span class="token operator">|</span><span class="token function">grep</span> 8088 <span class="token comment" spellcheck="true">#检验端口的网络连接情况</span>
+<span class="token function">killall</span> <span class="token function">ssh</span> <span class="token comment" spellcheck="true">#终止ssh所有进程</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>参考：</p>
+<p><a href="https://liam.page/2018/04/11/break-firewall-by-the-use-of-SSH-tunnel/" target="_blank" rel="noopener">最佳搭档：利用正反 SSH 隧道穿透防火墙访问内网服务器</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/26547381" target="_blank" rel="noopener">玩转SSH端口转发</a></p>
+<p><a href="https://www.bilibili.com/video/BV1C7411P7Er?p=1" target="_blank" rel="noopener">B站SSH端口转发</a></p>
 
             </div>
             <hr/>
@@ -1718,7 +1771,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">202.3k</span>&nbsp;字
+                class="white-color">151.2k</span>&nbsp;字
             
             
             
