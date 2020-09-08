@@ -11,7 +11,7 @@ summary: BlueCMS是一款专注于地方门户网站建设解决方案，基于P
 abbrlink: 56307
 date: 2020-06-04 22:49:57
 updated:
-img: https://i.loli.net/2020/06/05/bSmYhIFJUNnVzG4.png
+img: https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824173359.png
 permalink:
 ---
 

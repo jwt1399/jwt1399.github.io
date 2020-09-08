@@ -9,7 +9,7 @@ comments: true
 top: false
 abbrlink: 31062
 summary: 114啦是一个老牌的网址导航站，采用php+Mysql架构，基于Smarty模板引擎。V1.13中包含XSS漏洞，可以利用来Getshell。
-img: 'https://i.loli.net/2020/06/06/7noqPmHLlBfIA4S.jpg'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824173233.jpg'
 date: 2020-06-06 18:40:02
 updated:
 permalink:
@@ -52,7 +52,7 @@ app_db::insert('ylmf_urladd', array('domain', 'info', 'addtime'), array($domain,
 
 对提交的数据只使用`addslashes`函数在引号前面添加`\`,使用`serialize`函数序列化输入的信息，未做其他过滤，直接插入数据库,造成了存储型XSS漏洞
 
-在网站名称那一栏插入`JS`,其它的符合要求填写就可以了，然后提交
+在网站名称那一栏插入`JS`,其它的符合要求填写就可以了，然后提交，
 
 ```js
 <script>alert(123)</script>;
@@ -60,7 +60,7 @@ app_db::insert('ylmf_urladd', array('domain', 'info', 'addtime'), array($domain,
 
 ![](https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200607160047.png)
 
-查看数据库，看到JS代码确实插入到了数据库中
+但是提交后不会弹窗，查看数据库，看到JS代码确实插入到了数据库中，这就是XSS[盲打](https://blog.csdn.net/weixin_43716322/article/details/89480895)
 
 ![](https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200607160242.png)
 

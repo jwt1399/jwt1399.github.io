@@ -2,18 +2,18 @@
 title: Web服务器配置与管理
 author: 简文涛
 categories:
-  - Windows服务器配置与管理
+  - 信息安全
 tags:
   - Web服务器
+  - Windows服务器配置与管理
 comments: true
 top: false
-img: 'https://i.loli.net/2020/03/21/paUVEPxmN3kH4Oz.jpg'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824183541.jpg'
 abbrlink: 61907
 date:
 updated:
 summary:
 ---
-
 
 ## 一、实验环境
 
@@ -36,34 +36,34 @@ summary:
 ### 1.Web服务器的安装
 
 **i.**	打开【服务器管理器】，单击【添加角色和功能】选项。
-![image-20200312105216426](https://i.loli.net/2020/03/21/KC41y3UIPqbJG56.png)
+![](https://i.loli.net/2020/03/21/KC41y3UIPqbJG56.png)
 **ii.**	在【添加角色和功能向导】中，单击【下一步】按钮。然后，在【安装类型】，选择【基于角色或基于功能的安装】，单击【下一步】按钮。
-![image-20200312105243765](https://i.loli.net/2020/03/21/h1IVKsPgxafJYbE.png)
+![](https://i.loli.net/2020/03/21/h1IVKsPgxafJYbE.png)
 **iii.**	在【服务器选择】中，选择【从服务器池中选择服务器】，安装程序会自动检测与显示这台计算机采用静态IP地址设置的网络连接，单击【下一步】按钮。
 **iv.**	在【服务器角色】中，选择【Web服务器（IIS）】,自动弹出【添加Web服务器（IIS）所需的功能】对话框，单击【添加功能】按钮，单击【下一步】按钮。
 **v.**	在这里选择需要添加的功能，如无特殊需求，一般默认即可，单击【下一步】按钮。
 **vi.**	在【角色服务】，勾选所需的Web服务器里所需的角色（默认即可，安装完成后可更改），单击【下一步】按钮后继续单击【安装】按钮。
 **vii.**	单击【关闭】按钮完成安装。
 **viii.**	回到【服务器管理器】，可以看到左侧多了一项【IIS】，单击【工具】→【Internet信息服务（IIS）管理器】，即可对IIS进行配置、管理。 
-<img src="https://i.loli.net/2020/03/21/FwbWQYpiOkvP91d.png" alt="image-20200312105620970" style="zoom:50%;" />
+<img src="https://i.loli.net/2020/03/21/FwbWQYpiOkvP91d.png"/>
 
 ### 2.创建Web站点并实现外网访问
 
 **i.**	将网站放置在“C：\jwt-website”目录中，网站的首页为“homepage.html” 。
-![image-20200315184408527.png](https://i.loli.net/2020/03/21/g29w3rZ7oi14WnD.png)
+![](https://i.loli.net/2020/03/21/g29w3rZ7oi14WnD.png)
 **ii.**	打开【服务器管理】，单击【工具】→【Internet信息服务（IIS）管理器】，即可进入【Internet信息服务（IIS）管理器】主窗口。
 
 **iii.**	展开左侧网站列表，单击【Default Web Site】站点，再右键菜单中选择【管理网站】，单击【停止】按钮。
-<img src="https://i.loli.net/2020/03/21/yrehZv8C9QFuwg6.png" alt="image-20200315182243851.png" style="zoom:50%;" />
+<img src="https://i.loli.net/2020/03/21/yrehZv8C9QFuwg6.png"/>
 **iv.**	在左侧【网站】，单击右键，单击【添加网站】链接来添加网站。
-**v.**	在【添加网站】对话框中，设置网站名称、物理路径、IP地址，其他默认设置，单击【确定】按钮完成网站创建。<img src="https://i.loli.net/2020/03/21/W4SG2RHsrPoAcNa.png" alt="image-20200315182443599" style="zoom: 50%;" />
+**v.**	在【添加网站】对话框中，设置网站名称、物理路径、IP地址，其他默认设置，单击【确定】按钮完成网站创建。<img src="https://i.loli.net/2020/03/21/W4SG2RHsrPoAcNa.png"/>
 
 **vi.**	在IIS管理器选中【简简网站】，双击【默认文档】。
 **vii.**	在默认文档中，单击【添加】按钮，在名称中输入存在本地服务器上的网站首页文件（如：homepage.html）。
-![image-20200315184325302.png](https://i.loli.net/2020/03/21/f2C4Bk7G8LdSzRH.png)
+![](https://i.loli.net/2020/03/21/f2C4Bk7G8LdSzRH.png)
 
 **viii.**	在IIS管理器单击右侧【浏览网站】，或者打开浏览器，在地址栏输入【http://172.18.176.138】,即可在本机正常浏览该网站。
-<img src="https://i.loli.net/2020/03/21/PC9E5stTDR3z8h1.png" alt="image-20200315184253206" style="zoom:50%;" />
+<img src="https://i.loli.net/2020/03/21/PC9E5stTDR3z8h1.png"/>
 
 
 
@@ -74,9 +74,9 @@ summary:
 外网访问需要阿里云打开80端口的访问权限，具体操作`登陆阿里云--实例- -管理--本实例安全组--配置规则`
 
 点击`添加安全组规则`，然后按下图填写规则，然后点击确定
-<img src="https://i.loli.net/2020/03/21/8KGTrOkWwxC5b96.png" alt="image-20200315192436956.png" style="zoom:50%;" />
+<img src="https://i.loli.net/2020/03/21/8KGTrOkWwxC5b96.png"/>
 输入阿里云分配的公网IP，我的公网IP为`47.107.236.250`，然后就可以happy的访问我们的网页啦！
-<img src="https://i.loli.net/2020/03/21/swA8DcZnielCqrM.png" alt="image-20200315192659861" style="zoom:50%;" />
+<img src="https://i.loli.net/2020/03/21/swA8DcZnielCqrM.png"/>
 
 参考链接：https://blog.csdn.net/u014453443/article/details/84942670
 

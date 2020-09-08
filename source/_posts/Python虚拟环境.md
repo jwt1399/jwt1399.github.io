@@ -8,7 +8,7 @@ tags:
 comments: true
 top: false
 summary: Python虚拟环境让每一个Python项目有独立的运行环境，只需要安装对应的模块，迁移时移动整个环境即可。
-img: 'https://i.loli.net/2020/04/06/tRBbXWSdHDcznl1.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824182635.png'
 abbrlink: 26224
 date: 2020-04-05 15:19:29
 updated:

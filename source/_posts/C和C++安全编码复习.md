@@ -6,7 +6,7 @@ categories:
 tags:
   - C和C++
 comments: true
-img: 'https://i.loli.net/2020/03/10/B4vuSdRloxHZTVe.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824183315.png'
 abbrlink: 57105
 date: 2019-10-31 19:50:58
 ---

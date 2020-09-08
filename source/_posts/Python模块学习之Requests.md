@@ -7,15 +7,16 @@ tags:
   - Requests
 comments: true
 top: true
-img: 'https://i.loli.net/2019/08/08/ReAWOhCsT5vdDVq.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824173112.png'
 abbrlink: 57181
 date: 2019-08-08 09:41:37
 ---
-![](https://i.loli.net/2019/08/08/ReAWOhCsT5vdDVq.png)
+![](https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824173112.png)
 
 >Requests is the only Non-GMO HTTP library for Python, safe for human consumption.
 
 ## 前言
+
 为什么学习`Requests`模块呢，因为最近老是遇见它，自己又不太懂，加之在很多`Web`的`poc`里面`Requests`模块的出镜率很高，于是特此学习记录之。
 
 ## 简介

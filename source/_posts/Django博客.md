@@ -9,7 +9,7 @@ comments: true
 top: false
 summary: '学了一段时间Django了,于是自己尝试了哈用Django来写一个动态博客系统，后台是SimpleUi框架。'
 abbrlink: 31757
-img: 'https://i.loli.net/2020/04/30/96yhb4T3nNKsR5G.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824182002.png'
 date: 2020-04-16 13:58:17
 updated:
 permalink:

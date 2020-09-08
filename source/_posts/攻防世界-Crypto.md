@@ -7,11 +7,12 @@ tags:
   - Crypto
   - Write-up
 comments: true
-img: 'https://i.loli.net/2019/07/03/5d1c213fa0cd670760.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824182937.png'
 abbrlink: 58189
 date: 2019-07-15 10:59:38
 ---
 ## 你猜猜
+
 **题目信息**
 ![](https://i.loli.net/2019/07/15/5d2bed18c10d646240.png)
 下载附件得到`haha.txt`,504B0304很明显是Zip的文件头

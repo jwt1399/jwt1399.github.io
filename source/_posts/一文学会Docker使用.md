@@ -2,14 +2,14 @@
 title: 一文学会Docker使用
 author: 简简
 categories:
-  - Web
+  - 工具
 tags:
   - Docker
 comments: true
 top: false
 summary: Docker可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的Linux 机器上，也可以实现虚拟化。
 abbrlink: 39812
-img: 'https://i.loli.net/2020/04/29/TBYkqrKVIEFalQ8.jpg'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824181722.jpg'
 date: 2020-04-29 20:18:17
 updated:
 permalink:
@@ -137,13 +137,14 @@ docker run -it ubuntu /bin/bash #使用 ubuntu 镜像启动一个容器，参数
 | 镜像操作指令       | RUN、COPY、ADD、EXPOSE、WORKDIR、ONBUILD、USER、VOLUME等 |
 | 容器启动时执行指令 | CMD、ENTRYPOINT                                          |
 
-
 ### FROM：指定基础镜像
 
 ```dockerfile
-FROM <image>                       # 指定基础镜像
+# 指定基础镜像
+FROM <image>
 
-FROM <image>:<tag>                 # 指定一个tag版本的基础镜像
+# 指定一个tag版本的基础镜像
+FROM <image>:<tag>                 
 
 例如：FROM ubuntu:18.04
 ```

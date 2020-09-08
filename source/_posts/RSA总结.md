@@ -6,7 +6,7 @@ categories:
 tags:
   - Crypto
 comments: true
-img: 'https://i.loli.net/2019/10/01/4Vp7qrYoNBbvgt8.jpg'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824183928.jpg'
 password: a7d23a7bb9f6d3401cb9f174cdf6b456920cb99fd2f9587dfb400338a8ec146d
 abbrlink: 55360
 date: 2019-10-01 15:22:24

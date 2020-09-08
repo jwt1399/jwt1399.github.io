@@ -2,16 +2,17 @@
 title: 靶机：WinXPenSP3
 author: 简文涛
 categories:
-  - 信息安全
+  - 内网渗透
 tags:
   - 渗透测试
+  - 靶场
 comments: true
 top: false
 abbrlink: 12470
 date: 2020-06-03 09:40:02
 updated:
 summary: 这是《Metasploit渗透测试魔鬼训练营》中的靶机，包含MS08-067、MS17-010(永恒之蓝)、MS09-001等漏洞。
-img: https://i.loli.net/2020/06/03/8UgmS2xVAsWOpQ7.png
+img: https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824173458.png
 permalink:
 ---
 
@@ -282,8 +283,6 @@ reg setval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v sys -d 
 
 ![](../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image046.jpg)
 
-对靶机发起了拒绝服务攻击
-
 ### MS17-010(永恒之蓝)
 
 跟上面漏洞利用差不多
@@ -319,12 +318,6 @@ run 或者 exploit
 ![](../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image052.jpg)
 
 对靶机发起了拒绝服务攻击,具体对靶机的影响暂时不知
-
-
-
- 
-
-
 
 ## 赞助💰
 

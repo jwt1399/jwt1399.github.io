@@ -7,7 +7,7 @@ tags:
   - 爬虫
 comments: true
 top: false
-img: 'https://i.loli.net/2020/03/21/EAI2Ko83UPtq9g6.jpg'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824183843.jpg'
 abbrlink: 34992
 date:
 updated:

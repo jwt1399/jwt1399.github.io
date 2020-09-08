@@ -34,39 +34,39 @@ layout: "about"
 <h1 id="专业技能"><a href="#专业技能" class="headerlink" title="专业技能"></a>专业技能</h1>
 <ul>
 <li>本人擅长Pycharm、VScode、Dreamweaver、IDEA、Eclipse、Ps等软件的安装与卸载</li>
-<li>精通CSS、JavaScript、PHP、C、C++、C#、Java、Ruby、Perl、Python、HTML、bootstrap等单词的拼写</li>
+<li>精通CSS、JavaScript、PHP、Go、C++、Java、Java、Ruby、Perl、Python、Html、bootstrap等单词的拼写</li>
 <li>熟悉Windows、Linux、MacOS、IOS、Android等系统的开关机</li>
 <li>求一份吃得饱的工作！(•́ ₃ •̀)</li>
 <li>哈哈哈，好啦，下面才是重点！！！😁😁😁</li>
-<li>熟悉Web基础漏洞, Sql注入、Xss攻击、命令注入、CSRF攻击、上传漏洞等</li>
+<li>熟悉Web基础漏洞, SQL注入、XSS攻击、命令注入、CSRF攻击、上传漏洞等</li>
 <li>熟悉Linux操作系统命令使用及其相关配置，掌握docker的相关使用</li>
 <li>熟悉SQLserver、MySQL数据库的基础配置和使用，能进行数据库注入攻击</li>
 <li>熟悉Nmap、Burpsuite、Metasploit、AWVS、Nessus、Wireshark、SQLmap等常见安全工具使用</li>
 <li>掌握Apache、ISS、Nginx等Web服务器的搭建及配置</li> 
 <li>掌握计算机网络、操作系统、密码学、网络协议分析等基础网络安全知识</li>
 <li>掌握C++、C、Python、Java，并能够写出简单的测试脚本</li>
-<li>掌握HTML、CSS、JS、Bootstrap等前端基础知识，了解python-Django框架</li>
-<li>了解PHP、JSP、python-Django框架</li>
-<li>具有一定的CTF比赛经验</li>
+<li>掌握HTML、CSS、JS、Bootstrap等前端基础知识</li>
+<li>了解PHP、JSP、Python-Django框架等后端知识</li>
+<li>具有一定的CTF比赛经验，擅长Web和Crypto</li>
 <li>具有良好的文档编辑能力、学习能力、沟通能力、抗压能力</li>
 </ul>
 <h1 id="科研-项目-比赛"><a href="#科研-项目-比赛" class="headerlink" title="科研/项目/比赛"></a>科研/项目/比赛</h1>
-<p><b>【2017-至今】       大二加入学校网络安全实验室进行CTF安全和Web的自主学习和研究，同时做一些项目和参加比赛等</b></p>
+<p><b>【2017-至今】       大二加入学校网络安全实验室进行CTF和Web安全的自主学习和研究，同时做一些项目和参加比赛等</b></p>
 <blockquote>
   <p><b>本科划水阶段：</b></p>
 </blockquote>
 <ul>
 <li><p>未完待续...</p></li>
 <li>
-<p>2020.06——中国大学生计算机设计大赛四川省级赛——所属领域：密码学、微课与教学辅助——Rank：二等奖&推选进国赛</p>    
+<p>2020.06——中国大学生计算机设计大赛——所属领域：密码学、微课与教学辅助——Rank：省赛二等奖&国赛三等奖</p> 
 <li>
-<p>2020.05——全国信息安全与对抗技术竞赛——所属领域：Web安全、逆向工程、二进制、密码学——Rank：全国二等奖</p>
+<p>2020.05——全国大学生信息安全与对抗技术竞赛——所属领域：Web安全、逆向工程、二进制、密码学——Rank：全国二等奖</p>
 </li>    
 <li>
 	<p>2019.11——西华创想杯——所属领域：密码学、三维课堂——Rank：校二等奖</p>
 </li>
 <li>  
-	<p>2019.07——四川省信息安全技术大赛——所属领域：Web安全、逆向工程、二进制漏洞挖掘、密码学、网络攻防——Rank：四川省一等奖</p>
+	<p>2019.07——四川省大学生信息安全技术大赛——所属领域：Web安全、逆向、密码学、网络攻防——Rank：四川省一等奖</p>
 </li>
 </ul>
 <ul>
@@ -93,11 +93,11 @@ layout: "about"
 <li>2020——信息安全铁人三项赛</li>
 <li>2020——全国软件和信息技术专业人才大赛</li>
 <li>2020——泛珠三角+计算机作品大赛</li>
-<li>2020——中国大学生计算机设计大赛</li>
+<li>2020——全国大学生信息安全竞赛创新实践能力赛</li>
+<li style="color:gray"><s>2020——中国大学生计算机设计大赛</s></li>
 <li style="color:gray"><s>2020——ISCC</s></li>
 <li style="color:gray"><s>2020——网鼎杯</s></li>
 </ul>
-
 
 <h1 id="主要获奖"><a href="#主要获奖" class="headerlink" title="主要获奖"></a>主要获奖</h1>
 <blockquote>
@@ -106,9 +106,10 @@ layout: "about"
 <p><b>学术竞赛类获奖：</b></p>
 <ul>
 <li>未完待续...</li>
-<li>2020——中国大学生计算机设计大赛四川省级赛二等奖</li> 
-<li>2020——全国信息安全与对抗技术竞赛二等奖</li>    
-<li>2019——四川省信息安全技术大赛一等奖 </li>
+<li>2020——中国大学生计算机设计大赛四川省级赛二等奖&国赛三等奖</li> 
+<li>2020——全国大学生信息安全与对抗技术竞赛二等奖</li>    
+<li>2019——四川省大学生信息安全技术大赛一等奖 </li>
+<li>2019——第三届“强网杯”全国网络安全挑战赛线上赛优胜奖</li>    
 <li>2019——全国大学生信息安全竞赛创新实践能力赛赛区二等奖</li>
 <li>2019——全国软件和信息技术专业人才大赛赛区三等奖</li>
 <li>2019——西华创想杯二等奖 </li>
@@ -116,6 +117,7 @@ layout: "about"
 <p><b>学习实践类获奖：</b></p>
 <ul>
 <li>未完待续...</li>
+<li>2020——四川省大学生“综合素质A级证书”</li>
 <li>2019——勤奋谦卑奖学金</li>
 <li>2019——校优秀三好学生一等奖学金</li>
 <li>2019——国家奖学金</li>
@@ -136,7 +138,8 @@ layout: "about"
 </ul>
 <h1 >学习成绩</h1>
 <ul>
-<li>2019——未知</li>
+<li>2020——。。。。</li>
+<li>2019——专业第一</li>
 <li>2018——专业第一</li>
 <li>2017——专业第一</li>
 </ul>

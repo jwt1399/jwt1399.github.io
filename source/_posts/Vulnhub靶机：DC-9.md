@@ -5,10 +5,11 @@ categories:
   - Web
 tags:
   - 渗透测试
+  - 靶场
 comments: true
 top: false
 summary: Vulnhub是一个提供各种漏洞环境的靶场平台，大部分环境是做好的虚拟机镜像文件，镜像预先设计了多种漏洞。
-img: 'https://i.loli.net/2020/05/16/nPTcQAf2o7xHz5p.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824173621.png'
 abbrlink: 55886
 date: 2020-05-22 20:32:32
 updated:

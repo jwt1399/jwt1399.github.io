@@ -9,7 +9,7 @@ tags:
 comments: true
 top: false
 summary: 如果没有医护人员的负重前行，哪有我们此时的岁月静好！4月4日，向逝去的生命致以崇高的敬意！
-img: 'https://i.loli.net/2020/04/04/XgTnHU5xMbupK3q.png'
+img: 'https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20200824182802.png'
 keywords: 'CSS-filter,网页变灰'
 abbrlink: 58488
 date: 2020-04-04 10:00:00
