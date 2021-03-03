@@ -574,14 +574,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-02-06
+                    2021-02-21
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    7.4k
+                    8.6k
                 </div>
                 
 
@@ -1734,6 +1734,54 @@ pip3 <span class="token function">install</span> -r requirements.txt <span class
     myChart1<span class="token punctuation">.</span><span class="token function">resize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     myChart2<span class="token punctuation">.</span><span class="token function">resize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="Django实现文件上传"><a href="#Django实现文件上传" class="headerlink" title="Django实现文件上传"></a>Django实现文件上传</h2><p>以下内容转载自：<a href="https://segmentfault.com/a/1190000021960355" target="_blank" rel="noopener">https://segmentfault.com/a/1190000021960355</a></p>
+<h3 id="media-amp-MEDIA-ROOT-的配置"><a href="#media-amp-MEDIA-ROOT-的配置" class="headerlink" title="media &amp; MEDIA_ROOT 的配置"></a>media &amp; MEDIA_ROOT 的配置</h3><p>首先我们在自己的Django项目中创建一个<strong>media</strong>文件夹：<br><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20210221135916" alt></p>
+<p>然后在<code>settings.py</code>中设置<code>MEDIA_ROOT</code>：</p>
+<pre class="line-numbers language-python"><code class="language-python">MEDIA_ROOT <span class="token operator">=</span> os<span class="token punctuation">.</span>path<span class="token punctuation">.</span>join<span class="token punctuation">(</span>BASE_DIR<span class="token punctuation">,</span><span class="token string">'media'</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true"># 上传到自己指定app的路径下（例如上传到webscan下面的static目录下的media中)</span>
+<span class="token comment" spellcheck="true"># MEDIA_ROOT = os.path.join(BASE_DIR,'webscan','static/media')</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>接着在<code>urls.py</code>中设置<strong>media</strong>路由的相关配置：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> django<span class="token punctuation">.</span>urls <span class="token keyword">import</span> path<span class="token punctuation">,</span>re_path
+<span class="token keyword">from</span> django<span class="token punctuation">.</span>views<span class="token punctuation">.</span>static <span class="token keyword">import</span> serve
+<span class="token keyword">from</span> cnblog <span class="token keyword">import</span> settings
+
+<span class="token comment" spellcheck="true">##media配置——配合settings中的MEDIA_ROOT的配置，就可以在浏览器的地址栏访问media文件夹及里面的文件了</span>
+re_path<span class="token punctuation">(</span>r<span class="token string">'media/(?P&lt;path>.*)$'</span><span class="token punctuation">,</span>serve<span class="token punctuation">,</span><span class="token punctuation">{</span><span class="token string">'document_root'</span><span class="token punctuation">:</span>settings<span class="token punctuation">.</span>MEDIA_ROOT<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>有了上面这个路由设置，我们就可以在浏览器的地址栏根据media文件夹中文件的路径去访问对应的文件了（需要注意的是为了保证安全，默认情况下Django项目中各目录的文件是不能通过地址栏去访问的）。</p>
+<p>当然，我们这里实现的是文件上传的功能，需要将文件信息传给数据库保存，<code>models.py</code>文件中的内容如下：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">class</span> <span class="token class-name">UserInfo</span><span class="token punctuation">(</span>models<span class="token punctuation">.</span>Model<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    nid <span class="token operator">=</span> models<span class="token punctuation">.</span>AutoField<span class="token punctuation">(</span>primary_key<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">##头像是一个FileField——注意这里必须是“相对路径”，不能是/avatars/这样的绝对路径</span>
+    avatar <span class="token operator">=</span> models<span class="token punctuation">.</span>FileField<span class="token punctuation">(</span>upload_to<span class="token operator">=</span><span class="token string">'avatars/'</span><span class="token punctuation">,</span>default<span class="token operator">=</span><span class="token string">'avatars/default.jpg'</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我们用<code>FileField</code>存放上传的文件，这里需要注意：<strong>media文件夹</strong>是我们上传文件的 <strong>根目录</strong>，如果我们想再为这个“根目录”指定“子目录”的话需要通过参数<code>upload_to</code>去指定，也就是说，我们上传的文件会保存在 <strong>/media/avatars目录</strong> 下，后面的参数<code>default</code>表示默认图像————比如说我们想要上传头像，用户不指定头像的时候就用<code>default</code>参数指定的图片。</p>
+<pre><code>这里省略模板与视图函数的实现，只说明media参数的用法</code></pre><p>当我们将图片上传到服务器后，就会在我们指定的目录看到上传的文件了：<br><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20210221141044" alt></p>
+<h3 id="上传文件的访问"><a href="#上传文件的访问" class="headerlink" title="上传文件的访问"></a>上传文件的访问</h3><h4 id="文件的访问简介"><a href="#文件的访问简介" class="headerlink" title="文件的访问简介"></a>文件的访问简介</h4><p>其实，当我们在上面进行了<code>MEDIA_ROOT</code>与路由的相关配置后，在浏览器输入文件的路径就可以查看对应的文件了。比如我们想查看上图中的222.jpg文件，可以在程序运行的时候在地址栏输入：</p>
+<pre><code>http://127.0.0.1:8000/media/avatars/222.jpg</code></pre><p>这样就可以显示这个图片了。</p>
+<p>但是实际中，用户不可能去地址栏输入文件路径的，我们做程序的目的就是尽最大限度的解放用户的操作————那么，是否有一种方法能够让用户仅仅点击一下就能查看到对应的文件呢？<br>答案当然是肯定的！</p>
+<p>这就用到了media的另外一个参数————<code>MEDIA_URL</code>。</p>
+<h4 id="MEDIA-URL"><a href="#MEDIA-URL" class="headerlink" title="MEDIA_URL"></a>MEDIA_URL</h4><p>在使用<code>MEDIA_URL</code>之前我们需要新增一条中间件，在<code>settings.py</code>文件的<code>TEMPLATES</code>参数中加入中间件：</p>
+<pre class="line-numbers language-python"><code class="language-python">django<span class="token punctuation">.</span>template<span class="token punctuation">.</span>context_processors<span class="token punctuation">.</span>media<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>然后我们在<code>settings.py</code>中加入<code>MEDIA_URL</code>的参数：</p>
+<pre><code>MEDIA_URL = &#39;/media/&#39;</code></pre><p>接着我们再新增一条测试路由：</p>
+<pre><code>##测试
+path(&#39;aa/bb&#39;,views.aa),</code></pre><p>视图也比较简单：</p>
+<pre><code>def aa(request):
+    return  render(request,&#39;aa.html&#39;)</code></pre><p>然后模板文件中我们做相应的功能：</p>
+<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Title<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{{ MEDIA_URL }}avatars/222.jpg<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>查看media目录下的一张图片<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>MEDIA_URL: {{ MEDIA_URL }}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>假如我们想实现点击a标签的文字出来222.jpg图片，可以在href加上图片的路径，这里大家看到了，我们用模板语言<code></code>进行渲染，这里模板语言渲染出来的值其实就是我们在settings中设置的’/media/‘。我们可以看一下演示效果：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20210221141321" alt></p>
+<p>我们可以看到，点击链接的访问效果与在浏览器的地址栏输入文件路径的效果一样。<br>可能有人会问了，既然效果一样，那为何不在模板中直接将a标签的href写死呢，何必用模板语言去渲染？！<br>当然，二者的效果固然一样，但是当我们的项目做大的时候，文件目录的组织形式会越来越复杂，在settings中设置这样一个或者几个固定的、容易记忆的变量去存储复杂的文件路径，我们在开发的时候就不会为这些“琐事”去动脑筋了，这样能够极大的提高我们的编程效率。</p>
 
             </div>
             <hr/>
@@ -2509,7 +2557,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">182.1k</span>&nbsp;字
+                class="white-color">183.8k</span>&nbsp;字
             
             
             
