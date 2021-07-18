@@ -35,9 +35,9 @@ xxx.pro
     
     <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
     
+<link rel="alternate" href="/atom.xml" title="简简" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简简" type="application/atom+xml">
-</head>
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -579,14 +579,14 @@ xxx.pro
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-07-09
+                    2021-07-13
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.8k
+                    6k
                 </div>
                 
 
@@ -708,9 +708,43 @@ QPushButton <span class="token operator">*</span> btn <span class="token operato
     this                         -信号接受者（这里是本窗口Widget）
     &amp;QWidget::close             -信号接收者收到信号干的事（这里是调用的是关闭窗口的函数）
 */</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="自定义信号和槽"><a href="#自定义信号和槽" class="headerlink" title="自定义信号和槽"></a>自定义信号和槽</h3><p>。。。</p>
+<h3 id="自定义信号和槽"><a href="#自定义信号和槽" class="headerlink" title="自定义信号和槽"></a>自定义信号和槽</h3><p>案例–下课后，老师触发饿了信号，学生响应信号，请客吃饭</p>
+<pre class="line-numbers language-c"><code class="language-c">首先定义一个学生类和老师类：
+    老师类中声明信号 饿了 hungry
+signals<span class="token punctuation">:</span>
+       <span class="token keyword">void</span> <span class="token function">hungury</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//只需要声明，不需要实现</span>
+    学生类中声明槽   请客 treat
+    public slots<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>早期Qt版本 必须要写到public slots，高级版本可以写到 public或者全局下
+       <span class="token keyword">void</span> <span class="token function">treat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//需要声明，需要实现</span>
+    在窗口中声明一个公共方法下课，这个方法的调用会触发老师饿了这个信号，而响应槽函数学生请客
+    <span class="token keyword">void</span> MyWidget<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">ClassIsOver</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//下课函数，调用后，触发老师饿了的信号</span>
+    emit teacher<span class="token operator">-></span><span class="token function">hungury</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+    学生响应了槽函数，并且打印信息
+<span class="token comment" spellcheck="true">//自定义槽函数 实现</span>
+<span class="token keyword">void</span> Student<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">treat</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+       <span class="token function">qDebug</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token string">"请老师吃饭！"</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+定义对象
+    teacher <span class="token operator">=</span> new <span class="token function">Teacher</span><span class="token punctuation">(</span>this<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    student <span class="token operator">=</span> new <span class="token function">Student</span><span class="token punctuation">(</span>this<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+在窗口中连接信号槽    <span class="token function">connect</span><span class="token punctuation">(</span>teacher<span class="token punctuation">,</span><span class="token operator">&amp;</span>Teacher<span class="token punctuation">:</span><span class="token punctuation">:</span>hungury<span class="token punctuation">,</span>student<span class="token punctuation">,</span><span class="token operator">&amp;</span>Student<span class="token punctuation">:</span><span class="token punctuation">:</span>treat<span class="token punctuation">)</span><span class="token punctuation">;</span>
+并且调用下课函数，测试打印出 “请老师吃饭！”
+<span class="token function">ClassIsOver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>自定义信号和发生重载的解决办法</strong></p>
+<pre class="line-numbers language-c"><code class="language-c">自定义的信号 hungry带参数，需要提供重载的自定义信号和 自定义槽
+<span class="token keyword">void</span> <span class="token function">hungury</span><span class="token punctuation">(</span>QString name<span class="token punctuation">)</span><span class="token punctuation">;</span>  自定义信号
+<span class="token keyword">void</span> <span class="token function">treat</span><span class="token punctuation">(</span>QString name <span class="token punctuation">)</span><span class="token punctuation">;</span>    自定义槽
+但是由于有两个重名的自定义信号和自定义的槽，直接连接会报错，所以需要利用函数指针来指向函数地址， 然后在做连接
+<span class="token keyword">void</span> <span class="token punctuation">(</span>Teacher<span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token operator">*</span> teacherSingal<span class="token punctuation">)</span><span class="token punctuation">(</span>QString<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token operator">&amp;</span>Teacher<span class="token punctuation">:</span><span class="token punctuation">:</span>hungury<span class="token punctuation">;</span>
+<span class="token keyword">void</span> <span class="token punctuation">(</span>Student<span class="token punctuation">:</span><span class="token punctuation">:</span> <span class="token operator">*</span> studentSlot<span class="token punctuation">)</span><span class="token punctuation">(</span>QString<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token operator">&amp;</span>Student<span class="token punctuation">:</span><span class="token punctuation">:</span>treat<span class="token punctuation">;</span>
+<span class="token function">connect</span><span class="token punctuation">(</span>teacher<span class="token punctuation">,</span>teacherSingal<span class="token punctuation">,</span>student<span class="token punctuation">,</span>studentSlot<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h3><blockquote>
-<p>C++11 中的 Lambda 表达式<strong>用于定义并创建匿名的函数对象</strong>，以简化编程工作。</p>
+<p>C++11 中的 Lambda 表达式<strong>用于定义并创建匿名的函数对象</strong>，以简化编程工作。用 Lambda 表达式，我们就不需要在类中对槽函数做任何的声明了。Lambda 表达式是 C++ 11 的内容，在比较低的 Qt版本中，要注意在 Pro 项目文件中加入  CONFIG += C++ 11。</p>
 </blockquote>
 <p><strong>Lambda表达式的基本构成：</strong></p>
 <pre class="line-numbers language-c"><code class="language-c"><span class="token punctuation">[</span>capture<span class="token punctuation">]</span><span class="token punctuation">(</span>parameters<span class="token punctuation">)</span> mutable <span class="token operator">-></span><span class="token keyword">return</span><span class="token operator">-</span>type
@@ -935,7 +969,7 @@ QFont font <span class="token operator">=</span> QFontDialog<span class="token p
     <span class="token function">connect</span><span class="token punctuation">(</span>ui<span class="token operator">-></span>cBox<span class="token punctuation">,</span><span class="token operator">&amp;</span>QCheckBox<span class="token punctuation">:</span><span class="token punctuation">:</span>stateChanged<span class="token punctuation">,</span><span class="token punctuation">[</span><span class="token operator">=</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">int</span> state<span class="token punctuation">)</span><span class="token punctuation">{</span>
         <span class="token function">qDebug</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> state<span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="Item-Widgets"><a href="#Item-Widgets" class="headerlink" title="Item Widgets"></a>Item Widgets</h3><h4 id="列表容器-List-Widget-QListWidget"><a href="#列表容器-List-Widget-QListWidget" class="headerlink" title="*列表容器(List Widget) QListWidget  *"></a>*<em>列表容器(List Widget) QListWidget  *</em></h4><ul>
+<h3 id="Item-Widgets"><a href="#Item-Widgets" class="headerlink" title="Item Widgets"></a>Item Widgets</h3><h4 id="列表容器-List-Widget-QListWidget"><a href="#列表容器-List-Widget-QListWidget" class="headerlink" title="列表容器(List Widget) QListWidget"></a>列表容器(List Widget) QListWidget</h4><ul>
 <li><p>QListWidgetItem * item 一行内容 </p>
 </li>
 <li><p>ui-&gt;listWidget -&gt;addItem ( item )</p>
@@ -1119,7 +1153,73 @@ QFileInfo <span class="token function">info</span><span class="token punctuation
 <p>QByteArray-&gt;QString           QString(QByteArray)          </p>
 <p>QByteArray -&gt; std::string     QByteArray.toStdString();</p>
 <p>std::string -&gt; char *              string.data();</p>
-<h1 id="PyQt5、PySide2"><a href="#PyQt5、PySide2" class="headerlink" title="PyQt5、PySide2"></a>PyQt5、PySide2</h1><h1 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h1><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
+<h2 id="Qt资源"><a href="#Qt资源" class="headerlink" title="Qt资源"></a>Qt资源</h2><p><a href="https://github.com/laserpants/qt-material-widgets" target="_blank" rel="noopener">Qt Material Design Desktop Widgets </a></p>
+<h1 id="PyQt5"><a href="#PyQt5" class="headerlink" title="PyQt5"></a>PyQt5</h1><blockquote>
+<p>PyQt是一个用于创建GUI应用程序的跨平台工具包，它将Python与Qt库融为一体。PyQt允许使用Python语言调用Qt库中的API。这样做的最大好处就是在保留了Qt高运行效率的同时，大大提高了开发效率。</p>
+</blockquote>
+<h2 id="第一个-PyQt-程序"><a href="#第一个-PyQt-程序" class="headerlink" title="第一个 PyQt 程序"></a>第一个 PyQt 程序</h2><h2 id="安装PyQt5"><a href="#安装PyQt5" class="headerlink" title="安装PyQt5"></a>安装PyQt5</h2><pre class="line-numbers language-shell"><code class="language-shell">pip install pyqt5-tools<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>即可同时安装 PyQt5 和一些重要的工具，比如 Qt designer。</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> PyQt5<span class="token punctuation">.</span>QtWidgets <span class="token keyword">import</span> QApplication<span class="token punctuation">,</span> QMainWindow
+<span class="token keyword">import</span> sys
+
+app <span class="token operator">=</span> QApplication<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>argv<span class="token punctuation">)</span>
+window <span class="token operator">=</span> QMainWindow<span class="token punctuation">(</span><span class="token punctuation">)</span>
+window<span class="token punctuation">.</span>resize<span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">,</span> <span class="token number">400</span><span class="token punctuation">)</span>
+window<span class="token punctuation">.</span>move<span class="token punctuation">(</span><span class="token number">300</span><span class="token punctuation">,</span> <span class="token number">300</span><span class="token punctuation">)</span>
+window<span class="token punctuation">.</span>setWindowTitle<span class="token punctuation">(</span><span class="token string">'第一个窗口'</span><span class="token punctuation">)</span>
+window<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sys<span class="token punctuation">.</span>exit<span class="token punctuation">(</span>app<span class="token punctuation">.</span>exec_<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>封装到类中</strong></p>
+<p>上面的代码把控件对应的变量名全部作为全局变量。如果要设计稍微复杂一些的程序，就会出现太多的控件对应的变量名。而且这样也不利于代码的模块化。所以，我们通常应该把 一个窗口和其包含的控件，对应的代码全部封装到类中，如下所示：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> PyQt5<span class="token punctuation">.</span>QtWidgets <span class="token keyword">import</span> QApplication<span class="token punctuation">,</span> QMainWindow
+<span class="token keyword">import</span> sys
+
+<span class="token keyword">class</span> <span class="token class-name">Window</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">__init__</span><span class="token punctuation">(</span>self<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        self<span class="token punctuation">.</span>window <span class="token operator">=</span> QMainWindow<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>window<span class="token punctuation">.</span>resize<span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">,</span> <span class="token number">400</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>window<span class="token punctuation">.</span>move<span class="token punctuation">(</span><span class="token number">300</span><span class="token punctuation">,</span> <span class="token number">300</span><span class="token punctuation">)</span>
+        self<span class="token punctuation">.</span>window<span class="token punctuation">.</span>setWindowTitle<span class="token punctuation">(</span><span class="token string">'第一个窗口'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    app <span class="token operator">=</span> QApplication<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>argv<span class="token punctuation">)</span>
+    stats <span class="token operator">=</span> Window<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    stats<span class="token punctuation">.</span>window<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    sys<span class="token punctuation">.</span>exit<span class="token punctuation">(</span>app<span class="token punctuation">.</span>exec_<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>if __name__ == &#39;__main__&#39;:</code> 作用：python文件通常有两种使用方法，第一是作为脚本直接执行，第二是 import 到其他的 python 脚本中被调用（模块重用）执行。因此 if <strong>name</strong> == ‘main’: 的作用就是控制这两种情况执行代码的过程，在 if <strong>name</strong> == ‘main’: 下的代码只有在第一种情况下（即文件作为脚本直接执行）才会被执行，而 import 到其他脚本中是不会被执行的。</p>
+<h2 id="加载UI文件"><a href="#加载UI文件" class="headerlink" title="加载UI文件"></a>加载UI文件</h2><h3 id="动态加载UI文件"><a href="#动态加载UI文件" class="headerlink" title="动态加载UI文件"></a>动态加载UI文件</h3><pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> PyQt5<span class="token punctuation">.</span>QtWidgets <span class="token keyword">import</span> QApplication
+<span class="token keyword">from</span> PyQt5 <span class="token keyword">import</span> uic
+<span class="token keyword">import</span> sys
+
+<span class="token comment" spellcheck="true"># 从文件中加载UI定义</span>
+app <span class="token operator">=</span> QApplication<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>argv<span class="token punctuation">)</span>
+ui <span class="token operator">=</span> uic<span class="token punctuation">.</span>loadUi<span class="token punctuation">(</span><span class="token string">"test.ui"</span><span class="token punctuation">)</span>
+ui<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sys<span class="token punctuation">.</span>exit<span class="token punctuation">(</span>app<span class="token punctuation">.</span>exec_<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="转UI文件为Py文件进行加载"><a href="#转UI文件为Py文件进行加载" class="headerlink" title="转UI文件为Py文件进行加载"></a>转UI文件为Py文件进行加载</h3><p>1.执行如下的命令把 UI 文件直接转化为包含界面定义的Py文件</p>
+<pre class="line-numbers language-shell"><code class="language-shell">python -m PyQt5.uic.pyuic test.ui > test.py<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>2.然后在你的代码文件中这样使用定义界面的类</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">from</span> PyQt5<span class="token punctuation">.</span>QtWidgets <span class="token keyword">import</span> QApplication<span class="token punctuation">,</span> QMainWindow
+<span class="token keyword">import</span> sys
+<span class="token keyword">import</span> test  <span class="token comment" spellcheck="true"># ui文件转为py文件的文件名</span>
+
+app <span class="token operator">=</span> QApplication<span class="token punctuation">(</span>sys<span class="token punctuation">.</span>argv<span class="token punctuation">)</span>
+window <span class="token operator">=</span> QMainWindow<span class="token punctuation">(</span><span class="token punctuation">)</span>
+ui <span class="token operator">=</span> test<span class="token punctuation">.</span>Ui_MainWindow<span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># py文件的类名</span>
+ui<span class="token punctuation">.</span>setupUi<span class="token punctuation">(</span>window<span class="token punctuation">)</span>
+window<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sys<span class="token punctuation">.</span>exit<span class="token punctuation">(</span>app<span class="token punctuation">.</span>exec_<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>配置PyUIC</strong></p>
+<blockquote>
+<p>为了不每次都执行第一步的代码，可以在 PyCharm 中配置快捷按钮，只需点击即可进行 ui 文件到 py 文件的转化。</p>
+</blockquote>
+<p>操作步骤：点击设置–&gt;工具–&gt;外部工具–&gt;点击“+”–&gt;进行如下配置<br><img src="https://cdn.jsdelivr.net/gh/jwt1399/cdn//img/20210713195925.png" alt></p>
+<pre class="line-numbers language-python"><code class="language-python">Name：PyUIC
+Program：D<span class="token punctuation">:</span>\Python37\python3<span class="token punctuation">.</span>exe   <span class="token comment" spellcheck="true">#python安装路径，要确保已经安装PyQt5</span>
+Arguments：<span class="token operator">-</span>m PyQt5<span class="token punctuation">.</span>uic<span class="token punctuation">.</span>pyuic $FileName$ <span class="token operator">-</span>o $FileNameWithoutExtension$<span class="token punctuation">.</span>py <span class="token comment" spellcheck="true">#把ui文件转成同名py文件</span>
+Working directory：$ProjectFileDir$ <span class="token comment" spellcheck="true">#当前项目工作目录</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>配置完成后，在 Pycharm 的菜单栏 Tools 或者右击需要转换的ui文件——&gt;External Tools——&gt;PyUIC，可以看到刚才配置菜单PyUIC，点击即可进行转换</p>
+<h1 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h1><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
      <tr>
@@ -1909,7 +2009,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">208.3k</span>&nbsp;字
+                class="white-color">210.4k</span>&nbsp;字
             
             
             
