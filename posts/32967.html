@@ -1,0 +1,2662 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Redis-实战篇, 简简,简简博客,网络安全,计算机,Java开发">
+    <meta name="description" content="⓪系统简介
+短信登录：使用redis共享session来实现
+
+商户查询缓存：理解缓存击穿，缓存穿透，缓存雪崩等问题
+
+优惠卷秒杀
+
+学会Redis的计数器功能， 结合Lua完成高性能的redis操作
+
+学会Redis分布式锁的原理，包括R">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
+    <meta name="sogou_site_verification" content="VTcD33rrfd" />
+    <meta name="google-site-verification" content="mHsYpjV9Rl0e0UzjioJFLg8RMtOhxw8HB3D21dIWvmc" />
+	<meta name="referrer" content="unsafe-url">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Redis-实战篇 | 简言之</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+	<!--变灰-->
+	<!-- <link href="http://static.isenyu.cn/file/css/MemorialDay.css"; rel="stylesheet" type="text/css" /> -->
+    <!-- <style type="text/css">
+     html{ filter: grayscale(100%); /* 标准写法 just for IE6-9 */ 
+        -webkit-filter: grayscale(100%); /* webkit 内核支持程度较好 */ 
+        -moz-filter: grayscale(100%); /* 其他内核现在并不支持，为了将来兼容性书写 */ 
+        -ms-filter: grayscale(100%); 
+        -o-filter: grayscale(100%); filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+        filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */ }
+     </style> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/6.0.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/aos/0.1.0/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+	<!--valine_人机验证-->
+	<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+	<script src="/js/Valine-RJyanzheng.js"></script>
+
+    
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img no-lazy src="/medias/logo.png" class="logo-img" alt="">
+                    
+                    <span class="logo-span">简言之</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Home</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-user-secret" style="zoom: 0.6;"></i>
+      
+      <span>Sec</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Web/">
+          
+          <i class="fab fa-internet-explorer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Web</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/CTF/">
+          
+          <i class="fas fa-flag" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CTF</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Crypto/">
+          
+          <i class="fa-solid fa-shield" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Data</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fab fa-java" style="zoom: 0.6;"></i>
+      
+      <span>Java</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/JavaSE/">
+          
+          <i class="fa-solid fa-mug-saucer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaSE</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/JavaWeb/">
+          
+          <i class="fa-solid fa-globe" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaWeb</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Spring/">
+          
+          <i class="fa-solid fa-leaf" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Spring</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-desktop" style="zoom: 0.6;"></i>
+      
+      <span>CS</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/CS%E5%9F%BA%E7%A1%80/">
+          
+          <i class="fa-solid fa-server" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CS基础</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/SQL/">
+          
+          <i class="fas fa-database" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>数据库</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">
+          
+          <i class="fa-solid fa-bezier-curve" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>结构-算法</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories/Python/" class="waves-effect waves-light">
+      
+      <i class="fab fa-python" style="zoom: 0.6;"></i>
+      
+      <span>Python</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-layer-group" style="zoom: 0.6;"></i>
+      
+      <span>Others</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Course/">
+          
+          <i class="fa-solid fa-graduation-cap" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Course</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Share/">
+          
+          <i class="fa-solid fa-crown" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Share~</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Tools/">
+          
+          <i class="fas fa-tools" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Tools~</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-list" style="zoom: 0.6;"></i>
+      
+      <span>整理</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/tags/">
+          
+          <i class="fas fa-bookmark" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归类</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/archives/">
+          
+          <i class="fas fa-file-contract" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归档</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-paper-plane" style="zoom: 0.6;"></i>
+      
+      <span>交流</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/friends/">
+          
+          <i class="fas fa-venus-mars" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>友链</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/artitalk/">
+          
+          <i class="fa-solid fa-message" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>说说</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/contact/">
+          
+          <i class="fas fa-envelope" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>留言</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about/" class="waves-effect waves-light">
+      
+      <i class="fas fa-id-card-alt" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img no-lazy src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">简言之</div>
+        <div class="logo-desc">
+            
+            悄无声息地变坚强，安静地变优秀！
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Home
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-user-secret"></i>
+			
+			Sec
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Web/ " style="margin-left:50px";>
+				  
+				   <i class="fab fa-internet-explorer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Web</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/CTF/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-flag" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CTF</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Crypto/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-shield" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Data</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fab fa-java"></i>
+			
+			Java
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/JavaSE/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-mug-saucer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaSE</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/JavaWeb/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-globe" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaWeb</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Spring/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-leaf" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Spring</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-desktop"></i>
+			
+			CS
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/CS%E5%9F%BA%E7%A1%80/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-server" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CS基础</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/SQL/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-database" style="position: absolute;left:28px" ></i>
+			      
+		          <span>数据库</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-bezier-curve" style="position: absolute;left:28px" ></i>
+			      
+		          <span>结构-算法</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories/Python/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fab fa-python"></i>
+			
+			Python
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-layer-group"></i>
+			
+			Others
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Course/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-graduation-cap" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Course</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Share/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-crown" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Share~</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Tools/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-tools" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Tools~</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-list"></i>
+			
+			整理
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/tags/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-bookmark" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归类</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/archives/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-file-contract" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归档</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-paper-plane"></i>
+			
+			交流
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/friends/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-venus-mars" style="position: absolute;left:28px" ></i>
+			      
+		          <span>友链</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/artitalk/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-message" style="position: absolute;left:28px" ></i>
+			      
+		          <span>说说</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/contact/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-envelope" style="position: absolute;left:28px" ></i>
+			      
+		          <span>留言</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-id-card-alt"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('猜猜密码是什么呢ヾﾉ≧∀≦)o')).toString(CryptoJS.enc.Hex)) {
+                alert('哎呦！密码好像不对哟，将返回主页！');
+                location.href = '/';	
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.jwt1399.top/img/202207032341528.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Redis-实战篇</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    /*.toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }*/
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+        /* 毛玻璃 */
+        /*background-color: rgba(162,101,228, 0.08);*/
+        /*backdrop-filter: saturate(180%) blur(20px);*/
+        /*目录样式修改*/
+        background-color: rgb(255, 255, 255,0.7);
+        border-radius: 10px;
+        box-shadow: 0 10px 35px 2px rgba(0, 0, 0, .15), 0 5px 15px rgba(0, 0, 0, .07), 0 2px 5px -5px rgba(0, 0, 0, .1) !important;
+    }
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/NoSQL/">
+                                <span class="chip bg-color">NoSQL</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/SQL/" class="post-category">
+                                SQL
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2022-08-08
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2022-11-02
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    6.7k
+                </div>
+                
+
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="⓪系统简介"><a href="#⓪系统简介" class="headerlink" title="⓪系统简介"></a>⓪系统简介</h1><ol>
+<li><p><strong>短信登录</strong>：使用redis共享session来实现</p>
+</li>
+<li><p><strong>商户查询缓存</strong>：理解缓存击穿，缓存穿透，缓存雪崩等问题</p>
+</li>
+<li><p><strong>优惠卷秒杀</strong></p>
+<ul>
+<li><p>学会Redis的计数器功能， 结合Lua完成高性能的redis操作</p>
+</li>
+<li><p>学会Redis分布式锁的原理，包括Redis的三种消息队列</p>
+</li>
+</ul>
+</li>
+<li><p><strong>附近的商户</strong>：利用Redis的GEOHash来完成对于地理坐标的操作</p>
+</li>
+<li><p><strong>UV统计</strong>：使用Redis来完成统计功能</p>
+</li>
+<li><p><strong>用户签到</strong>：使用Redis的BitMap数据统计功能</p>
+</li>
+<li><p><strong>好友关注</strong>：基于Set集合的关注、取消关注，共同关注等等功能</p>
+</li>
+<li><p><strong>打人探店</strong>：基于List完成点赞列表的操作，基于SortedSet来完成点赞的排行榜功能</p>
+</li>
+</ol>
+<p><img src="https://img.jwt1399.top/img/202210261714909.png"></p>
+<h1 id="①短信登录"><a href="#①短信登录" class="headerlink" title="①短信登录"></a>①短信登录</h1><h2 id="❶基于session实现登录"><a href="#❶基于session实现登录" class="headerlink" title="❶基于session实现登录"></a>❶基于session实现登录</h2><h3 id="0-登录流程分析"><a href="#0-登录流程分析" class="headerlink" title="0.登录流程分析"></a>0.登录流程分析</h3><p><img src="https://img.jwt1399.top/img/202210121713673.png" alt="基于Session实现登录流程"></p>
+<p><strong>1.发送短信验证码：</strong></p>
+<p>用户在提交手机号后，会校验手机号是否合法，</p>
+<ul>
+<li><p>如果不合法，则要求用户重新输入手机号</p>
+</li>
+<li><p>如果合法，后台生成对应的验证码，同时将验证码进行保存，然后再通过短信将验证码发送给用户</p>
+</li>
+</ul>
+<p><strong>2.验证码登录/注册：</strong></p>
+<p>用户将验证码和手机号进行输入，后台从<code>session</code>中拿到当前验证码，然后和用户输入的验证码进行校验，</p>
+<ul>
+<li>如果不一致，则无法通过校验；</li>
+<li>如果一致，则后台根据手机号查询用户；<ul>
+<li>如果用户不存在，则为用户创建账号信息，保存到数据库，并用户信息保存到<code>session</code>中，</li>
+<li>如果用户存在，将用户信息保存到<code>session</code>中，</li>
+<li>无论是否存在，都将用户信息保存到<code>session</code>中是为了方便后续获得当前登录信息</li>
+</ul>
+</li>
+</ul>
+<p><strong>3.校验登录状态:</strong></p>
+<p>用户请求时，会从<code>cookie</code>中携带<code>JsessionId</code>到后台，后台通过<code>JsessionId</code>从<code>session</code>中拿到用户信息，</p>
+<ul>
+<li>如果没有<code>session</code>信息，则进行拦截，</li>
+<li>如果有<code>session</code>信息，则将用户信息保存到<code>threadLocal</code>中，并且放行</li>
+</ul>
+<h3 id="1-发送验证码"><a href="#1-发送验证码" class="headerlink" title="1.发送验证码"></a>1.发送验证码</h3><p><img src="https://img.jwt1399.top/img/202210121713058.png" alt="页面流程"></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>kbdp<span class="token punctuation">.</span>service<span class="token punctuation">.</span>impl<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Service</span>
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserServiceImpl</span> <span class="token keyword">extends</span> <span class="token class-name">ServiceImpl</span><span class="token operator">&lt;</span>UserMapper<span class="token punctuation">,</span> User<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">IUserService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Result <span class="token function">sendCode</span><span class="token punctuation">(</span>String phone<span class="token punctuation">,</span> HttpSession session<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.校验手机号</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>RegexUtils<span class="token punctuation">.</span><span class="token function">isPhoneInvalid</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 2.如果不符合，返回错误信息</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"手机号格式错误！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 3.符合，生成验证码</span>
+        String code <span class="token operator">=</span> RandomUtil<span class="token punctuation">.</span><span class="token function">randomNumbers</span><span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 4.保存验证码到 session</span>
+        session<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"code"</span><span class="token punctuation">,</span>code<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 5.发送验证码</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"发送短信验证码成功，验证码：{}"</span><span class="token punctuation">,</span> code<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 返回ok</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-登录-注册"><a href="#2-登录-注册" class="headerlink" title="2.登录/注册"></a>2.登录/注册</h3><p><img src="https://img.jwt1399.top/img/202210132211795.png" alt="页面流程"></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>kbdp<span class="token punctuation">.</span>service<span class="token punctuation">.</span>impl<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Service</span>
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserServiceImpl</span> <span class="token keyword">extends</span> <span class="token class-name">ServiceImpl</span><span class="token operator">&lt;</span>UserMapper<span class="token punctuation">,</span> User<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">IUserService</span> <span class="token punctuation">{</span>
+
+  <span class="token annotation punctuation">@Override</span>
+  <span class="token keyword">public</span> Result <span class="token function">login</span><span class="token punctuation">(</span>LoginFormDTO loginForm<span class="token punctuation">,</span> HttpSession session<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 1.校验手机号</span>
+    String phone <span class="token operator">=</span> loginForm<span class="token punctuation">.</span><span class="token function">getPhone</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>RegexUtils<span class="token punctuation">.</span><span class="token function">isPhoneInvalid</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// 2.如果不符合，返回错误信息</span>
+      <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"手机号格式错误！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 3.校验验证码</span>
+    Object cacheCode <span class="token operator">=</span> session<span class="token punctuation">.</span><span class="token function">getAttribute</span><span class="token punctuation">(</span><span class="token string">"code"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String code <span class="token operator">=</span> loginForm<span class="token punctuation">.</span><span class="token function">getCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>cacheCode <span class="token operator">==</span> null <span class="token operator">||</span> <span class="token operator">!</span>cacheCode<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">//4.不一致，报错</span>
+      <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"验证码错误"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">//5.一致，根据手机号查询用户</span>
+    <span class="token comment" spellcheck="true">//User user = query().eq("phone", phone).one();</span>
+    LambdaQueryWrapper<span class="token operator">&lt;</span>User<span class="token operator">></span> lqw <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LambdaQueryWrapper</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    User user <span class="token operator">=</span> <span class="token function">getOne</span><span class="token punctuation">(</span>lqw<span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span>User<span class="token operator">:</span><span class="token operator">:</span>getPhone<span class="token punctuation">,</span> phone<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//6.判断用户是否存在</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>user <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">//不存在，则创建</span>
+      user <span class="token operator">=</span>  <span class="token function">createUserWithPhone</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">//7.保存用户信息到session中</span>
+    session<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">,</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">private</span> User <span class="token function">createUserWithPhone</span><span class="token punctuation">(</span>String phone<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    User user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    user<span class="token punctuation">.</span><span class="token function">setPhone</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    user<span class="token punctuation">.</span><span class="token function">setNickName</span><span class="token punctuation">(</span>USER_NICK_NAME_PREFIX <span class="token operator">+</span> RandomUtil<span class="token punctuation">.</span><span class="token function">randomNumbers</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">save</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> user<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="3-登录验证"><a href="#3-登录验证" class="headerlink" title="3.登录验证"></a>3.登录验证</h3><h4 id="a-前置知识"><a href="#a-前置知识" class="headerlink" title="a.前置知识"></a>a.前置知识</h4><ul>
+<li>Tomcat的运行原理</li>
+</ul>
+<p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/1653068196656.png"></p>
+<p>当用户发起请求时，会访问我们tomcat注册的端口，任何程序想要运行，都需要有一个线程对当前端口号进行监听，tomcat也不例外，当监听线程知道用户想要和tomcat连接时，那会由监听线程创建socket连接，socket都是成对出现的，用户通过socket互相传递数据，当tomcat端的socket接受到数据后，此时监听线程会从tomcat的线程池中取出一个线程执行用户请求，在我们的服务部署到tomcat后，线程会找到用户想要访问的工程，然后用这个线程转发到工程中的controller，service，dao中，并且访问对应的DB，在用户执行完请求后，再统一返回，再找到tomcat端的socket，再将数据写回到用户端的socket，完成请求和响应</p>
+<p>通过以上讲解，我们可以得知每个用户其实对应都是去找tomcat线程池中的一个线程来完成工作的， 使用完成后再进行回收，既然每个请求都是独立的，所以在每个用户去访问我们的工程时，我们可以使用threadlocal来做到线程隔离，每个线程操作自己的一份数据</p>
+<ul>
+<li>Threadlocal</li>
+</ul>
+<p><code>ThreadLocal</code> 叫做本地线程变量，<code>ThreadLocal</code> 中填充的的是当前线程的变量，该变量对其他线程而言是封闭且隔离的</p>
+<h4 id="b-具体实现"><a href="#b-具体实现" class="headerlink" title="b.具体实现"></a>b.具体实现</h4><p><img src="https://img.jwt1399.top/img/202210261714702.png"></p>
+<ul>
+<li>拦截器代码</li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">,</span> Object handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+       <span class="token comment" spellcheck="true">//1.获取session</span>
+        HttpSession session <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getSession</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//2.获取session中的用户</span>
+        Object user <span class="token operator">=</span> session<span class="token punctuation">.</span><span class="token function">getAttribute</span><span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//3.判断用户是否存在</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>user <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+              <span class="token comment" spellcheck="true">//4.不存在，拦截，返回401状态码</span>
+              response<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token number">401</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">//5.存在，保存用户信息到Threadlocal</span>
+        UserHolder<span class="token punctuation">.</span><span class="token function">saveUser</span><span class="token punctuation">(</span><span class="token punctuation">(</span>User<span class="token punctuation">)</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//6.放行</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>让拦截器生效</li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span>InterceptorRegistry registry<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 登录拦截器</span>
+        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">LoginInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">excludePathPatterns</span><span class="token punctuation">(</span>
+                        <span class="token string">"/shop/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/voucher/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/shop-type/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/upload/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/blog/hot"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/user/code"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/user/login"</span>
+                <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="4-隐藏用户敏感信息"><a href="#4-隐藏用户敏感信息" class="headerlink" title="4.隐藏用户敏感信息"></a>4.隐藏用户敏感信息</h3><p>我们通过浏览器观察到此时用户的全部信息都在，这样极为不靠谱，所以我们应当在返回用户信息之前，将用户的敏感信息进行隐藏，采用的核心思路就是书写一个UserDTO对象，这个UserDTO对象就没有敏感信息了，我们在返回前，将有用户敏感信息的User对象转化成没有敏感信息的UserDTO对象，那么就能够避免这个尴尬的问题了</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Data</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserDTO</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> Long id<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String nickName<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String icon<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>在登录方法处修改</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//7.保存用户信息到session中</span>
+session<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">,</span> BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>user<span class="token punctuation">,</span>UserDTO<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>在拦截器处：</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//5.存在，保存用户信息到Threadlocal</span>
+UserHolder<span class="token punctuation">.</span><span class="token function">saveUser</span><span class="token punctuation">(</span><span class="token punctuation">(</span>UserDTO<span class="token punctuation">)</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>在UserHolder处：将user对象换成UserDTO</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserHolder</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> ThreadLocal<span class="token operator">&lt;</span>UserDTO<span class="token operator">></span> tl <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ThreadLocal</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">saveUser</span><span class="token punctuation">(</span>UserDTO user<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        tl<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> UserDTO <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">return</span> tl<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">removeUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        tl<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❷集群的session共享问题"><a href="#❷集群的session共享问题" class="headerlink" title="❷集群的session共享问题"></a>❷集群的session共享问题</h2><blockquote>
+<p><strong>集群的session 共享问题</strong>：多台Tomcat并不共享session存储空间，当请求切换到不同tomcat服务时导致数据丢失的问题。</p>
+</blockquote>
+<p><img src="https://img.jwt1399.top/img/202210261713817.png"></p>
+<p>每个 tomcat 中都有一份属于自己的session，假设用户第一次访问第一台tomcat，并且把自己的信息存放到第一台服务器的session中，但是第二次这个用户访问到了第二台tomcat，那么在第二台服务器上，肯定没有第一台服务器存放的session，所以此时整个登录拦截功能就会出现问题，我们能如何解决这个问题呢？</p>
+<p>早期的方案是session拷贝，就是说虽然每个tomcat上都有不同的session，但是每当任意一台服务器的session修改时，都会同步给其他的Tomcat服务器的session，这样的话，就可以实现session的共享了</p>
+<p>但是这种方案具有两个大问题</p>
+<ul>
+<li><p>1、每台服务器中都有完整的一份session数据，服务器压力过大。</p>
+</li>
+<li><p>2、session拷贝数据时，可能会出现延迟</p>
+</li>
+</ul>
+<p>所以后来采用的方案都是基于redis来完成，我们把session换成redis，redis数据本身就是共享的，就可以避免session共享的问题了</p>
+<h2 id="❸Redis代替session实现登录"><a href="#❸Redis代替session实现登录" class="headerlink" title="❸Redis代替session实现登录"></a>❸Redis代替session实现登录</h2><h3 id="1-key设计"><a href="#1-key设计" class="headerlink" title="1.key设计"></a>1.key设计</h3><blockquote>
+<p>利用redis来存储数据，那么到底使用哪种结构呢？</p>
+</blockquote>
+<p>由于存入的数据比较简单，我们可以考虑使用String，或者是使用Hash</p>
+<ul>
+<li><p>使用String结构，以JSON字符串来保存，比较直观，多占用一点空间(还需存<code>&#123;&#125;、&quot;&quot;</code>等字符)</p>
+</li>
+<li><p>使用Hash结构，可以将对象中的每个字段独立存储，可以针对单个字段做CRUD，并且内存占用更少</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">String</th>
+<th align="center">Hash</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://img.jwt1399.top/img/202210261621745.png"></td>
+<td align="center"><img src="https://img.jwt1399.top/img/202210261621354.png"></td>
+</tr>
+</tbody></table>
+<p>在设计这个key的时候，我们之前讲过需要满足两点</p>
+<p>1、key要具有唯一性</p>
+<p>2、key要方便携带</p>
+<p>如果我们采用phone：手机号这个的数据来存储当然是可以的，但是如果把这样的敏感数据存储到redis中并且从页面中带过来毕竟不太合适，所以我们在后台生成一个随机串token，然后让前端携带这个token就能完成我们的整体逻辑了</p>
+<h3 id="2-新版登录流程"><a href="#2-新版登录流程" class="headerlink" title="2.新版登录流程"></a>2.新版登录流程</h3><p><img src="https://img.jwt1399.top/img/202210261713092.png"></p>
+<p>当注册完成后，用户去登录会去校验用户提交的手机号和验证码，是否一致，如果一致，则根据手机号查询用户信息，不存在则新建，最后将用户数据保存到redis，并且生成token作为redis的key，当我们校验用户是否登录时，会去携带着token进行访问，从redis中取出token对应的value，判断是否存在这个数据，如果没有则拦截，如果存在则将其保存到threadLocal中，并且放行。</p>
+<h3 id="3-具体实现"><a href="#3-具体实现" class="headerlink" title="3.具体实现"></a>3.具体实现</h3><p><strong>登录/注册业务代码</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserServiceImpl</span> <span class="token keyword">extends</span> <span class="token class-name">ServiceImpl</span><span class="token operator">&lt;</span>UserMapper<span class="token punctuation">,</span> User<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">IUserService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Result <span class="token function">sendCode</span><span class="token punctuation">(</span>String phone<span class="token punctuation">,</span> HttpSession session<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.校验手机号</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>RegexUtils<span class="token punctuation">.</span><span class="token function">isPhoneInvalid</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 2.如果不符合，返回错误信息</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"手机号格式错误！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 3.符合，生成验证码</span>
+        String code <span class="token operator">=</span> RandomUtil<span class="token punctuation">.</span><span class="token function">randomNumbers</span><span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 4.保存验证码到redis，并设置过期时间</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>LOGIN_CODE_KEY <span class="token operator">+</span> phone<span class="token punctuation">,</span> code<span class="token punctuation">,</span> LOGIN_CODE_TTL<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 5.发送验证码</span>
+        log<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"发送短信验证码成功，验证码：{}"</span><span class="token punctuation">,</span> code<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 6.返回ok</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Result <span class="token function">login</span><span class="token punctuation">(</span>LoginFormDTO loginForm<span class="token punctuation">,</span> HttpSession session<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.校验手机号</span>
+        String phone <span class="token operator">=</span> loginForm<span class="token punctuation">.</span><span class="token function">getPhone</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>RegexUtils<span class="token punctuation">.</span><span class="token function">isPhoneInvalid</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 2.如果不符合，返回错误信息</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"手机号格式错误！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 3.从redis获取验证码并校验</span>
+        String cacheCode <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>LOGIN_CODE_KEY <span class="token operator">+</span> phone<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String code <span class="token operator">=</span> loginForm<span class="token punctuation">.</span><span class="token function">getCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>cacheCode <span class="token operator">==</span> null <span class="token operator">||</span> <span class="token operator">!</span>cacheCode<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 4.不一致，报错</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"验证码错误"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 5.一致，根据手机号查询用户 select * from tb_user where phone = ?</span>
+        <span class="token comment" spellcheck="true">//User user = query().eq("phone", phone).one();</span>
+        LambdaQueryWrapper<span class="token operator">&lt;</span>User<span class="token operator">></span> lqw <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LambdaQueryWrapper</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        User user <span class="token operator">=</span> <span class="token function">getOne</span><span class="token punctuation">(</span>lqw<span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span>User<span class="token operator">:</span><span class="token operator">:</span>getPhone<span class="token punctuation">,</span> phone<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 6.判断用户是否存在</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>user <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//不存在，则创建</span>
+            user <span class="token operator">=</span> <span class="token function">createUserWithPhone</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 7.保存用户信息到redis中</span>
+        <span class="token comment" spellcheck="true">// 7.1.随机生成token，作为登录令牌</span>
+        String token <span class="token operator">=</span> UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 7.2.将User对象转为HashMap存储</span>
+        UserDTO userDTO <span class="token operator">=</span> BeanUtil<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>user<span class="token punctuation">,</span> UserDTO<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Object<span class="token operator">></span> userMap <span class="token operator">=</span> BeanUtil<span class="token punctuation">.</span><span class="token function">beanToMap</span><span class="token punctuation">(</span>userDTO<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                CopyOptions<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">setIgnoreNullValue</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span>
+                        <span class="token punctuation">.</span><span class="token function">setFieldValueEditor</span><span class="token punctuation">(</span><span class="token punctuation">(</span>fieldName<span class="token punctuation">,</span> fieldValue<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> fieldValue<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 7.3.存储用户信息</span>
+        String tokenKey <span class="token operator">=</span> LOGIN_USER_KEY <span class="token operator">+</span> token<span class="token punctuation">;</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">putAll</span><span class="token punctuation">(</span>tokenKey<span class="token punctuation">,</span> userMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 7.4.设置token有效期</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">expire</span><span class="token punctuation">(</span>tokenKey<span class="token punctuation">,</span> LOGIN_USER_TTL<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 8.返回token</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> User <span class="token function">createUserWithPhone</span><span class="token punctuation">(</span>String phone<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        User user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        user<span class="token punctuation">.</span><span class="token function">setPhone</span><span class="token punctuation">(</span>phone<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        user<span class="token punctuation">.</span><span class="token function">setNickName</span><span class="token punctuation">(</span>USER_NICK_NAME_PREFIX <span class="token operator">+</span> RandomUtil<span class="token punctuation">.</span><span class="token function">randomNumbers</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">save</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> user<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>校验登录，监听器代码</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>kbdp<span class="token punctuation">.</span>utils<span class="token punctuation">;</span>
+
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//构造器注入（LoginInterceptor不是由Spring创建的）</span>
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token function">LoginInterceptor</span><span class="token punctuation">(</span>StringRedisTemplate stringRedisTemplate<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>stringRedisTemplate <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">,</span> Object handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.获取请求头中的token</span>
+        String token <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getHeader</span><span class="token punctuation">(</span><span class="token string">"authorization"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>StrUtil<span class="token punctuation">.</span><span class="token function">isBlank</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//不存在，拦截，返回401状态码</span>
+            response<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token number">401</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 2.基于TOKEN获取redis中的用户</span>
+        String key  <span class="token operator">=</span> LOGIN_USER_KEY <span class="token operator">+</span> token<span class="token punctuation">;</span>
+        Map<span class="token operator">&lt;</span>Object<span class="token punctuation">,</span> Object<span class="token operator">></span> userMap <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 3.判断用户是否存在</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>userMap<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 4.不存在，拦截，返回401状态码</span>
+            response<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token number">401</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 5.将查询到的hash数据转为UserDTO</span>
+        UserDTO userDTO <span class="token operator">=</span> BeanUtil<span class="token punctuation">.</span><span class="token function">fillBeanWithMap</span><span class="token punctuation">(</span>userMap<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">UserDTO</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//6.存在，保存用户信息到Threadlocal</span>
+        UserHolder<span class="token punctuation">.</span><span class="token function">saveUser</span><span class="token punctuation">(</span>userDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 7.刷新token有效期</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">expire</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> LOGIN_USER_TTL<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 8.放行</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>kbdp<span class="token punctuation">.</span>config<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">{</span>
+
+    <span class="token comment" spellcheck="true">//注入StringRedisTemplate</span>
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span>InterceptorRegistry registry<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 登录拦截器</span>
+        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">LoginInterceptor</span><span class="token punctuation">(</span>stringRedisTemplate<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">excludePathPatterns</span><span class="token punctuation">(</span>
+                        <span class="token string">"/shop/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/voucher/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/shop-type/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/upload/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/blog/hot"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/user/code"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/user/login"</span>
+                <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="4-解决token刷新问题"><a href="#4-解决token刷新问题" class="headerlink" title="4.解决token刷新问题"></a>4.解决token刷新问题</h3><blockquote>
+<p>即用户只要一直访问页面，那么就刷新token，既可以一直保持登录状态</p>
+</blockquote>
+<p><strong>初始方案：</strong></p>
+<p>初始方案中，确实可以使用对应路径的拦截，同时刷新登录token令牌的存活时间，但是现在这个拦截器只是拦截需要被拦截的路径（登录才能访问的页面），假设当前用户访问了一些不需要拦截的路径，那么这个拦截器就不会生效，所以此时token令牌刷新的动作就不会执行，所以这个方案是存在问题的</p>
+<p><img src="https://img.jwt1399.top/img/202210271640418.png"></p>
+<p><strong>优化方案</strong></p>
+<p>之前的拦截器无法对不需要拦截的路径生效，那么我们可以添加一个拦截器，在第一个拦截器中拦截所有的路径，把第二个拦截器做的事情放入到第一个拦截器中，同时刷新token令牌，因为第一个拦截器有了threadLocal的数据，所以此时第二个拦截器只需要判断拦截器中的user对象是否存在即可，完成整体刷新功能。</p>
+<p><img src="https://img.jwt1399.top/img/202210271640150.png"></p>
+<p><strong>RefreshTokenInterceptor</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RefreshTokenInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token keyword">public</span> <span class="token function">RefreshTokenInterceptor</span><span class="token punctuation">(</span>StringRedisTemplate stringRedisTemplate<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>stringRedisTemplate <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+        <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">,</span> Object handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.获取请求头中的token</span>
+        String token <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getHeader</span><span class="token punctuation">(</span><span class="token string">"authorization"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>StrUtil<span class="token punctuation">.</span><span class="token function">isBlank</span><span class="token punctuation">(</span>token<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">// 2.基于TOKEN获取redis中的用户</span>
+        String key  <span class="token operator">=</span> LOGIN_USER_KEY <span class="token operator">+</span> token<span class="token punctuation">;</span>
+        Map<span class="token operator">&lt;</span>Object<span class="token punctuation">,</span> Object<span class="token operator">></span> userMap <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHash</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 3.判断用户是否存在</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>userMap<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 4.将查询到的hash数据转为UserDTO</span>
+        UserDTO userDTO <span class="token operator">=</span> BeanUtil<span class="token punctuation">.</span><span class="token function">fillBeanWithMap</span><span class="token punctuation">(</span>userMap<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">UserDTO</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 5.存在，保存用户信息到Threadlocal</span>
+        UserHolder<span class="token punctuation">.</span><span class="token function">saveUser</span><span class="token punctuation">(</span>userDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 6.刷新token有效期</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">expire</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> LOGIN_USER_TTL<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 7.放行</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">afterCompletion</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">,</span> Object handler<span class="token punctuation">,</span> Exception ex<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 移除用户</span>
+        UserHolder<span class="token punctuation">.</span><span class="token function">removeUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+    
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>LoginInterceptor</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoginInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">,</span> Object handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.判断是否需要拦截（ThreadLocal中是否有用户）</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>UserHolder<span class="token punctuation">.</span><span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 没有用户，需要拦截，设置状态码</span>
+            response<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token number">401</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 拦截</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 有用户，则放行</span>
+        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>让拦截器生效</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>kbdp<span class="token punctuation">.</span>config<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span>InterceptorRegistry registry<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 登录拦截器</span>
+        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">LoginInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">excludePathPatterns</span><span class="token punctuation">(</span>
+                        <span class="token string">"/shop/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/voucher/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/shop-type/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/upload/**"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/blog/hot"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/user/code"</span><span class="token punctuation">,</span>
+                        <span class="token string">"/user/login"</span>
+                <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">order</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// token刷新的拦截器</span>
+        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">RefreshTokenInterceptor</span><span class="token punctuation">(</span>stringRedisTemplate<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addPathPatterns</span><span class="token punctuation">(</span><span class="token string">"/**"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">order</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">//order()的作用是设置优先级，越小越先执行</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="②商户查询缓存"><a href="#②商户查询缓存" class="headerlink" title="②商户查询缓存"></a>②商户查询缓存</h1><h2 id="❶缓存简介"><a href="#❶缓存简介" class="headerlink" title="❶缓存简介"></a>❶缓存简介</h2><p><strong>缓存(<strong>Cache)，就是数据交换的</strong>缓冲区</strong>,俗称的缓存就是<strong>缓冲区内的数据</strong>,一般从数据库中获取,存储于本地代码(例如:</p>
+<pre class="line-numbers language-java"><code class="language-java">例<span class="token number">1</span><span class="token operator">:</span>Static <span class="token keyword">final</span> ConcurrentHashMap<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> map <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ConcurrentHashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 本地用于高并发
+
+例<span class="token number">2</span><span class="token operator">:</span><span class="token keyword">static</span> <span class="token keyword">final</span> Cache<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> USER_CACHE <span class="token operator">=</span> CacheBuilder<span class="token punctuation">.</span><span class="token function">newBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 用于redis等缓存
+
+例<span class="token number">3</span><span class="token operator">:</span>Static <span class="token keyword">final</span> Map<span class="token operator">&lt;</span>K<span class="token punctuation">,</span>V<span class="token operator">></span> map <span class="token operator">=</span>  <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 本地缓存
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>由于其被<strong>Static</strong>修饰，所以随着类的加载而被加载到<strong>内存之中</strong>，作为本地缓存，由于其又被<strong>final</strong>修饰，所以其引用(例3:map)和对象(例3:new HashMap())之间的关系是固定的，不能改变，因此不用担心赋值(=)导致缓存失效;</p>
+<p><strong>为什么要使用缓存</strong></p>
+<p>缓存数据存储于代码中，而代码运行在内存中，内存的读写性能远高于磁盘，缓存可以大大降低<strong>用户访问并发量带来的</strong>服务器读写压力</p>
+<table>
+<thead>
+<tr>
+<th align="left">缓存优点</th>
+<th>缓存缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">降低后端负载 <br>提高读写效率，降低响应时间</td>
+<td>数据一致性成本<br>代码维护成本<br>运维成本</td>
+</tr>
+</tbody></table>
+<p><strong>如何使用缓存</strong></p>
+<p>实际开发中，会构筑多级缓存来使系统运行速度进一步提升，例如：本地缓存与redis中的缓存并发使用</p>
+<ul>
+<li><p><strong>浏览器缓存</strong>：主要是存在于浏览器端的缓存</p>
+</li>
+<li><p><strong>应用层缓存：</strong>可以分为tomcat本地缓存，比如之前提到的map，或者是使用redis作为缓存</p>
+</li>
+<li><p><strong>数据库缓存：</strong>在数据库中有一片空间是 buffer pool，增改查数据都会先加载到mysql的缓存中</p>
+</li>
+<li><p><strong>CPU缓存：</strong>当代计算机最大的问题是 cpu性能提升了，但内存读写速度没有跟上，所以为了适应当下的情况，增加了cpu的L1，L2，L3级的缓存</p>
+</li>
+</ul>
+<p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/image-20220523212915666.png"></p>
+<h2 id="❷添加商户缓存"><a href="#❷添加商户缓存" class="headerlink" title="❷添加商户缓存"></a>❷添加商户缓存</h2><p>在我们查询商户信息时，是直接从数据库中去进行查询的，直接查询数据库那肯定慢咯，所以我们需要增加缓存</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">queryShopById</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//这里是直接查询数据库</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>shopService<span class="token punctuation">.</span><span class="token function">getById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="1-缓存思路"><a href="#1-缓存思路" class="headerlink" title="1.缓存思路"></a>1.缓存思路</h3><p>标准的操作方式就是查询数据库之前先查询缓存，如果缓存数据存在，则直接从缓存中返回，如果缓存数据不存在，再查询数据库，然后将数据存入redis。</p>
+<p><img src="https://img.jwt1399.top/img/202210311652776.png"></p>
+<h3 id="2-代码实现"><a href="#2-代码实现" class="headerlink" title="2.代码实现"></a>2.代码实现</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/{id}"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">queryShopById</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//return Result.ok(shopService.getById(id)); //这里是直接查询数据库</span>
+    <span class="token keyword">return</span> shopService<span class="token punctuation">.</span><span class="token function">queryById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//缓存实现</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ShopServiceImpl</span> <span class="token keyword">extends</span> <span class="token class-name">ServiceImpl</span><span class="token operator">&lt;</span>ShopMapper<span class="token punctuation">,</span> Shop<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">IShopService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Result <span class="token function">queryById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        String key <span class="token operator">=</span> CACHE_SHOP_KEY <span class="token operator">+</span> id<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 1.从redis 查询商铺缓存</span>
+        String shopJson <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 2.判断是否存在</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>StrUtil<span class="token punctuation">.</span><span class="token function">isNotBlank</span><span class="token punctuation">(</span>shopJson<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 3.存在，直接返回</span>
+            Shop shop <span class="token operator">=</span> JSONUtil<span class="token punctuation">.</span><span class="token function">toBean</span><span class="token punctuation">(</span>shopJson<span class="token punctuation">,</span> Shop<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>shop<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 4.不存在，根据id查询数据库</span>
+        Shop shop <span class="token operator">=</span> <span class="token function">getById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 5.数据库也不存在，返回错误</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>shop <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"店铺不存在！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 6.数据库存在，写入redis</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> JSONUtil<span class="token punctuation">.</span><span class="token function">toJsonStr</span><span class="token punctuation">(</span>shop<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 7.返回</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>shop<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❸缓存更新策略"><a href="#❸缓存更新策略" class="headerlink" title="❸缓存更新策略"></a>❸缓存更新策略</h2><h3 id="1-更新策略"><a href="#1-更新策略" class="headerlink" title="1.更新策略"></a>1.更新策略</h3><p><strong>缓存更新</strong>是redis为了节约内存而设计出来的一个东西，主要是因为内存数据宝贵，当我们向redis插入太多数据，此时就可能会导致缓存中的数据过多，所以redis会对部分数据进行更新。有三种更新方法：</p>
+<ul>
+<li><p><strong>内存淘汰：</strong>redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)</p>
+</li>
+<li><p><strong>超时剔除：</strong>当我们给redis设置了过期时间ttl之后，redis会将超时的数据进行删除，方便继续使用缓存</p>
+</li>
+<li><p><strong>主动更新：</strong>我们可以手动调用方法把缓存删掉，通常用于解决缓存和数据库不一致问题</p>
+</li>
+</ul>
+<p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/1653322506393.png"></p>
+<p><strong>数据不一致解决方案</strong></p>
+<blockquote>
+<p>由于我们的<strong>缓存的数据源来自于数据库</strong>，而数据库的<strong>数据是会发生变化的</strong>，因此，如果当数据库中<strong>数据发生变化，而缓存却没有同步</strong>，此时就会有<strong>一致性问题存在</strong>，其后果是：用户使用缓存中的过时数据，就会产生类似多线程数据安全问题，从而影响业务，产品口碑等；怎么解决呢？有如下几种方案</p>
+</blockquote>
+<ul>
+<li><p>Cache Aside Pattern ：缓存调用者在更新完数据库后再去更新缓存，也称之为双写方案</p>
+</li>
+<li><p>Read/Write Through Pattern : 由系统本身完成，数据库与缓存的问题交由系统本身去处理</p>
+</li>
+<li><p>Write Behind Caching Pattern ：调用者只操作缓存，其他线程去异步处理数据库，实现最终一致</p>
+</li>
+</ul>
+<p>综合考虑使用方案一，但是操作缓存和数据库时有三个问题需要考虑：</p>
+<p>如果采用第一个方案，那么假设我们每次操作数据库后，都操作缓存，但是中间如果没有人查询，那么这个更新动作实际上只有最后一次生效，中间的更新动作意义并不大，我们可以把缓存删除，等待再次查询时，将缓存中的数据加载出来</p>
+<ul>
+<li><p>1.删除缓存还是更新缓存？</p>
+<ul>
+<li>更新缓存：每次更新数据库都更新缓存，无效写操作较多</li>
+<li>删除缓存：更新数据库时让缓存失效，查询时再更新缓存</li>
+</ul>
+</li>
+<li><p>2.如何保证缓存与数据库的操作的同时成功或失败？</p>
+<ul>
+<li>单体系统，将缓存与数据库操作放在一个事务</li>
+<li>分布式系统，利用TCC等分布式事务方案</li>
+</ul>
+</li>
+<li><p>3.先操作缓存还是先操作数据库？</p>
+<ul>
+<li>先删除缓存，再操作数据库</li>
+<li>先操作数据库，再删除缓存</li>
+</ul>
+</li>
+</ul>
+<p>我们应当是先操作数据库，再删除缓存，原因在于，如果你选择第一种方案，在两个线程并发来访问时，假设线程1先来，他先把缓存删了，此时线程2过来，他查询缓存数据并不存在，此时他写入缓存，当他写入缓存后，线程1再执行更新动作时，实际上写入的就是旧的数据，新的数据被旧数据覆盖了。</p>
+<p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/1653323595206.png"></p>
+<h3 id="2-代码实现-1"><a href="#2-代码实现-1" class="headerlink" title="2.代码实现"></a>2.代码实现</h3><p>核心思路如下：</p>
+<ul>
+<li><p>1.根据id查询店铺时，如果缓存未命中，则查询数据库，将数据库结果写入缓存，并<strong>设置超时时间</strong></p>
+</li>
+<li><p>2.根据id修改店铺时，<strong>先修改数据库，再删除缓存</strong></p>
+</li>
+</ul>
+<p><strong>1.设置redis缓存时添加过期时间</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ShopServiceImpl</span> <span class="token keyword">extends</span> <span class="token class-name">ServiceImpl</span><span class="token operator">&lt;</span>ShopMapper<span class="token punctuation">,</span> Shop<span class="token operator">></span> <span class="token keyword">implements</span> <span class="token class-name">IShopService</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Resource</span>
+    <span class="token keyword">private</span> StringRedisTemplate stringRedisTemplate<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Result <span class="token function">queryById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+         <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+         <span class="token comment" spellcheck="true">// 6.数据库存在，写入redis，并添加过期时间</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> JSONUtil<span class="token punctuation">.</span><span class="token function">toJsonStr</span><span class="token punctuation">(</span>shop<span class="token punctuation">)</span><span class="token punctuation">,</span> CACHE_SHOP_TTL<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MINUTES<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>2.根据id修改店铺时，先修改数据库，再删除缓存</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token annotation punctuation">@Transactional</span>
+<span class="token keyword">public</span> Result <span class="token function">update</span><span class="token punctuation">(</span>Shop shop<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Long id <span class="token operator">=</span> shop<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>id <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+      <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"店铺id不能为空！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 1.更新数据库</span>
+    <span class="token function">updateById</span><span class="token punctuation">(</span>shop<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.删除缓存</span>
+    stringRedisTemplate<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>CACHE_SHOP_KEY <span class="token operator">+</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>代码分析：当我们修改了数据之后，然后把缓存中的数据进行删除，查询时发现缓存中没有数据，则会从mysql中加载最新的数据，从而避免数据库和缓存不一致的问题。</p>
+<h2 id="❹缓存穿透"><a href="#❹缓存穿透" class="headerlink" title="❹缓存穿透"></a>❹缓存穿透</h2><blockquote>
+<p>缓存穿透是指客户端请求的<strong>数据在缓存中和数据库中都不存在</strong>，这样缓存永远不会生效，这些请求都会打到数据库。</p>
+</blockquote>
+<h3 id="1-解决思路"><a href="#1-解决思路" class="headerlink" title="1.解决思路"></a>1.解决思路</h3><p>常见的解决方案有两种：</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th>缓存空对象</th>
+<th>布隆过滤器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">优点</td>
+<td>实现简单，维护方便</td>
+<td>内存占用较少，没有多余key</td>
+</tr>
+<tr>
+<td align="center">缺点</td>
+<td>额外的内存消耗<br>可能造成短期的不一致</td>
+<td>实现复杂<br/>存在误判可能</td>
+</tr>
+</tbody></table>
+<p><strong>缓存空对象：</strong>哪怕这个数据在数据库中不存在，我们也把这个数据存入到redis中去，这样，下次用户过来访问这个不存在的数据，那么在redis中也能找到这个数据</p>
+<p><strong>布隆过滤器：</strong>通过一个庞大的二进制数组，走哈希思想去判断当前这个要查询的这个数据是否存在，如果布隆过滤器判断存在，则放行；不存在，则直接返回</p>
+<p>这种方式优点在于节约内存空间，但是存在误判，误判原因在于：布隆过滤器走的是哈希思想，可能存在哈希冲突</p>
+<p><img src="https://img.jwt1399.top/img/202211021526445.png"></p>
+<h3 id="2-具体实现"><a href="#2-具体实现" class="headerlink" title="2.具体实现"></a>2.具体实现</h3><p>原来的逻辑中，如果发现这个数据在mysql中不存在，直接就返回404了，这样是会存在缓存穿透问题的</p>
+<p>现在的逻辑中：如果这个数据不存在，我们不会返回404 ，还是会把这个数据写入到Redis中，并且将value设置为空，欧当再次发起查询时，我们如果发现命中之后，判断这个value是否是null，如果是null，则是之前写入的数据，证明是缓存穿透数据，如果不是，则直接返回数据。</p>
+<p><img src="https://img.jwt1399.top/img/202211021536810.png"></p>
+<h2 id="❺缓存雪崩"><a href="#❺缓存雪崩" class="headerlink" title="❺缓存雪崩"></a>❺缓存雪崩</h2><blockquote>
+<p>缓存雪崩是指在<strong>同一时段大量的缓存key同时失效或者Redis服务宕机</strong>，导致大量请求到达数据库，带来巨大压力。</p>
+</blockquote>
+<h3 id="1-解决思路-1"><a href="#1-解决思路-1" class="headerlink" title="1.解决思路"></a>1.解决思路</h3><ul>
+<li>给不同的Key的TTL添加随机值</li>
+<li>利用Redis集群提高服务的可用性</li>
+<li>给缓存业务添加降级限流策略</li>
+<li>给业务添加多级缓存</li>
+</ul>
+<h3 id="2-具体实现-1"><a href="#2-具体实现-1" class="headerlink" title="2.具体实现"></a>2.具体实现</h3><h2 id="❻缓存击穿"><a href="#❻缓存击穿" class="headerlink" title="❻缓存击穿"></a>❻缓存击穿</h2><blockquote>
+<p>缓存击穿问题也叫热点Key问题，指<strong>一个被高并发访问并且缓存重建业务较复杂的key突然失效了</strong>，无数的请求访问会在瞬间给数据库带来巨大的冲击。</p>
+</blockquote>
+<h3 id="1-解决思路-2"><a href="#1-解决思路-2" class="headerlink" title="1.解决思路"></a>1.解决思路</h3><p>常见的解决方案有两种：</p>
+<ul>
+<li><strong>互斥锁</strong></li>
+</ul>
+<p>因为锁能实现互斥性。假设线程过来，只能逐一的访问数据库，从而避免数据库访问压力过大，但这也会影响查询性能，因为此时会让查询的性能从并行变成了串行，我们可以采用tryLock方法 + double check来解决这样的问题。</p>
+<ul>
+<li><strong>逻辑过期</strong></li>
+</ul>
+<p>之所以会出现这个缓存击穿问题，主要原因是在于我们对key设置了过期时间，假设我们不设置过期时间，其实就不会有缓存击穿的问题，但是不设置过期时间，这样数据不就一直占用我们内存了吗，可以采用逻辑过期方案。</p>
+<p>这种方案巧妙在于，异步的构建缓存，缺点在于在构建完缓存之前，返回的都是脏数据。</p>
+<table>
+<thead>
+<tr>
+<th align="center">互斥锁</th>
+<th align="center">逻辑过期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://img.jwt1399.top/img/202211021615160.png"></td>
+<td align="center"><img src="https://img.jwt1399.top/img/202211021616600.png"></td>
+</tr>
+<tr>
+<td align="center">假设现在线程1过来访问，他查询缓存没有命中，但是此时他获得到了锁的资源，那么线程1就会一个人去执行逻辑，假设现在线程2过来，线程2在执行过程中，并没有获得到锁，那么线程2就可以进行到休眠，直到线程1把锁释放后，线程2获得到锁，然后再来执行逻辑，此时就能够从缓存中拿到数据了。</td>
+<td align="center">把过期时间设置在redis的value中，这个过期时间并不会直接作用于redis，而是后续通过逻辑去处理。假设线程1去查询缓存，然后从value中判断出来当前的数据已经过期，此时线程1去获得互斥锁，那么其他线程会进行阻塞，获得了锁的线程会开启一个 线程去进行以前的重构数据的逻辑，直到新开的线程完成这个逻辑后，才释放锁， 而线程1直接进行返回，假设现在线程3过来访问，由于线程线程2持有着锁，所以线程3无法获得锁，线程3也直接返回数据，只有等到新开的线程2把重建数据构建完后，其他线程才能走返回正确的数据。</td>
+</tr>
+</tbody></table>
+<p><img src="https://img.jwt1399.top/img/202211021615745.png"></p>
+<h3 id="2-具体实现-2"><a href="#2-具体实现-2" class="headerlink" title="2.具体实现"></a>2.具体实现</h3><h4 id="互斥锁实现"><a href="#互斥锁实现" class="headerlink" title="互斥锁实现"></a><strong>互斥锁实现</strong></h4><p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/image-20221102161945737.png"></p>
+<h4 id="逻辑过期实现"><a href="#逻辑过期实现" class="headerlink" title="逻辑过期实现"></a><strong>逻辑过期实现</strong></h4><p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/1653360308731.png"></p>
+<p>③优惠券秒杀</p>
+<p>④达人探店</p>
+<p>⑤好友关注</p>
+<p>⑥附近的商户</p>
+<p>⑦用户签到</p>
+<p>⑧UV统计</p>
+<h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
+<table>
+  <tbody>
+     <tr>
+         <td style="text-align:center;">支付宝</td>
+         <td style="text-align:center;">微信</td>
+     </tr>
+   <tr>
+    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/sponor_wechat.png"></td>     
+  </tr>
+</tbody></table>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top" rel="external nofollow noreferrer">简简</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top/posts/32967.html">https://jwt1399.top/posts/32967.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://jwt1399.top" target="_blank">简简</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/NoSQL/">
+                                    <span class="chip bg-color">NoSQL</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,linkedin,facebook,twitter,google,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">打</a>
+	<a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        /*max-width: 100%;*/
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+    .v[data-class=v] .vinput {
+     padding: 0px 0px;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论<center>填上邮箱会收到评论回复提醒哦!!!</center></span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/libs/valine/av-min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/valine/1.4.18/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'Awf92dhT3VWqTfENqbCDoqbA-gzGzoHsz',
+        appKey: '9uN7ODvigK9GAp8CYBz0fOrX',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: '',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: '[填上邮箱，会给你发送评论提醒]，ヾﾉ≧∀≦)o 请畅所欲言~',
+        enableQQ: true,
+        boolean: true,
+    });
+</script>
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/posts/26733.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top//img/20211024131658.jpeg" class="responsive-img" alt="LeetCode-剑指offer">
+                        
+                        <span class="card-title">LeetCode-剑指offer</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            首刷剑指offer，刷起来还是比较吃力，大多数题需要看题解才能做出来，甚至有的看了题解都不懂😭，我是废物，希望第二次刷的时候大部分题都能自己做出来吧！！！
+剑指Offer
+
+
+简单
+中等
+困难
+
+
+
+38道
+31道
+6道
+
+
+第 1 天 
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2022-08-09
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/" class="post-category">
+                                    结构-算法
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+                        <span class="chip bg-color">数据结构</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%AE%97%E6%B3%95/">
+                        <span class="chip bg-color">算法</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/27273.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top/img/202207032341528.png" class="responsive-img" alt="Redis-基础篇">
+                        
+                        <span class="card-title">Redis-基础篇</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Redis 诞生于 2009 年，全称是 Remote Dictionary Server，远程词典服务器，是一个基于内存的键值型 NoSQL 数据库。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-07-03
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/SQL/" class="post-category">
+                                    SQL
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/NoSQL/">
+                        <span class="chip bg-color">NoSQL</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('100')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: 简言之<br />'
+            + '文章作者: 简简<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('2'),
+            headingSelector: 'h1, h2, h3, h4, h5, h6'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h1, h2, h3, h4, h5, h6').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2019</span>
+            <a href="https://jwt1399.top" target="_blank">简简</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>&nbsp;|
+
+			<!-- <span>为♥️️发电</span> -->
+            <a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img no-lazy src="https://img.jwt1399.top/img/20200824181422.png" style="width: 47px; vertical-align: middle;" ></a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">697.8k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "7";
+                    var startDate = "2";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            <a href="https://search.google.com/search-console?resource_id=http%3A%2F%2Fjwt1399.top%2F" target="_blank"
+                rel="nofollow noopener">谷歌统计</a>&nbsp;|
+            
+            <span id="icp"><img no-lazy src="/medias/icp.png" style="vertical-align: text-bottom;" />
+                <a href="http://www.beian.miit.gov.cn/" target="_blank">蜀ICP备19020450号</a>
+            </span>
+            |
+            
+            <a href="https://tongji.baidu.com/web/10000159136/overview/index?siteId=14519996" target="_blank"
+                rel="nofollow noopener">百度统计</a>
+
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+    <a href="https://jwt1399.top/baidusitemap.xml" class="tooltipped" target="_blank" data-tooltip="访问我的sitemap" data-position="top" data-delay="50">
+        <i class="fas fa-sitemap"></i>
+    </a>
+
+
+    <a href="https://pl.jwt1399.top" class="tooltipped" target="_blank" data-tooltip="valine评论: https://pl.jwt1399.top" data-position="top" data-delay="50">
+        <i class="fab fa-optin-monster"></i>
+    </a>
+
+
+    <a href="mailto:1019084218@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1019084218" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1019084218" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.json", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="https://cdn.staticfile.org/aos/3.0.0-beta.6/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+	<!--valine_人机验证-->
+	<button id="TencentCaptcha"data-appid="2046265119"data-cbfn="callback"type="button" hidden></button>
+	
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160042502-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160042502-1');
+</script>
+
+
+    <!-- Baidu Analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0e306ce3426983ae6367d094d39f1190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" color="0,0,255"
+        pointColor="0,0,255" opacity='0.7'
+        zIndex="-1" count="99"
+        src="/libs/background/canvas-nest.js"></script>
+    
+
+    
+    
+    <script type="text/javascript" size="150" alpha='0.6'
+        zIndex="-1" src="/libs/background/ribbon.min.js" async="async"></script>
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+        
+</body>
+
+</html>
