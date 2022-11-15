@@ -861,14 +861,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-14
+                    2022-11-15
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2k
+                    3.6k
                 </div>
                 
 
@@ -961,6 +961,111 @@
 </ol>
 </li>
 </ul>
+<p> 回想一下，我们考虑动态SSE，因此该方案必须允许添加和删除文件。这两种操作都是使用令牌来处理的。</p>
+<p>为了添加文件$f$，客户端生成添加令牌 $\tau_{a}$，给定  $\tau_{a}$ 和 $\gamma$，提供者可以更新加密的索引 $\gamma$。</p>
+<p>类似地，为了删除文件 $f$，客户机生成一个删除令牌 $\tau_{d}$，提供者用它来更新 $\gamma$。</p>
+<table>
+<thead>
+<tr>
+<th align="center">符号</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">$f$</td>
+<td align="left">明文序列 $f=(f_{1},…,f_{n})$</td>
+</tr>
+<tr>
+<td align="center">$f_{w}$</td>
+<td align="left">包含$w$的明文</td>
+</tr>
+<tr>
+<td align="center">$c$</td>
+<td align="left">密文序列 $c=(c_{1},…,c_{n})$</td>
+</tr>
+<tr>
+<td align="center">$c_{w}$</td>
+<td align="left">包含$w$的密文</td>
+</tr>
+<tr>
+<td align="center">$I_{w}$</td>
+<td align="left">包含$w$的文件标识符 $I_w∈c$</td>
+</tr>
+<tr>
+<td align="center">$δ$</td>
+<td align="left">索引</td>
+</tr>
+<tr>
+<td align="center">$\gamma$</td>
+<td align="left">加密的索引</td>
+</tr>
+<tr>
+<td align="center">$\tau_{s}$</td>
+<td align="left">搜索令牌</td>
+</tr>
+<tr>
+<td align="center">$\tau_{a}$</td>
+<td align="left">添加令牌</td>
+</tr>
+<tr>
+<td align="center">$\tau_{d}$</td>
+<td align="left">删除令牌</td>
+</tr>
+</tbody></table>
+<p>DSSE方案是九个多项式时间算法$DSSE=(Gen,Enc,SrchToken,AddToken,DelToken,Search,Add,Del,Dec)$</p>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$K\leftarrow Gen(1^{k})$</td>
+<td>密钥生成算法</td>
+</tr>
+<tr>
+<td>$(\gamma,c)\leftarrow Enc(K,f)$</td>
+<td>加密&amp;索引生成算法</td>
+</tr>
+<tr>
+<td>$\tau_{s}\leftarrow SrchToken(K,w)$</td>
+<td>陷门生成算法</td>
+</tr>
+<tr>
+<td>$(\tau_{a},c_{f})\leftarrow AddToken(K,f)$</td>
+<td>添加令牌生成算法</td>
+</tr>
+<tr>
+<td>$\tau_{d} \leftarrow DelToken(K,f)$</td>
+<td>删除令牌生成算法</td>
+</tr>
+<tr>
+<td>$I_{w}:=Search(\gamma,c,\tau_{s})$</td>
+<td>搜索算法</td>
+</tr>
+<tr>
+<td>$(\gamma’,c’):=Add(\gamma,c,\tau_{a},c_{new})$</td>
+<td>添加文件算法</td>
+</tr>
+<tr>
+<td>$(\gamma’,c’):=Del(\gamma,c,\tau_{d})$</td>
+<td>删除文件算法</td>
+</tr>
+<tr>
+<td>$f:=Dec(K,c)$</td>
+<td>解密算法</td>
+</tr>
+</tbody></table>
+<p>​    直观地说，我们从动态SSE方案中要求的安全保证是：</p>
+<p>​    （1）给定一个加密的索引$\gamma$*和一个密文序列 $c$，任何对手都无法获知关于文件 $f$ 的部分信息；</p>
+<p>​    （2）另外给定了token序列 $\tau=(\tau_{1},…,\tau_{n})$。对于自适应生成的查询序列 $q=(q_{1},…,q_{n})$（它可以用于搜索、添加或删除操作），任何对手都无法获知关于 $f$ 或 $q$ 的任何部分信息。</p>
+<p>关于SSE安全性：该方案是抵抗自适应选择关键字攻击（CKA2）还是仅抵抗非自适应选择关键字攻击（CKA1）。</p>
+<p>CKA2：即使客户端的查询是基于加密的索引和先前查询的结果，前者也能保证安全性。</p>
+<p>CKA1：只有当客户的查询独立于索引和先前的结果时，后者才能保证安全性。</p>
+<p>Dynamic CKA2-security</p>
+<p>我们需要通过允许向对手透露一些有关消息和查询的有限信息来适当地削弱定义。为了捕捉这一点，我们采用[8]和[6]的方法，用一组泄漏函数来参数化我们的定义，这些函数精确地捕捉了密文和令牌所泄漏的内容。</p>
+<p> Probabilistic PolynomialTime Algorithm概率多项式时间算法</p>
 <h2 id="2、使用技术"><a href="#2、使用技术" class="headerlink" title="2、使用技术"></a>2、使用技术</h2><p>今年来关于对称可搜搜加密的研究主要集中于对于动态可搜索加密中的前向安全和后向安全。</p>
 <p>前向安全指的是：在插入新的文件后，之前的搜索不能匹配到新添加的文件。</p>
 <p>后向安全指的是：插入在删除文件后，搜索不会暴漏该文件的标识。</p>
@@ -968,7 +1073,24 @@
 <p> 前向隐私（Forward privacy）和后向隐私(Backward privacy)是DSSE（Dynamic Searchable Symmetric Encryption）的两个基本属性，旨在控制动态方案中更新操作造成的信息泄露。</p>
 <p>前向隐私：服务器无法将当前添加的关键字与之前搜索的结果相关联。即服务器不知道当前添加的关键字是否之前搜索过。（先搜索后更新）。</p>
 <p>后向隐私：服务器无法将当前搜索的关键字与之前的更新相关联。即服务器不知道更新（添加或删除）历史（先更新后搜索）。</p>
-<h2 id="4、具体实现"><a href="#4、具体实现" class="headerlink" title="4、具体实现"></a>4、具体实现</h2><p><a target="_blank" rel="noopener" href="https://blog.nowcoder.net/n/b3227a872c25451784acfbca3f9c2cb0">《动态可搜索对称加密》文章阅读_牛客博客 (nowcoder.net)</a></p>
+<h2 id="4、具体实现"><a href="#4、具体实现" class="headerlink" title="4、具体实现"></a>4、具体实现</h2><p>我们的方案是基于倒排索引数据结构的的SSE-1结构的扩展。尽管SSE-1是实用的（它对于小常数是渐近最优的），但它确实有一些限制，使得它不适合直接用于加密云存储系统中：</p>
+<p>​    （1）它只能抵抗非自适应选择关键字攻击（CKA1），这意味着它只能为批量执行搜索的客户端提供安全性；</p>
+<p>​    （2）它不是显式动态的，即，它只能支持使用通用和低效技术的动态操作。</p>
+<p>在讨论如何解决这些问题之前，我们首先回忆一下SSE-1结构的一个高级变体。</p>
+<p>其结构基本上与SSE-1相同，只是间接寻址管理的查找表被字典所取代。该方案利用了私钥加密方案 $SKE = (Gen,Enc,Dec)$，两个伪随机函数$F$和$G$，我们称之为搜索阵列的阵列$A_{s}$和我们称之为搜索表的字典$T_{s}$。这里我们假设SKE是匿名的，因为给定两个密文，人们不能确定它们是否是用同一个密钥加密的。</p>
+<p>为了加密文件集合$f$，该方案为每个关键字 $w∈W$ 构造一个列表 $L_{W}$，每个列表 $L_{W}$ 由 $#f_{W}$ 节点$(N_{1},…,N_{f_{w}})$，它们被存储在搜索阵列中的随机位置。</p>
+<p>节点 $N_{i}$ 被定义为$N_{i}=⟨id,addr_{s}(N_{i+1})⟩$，其中 $id$ 是包含 w 的文件的唯一文件标识符，</p>
+<p>$addr_{s}(N)$ 表示在范围 $A_{s}$ 中的节点 $N$ 的位置。</p>
+<p>为了防止$A_{s}$的大小泄露有关$f$的统计信息，建议$A_{s}$的大小至少为$|c|/8$，和使用长度适当的随机字符串填充未使用的单元格。</p>
+<p>对于每个关键字$w$，将指向$L_{w}$头部的指针插入到搜索键 $F_{K_{1}}(w)$ 下的搜索表 $T_{s}$ 中，其中 $K_{1}$ 是 PRF F 的密钥，然后在生成的密钥$G_{K_{2}}(w)$下使用SKE对每个列表进行加密，其中$K_{2}$是 PRF G 的密钥。</p>
+<p>如果要搜索关键字w，客户端发送 $F_{K_{1}}(w)$ 和$G_{K_{2}}(w)$就足够了。然后，服务器可以使用 $F_{K_{1}}(w)$ 和$T_{s}$来恢复指向 $L_{W}$头部的指针，并使用$G_{K_{2}}(w)$来解密列表并恢复包含$w$的文件的标识符。只要T支持O(1)时间复杂度查找（可以使用哈希表实现），服务器的总搜索时间在 $#f_{W}$ 中是线性的，这是最优的。</p>
+<p>使SSE-1动态。如上所述，SSE-1的限制有两方面：</p>
+<p>​    （1）它只是CKA1-secure的，（2）它不是显式动态的。</p>
+<p>​    正如在[6]中观察到的那样，第一个限制可以通过需求相对容易地解决SKE是不提交的（实际上是CKA2-secure的该工作中提出的SSE结构采用简单的基于PRF非承诺加密方案）。<br>​    然而，第二个限制就不那么容易克服了。难点在于文件的添加、删除或修改需要服务器在存储在$A_{s}$中的加密列表中添加、删除或修改节点。<br>​    这对于服务器来说很难做到，因为：</p>
+<p>​    （1）当删除文件f时，它不知道（在a中）与f对应的节点存储在哪里；</p>
+<p>​    （2）当从列表中插入或删除一个节点时，它不能修改前一个节点的指针，因为它是加密的；</p>
+<p>​    （3）添加一个节点后，它不知道A_{s}<em>A**s</em>中哪些位置是空闲的。<br>​    在高层次上，我们处理这些限制如下：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.nowcoder.net/n/b3227a872c25451784acfbca3f9c2cb0">《动态可搜索对称加密》文章阅读_牛客博客 (nowcoder.net)</a></p>
 <p><a target="_blank" rel="noopener" href="http://eotstxtab.top/2022/03/01/%E5%8A%A8%E6%80%81%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86-1-%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F/">动态可搜索加密-1-前世今生 - Kisna’s Blog (eotstxtab.top)</a></p>
 <h2 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h2><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
@@ -1782,7 +1904,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">697.8k</span>&nbsp;字
+                class="white-color">701k</span>&nbsp;字
             
             
             
