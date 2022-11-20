@@ -866,14 +866,14 @@ SE介绍
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-13
+                    2022-11-18
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.4k
+                    3k
                 </div>
                 
 
@@ -1027,15 +1027,62 @@ SE介绍
 <li>如何搜索包含关系数据库或非关系数据库的加密数据库；</li>
 <li>如何搜索结构化的社交网络数据（空间数据）。</li>
 </ul>
-<p>对称可搜搜加密的研究主要集中于对于动态可搜索加密中的前向安全和后向安全。</p>
+<h2 id="SSE安全性"><a href="#SSE安全性" class="headerlink" title="SSE安全性"></a>SSE安全性</h2><p>当SSE方案是安全的：</p>
+<p>（1）仅密文不揭示关于数据的任何信息；</p>
+<p>（2）密文与搜索令牌一起最多揭示了搜索的结果；</p>
+<p>（3）只能使用密钥生成搜索令牌。</p>
+<p>服务器可以了解到一些关于客户端查询的有限信息。例如它知道正在搜索的关键字都包含在加密为$c_{w}$ 的文件中。</p>
 <blockquote>
-<p>前向隐私（Forward privacy）和后向隐私(Backward privacy)是DSSE（Dynamic Searchable Symmetric Encryption）的两个基本属性，旨在控制动态方案中更新操作造成的信息泄露。</p>
+<p>KPA &lt; IND-SCKA &lt; IND-CKA1 &lt; IND-CKA2</p>
 </blockquote>
+<p><strong>KPA</strong></p>
+<ul>
+<li><p>Known Plaintext Attack</p>
+</li>
+<li><p>知道部分的明文和密文对，推出密钥和加密算法</p>
+</li>
+</ul>
+<p><strong>SCKA</strong></p>
+<ul>
+<li><p>selectivelychosen-keyword attack</p>
+</li>
+<li><p>选择性关键字攻击</p>
+</li>
+<li><p>它不能保证谓词的私密性，因为攻击者可以通过生成任意的明文-密文索引对 从陷门中推断出查询关键字。</p>
+</li>
+</ul>
+<p><strong>IND-CKA1</strong> </p>
+<ul>
+<li>indistinguishability against chosen keyword attack</li>
+<li>针对选择关键字攻击的不可区分性</li>
+<li>保证文档内容不会被建立在其上的索引以及其他文档的索引泄漏</li>
+<li>然而，在<a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.5555/2590701.2590705">可搜索的对称加密：改进的定义和高效的结构</a>中提出到，只有当搜索查询独立于 $(\gamma, c)$ 和先前的搜索结果时，CKA1 才提供安全性。为了解决这个问题，提出了更强的<strong>CKA2</strong>。</li>
+<li>只有当客户的查询独立于索引和先前的结果时，CKA1才能保证安全性。</li>
+</ul>
+<p>IND-CKA2</p>
+<ul>
+<li><p>adaptively chosen-keyword attack</p>
+</li>
+<li><p>自适应选择关键字攻击</p>
+</li>
+<li><p>自适应攻击模型下满足抵抗选择性明文攻击的安全为CKA2</p>
+</li>
+<li><p>对手根据先前选择的查询及其陷门和搜索结果自适应地选择未来的每个查询。如果没有概率多项式时间（PPT）对手能够以不可忽略的优势区分真实项目和模拟项目，则该方案是自适应安全的，这是迄今为止基于SSE的关键字搜索最强大的安全模型。</p>
+</li>
+<li><p>即使客户端的查询是基于加密的索引和先前查询的结果，CKA2也能保证安全性。</p>
+</li>
+</ul>
+<p>UC-Secure</p>
+<ul>
+<li>最近，Kurosawa和Ohtaki提出了更强的通用可组合<a target="_blank" rel="noopener" href="https://eprint.iacr.org/2015/251">How to Construct UC-Secure Searchable Symmetric Encryption Scheme</a>（UC-Secure）SSE概念。粗略地说，即使在任意环境中使用该方案时，也能保证安全性。</li>
+</ul>
+<p>参考：在 <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/1180405.1180417?casa_token=9_Hd9p-Sz3sAAAAA:exvY5ztMhWxLalHYBWhqHRZ_Rf54MMJf17PV5mgJMnGNDWtQNBlPD6jP34jUEyojdSFXAer7F23u">可搜索的对称加密：改进的定义和有效的构造</a> 中，Curtmola 等人。为可搜索的加密方案提出非自适应和自适应（不可区分性和基于模拟器）的安全定义，通常称为IND-CKA1 和IND-CKA2。</p>
+<p>今年来关于对称可搜搜加密的研究主要集中于对于动态可搜索加密中的前向安全和后向安全。</p>
 <p>前向安全指的是：在插入新的文件后，之前的搜索不能匹配到新添加的文件。</p>
 <p>后向安全指的是：插入在删除文件后，搜索不会暴漏该文件的标识。</p>
+<p> 前向隐私（Forward privacy）和后向隐私(Backward privacy)是DSSE（Dynamic Searchable Symmetric Encryption）的两个基本属性，旨在控制动态方案中更新操作造成的信息泄露。</p>
 <p>前向隐私：服务器无法将当前添加的关键字与之前搜索的结果相关联。即服务器不知道当前添加的关键字是否之前搜索过。（先搜索后更新）。</p>
 <p>后向隐私：服务器无法将当前搜索的关键字与之前的更新相关联。即服务器不知道更新（添加或删除）历史（先更新后搜索）。</p>
-<p><a target="_blank" rel="noopener" href="http://it.taocms.org/07/110668.htm">IEEE TIFS’22：健壮且具有前后向安全性的可搜索对称加密_ IT技术精华 (taocms.org)</a></p>
 <h2 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h2><p>您的支持是我不断前进的动力，如果你觉得本文对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
@@ -1826,7 +1873,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">701k</span>&nbsp;字
+                class="white-color">705.8k</span>&nbsp;字
             
             
             
