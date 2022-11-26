@@ -854,14 +854,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-10-26
+                    2022-11-25
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    17k
+                    17.3k
                 </div>
                 
 
@@ -2264,8 +2264,18 @@ QUEUED
 <p>这样就会导致事务冲突，如何解决呢？</p>
 <h3 id="3-1-悲观锁"><a href="#3-1-悲观锁" class="headerlink" title="3.1 悲观锁"></a>3.1 悲观锁</h3><p><strong>悲观锁(Pessimistic Lock)</strong>, 每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会 block 直到它拿到锁。</p>
 <p><img src="https://img.jwt1399.top/img/202208311123265.png"></p>
+<p>悲观锁可以实现对于数据的串行化执行，比如syn，和lock都是悲观锁的代表，同时，悲观锁中又可以再细分为公平锁，非公平锁，可重入锁，等等</p>
 <h3 id="3-2-乐观锁"><a href="#3-2-乐观锁" class="headerlink" title="3.2 乐观锁"></a>3.2 乐观锁</h3><p><strong>乐观锁(Optimistic Lock)<strong>，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号等机制。</strong>乐观锁适用于多读的应用类型，这样可以提高吞吐量</strong>。</p>
 <p><img src="https://img.jwt1399.top/img/202208311124559.png"></p>
+<p>乐观锁：会有一个版本号，每次操作数据会对版本号+1，再提交回数据时，会去校验是否比之前的版本大1 ，如果大1 ，则进行操作成功，这套机制的核心逻辑在于，如果在操作过程中，版本号只比原来大1 ，那么就意味着操作过程中没有人对他进行过修改，他的操作就是安全的，如果不大1，则数据被修改过。</p>
+<p>乐观锁的典型代表：就是CAS（<strong>Compare And Swap</strong>），利用cas进行无锁化机制加锁，var5 是操作前读取的内存值，while中的var1+var2 是预估值，如果预估值 == 内存值，则代表中间没有被人修改过，此时就将新值去替换内存值，其中do while 是为了在操作失败时，再次进行自旋操作，即把之前的逻辑再操作一次。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">int</span> var5<span class="token punctuation">;</span>
+<span class="token keyword">do</span> <span class="token punctuation">{</span>
+    var5 <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getIntVolatile</span><span class="token punctuation">(</span>var1<span class="token punctuation">,</span> var2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">compareAndSwapInt</span><span class="token punctuation">(</span>var1<span class="token punctuation">,</span> var2<span class="token punctuation">,</span> var5<span class="token punctuation">,</span> var5 <span class="token operator">+</span> var4<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">return</span> var5<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="3-3-watch-amp-unwatch"><a href="#3-3-watch-amp-unwatch" class="headerlink" title="3.3 watch &amp; unwatch"></a>3.3 watch &amp; unwatch</h3><p>在执行 multi 之前，先执行 watch key1 [key2]，可以监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。</p>
 <pre class="line-numbers language-bash"><code class="language-bash">127.0.0.1:6379<span class="token punctuation">[</span>1<span class="token punctuation">]</span><span class="token operator">></span> <span class="token function">watch</span> balence
 OK
@@ -3894,7 +3904,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">705.8k</span>&nbsp;字
+                class="white-color">714.3k</span>&nbsp;字
             
             
             
