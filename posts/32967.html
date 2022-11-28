@@ -52,9 +52,9 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-</head>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -863,14 +863,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-26
+                    2022-11-28
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    15.5k
+                    22.9k
                 </div>
                 
 
@@ -2174,10 +2174,8 @@ stringRedisTemplate<span class="token punctuation">.</span><span class="token fu
     seckillVoucher<span class="token punctuation">.</span><span class="token function">setBeginTime</span><span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getBeginTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     seckillVoucher<span class="token punctuation">.</span><span class="token function">setEndTime</span><span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getEndTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     seckillVoucherService<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>seckillVoucher<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">// 保存秒杀库存到Redis中</span>
-    stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>SECKILL_STOCK_KEY <span class="token operator">+</span> voucher<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> voucher<span class="token punctuation">.</span><span class="token function">getStock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>添加一张特价券</strong></p>
 <p><img src="https://img.jwt1399.top/img/202211252001419.png"></p>
 <pre class="line-numbers language-json"><code class="language-json"><span class="token punctuation">{</span>
@@ -2580,7 +2578,7 @@ DEL <span class="token keyword">key</span>
 <ul>
 <li>获取锁：利用setnx方法进行加锁，同时增加过期时间，防止死锁，可以保证加锁和增加过期时间具有原子性</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String KEY_PREFIX<span class="token operator">=</span><span class="token string">"lock:"</span>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String KEY_PREFIX<span class="token operator">=</span><span class="token string">"lock:"</span><span class="token punctuation">;</span>
 <span class="token annotation punctuation">@Override</span>
 <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token keyword">long</span> timeoutSec<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 获取线程标示作为值</span>
@@ -2653,9 +2651,10 @@ DEL <span class="token keyword">key</span>
 <img src="https://img.jwt1399.top/img/202211262127471.png" style="zoom:50%;" />
 
 <ul>
-<li>加锁</li>
+<li>获取锁</li>
 </ul>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String ID_PREFIX <span class="token operator">=</span> UUID<span class="token punctuation">.</span><span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"-"</span><span class="token punctuation">;</span>
+<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> String KEY_PREFIX<span class="token operator">=</span><span class="token string">"lock:"</span><span class="token punctuation">;</span>
 <span class="token annotation punctuation">@Override</span>
 <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token keyword">long</span> timeoutSec<span class="token punctuation">)</span> <span class="token punctuation">{</span>
    <span class="token comment" spellcheck="true">// 获取线程标示</span>
@@ -2665,11 +2664,12 @@ DEL <span class="token keyword">key</span>
                 <span class="token punctuation">.</span><span class="token function">setIfAbsent</span><span class="token punctuation">(</span>KEY_PREFIX <span class="token operator">+</span> name<span class="token punctuation">,</span> threadId<span class="token punctuation">,</span> timeoutSec<span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">)</span><span class="token punctuation">;</span>
    <span class="token keyword">return</span> Boolean<span class="token punctuation">.</span>TRUE<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>success<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>释放锁</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 获取线程标示</span>
     String threadId <span class="token operator">=</span> ID_PREFIX <span class="token operator">+</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token comment" spellcheck="true">// 获取锁中的标示</span>
@@ -2680,13 +2680,847 @@ DEL <span class="token keyword">key</span>
         stringRedisTemplate<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span>KEY_PREFIX <span class="token operator">+</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>测试：</strong>在我们修改完此处代码后，重启工程，然后启动两个线程，第一个线程持有锁后，手动释放锁，第二个线程 此时进入到锁内部，再放行第一个线程，此时第一个线程由于锁的value值并非是自己，所以不能释放锁，也就无法删除别人的锁，此时第二个线程能够正确释放锁，通过这个案例初步说明我们解决了锁误删的问题。</p>
-<h2 id="❻分布式锁的原子性问题"><a href="#❻分布式锁的原子性问题" class="headerlink" title="❻分布式锁的原子性问题"></a>❻分布式锁的原子性问题</h2><p>达人探店</p>
-<p>⑤好友关注</p>
-<p>⑥附近的商户</p>
-<p>⑦用户签到</p>
-<p>⑧UV统计</p>
+<h2 id="❻分布式锁的原子性问题"><a href="#❻分布式锁的原子性问题" class="headerlink" title="❻分布式锁的原子性问题"></a>❻分布式锁的原子性问题</h2><p>更为极端的误删问题：线程1现在持有锁之后，在执行业务逻辑过程中，他正准备删除锁，而且已经走到了条件判断的过程中，比如当前这把锁确实是属于他自己的，正准备删除锁，但是突然阻塞了，而且此时他的锁也到期了，那么此时线程2进来，当线程1卡顿结束后，他直接就会执行删除锁那行代码，相当于条件判断并没有起到作用，就会直接删除线程2的锁，这就是删锁时的原子性问题，之所以有这个问题，是<strong>因为线程1的拿锁，比锁，删锁，实际上并不是原子性的</strong>，我们要防止这种情况发生</p>
+<p><img src="https://img.jwt1399.top/img/202211262150817.png"></p>
+<h2 id="❼Lua解决多条命令原子性问题"><a href="#❼Lua解决多条命令原子性问题" class="headerlink" title="❼Lua解决多条命令原子性问题"></a>❼Lua解决多条命令原子性问题</h2><blockquote>
+<p>Redis提供了Lua脚本功能，在一个脚本中编写多条Redis命令，确保多条命令执行时的原子性。</p>
+<p>Lua是一种编程语言，基本语法可以参考网站：<a target="_blank" rel="noopener" href="https://www.runoob.com/lua/lua-tutorial.html">https://www.runoob.com/lua/lua-tutorial.html</a></p>
+<p>这里重点介绍Redis提供的调用函数，我们可以使用lua去操作redis，又能保证他的原子性，这样就可以实现拿锁、比锁、删锁是一个原子性动作了。</p>
+</blockquote>
+<p>这里重点介绍Redis提供的调用函数，语法如下：</p>
+<pre class="line-numbers language-lua"><code class="language-lua">redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'命令名称'</span><span class="token punctuation">,</span> <span class="token string">'key'</span><span class="token punctuation">,</span> <span class="token string">'其它参数'</span><span class="token punctuation">,</span> <span class="token punctuation">...</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>例如，我们要执行set name jack，则脚本是这样：</p>
+<pre class="line-numbers language-lua"><code class="language-lua"><span class="token operator">#</span> 执行 set name jack
+redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'set'</span><span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">,</span> <span class="token string">'jack'</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>例如，我们要先执行set name Rose，再执行get name，则脚本如下：</p>
+<pre class="line-numbers language-lua"><code class="language-lua"><span class="token operator">#</span> 先执行 set name jack
+redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'set'</span><span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">,</span> <span class="token string">'Rose'</span><span class="token punctuation">)</span>
+<span class="token operator">#</span> 再执行 get name
+<span class="token keyword">local</span> name <span class="token operator">=</span> redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">,</span> <span class="token string">'name'</span><span class="token punctuation">)</span>
+<span class="token operator">#</span> 返回
+<span class="token keyword">return</span> name
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>写好脚本以后，需要用Redis命令来调用脚本，调用脚本的常见命令如下：</p>
+<p><img src="https://img.jwt1399.top/img/202211271513040.png"></p>
+<p>例如，我们要执行 redis.call(‘set’, ‘name’, ‘jack’) 这个脚本，语法如下：</p>
+<p><img src="https://img.jwt1399.top/img/202211271458507.png"></p>
+<p>如果脚本中的key、value不想写死，可以作为参数传递。key类型参数会放入KEYS数组，其它参数会放入ARGV数组，在脚本中可以从KEYS和ARGV数组获取这些参数：</p>
+<p><img src="https://img.jwt1399.top/img/202211271458421.png"></p>
+<p>释放锁的业务流程是这样的</p>
+<p>​    1、获取锁中的线程标示</p>
+<p>​    2、判断是否与指定的标示（当前线程标示）一致</p>
+<p>​    3、如果一致则释放锁（删除）</p>
+<p>​    4、如果不一致则什么都不做</p>
+<p>最终我们操作redis的拿锁比锁删锁的lua脚本就会变成这样</p>
+<pre class="line-numbers language-lua"><code class="language-lua"><span class="token comment" spellcheck="true">-- 这里的 KEYS[1] 就是锁的key，这里的ARGV[1] 就是当前线程标示</span>
+<span class="token comment" spellcheck="true">-- 获取锁中的标示，判断是否与当前线程标示一致</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'GET'</span><span class="token punctuation">,</span> KEYS<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> ARGV<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">then</span>
+  <span class="token comment" spellcheck="true">-- 一致，则删除锁</span>
+  <span class="token keyword">return</span> redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'DEL'</span><span class="token punctuation">,</span> KEYS<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span>
+<span class="token comment" spellcheck="true">-- 不一致，则直接返回</span>
+<span class="token keyword">return</span> <span class="token number">0</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❽利用Java调用Lua改造分布式锁"><a href="#❽利用Java调用Lua改造分布式锁" class="headerlink" title="❽利用Java调用Lua改造分布式锁"></a>❽利用Java调用Lua改造分布式锁</h2><p>RedisTemplate调用Lua脚本的API如下：利用execute(lua脚本, key, 参数)方法去执行lua脚本</p>
+<p><img src="https://img.jwt1399.top/img/202211271515973.png"></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 加载lua脚本</span>
+<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> DefaultRedisScript<span class="token operator">&lt;</span>Long<span class="token operator">></span> UNLOCK_SCRIPT<span class="token punctuation">;</span> 
+<span class="token keyword">static</span> <span class="token punctuation">{</span>
+  UNLOCK_SCRIPT <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultRedisScript</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  UNLOCK_SCRIPT<span class="token punctuation">.</span><span class="token function">setLocation</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">ClassPathResource</span><span class="token punctuation">(</span><span class="token string">"unlock.lua"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  UNLOCK_SCRIPT<span class="token punctuation">.</span><span class="token function">setResultType</span><span class="token punctuation">(</span>Long<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 释放锁</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 调用lua脚本</span>
+    stringRedisTemplate<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span>
+            UNLOCK_SCRIPT<span class="token punctuation">,</span>
+            Collections<span class="token punctuation">.</span><span class="token function">singletonList</span><span class="token punctuation">(</span>KEY_PREFIX <span class="token operator">+</span> name<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            ID_PREFIX <span class="token operator">+</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">//经过以上代码改造后，我们就能够实现 拿锁比锁删锁的原子性动作了~</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>测试逻辑：</strong></p>
+<p>第一个线程进来，得到了锁，手动删除锁，模拟锁超时了，其他线程会执行lua来抢锁，当第一天线程利用lua删除锁时，lua能保证他不能删除他的锁，第二个线程删除锁时，利用lua同样可以保证不会删除别人的锁，同时还能保证原子性。</p>
+<h2 id="❾总结"><a href="#❾总结" class="headerlink" title="❾总结"></a>❾总结</h2><p>基于Redis的分布式锁实现思路：</p>
+<ul>
+<li>利用set nx ex获取锁，并设置过期时间，保存线程标示</li>
+<li>释放锁时先判断线程标示是否与自己一致，一致则删除锁<ul>
+<li>利用set nx满足互斥性</li>
+<li>利用set ex保证故障时锁依然能释放，避免死锁，提高安全性</li>
+<li>利用Redis集群保证高可用和高并发特性</li>
+</ul>
+</li>
+</ul>
+<p>笔者总结：</p>
+<ul>
+<li><p>1、利用添加过期时间，防止死锁问题的发生;</p>
+</li>
+<li><p>2、有了过期时间之后，可能出现误删别人锁的问题；</p>
+<ul>
+<li>删之前通过拿锁，比锁，删锁这个逻辑来解决，即删之前判断一下当前这把锁是否是属于自己的</li>
+</ul>
+</li>
+<li><p>3、但是还有原子性问题，即我们没法保证拿锁比锁删锁是一个原子性的动作；</p>
+<ul>
+<li>通过lua表达式来解决这个问题</li>
+</ul>
+</li>
+</ul>
+<p>但是目前还剩下一个问题：锁不住，什么是锁不住呢，如果当过期时间到了之后，我们可以给他续期一下，比如续个30s，就好像是网吧上网， 网费到了之后，然后说，网管，再给我来10块的，是不是后边的问题都不会发生了，那么续期问题怎么解决呢，可以依赖于我们接下来要学习redission啦</p>
+<h1 id="⑤分布式锁-redisson"><a href="#⑤分布式锁-redisson" class="headerlink" title="⑤分布式锁-redisson"></a>⑤分布式锁-redisson</h1><h2 id="❶redisson功能介绍"><a href="#❶redisson功能介绍" class="headerlink" title="❶redisson功能介绍"></a>❶redisson功能介绍</h2><p>基于setnx实现的分布式锁存在下面的问题：</p>
+<ul>
+<li><p><strong>不可重入问题</strong>：指获得锁的线程不可以再次进入到相同的锁的代码块中，可重入锁的意义在于防止死锁，比如HashTable这样的代码中，他的方法都是使用synchronized修饰的，假如他在一个方法内，调用另一个方法，那么此时如果是不可重入的，不就死锁了吗？所以可重入锁的主要意义是防止死锁，我们的synchronized和Lock锁都是可重入的。</p>
+</li>
+<li><p><strong>不可重试</strong>：指获取锁只尝试一次就返回false，没有重试机制。我们认为合理的情况是：当线程在获得锁失败后，他应该能再次尝试获得锁。</p>
+</li>
+<li><p><strong>超时释放：</strong>我们在加锁时增加了过期时间，这样的我们可以防止死锁，但是如果卡顿的时间超长，虽然我们采用了lua表达式防止删锁的时候，误删别人的锁，但是毕竟没有锁住，有安全隐患</p>
+</li>
+<li><p><strong>主从一致性：</strong> 如果Redis提供了主从集群，当我们向集群写数据时，主机需要异步的将数据同步给从机，而万一在同步过去之前，主机宕机了，就会出现死锁问题。</p>
+</li>
+</ul>
+<blockquote>
+<p>那么什么是Redisson呢</p>
+</blockquote>
+<p>Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。即是一个在Redis的基础上实现的分布式工具集合。它不仅提供了一系列的分布式的Java常用对象，还提供了许多分布式服务，其中就包含了各种分布式锁的实现。Redission提供了分布式锁的多种多样的功能</p>
+<p>8.分布式锁（Lock）和同步器（Synchronizer）</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#81-%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81reentrant-lock">8.1. 可重入锁（Reentrant Lock）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#82-%E5%85%AC%E5%B9%B3%E9%94%81fair-lock">8.2. 公平锁（Fair Lock）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#83-%E8%81%94%E9%94%81multilock">8.3. 联锁（MultiLock）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#84-%E7%BA%A2%E9%94%81redlock">8.4. 红锁（RedLock）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#85-%E8%AF%BB%E5%86%99%E9%94%81readwritelock">8.5. 读写锁（ReadWriteLock）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#86-%E4%BF%A1%E5%8F%B7%E9%87%8Fsemaphore">8.6. 信号量（Semaphore）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#87-%E5%8F%AF%E8%BF%87%E6%9C%9F%E6%80%A7%E4%BF%A1%E5%8F%B7%E9%87%8Fpermitexpirablesemaphore">8.7. 可过期性信号量（PermitExpirableSemaphore）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%92%8C%E5%90%8C%E6%AD%A5%E5%99%A8#88-%E9%97%AD%E9%94%81countdownlatch">8.8. 闭锁（CountDownLatch）</a></li>
+</ul>
+<p>官网地址： <a target="_blank" rel="noopener" href="https://redisson.org/">https://redisson.org</a></p>
+<p>GitHub地址： <a target="_blank" rel="noopener" href="https://github.com/redisson/redisson">https://github.com/redisson/redisson</a></p>
+<h2 id="❷redisson快速入门"><a href="#❷redisson快速入门" class="headerlink" title="❷redisson快速入门"></a>❷redisson快速入门</h2><p>引入依赖：</p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.redisson<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>redisson<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>3.13.6<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>配置Redisson客户端：</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">RedissonConfig</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> RedissonClient <span class="token function">redissonClient</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 配置</span>
+        Config config <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Config</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        config<span class="token punctuation">.</span><span class="token function">useSingleServer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setAddress</span><span class="token punctuation">(</span><span class="token string">"redis://192.168.150.101:6379"</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span><span class="token string">"123321"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 创建RedissonClient对象</span>
+        <span class="token keyword">return</span> Redisson<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如何使用Redission的分布式锁</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Resource</span>
+<span class="token keyword">private</span> RedissionClient redissonClient<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Test</span>
+<span class="token keyword">void</span> <span class="token function">testRedisson</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception<span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//获取锁(可重入)，指定锁的名称</span>
+    RLock lock <span class="token operator">=</span> redissonClient<span class="token punctuation">.</span><span class="token function">getLock</span><span class="token punctuation">(</span><span class="token string">"anyLock"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//尝试获取锁，参数分别是：获取锁的最大等待时间(期间会重试)，锁自动释放时间，时间单位</span>
+    <span class="token keyword">boolean</span> isLock <span class="token operator">=</span> lock<span class="token punctuation">.</span><span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">,</span>TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//判断获取锁成功</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>isLock<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">try</span><span class="token punctuation">{</span>
+            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"执行业务"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>          
+        <span class="token punctuation">}</span><span class="token keyword">finally</span><span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//释放锁</span>
+            lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在 VoucherOrderServiceImpl 注入RedissonClient</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Resource</span>
+<span class="token keyword">private</span> RedissonClient redissonClient<span class="token punctuation">;</span>
+
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Result <span class="token function">seckillVoucher</span><span class="token punctuation">(</span>Long voucherId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.查询优惠券</span>
+        SeckillVoucher voucher <span class="token operator">=</span> seckillVoucherService<span class="token punctuation">.</span><span class="token function">getById</span><span class="token punctuation">(</span>voucherId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 2.判断秒杀是否开始</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getBeginTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isAfter</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 尚未开始</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"秒杀尚未开始！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 3.判断秒杀是否已经结束</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getEndTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">isBefore</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 尚未开始</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"秒杀已经结束！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 4.判断库存是否充足</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getStock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 库存不足</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"库存不足！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        Long userId <span class="token operator">=</span> UserHolder<span class="token punctuation">.</span><span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//创建锁对象 这个代码不用了，因为我们现在要使用分布式锁</span>
+        <span class="token comment" spellcheck="true">//SimpleRedisLock lock = new SimpleRedisLock("order:" + userId, stringRedisTemplate);</span>
+        RLock lock <span class="token operator">=</span> redissonClient<span class="token punctuation">.</span><span class="token function">getLock</span><span class="token punctuation">(</span><span class="token string">"lock:order:"</span> <span class="token operator">+</span> userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//获取锁对象</span>
+        <span class="token keyword">boolean</span> isLock <span class="token operator">=</span> lock<span class="token punctuation">.</span><span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//加锁失败</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isLock<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span><span class="token string">"不允许重复下单"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//获取代理对象(事务)</span>
+            IVoucherOrderService proxy <span class="token operator">=</span> <span class="token punctuation">(</span>IVoucherOrderService<span class="token punctuation">)</span> AopContext<span class="token punctuation">.</span><span class="token function">currentProxy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> proxy<span class="token punctuation">.</span><span class="token function">createVoucherOrder</span><span class="token punctuation">(</span>voucherId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//释放锁</span>
+            lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+ <span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❸redisson可重入锁原理"><a href="#❸redisson可重入锁原理" class="headerlink" title="❸redisson可重入锁原理"></a>❸redisson可重入锁原理</h2><p><strong>redission可重入锁原理：</strong>采用hash结构用来存储锁，其中KEY表示表示这把锁是否存在（存锁名称），用VALUE表示当前这把锁被哪个线程持有（存线程名和重入状态）。比如当前没有人持有这把锁，那么value=0，假如有人持有这把锁，那么value+1，如果持有这把锁的人再次持有（重入）这把锁，那么value就会再+1 ，释放一次就-1 ，直到减少成0时，表示当前这把锁没有被人持有。  </p>
+<p><img src="https://img.jwt1399.top/img/202211272031145.png"></p>
+<p>可重入锁的lua源码</p>
+<table>
+<thead>
+<tr>
+<th>获取锁</th>
+<th>释放锁</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://img.jwt1399.top/img/202211272036891.png"></td>
+<td><img src="https://img.jwt1399.top/img/202211272036219.png"></td>
+</tr>
+</tbody></table>
+<h2 id="❹redisson锁重试和WatchDog机制"><a href="#❹redisson锁重试和WatchDog机制" class="headerlink" title="❹redisson锁重试和WatchDog机制"></a>❹redisson锁重试和WatchDog机制</h2><p><img src="https://img.jwt1399.top/img/202211272142836.png" alt="Redisson分布式锁原理"></p>
+<h3 id="1-锁重试"><a href="#1-锁重试" class="headerlink" title="1.锁重试"></a>1.锁重试</h3><p>抢锁过程中，获得当前线程，通过tryAcquire进行抢锁，该抢锁逻辑和之前逻辑相同</p>
+<p>1、先判断当前这把锁是否存在，如果不存在，插入一把锁，返回null</p>
+<p>2、判断当前这把锁是否是属于当前线程，如果是，则返回null</p>
+<p>所以如果返回是null，则代表着当前线程已经抢锁完毕，或者可重入完毕，但是如果以上两个条件都不满足，则进入到第三个条件，返回的是锁的失效时间，源码中你能发现有个while(true) 再次进行tryAcquire进行抢锁</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//参数分别是：获取锁的最大等待时间(期间会重试)，锁自动释放时间，时间单位</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token keyword">long</span> waitTime<span class="token punctuation">,</span> <span class="token keyword">long</span> leaseTime<span class="token punctuation">,</span> TimeUnit unit<span class="token punctuation">)</span> <span class="token keyword">throws</span> InterruptedException <span class="token punctuation">{</span>
+        <span class="token keyword">long</span> time <span class="token operator">=</span> unit<span class="token punctuation">.</span><span class="token function">toMillis</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">long</span> current <span class="token operator">=</span> System<span class="token punctuation">.</span><span class="token function">currentTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">long</span> threadId <span class="token operator">=</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Long ttl <span class="token operator">=</span> <span class="token function">tryAcquire</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">,</span> leaseTime<span class="token punctuation">,</span> unit<span class="token punctuation">,</span> threadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// lock acquired</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ttl <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">//.....</span>
+        
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">long</span> currentTime <span class="token operator">=</span> System<span class="token punctuation">.</span><span class="token function">currentTimeMillis</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          ttl <span class="token operator">=</span> <span class="token function">tryAcquire</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">,</span> leaseTime<span class="token punctuation">,</span> unit<span class="token punctuation">,</span> threadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token comment" spellcheck="true">// lock acquired</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>ttl <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+       <span class="token comment" spellcheck="true">//....</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>通过tryAcquire进行抢锁</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> Long <span class="token function">tryAcquire</span><span class="token punctuation">(</span><span class="token keyword">long</span> waitTime<span class="token punctuation">,</span> <span class="token keyword">long</span> leaseTime<span class="token punctuation">,</span> TimeUnit unit<span class="token punctuation">,</span> <span class="token keyword">long</span> threadId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token function">tryAcquireAsync</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">,</span> leaseTime<span class="token punctuation">,</span> unit<span class="token punctuation">,</span> threadId<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-WatchDog机制"><a href="#2-WatchDog机制" class="headerlink" title="2.WatchDog机制"></a>2.WatchDog机制</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token operator">&lt;</span>T<span class="token operator">></span> RFuture<span class="token operator">&lt;</span>Long<span class="token operator">></span> <span class="token function">tryAcquireAsync</span><span class="token punctuation">(</span><span class="token keyword">long</span> waitTime<span class="token punctuation">,</span> <span class="token keyword">long</span> leaseTime<span class="token punctuation">,</span> TimeUnit unit<span class="token punctuation">,</span> <span class="token keyword">long</span> threadId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>leaseTime <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">tryLockInnerAsync</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">,</span> leaseTime<span class="token punctuation">,</span> unit<span class="token punctuation">,</span> threadId<span class="token punctuation">,</span> RedisCommands<span class="token punctuation">.</span>EVAL_LONG<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        RFuture<span class="token operator">&lt;</span>Long<span class="token operator">></span> ttlRemainingFuture <span class="token operator">=</span> <span class="token function">tryLockInnerAsync</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">,</span>
+                                                commandExecutor<span class="token punctuation">.</span><span class="token function">getConnectionManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getCfg</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getLockWatchdogTimeout</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                                                TimeUnit<span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">,</span> threadId<span class="token punctuation">,</span> RedisCommands<span class="token punctuation">.</span>EVAL_LONG<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ttlRemainingFuture<span class="token punctuation">.</span><span class="token function">onComplete</span><span class="token punctuation">(</span><span class="token punctuation">(</span>ttlRemaining<span class="token punctuation">,</span> e<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>e <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+
+            <span class="token comment" spellcheck="true">// lock acquired</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>ttlRemaining <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token function">scheduleExpirationRenewal</span><span class="token punctuation">(</span>threadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ttlRemainingFuture<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>因为trylock方法有重载方法，一个是带参数，一个是不带参数，如果带参数传入的值是-1，如果传入参数，则leaseTime是他本身，所以如果传入了参数，此时leaseTime != -1 则会进去抢锁，抢锁的逻辑就是之前说的那三个逻辑</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">if</span> <span class="token punctuation">(</span>leaseTime <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">tryLockInnerAsync</span><span class="token punctuation">(</span>waitTime<span class="token punctuation">,</span> leaseTime<span class="token punctuation">,</span> unit<span class="token punctuation">,</span> threadId<span class="token punctuation">,</span> RedisCommands<span class="token punctuation">.</span>EVAL_LONG<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>如果是没有传入时间，也会进行抢锁， 而且抢锁时间是默认看门狗时间</p>
+<ul>
+<li><code>commandExecutor.##.**.getLockWatchdogTimeout()</code></li>
+</ul>
+<p><code>ttlRemainingFuture.onComplete((ttlRemaining, e)</code> 这句话相当于对以上抢锁进行了监听，也就是说当上边抢锁完毕后，此方法会被调用，具体调用的逻辑就是去后台开启一个线程，进行续约逻辑<code>scheduleExpirationRenewal()</code>，也就是看门狗线程</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">scheduleExpirationRenewal</span><span class="token punctuation">(</span><span class="token keyword">long</span> threadId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ExpirationEntry entry <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ExpirationEntry</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  ExpirationEntry oldEntry <span class="token operator">=</span> EXPIRATION_RENEWAL_MAP<span class="token punctuation">.</span><span class="token function">putIfAbsent</span><span class="token punctuation">(</span><span class="token function">getEntryName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> entry<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>oldEntry <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    oldEntry<span class="token punctuation">.</span><span class="token function">addThreadId</span><span class="token punctuation">(</span>threadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    entry<span class="token punctuation">.</span><span class="token function">addThreadId</span><span class="token punctuation">(</span>threadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">renewExpiration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>调用renewExpiration()，此逻辑就是续约逻辑</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">renewExpiration</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ExpirationEntry ee <span class="token operator">=</span> EXPIRATION_RENEWAL_MAP<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token function">getEntryName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ee <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    Timeout task <span class="token operator">=</span> commandExecutor<span class="token punctuation">.</span><span class="token function">getConnectionManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">newTimeout</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">TimerTask</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span>Timeout timeout<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
+            ExpirationEntry ent <span class="token operator">=</span> EXPIRATION_RENEWAL_MAP<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token function">getEntryName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>ent <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            Long threadId <span class="token operator">=</span> ent<span class="token punctuation">.</span><span class="token function">getFirstThreadId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>threadId <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            
+            RFuture<span class="token operator">&lt;</span>Boolean<span class="token operator">></span> future <span class="token operator">=</span> <span class="token function">renewExpirationAsync</span><span class="token punctuation">(</span>threadId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            future<span class="token punctuation">.</span><span class="token function">onComplete</span><span class="token punctuation">(</span><span class="token punctuation">(</span>res<span class="token punctuation">,</span> e<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>e <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Can't update lock "</span> <span class="token operator">+</span> <span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">" expiration"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">return</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>res<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">// reschedule itself</span>
+                    <span class="token function">renewExpiration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> internalLockLeaseTime <span class="token operator">/</span> <span class="token number">3</span><span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>MILLISECONDS<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//internalLockLeaseTime = 30s</span>
+    ee<span class="token punctuation">.</span><span class="token function">setTimeout</span><span class="token punctuation">(</span>task<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>commandExecutor.getConnectionManager().newTimeout()</code></p>
+<p> 此方法参数：(  new TimerTask() {}，参数2 ，参数3  )</p>
+<p>通过参数2，参数3 去描述什么时候去做参数1的事情，现在的情况是：10s之后去做参数一的事情</p>
+<p>因为锁的失效时间是30s，当10s之后，此时这个timeTask 就触发了，他就去进行续约，把当前这把锁续约成30s，如果操作成功，那么此时就会递归调用自己，再重新设置一个timeTask()，于是再过10s后又再设置一个timerTask，完成不停的续约</p>
+<p>那么大家可以想一想，假设我们的线程出现了宕机他还会续约吗？当然不会，因为没有人再去调用renewExpiration这个方法，所以等到时间之后自然就释放了。</p>
+<h3 id="3-总结"><a href="#3-总结" class="headerlink" title="3.总结"></a>3.总结</h3><p>Redisson分布式锁原理：</p>
+<ul>
+<li><p><strong>可重入</strong>：利用hash结构记录线程id和重入次数</p>
+</li>
+<li><p><strong>可重试</strong>：利用信号量和PubSub功能实现等待、唤醒，获取锁失败的重试机制</p>
+</li>
+<li><p><strong>超时续约</strong>：利用watchDog，每隔一段时间（releaseTime / 3），重置超时时间</p>
+</li>
+</ul>
+<h2 id="❺redisson锁的MutiLock原理"><a href="#❺redisson锁的MutiLock原理" class="headerlink" title="❺redisson锁的MutiLock原理"></a>❺redisson锁的MutiLock原理</h2><p>为了提高redis的可用性，我们会搭建集群或者主从，现在以主从为例</p>
+<p>此时我们去写命令，写在主机上， 主机会将数据同步给从机，但是假设在主机还没有来得及把数据写入到从机去的时候，此时主机宕机，哨兵会发现主机宕机，并且选举一个slave变成master，而此时新的master中实际上并没有锁信息，此时锁信息就已经丢掉了。</p>
+<p><img src="https://img.jwt1399.top/img/202211272155896.png"></p>
+<p>为了解决这个问题，redission提出来了<strong>MutiLock锁</strong>，使用这把锁就不使用主从了，每个节点的地位都是一样的， 这把锁加锁的逻辑需要写入到每一个主丛节点上，只有所有的服务器都写入成功，此时才是加锁成功，假设现在某个节点挂了，那么他去获得锁的时候，只要有一个节点拿不到，都不能算是加锁成功，就保证了加锁的可靠性。</p>
+<p><img src="https://img.jwt1399.top/img/202211272155368.png"></p>
+<p>那么MutiLock 加锁原理是什么呢？</p>
+<p>当我们去设置了多个锁时，redission会将多个锁添加到一个集合中，然后用while循环去不停去尝试拿锁，但是会有一个总共的加锁时间，这个时间是用需要加锁的个数 * 1500ms ，假设有3个锁，那么时间就是4500ms，假设在这4500ms内，所有的锁都加锁成功， 那么此时才算是加锁成功，如果在4500ms有线程加锁失败，则会再次去进行重试</p>
+<p><img src="https://img.jwt1399.top/img/202211272200499.png"></p>
+<h2 id="❻总结"><a href="#❻总结" class="headerlink" title="❻总结"></a>❻总结</h2><p><strong>1）不可重入Redis分布式锁：</strong></p>
+<ul>
+<li><p>原理：利用setnx的互斥性；利用ex避免死锁；释放锁时判断线程标示</p>
+</li>
+<li><p>缺陷：不可重入、无法重试、锁超时失效</p>
+</li>
+</ul>
+<p><strong>2）可重入的Redis分布式锁：</strong></p>
+<ul>
+<li><p>原理：利用hash结构，记录线程标示和重入次数；利用watchDog延续锁时间；利用信号量控制锁重试等待</p>
+</li>
+<li><p>缺陷：redis宕机引起锁失效问题</p>
+</li>
+</ul>
+<p><strong>3）Redisson的multiLock：</strong></p>
+<ul>
+<li><p>原理：多个独立的Redis节点，必须在所有节点都获取重入锁，才算获取锁成功</p>
+</li>
+<li><p>缺陷：运维成本高、实现复杂</p>
+</li>
+</ul>
+<h1 id="⑥秒杀优化"><a href="#⑥秒杀优化" class="headerlink" title="⑥秒杀优化"></a>⑥秒杀优化</h1><h2 id="❶异步秒杀思路"><a href="#❶异步秒杀思路" class="headerlink" title="❶异步秒杀思路"></a>❶异步秒杀思路</h2><p>回顾下单流程：当用户发起请求，此时会请求nginx，nginx会访问到tomcat，而tomcat中的程序，会进行串行操作，分成如下几个步骤</p>
+<ul>
+<li><p>1、查询优惠卷</p>
+</li>
+<li><p>2、判断秒杀库存是否足够</p>
+</li>
+<li><p>3、查询订单</p>
+</li>
+<li><p>4、校验是否是一人一单</p>
+</li>
+<li><p>5、扣减库存</p>
+</li>
+<li><p>6、创建订单</p>
+</li>
+</ul>
+<p>在这六步操作中，有很多操作是要去操作数据库的，而且还是一个线程串行执行， 这样就会导致我们的程序执行的很慢，所以我们需要异步程序执行，那么如何加速呢？</p>
+<table>
+<thead>
+<tr>
+<th>原始方案</th>
+<th>优化方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://img.jwt1399.top/img/202211281342647.png"></td>
+<td><img src="https://img.jwt1399.top/img/202211281342574.png"></td>
+</tr>
+</tbody></table>
+<p>优化方案：我们将耗时比较短的逻辑判断放入到redis中，比如库存是否足够、是否一人一单，只要这种逻辑可以完成，就意味着我们是一定可以下单完成的，我们只需要进行快速的逻辑判断，根本就不用等下单逻辑走完，就可以直接给用户返回成功， 再在后台开一个线程，后台线程慢慢的去执行queue里边的消息，这样程序不就超级快了吗？当然这里边有两个难点</p>
+<ul>
+<li><p>第一个难点是我们怎么在redis中去快速校验一人一单，还有库存判断</p>
+</li>
+<li><p>第二个难点是由于我们校验和下单是两个线程，那么我们如何知道到底哪个单他最后是否成功，或者是下单完成，为了完成这件事我们在redis操作完之后，我们会将一些信息返回给前端，同时也会把这些信息丢到异步queue中去，后续操作中，可以通过这个id来查询我们tomcat中的下单逻辑是否完成了。</p>
+</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202211272239865.png"></p>
+<ul>
+<li><p><strong>步骤一：</strong>新增秒杀优惠券的同时，将优惠券信息保存到Redis中</p>
+</li>
+<li><p><strong>步骤二：</strong>基于Lua脚本，判断秒杀库存、一人一单，决定用户是否抢购成功</p>
+</li>
+<li><p><strong>步骤三：</strong>如果抢购成功，将优惠券id、用户id、订单id封装后存入阻塞队列</p>
+</li>
+<li><p><strong>步骤四：</strong>开启线程任务，不断从阻塞队列中获取信息，实现异步下单功能</p>
+</li>
+</ul>
+<h2 id="❷Redis完成秒杀资格判断"><a href="#❷Redis完成秒杀资格判断" class="headerlink" title="❷Redis完成秒杀资格判断"></a>❷Redis完成秒杀资格判断</h2><p><strong>步骤一</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token annotation punctuation">@Transactional</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addSeckillVoucher</span><span class="token punctuation">(</span>Voucher voucher<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 保存优惠券</span>
+    <span class="token function">save</span><span class="token punctuation">(</span>voucher<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 保存秒杀信息</span>
+    SeckillVoucher seckillVoucher <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SeckillVoucher</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    seckillVoucher<span class="token punctuation">.</span><span class="token function">setVoucherId</span><span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    seckillVoucher<span class="token punctuation">.</span><span class="token function">setStock</span><span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getStock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    seckillVoucher<span class="token punctuation">.</span><span class="token function">setBeginTime</span><span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getBeginTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    seckillVoucher<span class="token punctuation">.</span><span class="token function">setEndTime</span><span class="token punctuation">(</span>voucher<span class="token punctuation">.</span><span class="token function">getEndTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    seckillVoucherService<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>seckillVoucher<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 保存秒杀库存到Redis中</span>
+    stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>SECKILL_STOCK_KEY <span class="token operator">+</span> voucher<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> voucher<span class="token punctuation">.</span><span class="token function">getStock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>步骤二</strong></p>
+<img src="../images/Redis-实战篇/image-20221128135703650.png" style="zoom:50%;" />
+
+<pre class="line-numbers language-lua"><code class="language-lua"><span class="token comment" spellcheck="true">-- 1.参数列表</span>
+<span class="token comment" spellcheck="true">-- 1.1.优惠券id</span>
+<span class="token keyword">local</span> voucherId <span class="token operator">=</span> ARGV<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true">-- 1.2.用户id</span>
+<span class="token keyword">local</span> userId <span class="token operator">=</span> ARGV<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true">-- 1.3.订单id</span>
+<span class="token keyword">local</span> orderId <span class="token operator">=</span> ARGV<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span>
+
+<span class="token comment" spellcheck="true">-- 2.数据key</span>
+<span class="token comment" spellcheck="true">-- 2.1.库存key</span>
+<span class="token keyword">local</span> stockKey <span class="token operator">=</span> <span class="token string">'seckill:stock:'</span> <span class="token operator">..</span> voucherId
+<span class="token comment" spellcheck="true">-- 2.2.订单key</span>
+<span class="token keyword">local</span> orderKey <span class="token operator">=</span> <span class="token string">'seckill:order:'</span> <span class="token operator">..</span> voucherId
+
+<span class="token comment" spellcheck="true">-- 3.脚本业务</span>
+<span class="token comment" spellcheck="true">-- 3.1.判断库存是否充足 get stockKey   </span>
+<span class="token keyword">if</span><span class="token punctuation">(</span><span class="token function">tonumber</span><span class="token punctuation">(</span>redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">,</span> stockKey<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">then</span> <span class="token comment" spellcheck="true">-- tonumber（string 转 num)</span>
+    <span class="token comment" spellcheck="true">-- 库存不足，返回1</span>
+    <span class="token keyword">return</span> <span class="token number">1</span>
+<span class="token keyword">end</span>
+<span class="token comment" spellcheck="true">-- 3.2.判断用户是否下单 SISMEMBER orderKey userId</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'sismember'</span><span class="token punctuation">,</span> orderKey<span class="token punctuation">,</span> userId<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">then</span>
+    <span class="token comment" spellcheck="true">-- 3.3.存在，说明是重复下单，返回2</span>
+    <span class="token keyword">return</span> <span class="token number">2</span>
+<span class="token keyword">end</span>
+<span class="token comment" spellcheck="true">-- 3.4.扣库存 incrby stockKey -1</span>
+redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'incrby'</span><span class="token punctuation">,</span> stockKey<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">-- 3.5.下单（保存用户）sadd orderKey userId</span>
+redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">'sadd'</span><span class="token punctuation">,</span> orderKey<span class="token punctuation">,</span> userId<span class="token punctuation">)</span>
+<span class="token keyword">return</span> <span class="token number">0</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>步骤三</strong></p>
+<img src="../images/Redis-实战篇/image-20221128140938673.png" style="zoom:50%;" />
+
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 加载lua脚本</span>
+<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> DefaultRedisScript<span class="token operator">&lt;</span>Long<span class="token operator">></span> SECKILL_SCRIPT<span class="token punctuation">;</span>
+<span class="token keyword">static</span> <span class="token punctuation">{</span>
+  SECKILL_SCRIPT <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultRedisScript</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  SECKILL_SCRIPT<span class="token punctuation">.</span><span class="token function">setLocation</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">ClassPathResource</span><span class="token punctuation">(</span><span class="token string">"seckill.lua"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  SECKILL_SCRIPT<span class="token punctuation">.</span><span class="token function">setResultType</span><span class="token punctuation">(</span>Long<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">//阻塞队列</span>
+<span class="token keyword">private</span> BlockingQueue<span class="token operator">&lt;</span>VoucherOrder<span class="token operator">></span> orderTasks <span class="token operator">=</span><span class="token keyword">new</span>  <span class="token class-name">ArrayBlockingQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token number">1024</span> <span class="token operator">*</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">private</span> IVoucherOrderService proxy<span class="token punctuation">;</span>
+
+  <span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Result <span class="token function">seckillVoucher</span><span class="token punctuation">(</span>Long voucherId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//获取用户</span>
+    Long userId <span class="token operator">=</span> UserHolder<span class="token punctuation">.</span><span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> orderId <span class="token operator">=</span> redisIdWorker<span class="token punctuation">.</span><span class="token function">nextId</span><span class="token punctuation">(</span><span class="token string">"order"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 1.执行lua脚本</span>
+    Long result <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span>
+            SECKILL_SCRIPT<span class="token punctuation">,</span>                         <span class="token comment" spellcheck="true">//lua脚本</span>
+            Collections<span class="token punctuation">.</span><span class="token function">emptyList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>   <span class="token comment" spellcheck="true">//KEY</span>
+            voucherId<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">//ARGV[1]</span>
+                  userId<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>       <span class="token comment" spellcheck="true">//ARGV[2]</span>
+                  String<span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//ARGV[3]</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> r <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">intValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//转成int</span>
+    <span class="token comment" spellcheck="true">// 2.判断结果是否为0</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>r <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 2.1.不为0 ，代表没有购买资格</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span>r <span class="token operator">==</span> <span class="token number">1</span> <span class="token operator">?</span> <span class="token string">"库存不足"</span> <span class="token operator">:</span> <span class="token string">"不能重复下单"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+      
+    <span class="token comment" spellcheck="true">//2.2.为0，信息保存到阻塞队列</span>
+    VoucherOrder voucherOrder <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">VoucherOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.2.1订单id</span>
+    <span class="token keyword">long</span> orderId <span class="token operator">=</span> redisIdWorker<span class="token punctuation">.</span><span class="token function">nextId</span><span class="token punctuation">(</span><span class="token string">"order"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    voucherOrder<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.2.2用户id</span>
+    voucherOrder<span class="token punctuation">.</span><span class="token function">setUserId</span><span class="token punctuation">(</span>userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.2.3代金券id</span>
+    voucherOrder<span class="token punctuation">.</span><span class="token function">setVoucherId</span><span class="token punctuation">(</span>voucherId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.2.4放入阻塞队列</span>
+    orderTasks<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>voucherOrder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 3.获取代理对象</span>
+    proxy <span class="token operator">=</span> <span class="token punctuation">(</span>IVoucherOrderService<span class="token punctuation">)</span>AopContext<span class="token punctuation">.</span><span class="token function">currentProxy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  
+    <span class="token comment" spellcheck="true">// 4.返回订单id</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❸基于阻塞队列实现秒杀优化"><a href="#❸基于阻塞队列实现秒杀优化" class="headerlink" title="❸基于阻塞队列实现秒杀优化"></a>❸基于阻塞队列实现秒杀优化</h2><p><strong>步骤四</strong></p>
+<p>现在我们去下单时，是通过lua表达式去原子执行判断逻辑，如果判断我出来不为0 ，则要么是库存不足，要么是重复下单，返回错误信息；如果是0，则把下单的逻辑保存到队列中去，然后异步执行</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//异步处理线程池</span>
+<span class="token keyword">private</span> <span class="token keyword">static</span> <span class="token keyword">final</span> ExecutorService SECKILL_ORDER_EXECUTOR <span class="token operator">=</span> Executors<span class="token punctuation">.</span><span class="token function">newSingleThreadExecutor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">//在类初始化之后执行，因为当这个类初始化好了之后，随时都是有可能要执行的</span>
+<span class="token annotation punctuation">@PostConstruct</span>
+<span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  SECKILL_ORDER_EXECUTOR<span class="token punctuation">.</span><span class="token function">submit</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">VoucherOrderHandler</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 用于线程池处理的任务</span>
+<span class="token comment" spellcheck="true">// 当初始化完毕后，就会去从对列中去拿信息</span>
+<span class="token keyword">private</span> <span class="token keyword">class</span> <span class="token class-name">VoucherOrderHandler</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span> <span class="token punctuation">{</span>
+  <span class="token annotation punctuation">@Override</span>
+  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.获取队列中的订单信息</span>
+        VoucherOrder voucherOrder <span class="token operator">=</span> orderTasks<span class="token punctuation">.</span><span class="token function">take</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 2.创建订单</span>
+        <span class="token function">handleVoucherOrder</span><span class="token punctuation">(</span>voucherOrder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"处理订单异常"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 创建订单</span>
+<span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">handleVoucherOrder</span><span class="token punctuation">(</span>VoucherOrder voucherOrder<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">//1.获取用户</span>
+  Long userId <span class="token operator">=</span> voucherOrder<span class="token punctuation">.</span><span class="token function">getUserId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 2.创建锁对象</span>
+  RLock lock <span class="token operator">=</span> redissonClient<span class="token punctuation">.</span><span class="token function">getLock</span><span class="token punctuation">(</span><span class="token string">"lock:order:"</span> <span class="token operator">+</span> userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 3.尝试获取锁</span>
+  <span class="token keyword">boolean</span> isLock <span class="token operator">=</span> lock<span class="token punctuation">.</span><span class="token function">tryLock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 4.判断是否获得锁成功</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>isLock<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 获取锁失败，直接返回失败或者重试</span>
+    log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"不允许重复下单！"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">try</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//注意：由于是spring的事务是放在threadLocal中，此时的是多线程，事务会失效</span>
+    proxy<span class="token punctuation">.</span><span class="token function">createVoucherOrder</span><span class="token punctuation">(</span>voucherOrder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">finally</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 释放锁</span>
+    lock<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token annotation punctuation">@Transactional</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">createVoucherOrder</span><span class="token punctuation">(</span>VoucherOrder voucherOrder<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  Long userId <span class="token operator">=</span> voucherOrder<span class="token punctuation">.</span><span class="token function">getUserId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 5.1.查询订单</span>
+  <span class="token keyword">int</span> count <span class="token operator">=</span> <span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span><span class="token string">"user_id"</span><span class="token punctuation">,</span> userId<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span><span class="token string">"voucher_id"</span><span class="token punctuation">,</span> voucherOrder<span class="token punctuation">.</span><span class="token function">getVoucherId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 5.2.判断是否存在</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 用户已经购买过了</span>
+    log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"用户已经购买过了"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment" spellcheck="true">// 6.扣减库存</span>
+  <span class="token keyword">boolean</span> success <span class="token operator">=</span> seckillVoucherService<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">setSql</span><span class="token punctuation">(</span><span class="token string">"stock = stock - 1"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// set stock = stock - 1</span>
+    <span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span><span class="token string">"voucher_id"</span><span class="token punctuation">,</span> voucherOrder<span class="token punctuation">.</span><span class="token function">getVoucherId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">gt</span><span class="token punctuation">(</span><span class="token string">"stock"</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//where id = ? and stock > 0</span>
+    <span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 扣减失败</span>
+    log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"库存不足"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token function">save</span><span class="token punctuation">(</span>voucherOrder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❹总结"><a href="#❹总结" class="headerlink" title="❹总结"></a>❹总结</h2><p>秒杀业务的优化思路是什么？</p>
+<ul>
+<li>先利用Redis完成库存余量、一人一单判断，完成抢单业务</li>
+<li>再将下单业务放入阻塞队列，利用独立线程异步下单</li>
+<li>基于阻塞队列的异步秒杀存在哪些问题？<ul>
+<li>内存限制问题</li>
+<li>数据安全问题</li>
+</ul>
+</li>
+</ul>
+<h1 id="⑦Redis消息队列"><a href="#⑦Redis消息队列" class="headerlink" title="⑦Redis消息队列"></a>⑦Redis消息队列</h1><h2 id="❶认识消息队列"><a href="#❶认识消息队列" class="headerlink" title="❶认识消息队列"></a>❶认识消息队列</h2><p>什么是消息队列：存放消息的队列。最简单的消息队列模型包括3个角色：</p>
+<ul>
+<li>消息队列：存储和管理消息，也被称为消息代理（Message Broker）</li>
+<li>生产者：发送消息到消息队列</li>
+<li>消费者：从消息队列获取消息并处理消息</li>
+</ul>
+<p>使用队列的好处在于 <strong>解耦：</strong>所谓解耦，举一个生活中的例子就是：快递员(生产者)把快递放到快递柜里边(Message Queue)去，我们(消费者)从快递柜里边去拿东西，这就是一个异步，如果耦合，那么这个快递员相当于直接把快递交给你，这事固然好，但是万一你不在家，那么快递员就会一直等你，这就浪费了快递员的时间，所以这种思想在我们日常开发中，是非常有必要的。</p>
+<p><img src="https://img.jwt1399.top/img/202211281835719.png"></p>
+<p>这种场景在我们秒杀中就变成了：我们下单之后，利用redis去进行校验下单条件，再通过队列把消息发送出去，然后再启动一个线程去消费这个消息，完成解耦，同时也加快我们的响应速度。</p>
+<p>这里我们可以使用一些现成的mq，比如kafka，rabbitmq等等，但是呢，如果没有安装mq，我们也可以直接使用redis提供的mq方案，降低我们的部署和学习成本。</p>
+<h2 id="❷基于List实现消息队列"><a href="#❷基于List实现消息队列" class="headerlink" title="❷基于List实现消息队列"></a>❷基于List实现消息队列</h2><p>Redis的List数据结构是一个双向链表，很容易模拟出队列效果。</p>
+<p>队列是入口和出口不在一边，因此我们可以利用：LPUSH 结合 RPOP、或者 RPUSH 结合 LPOP来实现。<br>不过要注意的是，当队列中没有消息时RPOP或LPOP操作会返回null，并不像JVM的阻塞队列那样会阻塞并等待消息。因此这里应该使用BRPOP或者BLPOP来实现阻塞效果。</p>
+<p><img src="https://img.jwt1399.top/img/202211281839415.png"></p>
+<p>基于List的消息队列有哪些优缺点？</p>
+<p>优点：</p>
+<ul>
+<li>利用Redis存储，不受限于JVM内存上限</li>
+<li>基于Redis的持久化机制，数据安全性有保证</li>
+<li>可以满足消息有序性</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>无法避免消息丢失</li>
+<li>只支持单消费者</li>
+</ul>
+<h2 id="❸基于PubSub的消息队列"><a href="#❸基于PubSub的消息队列" class="headerlink" title="❸基于PubSub的消息队列"></a>❸基于PubSub的消息队列</h2><p>PubSub（发布订阅）是Redis2.0版本引入的消息传递模型。消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息。</p>
+<ul>
+<li>SUBSCRIBE channel [channel] ：订阅一个或多个频道</li>
+<li> PUBLISH channel msg ：向一个频道发送消息</li>
+<li>PSUBSCRIBE pattern[pattern] ：订阅与pattern格式匹配的所有频道</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202211281840014.png"></p>
+<p>基于PubSub的消息队列有哪些优缺点？<br>优点：</p>
+<ul>
+<li>采用发布订阅模型，支持多生产、多消费</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>不支持数据持久化</li>
+<li>无法避免消息丢失</li>
+<li>消息堆积有上限，超出时数据丢失</li>
+</ul>
+<h2 id="❹基于Stream的消息队列"><a href="#❹基于Stream的消息队列" class="headerlink" title="❹基于Stream的消息队列"></a>❹基于Stream的消息队列</h2><p>Stream 是 Redis 5.0 引入的一种新数据类型，可以实现一个功能非常完善的消息队列。</p>
+<p>发送消息的命令：XADD</p>
+<p><img src="https://img.jwt1399.top/img/202211281903260.png"></p>
+<p>例如：</p>
+<p><img src="https://img.jwt1399.top/img/202211281903875.png"></p>
+<p>读取消息的方式之一：XREAD</p>
+<p><img src="https://img.jwt1399.top/img/202211281905063.png"></p>
+<p>例如，使用XREAD读取第一个消息：</p>
+<p><img src="https://img.jwt1399.top/img/202211281905688.png"></p>
+<p>例如，XREAD阻塞方式，读取最新的消息：</p>
+<p><img src="https://img.jwt1399.top/img/202211281905433.png"></p>
+<p>在业务开发中，我们可以循环的调用XREAD阻塞方式来查询最新消息，从而实现持续监听队列的效果，伪代码如下</p>
+<p><img src="https://img.jwt1399.top/img/202211281907873.png"></p>
+<p>注意：当我们指定起始ID为$时，代表读取最新的消息，如果我们处理一条消息的过程中，又有超过1条以上的消息到达队列，则下次获取时也只能获取到最新的一条，会出现漏读消息的问题</p>
+<p>STREAM类型消息队列的XREAD命令特点：</p>
+<ul>
+<li>消息可回溯（消息可重复读）</li>
+<li>一个消息可以被多个消费者读取</li>
+<li>可以阻塞读取</li>
+<li>有消息漏读的风险</li>
+</ul>
+<h2 id="❺基于Stream的消息队列-消费者组"><a href="#❺基于Stream的消息队列-消费者组" class="headerlink" title="❺基于Stream的消息队列-消费者组"></a>❺基于Stream的消息队列-消费者组</h2><p>消费者组（Consumer Group）：将多个消费者划分到一个组中，监听同一个队列。具备下列特点：</p>
+<p><img src="https://img.jwt1399.top/img/202211281930845.png"></p>
+<p><strong>创建消费者组：</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql">XGROUP <span class="token keyword">CREATE</span> <span class="token keyword">key</span> groupName ID <span class="token punctuation">[</span>MKSTREAM<span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>key：队列名称</li>
+<li>groupName：消费者组名称</li>
+<li>ID：起始ID标示，$代表队列中最后一个消息，0则代表队列中第一个消息</li>
+<li>MKSTREAM：队列不存在时自动创建队列</li>
+</ul>
+<p> <strong>删除指定的消费者组</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql">XGROUP DESTORY <span class="token keyword">key</span> groupName
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p> <strong>给指定的消费者组添加消费者</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql">XGROUP CREATECONSUMER <span class="token keyword">key</span> groupName consumername
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p> <strong>删除消费者组中的指定消费者</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql">XGROUP DELCONSUMER <span class="token keyword">key</span> groupName consumername
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>从消费者组读取消息</strong></p>
+<pre class="line-numbers language-java"><code class="language-java">XREADGROUP GROUP group consumer <span class="token punctuation">[</span>COUNT count<span class="token punctuation">]</span> <span class="token punctuation">[</span>BLOCK milliseconds<span class="token punctuation">]</span> <span class="token punctuation">[</span>NOACK<span class="token punctuation">]</span> STREAMS key <span class="token punctuation">[</span>key <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span> ID <span class="token punctuation">[</span>ID <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>group：消费组名称</li>
+<li>consumer：消费者名称，如果消费者不存在，会自动创建一个消费者</li>
+<li>count：本次查询的最大数量</li>
+<li>BLOCK milliseconds：当没有消息时最长等待时间</li>
+<li>NOACK：无需手动ACK，获取到消息后自动确认</li>
+<li>STREAMS key：指定队列名称</li>
+<li>ID：获取消息的起始ID：<ul>
+<li> “&gt;”：从下一个未消费的消息开始</li>
+<li>其它：根据指定id从pending-list中获取已消费但未确认的消息，例如0，是从pending-list中的第一个消息开始</li>
+</ul>
+</li>
+</ul>
+<p>消费者监听消息的基本思路：伪代码如下</p>
+<p><img src="https://img.jwt1399.top/img/202211281947654.png"></p>
+<p><strong>总结</strong></p>
+<p>STREAM类型消息队列的XREADGROUP命令特点：</p>
+<ul>
+<li>消息可回溯</li>
+<li>可以多消费者争抢消息，加快消费速度</li>
+<li>可以阻塞读取</li>
+<li>没有消息漏读的风险</li>
+<li>有消息确认机制，保证消息至少被消费一次</li>
+</ul>
+<p>最后我们来个小对比</p>
+<p><img src="https://img.jwt1399.top/img/202211281940958.png"></p>
+<h2 id="❻Stream消息队列实现异步秒杀下单"><a href="#❻Stream消息队列实现异步秒杀下单" class="headerlink" title="❻Stream消息队列实现异步秒杀下单"></a>❻Stream消息队列实现异步秒杀下单</h2><ul>
+<li>创建一个Stream类型的消息队列，名为stream.orders</li>
+</ul>
+<pre class="line-numbers language-sql"><code class="language-sql">XGROUP <span class="token keyword">CREATE</span> stream<span class="token punctuation">.</span>orders g1 <span class="token number">0</span> MKSTREAM
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>修改之前的秒杀下单Lua脚本（seckill.lua），在认定有抢购资格后，直接向stream.orders中添加消息，内容包含voucherId、userId、orderId</li>
+</ul>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">-- 3.6.发送消息到队列中， XADD stream.orders * k1 v1 k2 v2 ...</span>
+redis<span class="token punctuation">.</span><span class="token keyword">call</span><span class="token punctuation">(</span><span class="token string">'xadd'</span><span class="token punctuation">,</span> <span class="token string">'stream.orders'</span><span class="token punctuation">,</span> <span class="token string">'*'</span><span class="token punctuation">,</span> <span class="token string">'userId'</span><span class="token punctuation">,</span> userId<span class="token punctuation">,</span> <span class="token string">'voucherId'</span><span class="token punctuation">,</span> voucherId<span class="token punctuation">,</span> <span class="token string">'id'</span><span class="token punctuation">,</span> orderId<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Result <span class="token function">seckillVoucher</span><span class="token punctuation">(</span>Long voucherId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">//获取用户</span>
+  Long userId <span class="token operator">=</span> UserHolder<span class="token punctuation">.</span><span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">long</span> orderId <span class="token operator">=</span> redisIdWorker<span class="token punctuation">.</span><span class="token function">nextId</span><span class="token punctuation">(</span><span class="token string">"order"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 1.执行lua脚本</span>
+  Long result <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span>
+    SECKILL_SCRIPT<span class="token punctuation">,</span>                         <span class="token comment" spellcheck="true">//lua脚本</span>
+    Collections<span class="token punctuation">.</span><span class="token function">emptyList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>   <span class="token comment" spellcheck="true">//KEY</span>
+    voucherId<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>     <span class="token comment" spellcheck="true">//ARGV[1]</span>
+    userId<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>       <span class="token comment" spellcheck="true">//ARGV[2]</span>
+    String<span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//ARGV[3]</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> r <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">intValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//转成int</span>
+  <span class="token comment" spellcheck="true">// 2.判断结果是否为0</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>r <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 2.1.不为0 ，代表没有购买资格</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">fail</span><span class="token punctuation">(</span>r <span class="token operator">==</span> <span class="token number">1</span> <span class="token operator">?</span> <span class="token string">"库存不足"</span> <span class="token operator">:</span> <span class="token string">"不能重复下单"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment" spellcheck="true">// 3.获取代理对象</span>
+  proxy <span class="token operator">=</span> <span class="token punctuation">(</span>IVoucherOrderService<span class="token punctuation">)</span>AopContext<span class="token punctuation">.</span><span class="token function">currentProxy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment" spellcheck="true">// 4.返回订单id</span>
+  <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>orderId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>项目启动时，开启一个线程任务，尝试获取stream.orders中的消息，完成下单</li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">class</span> <span class="token class-name">VoucherOrderHandler</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 1.获取消息队列中的订单信息 </span>
+                <span class="token comment" spellcheck="true">// XREADGROUP GROUP g1 c1 COUNT 1 BLOCK 2000 STREAMS s1 ></span>
+                List<span class="token operator">&lt;</span>MapRecord<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Object<span class="token punctuation">,</span> Object<span class="token operator">>></span> list <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>
+                    Consumer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"g1"</span><span class="token punctuation">,</span> <span class="token string">"c1"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    StreamReadOptions<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">block</span><span class="token punctuation">(</span>Duration<span class="token punctuation">.</span><span class="token function">ofSeconds</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    StreamOffset<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">"stream.orders"</span><span class="token punctuation">,</span> ReadOffset<span class="token punctuation">.</span><span class="token function">lastConsumed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 2.判断订单信息是否为空</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>list <span class="token operator">==</span> null <span class="token operator">||</span> list<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">// 如果为null，说明没有消息，继续下一次循环</span>
+                    <span class="token keyword">continue</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                <span class="token comment" spellcheck="true">// 解析数据</span>
+                MapRecord<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Object<span class="token punctuation">,</span> Object<span class="token operator">></span> record <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                Map<span class="token operator">&lt;</span>Object<span class="token punctuation">,</span> Object<span class="token operator">></span> value <span class="token operator">=</span> record<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                VoucherOrder voucherOrder <span class="token operator">=</span> BeanUtil<span class="token punctuation">.</span><span class="token function">fillBeanWithMap</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">VoucherOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 3.创建订单</span>
+                <span class="token function">createVoucherOrder</span><span class="token punctuation">(</span>voucherOrder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 4.确认消息 XACK</span>
+                stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">acknowledge</span><span class="token punctuation">(</span><span class="token string">"s1"</span><span class="token punctuation">,</span> <span class="token string">"g1"</span><span class="token punctuation">,</span> record<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"处理订单异常"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">//处理异常消息</span>
+                <span class="token function">handlePendingList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">handlePendingList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">// 1.获取pending-list中的订单信息 </span>
+               <span class="token comment" spellcheck="true">// XREADGROUP GROUP g1 c1 COUNT 1 BLOCK 2000 STREAMS s1 0</span>
+                List<span class="token operator">&lt;</span>MapRecord<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Object<span class="token punctuation">,</span> Object<span class="token operator">>></span> list <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span>
+                    Consumer<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"g1"</span><span class="token punctuation">,</span> <span class="token string">"c1"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    StreamReadOptions<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    StreamOffset<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token string">"stream.orders"</span><span class="token punctuation">,</span> ReadOffset<span class="token punctuation">.</span><span class="token function">from</span><span class="token punctuation">(</span><span class="token string">"0"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 2.判断订单信息是否为空</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>list <span class="token operator">==</span> null <span class="token operator">||</span> list<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">// 如果为null，说明没有异常消息，结束循环</span>
+                    <span class="token keyword">break</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                <span class="token comment" spellcheck="true">// 解析数据</span>
+                MapRecord<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Object<span class="token punctuation">,</span> Object<span class="token operator">></span> record <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                Map<span class="token operator">&lt;</span>Object<span class="token punctuation">,</span> Object<span class="token operator">></span> value <span class="token operator">=</span> record<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                VoucherOrder voucherOrder <span class="token operator">=</span> BeanUtil<span class="token punctuation">.</span><span class="token function">fillBeanWithMap</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">VoucherOrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 3.创建订单</span>
+                <span class="token function">createVoucherOrder</span><span class="token punctuation">(</span>voucherOrder<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 4.确认消息 XACK</span>
+                stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForStream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">acknowledge</span><span class="token punctuation">(</span><span class="token string">"s1"</span><span class="token punctuation">,</span> <span class="token string">"g1"</span><span class="token punctuation">,</span> record<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                log<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"处理pendding订单异常"</span><span class="token punctuation">,</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">try</span><span class="token punctuation">{</span>
+                    Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span><span class="token keyword">catch</span><span class="token punctuation">(</span>Exception e<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                    e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="⑧达人探店"><a href="#⑧达人探店" class="headerlink" title="⑧达人探店"></a>⑧达人探店</h1><h2 id="❶发布探店笔记"><a href="#❶发布探店笔记" class="headerlink" title="❶发布探店笔记"></a>❶发布探店笔记</h2><h2 id="❷查看探店笔记"><a href="#❷查看探店笔记" class="headerlink" title="❷查看探店笔记"></a>❷查看探店笔记</h2><h2 id="❸点赞功能"><a href="#❸点赞功能" class="headerlink" title="❸点赞功能"></a>❸点赞功能</h2><h2 id="❹点赞排行榜"><a href="#❹点赞排行榜" class="headerlink" title="❹点赞排行榜"></a>❹点赞排行榜</h2><p>好友关注</p>
+<p>附近的商户</p>
+<p>用户签到</p>
+<p>UV统计</p>
 <h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -3489,7 +4323,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">718.8k</span>&nbsp;字
+                class="white-color">727.8k</span>&nbsp;字
             
             
             

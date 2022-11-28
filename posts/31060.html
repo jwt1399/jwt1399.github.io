@@ -47,9 +47,9 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-</head>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -858,14 +858,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-11-26
+                    2022-11-28
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    8k
+                    8.7k
                 </div>
                 
 
@@ -1305,6 +1305,39 @@
 <p>Session 机制的存在就是为了解决这个问题，Session 的主要作用就是通过服务端记录用户的状态。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个 Session）。在服务端保存 Session 的方法很多，最常用的就是内存和数据库(比如是使用内存数据库 redis 保存)。</p>
 <p><strong>既然 Session 存放在服务器端，那么我们如何实现 Session 跟踪呢？</strong>大部分情况下，我们都是通过在 Cookie 中附加一个 Session ID 来方式来跟踪。</p>
 <p>**Cookie 被禁用怎么办?**最常用的就是利用 URL 重写把 Session ID 直接附加在 URL 路径的后面。</p>
+<h3 id="❿HTTP和RPC"><a href="#❿HTTP和RPC" class="headerlink" title="❿HTTP和RPC"></a>❿HTTP和RPC</h3><table>
+<thead>
+<tr>
+<th align="center">HTTP（HyperText Transfer Protocol，超文本传输协议）</th>
+<th align="center">RPC（Remote Procedure Call，远程过程调用）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">基于HTTP协议</td>
+<td align="center">基于TCP协议，也可以基于HTTP协议</td>
+</tr>
+<tr>
+<td align="center">HTTP接口使用基于HTTP协议的URL传参调用</td>
+<td align="center">实现调用本地接口一样调用远程服务的接口</td>
+</tr>
+<tr>
+<td align="center">HTTP更臃肿，但跨平台、跨语言更灵活</td>
+<td align="center">RPC效率更好，但是实现更难</td>
+</tr>
+<tr>
+<td align="center">需要配置Nginx，HAProxy实现负载均衡</td>
+<td align="center">自带了负载均衡策略</td>
+</tr>
+<tr>
+<td align="center">HTTP主要用于对外的异构环境，浏览器调用，APP接口调用，第三方接口调用等等。</td>
+<td align="center">RPC主要用于公司内部服务调用，性能消耗低，传输效率高，服务治理方便。</td>
+</tr>
+</tbody></table>
+<h4 id="流行的RPC框架"><a href="#流行的RPC框架" class="headerlink" title="流行的RPC框架"></a>流行的RPC框架</h4><ol>
+<li><code>gRPC</code>：gRPC是Google公布的开源项目，基于HTTP2.0协议，并支持常见的众多编程语言。HTTP 2.0协议是基于二进制的HTTP协议的升级版本，gRPC底层使用了Netty框架。</li>
+<li><code>Thrift</code>：Thrift是Facebook的一个开源项目，主要是一个跨语言的服务开发框架。它有一个代码生成器来对它所定义的IDL文件自动生成服务代码框架。Thrift对于底层的RPC通讯都是透明的，用户只需要对其进行二次开发即可，省去了一系列重复的前置基础开发工作。</li>
+<li><code>Dubbo</code>：Dubbo是阿里集团开源的一个极为出名的RPC框架，在很多互联网公司和企业应用中广泛使用。协议和序列化框架都可以插拔是及其鲜明的特色。</li>
+</ol>
 <h2 id="④Other"><a href="#④Other" class="headerlink" title="④Other"></a>④Other</h2><h3 id="❶DNS-的解析过程"><a href="#❶DNS-的解析过程" class="headerlink" title="❶DNS 的解析过程"></a>❶DNS 的解析过程</h3><ol>
 <li><p>浏览器搜索<strong>自己的DNS缓存</strong></p>
 </li>
@@ -1402,7 +1435,28 @@
 <li><strong>信号量(Semaphore)</strong> ：它允许同一时刻多个线程访问同一资源，但是需要控制同一时刻访问此资源的最大线程数量。</li>
 <li><strong>事件(Event)</strong> :Wait/Notify：通过通知操作的方式来保持多线程同步，方便的实现多线程优先级的比较操作。</li>
 </ol>
-<h3 id="❽死锁的四个必要条件"><a href="#❽死锁的四个必要条件" class="headerlink" title="❽死锁的四个必要条件"></a>❽死锁的四个必要条件</h3><h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
+<h3 id="❽死锁"><a href="#❽死锁" class="headerlink" title="❽死锁"></a>❽死锁</h3><blockquote>
+<p>死锁是指两个或两个以上的线程在执行过程中，因争夺资源而造成的一种互相等待的现象。若无外力作用，它们都将无法推进下去。</p>
+</blockquote>
+<p><strong>死锁产生的四个必要条件</strong></p>
+<ul>
+<li><p><strong>互斥</strong>：一个资源每次只能被一个进程使用</p>
+</li>
+<li><p><strong>不可强占</strong>：任一进程不能从另一进程那里抢夺资源</p>
+</li>
+<li><p><strong>请求和保持</strong>：一个进程请求资源而阻塞时，不释放已占有的资源</p>
+</li>
+<li><p><strong>循环等待</strong>：进程之间循环等待着资源</p>
+</li>
+</ul>
+<p><strong>解决死锁的方法</strong></p>
+<ul>
+<li><strong>预防死锁</strong>：采用策略<strong>限制并发进程对资源的请求</strong>，使得死锁的必要条件在系统执行的任何时间上都不满足。</li>
+<li><strong>避免死锁</strong>：系统在分配资源时，根据资源的使用情况<strong>提前做出预测</strong>，从而<strong>避免死锁的发生</strong></li>
+<li><strong>检测死锁</strong>：设<strong>专门的机构</strong>，当死锁发生时，能够检测死锁的发生，并精确地确定与死锁有关的进程和资源。</li>
+<li><strong>解除死锁</strong>：与检测死锁配套的一种措施，用于<strong>将进程从死锁状态下解脱出来</strong>。</li>
+</ul>
+<h2 id="②内存管理"><a href="#②内存管理" class="headerlink" title="②内存管理"></a>②内存管理</h2><h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
      <tr>
@@ -2197,7 +2251,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">718.8k</span>&nbsp;字
+                class="white-color">727.8k</span>&nbsp;字
             
             
             
