@@ -867,14 +867,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-02
+                    2022-12-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    38.8k
+                    40.7k
                 </div>
                 
 
@@ -6497,6 +6497,246 @@ List<span class="token operator">&lt;</span>Integer<span class="token operator">
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="617-合并二叉树"><a href="#617-合并二叉树" class="headerlink" title="617. 合并二叉树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/merge-two-binary-trees/">617. 合并二叉树</a></h4><p>给你两棵二叉树： <code>root1</code> 和 <code>root2</code> 。</p>
+<p>想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，<strong>不为</strong> null 的节点将直接作为新二叉树的节点。</p>
+<p>返回合并后的二叉树。<strong>注意:</strong> 合并过程必须从两个树的根节点开始。</p>
+<p><strong>示例 1：</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2021/02/05/merge.jpg"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root1</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,3,2,5], root2 = [2,1,3,null,4,null,7]</span>
+输出：[3,4,5,5,4,null,7]
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root1</span> <span class="token punctuation">=</span> <span class="token attr-value">[1], root2 = [1,2]</span>
+<span class="token attr-name">输出：[2,2]</span> 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">mergeTrees</span><span class="token punctuation">(</span>TreeNode root1<span class="token punctuation">,</span> TreeNode root2<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root1 <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> root2<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root2 <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span> root1<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        TreeNode root <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TreeNode</span><span class="token punctuation">(</span>root1<span class="token punctuation">.</span>val <span class="token operator">+</span> root2<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        root<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token function">mergeTrees</span><span class="token punctuation">(</span>root1<span class="token punctuation">.</span>left<span class="token punctuation">,</span> root2<span class="token punctuation">.</span>left<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">mergeTrees</span><span class="token punctuation">(</span>root1<span class="token punctuation">.</span>right<span class="token punctuation">,</span> root2<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">mergeTrees</span><span class="token punctuation">(</span>TreeNode root1<span class="token punctuation">,</span> TreeNode root2<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 如果一棵树有，另一棵树没有，接上去</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root1 <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> root2<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root2 <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> root1<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 两棵树都有的节点，叠加节点值</span>
+        root1<span class="token punctuation">.</span>val <span class="token operator">+=</span> root2<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 递归合并左右子树</span>
+        root1<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token function">mergeTrees</span><span class="token punctuation">(</span>root1<span class="token punctuation">.</span>left<span class="token punctuation">,</span> root2<span class="token punctuation">.</span>left<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        root1<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">mergeTrees</span><span class="token punctuation">(</span>root1<span class="token punctuation">.</span>right<span class="token punctuation">,</span> root2<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> root1<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="❼二叉搜索树"><a href="#❼二叉搜索树" class="headerlink" title="❼二叉搜索树"></a>❼二叉搜索树</h3><h4 id="解题框架"><a href="#解题框架" class="headerlink" title="解题框架"></a>解题框架</h4><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">void</span> <span class="token function">BST</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">==</span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">// 找到目标，做点什么</span>
+    <span class="token punctuation">}</span> 
+    <span class="token comment" spellcheck="true">// 去右子树搜索</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">&lt;</span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">BST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> target<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 去左子树搜索 </span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">></span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">BST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> target<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>     
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="700-二叉搜索树中的搜索"><a href="#700-二叉搜索树中的搜索" class="headerlink" title="700. 二叉搜索树中的搜索 "></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/search-in-a-binary-search-tree/">700. 二叉搜索树中的搜索 </a></h4><p>给定二叉搜索树（BST）的根节点 <code>root</code> 和一个整数值 <code>val</code>。</p>
+<p>你需要在 BST 中找到节点值等于 <code>val</code> 的节点。 返回以该节点为根的子树。 如果节点不存在，则返回 <code>null</code> 。</p>
+<p><strong>示例 1:</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2021/01/12/tree1.jpg"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[4,2,7,1,3], val = 2</span>
+输出：[2,1,3]
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2:</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2021/01/12/tree2.jpg"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[4,2,7,1,3], val = 5</span>
+输出：[]
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//递归</span>
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">searchBST</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 去左子树搜索</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">></span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">searchBST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> target<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 去右子树搜索</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">&lt;</span> target<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token function">searchBST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> target<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">//迭代</span>
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">searchBST</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> val<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>root <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>val <span class="token operator">==</span> root<span class="token punctuation">.</span>val<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            root <span class="token operator">=</span> val <span class="token operator">&lt;</span> root<span class="token punctuation">.</span>val <span class="token operator">?</span> root<span class="token punctuation">.</span>left <span class="token operator">:</span> root<span class="token punctuation">.</span>right<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="98-验证二叉搜索树"><a href="#98-验证二叉搜索树" class="headerlink" title="98. 验证二叉搜索树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/validate-binary-search-tree/">98. 验证二叉搜索树</a></h4><p>给你一个二叉树的根节点 <code>root</code> ，判断其是否是一个有效的二叉搜索树。</p>
+<p><strong>有效</strong> 二叉搜索树定义如下：</p>
+<ul>
+<li>节点的左子树只包含 <strong>小于</strong> 当前节点的数。</li>
+<li>节点的右子树只包含 <strong>大于</strong> 当前节点的数。</li>
+<li>所有左子树和右子树自身必须也是二叉搜索树。</li>
+</ul>
+<p><strong>示例 1：</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2020/12/01/tree1.jpg"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[2,1,3]</span>
+输出：true
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2020/12/01/tree2.jpg"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[5,1,4,null,null,3,6]</span>
+输出：false
+<span class="token attr-name">解释：根节点的值是</span> <span class="token attr-value">5 ，但是右子节点的值是 4 。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<hr>
+<p>误区：BST 不是左小右大么，那只要检查 <code>root.val &gt; root.left.val</code> 且 <code>root.val &lt; root.right.val</code> 不就行了？这样是不对的，因为 BST 左小右大的特性是指 <code>root.val</code> 要比左子树的所有节点都更大，要比右子树的所有节点都小，只检查左右两个子节点当然是不够的。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">boolean</span> <span class="token function">isValidBST</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token function">isValidBST</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> null<span class="token punctuation">,</span> null<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment" spellcheck="true">/* 限定以 root 为根的子树节点必须满足 max.val > root.val > min.val */</span>
+    <span class="token keyword">boolean</span> <span class="token function">isValidBST</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> TreeNode min<span class="token punctuation">,</span> TreeNode max<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// base case</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 若 root.val 不符合 max 和 min 的限制，说明不是合法 BST</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>min <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> root<span class="token punctuation">.</span>val <span class="token operator">&lt;=</span> min<span class="token punctuation">.</span>val<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>max <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> root<span class="token punctuation">.</span>val <span class="token operator">>=</span> max<span class="token punctuation">.</span>val<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 限定左子树的最大值是 root.val，右子树的最小值是 root.val</span>
+        <span class="token keyword">return</span> <span class="token function">isValidBST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> min<span class="token punctuation">,</span> root<span class="token punctuation">)</span> 
+            <span class="token operator">&amp;&amp;</span> <span class="token function">isValidBST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> root<span class="token punctuation">,</span> max<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="450-删除二叉搜索树中的节点"><a href="#450-删除二叉搜索树中的节点" class="headerlink" title="450. 删除二叉搜索树中的节点"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/delete-node-in-a-bst/">450. 删除二叉搜索树中的节点</a></h4><p>给定一个二叉搜索树的根节点 <strong>root</strong> 和一个值 <strong>key</strong>，删除二叉搜索树中的 <strong>key</strong> 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。</p>
+<p>一般来说，删除节点可分为两个步骤：</p>
+<ol>
+<li>首先找到需要删除的节点；</li>
+<li>如果找到了，删除它。</li>
+</ol>
+<p><strong>示例 1:</strong></p>
+<p><img src="https://assets.leetcode.com/uploads/2020/09/04/del_node_1.jpg"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[5,3,6,2,4,null,7], key = 3</span>
+输出：[5,4,6,2,null,null,7]
+<span class="token attr-name">解释：给定需要删除的节点值是</span> <span class="token attr-value">3，所以我们首先找到 3 这个节点，然后删除它。</span>
+<span class="token attr-name">一个正确的答案是</span> <span class="token attr-value">[5,4,6,2,null,null,7], 如下图所示。</span>
+<span class="token attr-name">另一个正确答案是</span> <span class="token attr-value">[5,2,6,null,4,null,7]。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2:</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入</span><span class="token punctuation">:</span> <span class="token attr-value">root = [5,3,6,2,4,null,7], key = 0</span>
+<span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">[5,3,6,2,4,null,7]</span>
+<span class="token attr-name">解释</span><span class="token punctuation">:</span> <span class="token attr-value">二叉树不包含值为 0 的节点</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 3:</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入</span><span class="token punctuation">:</span> <span class="token attr-value">root = [], key = 0</span>
+<span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">[]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p><strong>情况 1</strong>：<code>A</code> 恰好是末端节点，两个子节点都为空，那么它可以当场去世了：</p>
+<p><img src="https://img.jwt1399.top/img/202212041947805.png"></p>
+<p><strong>情况 2</strong>：<code>A</code> 只有一个非空子节点，那么它要让这个孩子接替自己的位置：</p>
+<p><img src="https://img.jwt1399.top/img/202212041947953.png"></p>
+<p><strong>情况 3</strong>：<code>A</code> 有两个子节点，麻烦了，为了不破坏 BST 的性质，<code>A</code> 必须找到左子树中最大的那个节点或者右子树中最小的那个节点来接替自己，我的解法是用右子树中最小节点来替换：</p>
+<p><img src="https://img.jwt1399.top/img/202212041947896.png"></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//解题框架</span>
+TreeNode <span class="token function">deleteNode</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">==</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 找到啦，进行删除</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">></span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 去左子树找</span>
+        root<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">&lt;</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 去右子树找</span>
+        root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">deleteNode</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">==</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 这两个 if 把情况 1 和 2 都正确处理了</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>left <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">return</span> root<span class="token punctuation">.</span>right<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>right <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">return</span> root<span class="token punctuation">.</span>left<span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 情况 3</span>
+            <span class="token comment" spellcheck="true">// 获得右子树最小的节点</span>
+            TreeNode minNode <span class="token operator">=</span> <span class="token function">getMin</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 删除右子树最小的节点</span>
+            root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> minNode<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 用右子树最小的节点替换 root 节点</span>
+            minNode<span class="token punctuation">.</span>left <span class="token operator">=</span> root<span class="token punctuation">.</span>left<span class="token punctuation">;</span>
+            minNode<span class="token punctuation">.</span>right <span class="token operator">=</span> root<span class="token punctuation">.</span>right<span class="token punctuation">;</span>
+            root <span class="token operator">=</span> minNode<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">></span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            root<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">&lt;</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    TreeNode <span class="token function">getMin</span><span class="token punctuation">(</span>TreeNode node<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// BST 最左边的就是最小的</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>node<span class="token punctuation">.</span>left <span class="token operator">!=</span> null<span class="token punctuation">)</span> node <span class="token operator">=</span> node<span class="token punctuation">.</span>left<span class="token punctuation">;</span>
+        <span class="token keyword">return</span> node<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>注意：</p>
+<p>情况 3 时通过一系列略微复杂的链表操作交换 <code>root</code> 和 <code>minNode</code> 两个节点：</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 处理情况 3</span>
+<span class="token comment" spellcheck="true">// 获得右子树最小的节点</span>
+TreeNode minNode <span class="token operator">=</span> <span class="token function">getMin</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 删除右子树最小的节点</span>
+root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> minNode<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 用右子树最小的节点替换 root 节点</span>
+minNode<span class="token punctuation">.</span>left <span class="token operator">=</span> root<span class="token punctuation">.</span>left<span class="token punctuation">;</span>
+minNode<span class="token punctuation">.</span>right <span class="token operator">=</span> root<span class="token punctuation">.</span>right<span class="token punctuation">;</span>
+root <span class="token operator">=</span> minNode<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>有的读者可能会疑惑，替换 <code>root</code> 节点为什么这么麻烦，直接改 <code>val</code> 字段不就行了？看起来还更简洁易懂：</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 处理情况 3</span>
+<span class="token comment" spellcheck="true">// 获得右子树最小的节点</span>
+TreeNode minNode <span class="token operator">=</span> <span class="token function">getMin</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 删除右子树最小的节点</span>
+root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">deleteNode</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> minNode<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 用右子树最小的节点替换 root 节点</span>
+root<span class="token punctuation">.</span>val <span class="token operator">=</span> minNode<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>仅对于这道算法题来说是可以的，但这样操作并不完美，我们一般不会通过修改节点内部的值来交换节点。因为在实际应用中，BST 节点内部的数据域是用户自定义的，可以非常复杂，而 BST 作为数据结构（一个工具人），其操作应该和内部存储的数据域解耦，所以我们更倾向于使用指针操作来交换节点，根本没必要关心内部数据。</p>
+<h4 id="701-二叉搜索树中的插入操作"><a href="#701-二叉搜索树中的插入操作" class="headerlink" title="701. 二叉搜索树中的插入操作"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/insert-into-a-binary-search-tree/">701. 二叉搜索树中的插入操作</a></h4><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/P5rCT8/">剑指 Offer II 053. 二叉搜索树中的中序后继 - 力扣（Leetcode）</a></p>
 <h3 id="层序遍历相关题目"><a href="#层序遍历相关题目" class="headerlink" title="层序遍历相关题目"></a>层序遍历相关题目</h3><h4 id="107-二叉树的层序遍历-II"><a href="#107-二叉树的层序遍历-II" class="headerlink" title="107. 二叉树的层序遍历 II "></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/binary-tree-level-order-traversal-ii/">107. 二叉树的层序遍历 II </a></h4><p>给你二叉树的根节点 <code>root</code> ，返回其节点值 <strong>自底向上的层序遍历</strong> 。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
     <span class="token keyword">public</span> List<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>Integer<span class="token operator">>></span> <span class="token function">levelOrderBottom</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -7396,6 +7636,7 @@ cur<span class="token punctuation">.</span>right<span class="token punctuation">
 <li>java.util.Comparator：是挽救的比较接口，需要单独定义一个比较类，里面有compare比较方法。</li>
 </ul>
 <p>两种方法各有优劣， 用Comparable简单， 只要实现Comparable接口的对象直接就成为一个可以比较的对象，但是需要修改源代码。 用Comparator的好处是不需要修改源代码， 而是另外实现一个比较器， 当某个自定义的对象需要作比较的时候，把比较器和对象一起传递过去就可以比大小了， 并且在Comparator 里面用户可以自己实现复杂的可以通用的逻辑，使其可以匹配一些比较简单的对象，那样就可以节省很多重复劳动了。</p>
+<h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIxMDAwMDAxMw==&mid=2650732437&idx=1&sn=cf71cc01b4fdbfefb1471729fad74fbb&chksm=8f611677b8169f614e86d1537d83a48536a4198c2cca36ff4f3dc8eb54d64fce1c946bb46ec6&mpshare=1&scene=23&srcid=112131aewg4cW6yA0hrqkIEZ&sharer_sharetime=1670135117489&sharer_shareid=6a42f6adcb98a88421502c27789dc6ea#rd">《程序员数学：位运算》</a></p>
 <h2 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h2><blockquote>
 <p>KMP 算法是一个快速查找匹配串的算法，它的作用是：<strong>如何快速在「原字符串」中找到「匹配字符串」。</strong></p>
 <p>暴力查找复杂度是 O(m∗n)，KMP 算法的复杂度为 O(m+n)，其中m为原字符串长度，m为匹配字符串长度</p>
@@ -8250,7 +8491,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">740.4k</span>&nbsp;字
+                class="white-color">747.9k</span>&nbsp;字
             
             
             

@@ -854,14 +854,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-02
+                    2022-12-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    17.3k
+                    17.5k
                 </div>
                 
 
@@ -1545,20 +1545,33 @@ systemctl status redis
 <p>Bitmaps的常见命令</p>
 </blockquote>
 <ul>
-<li><p>setbit &lt;key&gt; &lt;offset&gt; &lt;value&gt; 设置Bitmaps中某个偏移量的值（0或1）</p>
-</li>
-<li><p>getbit &lt;key&gt; &lt;offset&gt; 获取Bitmaps中某个偏移量的值</p>
-</li>
-<li><p>bitcount &lt;key&gt; [start end] 统计字符串从start字节到end字节比特值为1的数量</p>
-</li>
-<li><p>bitop and(or/not/xor) &lt;destkey&gt; [key…] 可以做多个Bitmaps的and（交集） 、 or（并集） 、 not（非） 、 xor（异或） 操作并将结果保存在destkey中。</p>
-</li>
+<li>setbit &lt;key&gt; &lt;offset&gt; &lt;value&gt; 设置Bitmaps中某个偏移量的值（0或1）</li>
+<li>getbit &lt;key&gt; &lt;offset&gt; 获取Bitmaps中某个偏移量的值</li>
+<li>bitcount &lt;key&gt; [start end] 统计字符串从start字节到end字节比特值为1的数量</li>
+<li>bitop and(or/not/xor) &lt;destkey&gt; [key…] 可以做多个Bitmaps的and（交集） 、 or（并集） 、 not（非） 、 xor（异或） 操作并将结果保存在destkey中。</li>
+<li>BITFIELD ：操作（查询、修改、自增）BitMap中bit数组中的指定位置（offset）的值</li>
 </ul>
+<pre class="line-numbers language-sql"><code class="language-sql">BITFIELD <span class="token keyword">key</span> GET encoding <span class="token keyword">offset</span><span class="token operator">|</span><span class="token punctuation">[</span>OVERFLOW WRAP<span class="token operator">|</span>SAT<span class="token operator">|</span>FAIL<span class="token punctuation">]</span> <span class="token keyword">SET</span> encoding <span class="token keyword">offset</span> <span class="token keyword">value</span><span class="token operator">|</span>INCRBY encoding <span class="token keyword">offset</span> increment 
+
+<span class="token comment" spellcheck="true">#  GET查询 SET修改 INCRBY自增</span>
+<span class="token comment" spellcheck="true">#  encoding 设置符号位和操作长度，u代表无符号，i代表有符号</span>
+<span class="token comment" spellcheck="true">#  offset 偏移量，从第几位开始</span>
+
+<span class="token comment" spellcheck="true"># 查询bit数组中从0位开始的2位，返回10进制</span>
+BITFIELD <span class="token keyword">key</span> GET u2 <span class="token number">0</span>
+<span class="token comment" spellcheck="true"># 例如数据是11100，则返回3</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>BITFIELD_RO ：查询BitMap中bit数组，并以十进制形式返回，RO：READ_ONLY</li>
+</ul>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true"># 功能跟BITFIELD的查询功能一样</span>
+BITFIELD_RO <span class="token keyword">key</span> GET encoding <span class="token keyword">offset</span> <span class="token punctuation">[</span>GET encoding <span class="token keyword">offset</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <blockquote>
 <p>实例1</p>
 </blockquote>
 <p>每个独立用户是否访问过网站，结果存放在Bitmaps中， 将访问的用户记做1， 没有访问的用户记做0， 用偏移量作为用户的id。 假设现在有20个用户，userid=1， 6， 11， 15， 19的用户对网站进行了访问， 那么当前Bitmaps初始化结果如图</p>
-<p><img src="/Users/jianjian/jwt1399.github.io/source/images/Redis/image-20220717143701738.png"></p>
+<p><img src="https://img.jwt1399.top/img/202212041311883.png"></p>
 <p>users:20220717代表2022-07-17这天的独立访问用户的Bitmaps</p>
 <pre class="line-numbers language-bash"><code class="language-bash">127.0.0.1:6379<span class="token operator">></span> setbit users:20220717 1 1
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
@@ -1598,22 +1611,22 @@ systemctl status redis
 <p>实例2</p>
 </blockquote>
 <p>2022-07-02 日访问网站的userid=1,2,5,9。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">setbit users:20220702 1 1
+<pre class="line-numbers language-sql"><code class="language-sql">setbit users:<span class="token number">20220702</span> <span class="token number">1</span> <span class="token number">1</span>
 
-setbit users:20220702 2 1
+setbit users:<span class="token number">20220702</span> <span class="token number">2</span> <span class="token number">1</span>
 
-setbit users:20220702 5 1
+setbit users:<span class="token number">20220702</span> <span class="token number">5</span> <span class="token number">1</span>
 
-setbit users:20220702 9 1
+setbit users:<span class="token number">20220702</span> <span class="token number">9</span> <span class="token number">1</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>2022-07-03 日访问网站的userid=0,1,4,9。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">setbit users:20220703 0 1
+<pre class="line-numbers language-sql"><code class="language-sql">setbit users:<span class="token number">20220703</span> <span class="token number">0</span> <span class="token number">1</span>
 
-setbit users:20220703 1 1
+setbit users:<span class="token number">20220703</span> <span class="token number">1</span> <span class="token number">1</span>
 
-setbit users:20220703 4 1
+setbit users:<span class="token number">20220703</span> <span class="token number">4</span> <span class="token number">1</span>
 
-setbit users:20220703 9 1
+setbit users:<span class="token number">20220703</span> <span class="token number">9</span> <span class="token number">1</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>计算出两天都访问过网站的用户数量</p>
 <pre class="line-numbers language-bash"><code class="language-bash">127.0.0.1:6379<span class="token operator">></span> bitop and users:and:20220702_03 users:20220702 users:20220703
@@ -3904,7 +3917,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">740.4k</span>&nbsp;字
+                class="white-color">747.9k</span>&nbsp;字
             
             
             

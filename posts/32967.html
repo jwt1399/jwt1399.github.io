@@ -863,14 +863,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-02
+                    2022-12-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    28k
+                    31k
                 </div>
                 
 
@@ -901,9 +901,9 @@
 </li>
 </ul>
 </li>
-<li><p><strong>附近的商户</strong>：利用Redis的GEOHash来完成对于地理坐标的操作</p>
+<li><p><strong>附近的商户</strong>：利用Redis的GEO来完成对于地理坐标的操作</p>
 </li>
-<li><p><strong>UV统计</strong>：使用Redis来完成统计功能</p>
+<li><p><strong>UV统计</strong>：使用Redis的HyperLogLog来完成统计功能</p>
 </li>
 <li><p><strong>用户签到</strong>：使用Redis的BitMap数据统计功能</p>
 </li>
@@ -3529,7 +3529,7 @@ redis<span class="token punctuation">.</span><span class="token keyword">call</s
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="⑧达人探店"><a href="#⑧达人探店" class="headerlink" title="⑧达人探店"></a>⑧达人探店</h1><h2 id="❶发布探店笔记"><a href="#❶发布探店笔记" class="headerlink" title="❶发布探店笔记"></a>❶发布探店笔记</h2><p>探店笔记类似点评网站的评价，往往是图文结合。对应的表有两个：</p>
+<h1 id="⑧达人探店-ZSet"><a href="#⑧达人探店-ZSet" class="headerlink" title="⑧达人探店-ZSet"></a>⑧达人探店-ZSet</h1><h2 id="❶发布探店笔记"><a href="#❶发布探店笔记" class="headerlink" title="❶发布探店笔记"></a>❶发布探店笔记</h2><p>探店笔记类似点评网站的评价，往往是图文结合。对应的表有两个：</p>
 <ul>
 <li>tb_blog：探店笔记表，包含笔记中的标题、文字、图片等</li>
 <li>tb_blog_comments：其他用户对探店笔记的评价</li>
@@ -3836,7 +3836,7 @@ redis<span class="token punctuation">.</span><span class="token keyword">call</s
     <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>userDTOS<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h1 id="⑨好友关注"><a href="#⑨好友关注" class="headerlink" title="⑨好友关注"></a>⑨好友关注</h1><h2 id="❶关注和取关"><a href="#❶关注和取关" class="headerlink" title="❶关注和取关"></a>❶关注和取关</h2><p><img src="https://img.jwt1399.top/img/202211301608038.png"></p>
+<h1 id="⑨好友关注-Set"><a href="#⑨好友关注-Set" class="headerlink" title="⑨好友关注-Set"></a>⑨好友关注-Set</h1><h2 id="❶关注和取关"><a href="#❶关注和取关" class="headerlink" title="❶关注和取关"></a>❶关注和取关</h2><p><img src="https://img.jwt1399.top/img/202211301608038.png"></p>
 <p>实现思路：基于该表数据结构，实现两个接口：</p>
 <ul>
 <li>关注和取关接口</li>
@@ -3884,7 +3884,6 @@ redis<span class="token punctuation">.</span><span class="token keyword">call</s
     follow<span class="token punctuation">.</span><span class="token function">setUserId</span><span class="token punctuation">(</span>userId<span class="token punctuation">)</span><span class="token punctuation">;</span>
     follow<span class="token punctuation">.</span><span class="token function">setFollowUserId</span><span class="token punctuation">(</span>followUserId<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">boolean</span> isSuccess <span class="token operator">=</span> <span class="token function">save</span><span class="token punctuation">(</span>follow<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
   <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 3.取关，删除 delete from tb_follow where user_id = ? and follow_user_id = ?</span>
     <span class="token function">remove</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">QueryWrapper</span><span class="token operator">&lt;</span>Follow<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -3903,7 +3902,7 @@ redis<span class="token punctuation">.</span><span class="token keyword">call</s
   <span class="token comment" spellcheck="true">// 3.判断</span>
   <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="❷共同关注"><a href="#❷共同关注" class="headerlink" title="❷共同关注"></a>❷共同关注</h2><p>想要查看共同关注的好友，需要首先进入到这个页面，这个页面会发起两个请求</p>
 <ul>
 <li><p>1、去查询用户的详情</p>
@@ -4253,9 +4252,328 @@ count：查询个数，返回结果数量
     <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>附近的商户</p>
-<p>用户签到</p>
-<p>UV统计</p>
+<h1 id="⑩附近的商户-GEO"><a href="#⑩附近的商户-GEO" class="headerlink" title="⑩附近的商户-GEO"></a>⑩附近的商户-GEO</h1><h2 id="❶GEO数据结构的基本用法"><a href="#❶GEO数据结构的基本用法" class="headerlink" title="❶GEO数据结构的基本用法"></a>❶GEO数据结构的基本用法</h2><p>GEO就是Geolocation的简写形式，代表地理坐标。Redis在3.2版本中加入了对GEO的支持，允许存储地理坐标信息，帮助我们根据经纬度来检索数据。常见的命令有：</p>
+<ul>
+<li>GEOADD：添加一个地理空间信息，包含：经度（longitude）、纬度（latitude）、值（member）</li>
+<li>GEODIST：计算指定的两个点之间的距离并返回</li>
+<li>GEOHASH：将指定member的坐标转为hash字符串形式并返回</li>
+<li>GEOPOS：返回指定member的坐标</li>
+<li><del>GEORADIUS：指定圆心、半径，找到该圆内包含的所有member，并按照与圆心之间的距离排序后返回。6.以后已废弃</del></li>
+<li>GEOSEARCH：在指定范围内搜索member，并按照与指定点之间的距离排序后返回。范围可以是圆形或矩形。6.2.新功能</li>
+<li>GEOSEARCHSTORE：与GEOSEARCH功能一致，不过可以把结果存储到一个指定的key。 6.2.新功能</li>
+</ul>
+<blockquote>
+<p>练习Redis的GEO功能</p>
+<ul>
+<li><p>1.添加下面几条数据：</p>
+<ul>
+<li><p>北京南站（ 116.378248 39.865275 ）</p>
+</li>
+<li><p>北京站（ 116.42803 39.903738 ）</p>
+</li>
+<li><p>北京西站（ 116.322287 39.893729 ）</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> GEOADd gkey <span class="token number">116.378248</span> <span class="token number">39.865275</span> bjn <span class="token number">116.42803</span> <span class="token number">39.903738</span> bj <span class="token number">116.322287</span> <span class="token number">39.893729</span> bjx
+<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">3</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<ul>
+<li>2.计算北京西站到北京站的距离</li>
+</ul>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> GEODIST gkey bjx bj km
+<span class="token string">"9.0916"</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<ul>
+<li>3.搜索天安门（ 116.397904 39.909005 ）附近10km内的所有火车站，并按照距离升序排序</li>
+</ul>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> GEOSEARCH gkey FROMLONLAT <span class="token number">116.397904</span> <span class="token number">39.909005</span> BYRADIUS <span class="token number">10</span> km
+<span class="token number">1</span><span class="token punctuation">)</span> <span class="token string">"bj"</span>
+<span class="token number">2</span><span class="token punctuation">)</span> <span class="token string">"bjn"</span>
+<span class="token number">3</span><span class="token punctuation">)</span> <span class="token string">"bjx"</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<h2 id="❷导入店铺数据到GEO"><a href="#❷导入店铺数据到GEO" class="headerlink" title="❷导入店铺数据到GEO"></a>❷导入店铺数据到GEO</h2><p>当我们点击美食之后，会出现一系列的商家，商家中可以按照多种排序方式，我们此时关注的是距离，这个地方就需要使用到我们的GEO，向后台传入当前app收集的地址(我们此处是写死的) ，以当前坐标作为圆心，同时绑定相同的店家类型type，以及分页信息，把这几个条件传入后台，后台查询出对应的数据再返回。</p>
+<p><img src="https://img.jwt1399.top/img/202212031520795.png"></p>
+<p>我们要做的事情是：将数据库表中的数据导入到redis中去，redis中的GEO，GEO在redis中是一个menber和一个经纬度，我们把x和y传入到经纬度位置去，但我们不能把所有的数据都放入到menber中去，毕竟作为redis是一个内存级数据库，如果存海量数据，redis还是力不从心，所以我们在这个地方存储他的id即可。</p>
+<p>但是这个时候还有一个问题，就是在redis中并没有存储type，所以我们无法根据type来对数据进行筛选，所以我们可以按照商户类型做分组，类型相同的商户作为同一组，以typeId为key存入同一个GEO集合中即可</p>
+<p><img src="../images/Redis-%E5%AE%9E%E6%88%98%E7%AF%87/image-20221203152526081.png"></p>
+<p>HmDianPingApplicationTests</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">void</span> <span class="token function">loadShopData</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 1.查询店铺信息</span>
+    List<span class="token operator">&lt;</span>Shop<span class="token operator">></span> list <span class="token operator">=</span> shopService<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.把店铺分组，按照typeId分组，typeId一致的放到一个集合</span>
+    Map<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> List<span class="token operator">&lt;</span>Shop<span class="token operator">>></span> map <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">collect</span><span class="token punctuation">(</span>Collectors<span class="token punctuation">.</span><span class="token function">groupingBy</span><span class="token punctuation">(</span>Shop<span class="token operator">:</span><span class="token operator">:</span>getTypeId<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 3.分批完成写入Redis</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>Map<span class="token punctuation">.</span>Entry<span class="token operator">&lt;</span>Long<span class="token punctuation">,</span> List<span class="token operator">&lt;</span>Shop<span class="token operator">>></span> entry <span class="token operator">:</span> map<span class="token punctuation">.</span><span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 3.1.获取类型id</span>
+        Long typeId <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String key <span class="token operator">=</span> SHOP_GEO_KEY <span class="token operator">+</span> typeId<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 3.2.获取同类型的店铺的集合</span>
+        List<span class="token operator">&lt;</span>Shop<span class="token operator">></span> value <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        List<span class="token operator">&lt;</span>RedisGeoCommands<span class="token punctuation">.</span>GeoLocation<span class="token operator">&lt;</span>String<span class="token operator">>></span> locations <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 3.3.写入redis GEOADD key 经度 纬度 member</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>Shop shop <span class="token operator">:</span> value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// stringRedisTemplate.opsForGeo().add(key, new Point(shop.getX(), shop.getY()), shop.getId().toString());</span>
+            locations<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">RedisGeoCommands<span class="token punctuation">.</span>GeoLocation</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>
+                    shop<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                    <span class="token keyword">new</span> <span class="token class-name">Point</span><span class="token punctuation">(</span>shop<span class="token punctuation">.</span><span class="token function">getX</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> shop<span class="token punctuation">.</span><span class="token function">getY</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForGeo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> locations<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❸实现附近商户功能"><a href="#❸实现附近商户功能" class="headerlink" title="❸实现附近商户功能"></a>❸实现附近商户功能</h2><p>SpringDataRedis的2.3.9版本并不支持Redis 6.2提供的GEOSEARCH命令，因此我们需要提升其版本，修改自己的POM</p>
+<p>第一步：导入pom</p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--排除默认的--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-data-redis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>exclusions</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>exclusion</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-data-redis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.data<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>exclusion</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>exclusion</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>lettuce-core<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>io.lettuce<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>exclusion</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>exclusions</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token comment" spellcheck="true">&lt;!--添加自己的--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.data<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-data-redis<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>2.6.2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>io.lettuce<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>lettuce-core<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>6.1.6.RELEASE<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>第二步：</p>
+<p>ShopController</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/of/type"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">queryShopByType</span><span class="token punctuation">(</span>
+        <span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"typeId"</span><span class="token punctuation">)</span> Integer typeId<span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"current"</span><span class="token punctuation">,</span> defaultValue <span class="token operator">=</span> <span class="token string">"1"</span><span class="token punctuation">)</span> Integer current<span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"x"</span><span class="token punctuation">,</span> required <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span> Double x<span class="token punctuation">,</span>
+        <span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"y"</span><span class="token punctuation">,</span> required <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span> Double y
+<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token keyword">return</span> shopService<span class="token punctuation">.</span><span class="token function">queryShopByType</span><span class="token punctuation">(</span>typeId<span class="token punctuation">,</span> current<span class="token punctuation">,</span> x<span class="token punctuation">,</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>ShopServiceImpl</p>
+<pre class="line-numbers language-java"><code class="language-java">        <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Result <span class="token function">queryShopByType</span><span class="token punctuation">(</span>Integer typeId<span class="token punctuation">,</span> Integer current<span class="token punctuation">,</span> Double x<span class="token punctuation">,</span> Double y<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 1.判断是否需要根据坐标查询</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>x <span class="token operator">==</span> null <span class="token operator">||</span> y <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 不需要坐标查询，按数据库查询</span>
+            Page<span class="token operator">&lt;</span>Shop<span class="token operator">></span> page <span class="token operator">=</span> <span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span><span class="token string">"type_id"</span><span class="token punctuation">,</span> typeId<span class="token punctuation">)</span>
+                    <span class="token punctuation">.</span><span class="token function">page</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Page</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>current<span class="token punctuation">,</span> SystemConstants<span class="token punctuation">.</span>DEFAULT_PAGE_SIZE<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 返回数据</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>page<span class="token punctuation">.</span><span class="token function">getRecords</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment" spellcheck="true">// 2.计算分页参数</span>
+        <span class="token keyword">int</span> from <span class="token operator">=</span> <span class="token punctuation">(</span>current <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> SystemConstants<span class="token punctuation">.</span>DEFAULT_PAGE_SIZE<span class="token punctuation">;</span>
+        <span class="token keyword">int</span> end <span class="token operator">=</span> current <span class="token operator">*</span> SystemConstants<span class="token punctuation">.</span>DEFAULT_PAGE_SIZE<span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">// 3.查询redis、按照距离排序、分页。结果：shopId、distance</span>
+        String key <span class="token operator">=</span> SHOP_GEO_KEY <span class="token operator">+</span> typeId<span class="token punctuation">;</span>
+        GeoResults<span class="token operator">&lt;</span>RedisGeoCommands<span class="token punctuation">.</span>GeoLocation<span class="token operator">&lt;</span>String<span class="token operator">>></span> results <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForGeo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// GEOSEARCH key BYLONLAT x y BYRADIUS 10 WITHDISTANCE</span>
+                <span class="token punctuation">.</span><span class="token function">search</span><span class="token punctuation">(</span>
+                        key<span class="token punctuation">,</span>
+                        GeoReference<span class="token punctuation">.</span><span class="token function">fromCoordinate</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> y<span class="token punctuation">)</span><span class="token punctuation">,</span>
+                        <span class="token keyword">new</span> <span class="token class-name">Distance</span><span class="token punctuation">(</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+                        RedisGeoCommands<span class="token punctuation">.</span>GeoSearchCommandArgs<span class="token punctuation">.</span><span class="token function">newGeoSearchArgs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">includeDistance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">limit</span><span class="token punctuation">(</span>end<span class="token punctuation">)</span>
+                <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 4.解析出id</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>results <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>Collections<span class="token punctuation">.</span><span class="token function">emptyList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        List<span class="token operator">&lt;</span>GeoResult<span class="token operator">&lt;</span>RedisGeoCommands<span class="token punctuation">.</span>GeoLocation<span class="token operator">&lt;</span>String<span class="token operator">>>></span> list <span class="token operator">=</span> results<span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;=</span> from<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 没有下一页了，结束</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>Collections<span class="token punctuation">.</span><span class="token function">emptyList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 4.1.截取 from ~ end的部分</span>
+        List<span class="token operator">&lt;</span>Long<span class="token operator">></span> ids <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Distance<span class="token operator">></span> distanceMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        list<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">skip</span><span class="token punctuation">(</span>from<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>result <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 4.2.获取店铺id</span>
+            String shopIdStr <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">getContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ids<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>Long<span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>shopIdStr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 4.3.获取距离</span>
+            Distance distance <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">getDistance</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            distanceMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>shopIdStr<span class="token punctuation">,</span> distance<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 5.根据id查询Shop</span>
+        String idStr <span class="token operator">=</span> StrUtil<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">","</span><span class="token punctuation">,</span> ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        List<span class="token operator">&lt;</span>Shop<span class="token operator">></span> shops <span class="token operator">=</span> <span class="token function">query</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">in</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">,</span> ids<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">last</span><span class="token punctuation">(</span><span class="token string">"ORDER BY FIELD(id,"</span> <span class="token operator">+</span> idStr <span class="token operator">+</span> <span class="token string">")"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>Shop shop <span class="token operator">:</span> shops<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            shop<span class="token punctuation">.</span><span class="token function">setDistance</span><span class="token punctuation">(</span>distanceMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>shop<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 6.返回</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>shops<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="⑪用户签到-BitMap"><a href="#⑪用户签到-BitMap" class="headerlink" title="⑪用户签到-BitMap"></a>⑪用户签到-BitMap</h1><h2 id="❶思路"><a href="#❶思路" class="headerlink" title="❶思路"></a>❶思路</h2><p>针对签到功能完全可以通过MySQL来完成，用户一次签到，就是一条记录，假如有1000万用户，平均每人每年签到次数为10次，则这张表一年的数据量为1亿条，假设每次签到需要使用20字节的内存，一个月则需要600多字节。</p>
+<p>我们如何能够简化一点呢？采用Redis的BitMap</p>
+<p>我们按月来统计用户签到信息，把每一个bit位对应当月的每一天，形成了映射关系。用0和1标示业务状态，签到记录为1，未签到则记录为0。这样我们就用极小的空间，来实现了大量数据的表示。</p>
+<p>Redis中是利用string类型数据结构实现BitMap，因此最大上限是512M，转换为bit则是 2^32个bit位。</p>
+<p><img src="https://img.jwt1399.top/img/202212041337440.png"></p>
+<p>BitMap的操作命令有：</p>
+<ul>
+<li>SETBIT：向指定位置（offset）存入一个0或1</li>
+<li>GETBIT ：获取指定位置（offset）的bit值</li>
+<li>BITCOUNT ：统计BitMap中值为1的bit位的数量</li>
+<li>BITFIELD ：操作（查询、修改、自增）BitMap中bit数组中的指定位置（offset）的值<ul>
+<li>u 代表无符号位，i 代表有符号位</li>
+</ul>
+</li>
+<li>BITFIELD_RO ：获取BitMap中bit数组，并以十进制形式返回</li>
+<li>BITOP ：将多个BitMap的结果做位运算（与 、或、异或）</li>
+<li>BITPOS ：查找bit数组中指定范围内第一个0或1出现的位置</li>
+</ul>
+<h2 id="❷实现签到功能"><a href="#❷实现签到功能" class="headerlink" title="❷实现签到功能"></a>❷实现签到功能</h2><blockquote>
+<p>需求：实现签到接口，将当前用户当天签到信息保存到Redis中</p>
+</blockquote>
+<ul>
+<li>UserController</li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/sign"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">sign</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token keyword">return</span> userService<span class="token punctuation">.</span><span class="token function">sign</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>UserServiceImpl</li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Result <span class="token function">sign</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 1.获取当前登录用户</span>
+    Long userId <span class="token operator">=</span> UserHolder<span class="token punctuation">.</span><span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.获取日期</span>
+    LocalDateTime now <span class="token operator">=</span> LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 3.拼接key</span>
+    String keySuffix <span class="token operator">=</span> now<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>DateTimeFormatter<span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">":yyyyMM"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String key <span class="token operator">=</span> USER_SIGN_KEY <span class="token operator">+</span> userId <span class="token operator">+</span> keySuffix<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 4.获取今天是本月的第几天</span>
+    <span class="token keyword">int</span> dayOfMonth <span class="token operator">=</span> now<span class="token punctuation">.</span><span class="token function">getDayOfMonth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 5.写入Redis SETBIT key offset 1</span>
+    stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setBit</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> dayOfMonth <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="❸签到统计"><a href="#❸签到统计" class="headerlink" title="❸签到统计"></a>❸签到统计</h2><p><strong>问题1：</strong>什么叫做连续签到天数？</p>
+<p>从最后一次签到开始向前统计，直到遇到第一次未签到为止，计算总的签到次数，就是连续签到天数。</p>
+<p>Java逻辑代码：获得当前这个月的最后一次签到数据，定义一个计数器，然后不停的向前统计，直到获得第一个非1的数字即可，每得到一个非0的数字计数器+1，直到遍历完所有的数据，就可以获得连续签到天数了</p>
+<p><strong>问题2：</strong>如何得到本月到今天为止的所有签到数据？</p>
+<pre class="line-numbers language-sql"><code class="language-sql">BITFIELD <span class="token keyword">key</span> GET u<span class="token punctuation">[</span>dayOfMonth<span class="token punctuation">]</span> <span class="token number">0</span>
+
+<span class="token comment" spellcheck="true"># u[dayOfMonth] 获取dayOfMonth个bit位</span>
+<span class="token comment" spellcheck="true"># 返回结果为10进制</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>假设今天是10号，那么我们就可以从当前月的第一天开始，获得到当前这一天的位数，是10号，那么就是10位，去拿这段时间的数据，就能拿到所有的数据了，那么这10天里边签到了多少次呢？统计有多少个1即可。</p>
+<p><strong>问题3：如何从后向前遍历每个bit位？</strong></p>
+<p>注意：BITFIELD返回的数据是10进制，假如说返回一个数字8，那么我哪儿知道到底哪些是0，哪些是1呢？我们只需要让得到的10进制数字和1做与运算就可以了，因为1只有遇见1 才是1，其他数字都是0 ，我们把签到结果和1进行与操作，每与一次，就把签到结果向右移动一位，依次内推，我们就能完成逐个遍历的效果了。</p>
+<blockquote>
+<p>需求：实现接口，统计当前用户截止当前时间在本月的连续签到天数</p>
+</blockquote>
+<ul>
+<li><strong>UserController</strong></li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/sign/count"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">signCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> userService<span class="token punctuation">.</span><span class="token function">signCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><strong>UserServiceImpl</strong></li>
+</ul>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Result <span class="token function">signCount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 1.获取当前登录用户</span>
+    Long userId <span class="token operator">=</span> UserHolder<span class="token punctuation">.</span><span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 2.获取日期</span>
+    LocalDateTime now <span class="token operator">=</span> LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 3.拼接key</span>
+    String keySuffix <span class="token operator">=</span> now<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>DateTimeFormatter<span class="token punctuation">.</span><span class="token function">ofPattern</span><span class="token punctuation">(</span><span class="token string">":yyyyMM"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    String key <span class="token operator">=</span> USER_SIGN_KEY <span class="token operator">+</span> userId <span class="token operator">+</span> keySuffix<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 4.获取今天是本月的第几天</span>
+    <span class="token keyword">int</span> dayOfMonth <span class="token operator">=</span> now<span class="token punctuation">.</span><span class="token function">getDayOfMonth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true">// 5.获取本月截止今天为止的所有的签到记录，返回的是一个十进制的数字 BITFIELD sign:5:202203 GET u14 0</span>
+    List<span class="token operator">&lt;</span>Long<span class="token operator">></span> result <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">bitField</span><span class="token punctuation">(</span>
+            key<span class="token punctuation">,</span>
+            BitFieldSubCommands<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>BitFieldSubCommands<span class="token punctuation">.</span>BitFieldType<span class="token punctuation">.</span><span class="token function">unsigned</span><span class="token punctuation">(</span>dayOfMonth<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">valueAt</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>result <span class="token operator">==</span> null <span class="token operator">||</span> result<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 没有任何签到结果</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    Long num <span class="token operator">=</span> result<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>num <span class="token operator">==</span> null <span class="token operator">||</span> num <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 6.循环遍历</span>
+    <span class="token keyword">int</span> count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 6.1.让这个数字与1做与运算，得到数字的最后一个bit位  // 判断这个bit位是否为0</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>num <span class="token operator">&amp;</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 如果为0，说明未签到，结束</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 如果不为0，说明已签到，计数器+1</span>
+            count<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 把数字右移一位，抛弃最后一个bit位，继续下一个bit位</span>
+        num <span class="token operator">>>>=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">ok</span><span class="token punctuation">(</span>count<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h1 id="⑫UV统计-HyperLogLog"><a href="#⑫UV统计-HyperLogLog" class="headerlink" title="⑫UV统计-HyperLogLog"></a>⑫UV统计-HyperLogLog</h1><p>首先我们搞懂两个概念：</p>
+<ul>
+<li>UV：全称Unique Visitor，也叫独立访客量，是指通过互联网访问、浏览这个网页的自然人。1天内同一个用户多次访问该网站，只记录1次。</li>
+<li>PV：全称Page View，也叫页面访问量或点击量，用户每访问网站的一个页面，记录1次PV，用户多次打开页面，则记录多次PV。往往用来衡量网站的流量。</li>
+</ul>
+<p>通常来说UV会比PV大很多，所以衡量同一个网站的访问量，我们需要综合考虑很多因素，所以我们只是单纯的把这两个值作为一个参考值</p>
+<p>UV统计在服务端做会比较麻烦，因为要判断该用户是否已经统计过了，需要将统计过的用户信息保存。但是如果每个访问的用户都保存到Redis中，数据量会非常恐怖，那怎么处理呢？</p>
+<p>Hyperloglog(HLL) 是从LogLog算法派生的概率算法，用于确定非常大的集合的基数，而不需要存储其所有值。</p>
+<p>相关算法原理大家可以参考：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903785744056333#heading-0">https://juejin.cn/post/6844903785744056333#heading-0</a></p>
+<p>Redis中的HLL是基于string结构实现的，单个HLL的内存<strong>永远小于16kb</strong>，<strong>内存占用低</strong>的令人发指！作为代价，其测</p>
+<p>量结果是概率性的，<strong>有小于0.81％的误差</strong>。不过对于UV统计来说，这完全可以忽略。</p>
+<p>测试思路：我们直接利用单元测试，向HyperLogLog中添加100万条数据，看看内存占用和统计效果如何</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">void</span> <span class="token function">testHyperLogLog</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">//插入一百万条数据，1000条插入一次</span>
+  <span class="token comment" spellcheck="true">// 准备数组，装用户数据</span>
+  String<span class="token punctuation">[</span><span class="token punctuation">]</span> users <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token number">1000</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">// 数组角标</span>
+  <span class="token keyword">int</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">1000000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 赋值</span>
+    users<span class="token punctuation">[</span>index<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"user_"</span> <span class="token operator">+</span> i<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 每1000条发送一次</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">%</span> <span class="token number">1000</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">//PFADD</span>
+      stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHyperLogLog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"hll1"</span><span class="token punctuation">,</span> users<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment" spellcheck="true">// 统计数量 PFCOUNT</span>
+  Long size <span class="token operator">=</span> stringRedisTemplate<span class="token punctuation">.</span><span class="token function">opsForHyperLogLog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token string">"hll1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"size = "</span> <span class="token operator">+</span> size<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>经过测试：我们会发生他的误差是在允许范围内，并且内存占用极小</p>
 <h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -5058,7 +5376,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">740.4k</span>&nbsp;字
+                class="white-color">747.9k</span>&nbsp;字
             
             
             

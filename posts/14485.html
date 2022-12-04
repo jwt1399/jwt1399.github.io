@@ -854,14 +854,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-02
+                    2022-12-04
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    65
+                    2.5k
                 </div>
                 
 
@@ -879,7 +879,179 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h2><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
+                <h1 id="①JVM概述"><a href="#①JVM概述" class="headerlink" title="①JVM概述"></a>①JVM概述</h1><h2 id="❶基本介绍"><a href="#❶基本介绍" class="headerlink" title="❶基本介绍"></a>❶基本介绍</h2><p>JVM：全称 Java Virtual Machine，一个虚拟计算机，Java 程序的运行环境（Java二进制字节码的运行环境）</p>
+<p>特点：</p>
+<ul>
+<li>Java 虚拟机基于<strong>二进制字节码</strong>执行，由一套字节码指令集、一组寄存器、一个栈、一个垃圾回收堆、一个方法区等组成</li>
+<li>JVM 屏蔽了与操作系统平台相关的信息，从而能够让 Java 程序只需要生成能够在 JVM 上运行的字节码文件，通过该机制实现的<strong>跨平台性</strong>。即一次编译，处处执行</li>
+<li>自动的内存管理，垃圾回收机制</li>
+</ul>
+<p>JVM 结构：</p>
+<p><img src="https://img.jwt1399.top/img/202212031705537.png"></p>
+<p>Java 代码执行流程：<code>Java 程序 --（编译）--&gt; 字节码文件 --（解释执行）--&gt; 操作系统（Win，Linux）</code></p>
+<table>
+<thead>
+<tr>
+<th><img src="https://img.jwt1399.top/img/202212031714323.png"></th>
+<th><img src="https://img.jwt1399.top/img/202212031714094"></th>
+</tr>
+</thead>
+</table>
+<p>JVM、JRE、JDK 对比：</p>
+<ul>
+<li>JDK(Java SE Development Kit)：Java 标准开发包，提供了编译、运行 Java 程序所需的各种工具和资源</li>
+<li>JRE( Java Runtime Environment)：Java 运行环境，用于解释执行 Java 的字节码文件</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212031706253.png" style="zoom: 80%;" />
+
+<hr>
+<h2 id="❷架构模型"><a href="#❷架构模型" class="headerlink" title="❷架构模型"></a>❷架构模型</h2><p>Java 编译器输入的指令流是一种基于栈的指令集架构。因为跨平台的设计，Java 的指令都是根据栈来设计的，不同平台 CPU 架构不同，所以不能设计为基于寄存器架构</p>
+<ul>
+<li>基于栈式架构的特点：<ul>
+<li>设计和实现简单，适用于资源受限的系统</li>
+<li>使用零地址指令方式分配，执行过程依赖操作栈，指令集更小，编译器容易实现<ul>
+<li>零地址指令：机器指令的一种，是指令系统中的一种不设地址字段的指令，只有操作码而没有地址码。这种指令有两种情况：一是无需操作数，另一种是操作数为默认的（隐含的），默认为操作数在寄存器（ACC）中，指令可直接访问寄存器</li>
+<li>一地址指令：一个操作码对应一个地址码，通过地址码寻找操作数</li>
+</ul>
+</li>
+<li>不需要硬件的支持，可移植性更好，更好实现跨平台</li>
+</ul>
+</li>
+<li>基于寄存器架构的特点：<ul>
+<li>需要硬件的支持，可移植性差</li>
+<li>性能更好，执行更高效，寄存器比内存快</li>
+<li>以一地址指令、二地址指令、三地址指令为主，而基于栈式架构的指令集却是以零地址指令为主</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="❸生命周期"><a href="#❸生命周期" class="headerlink" title="❸生命周期"></a>❸生命周期</h2><p>JVM 的生命周期分为三个阶段，分别为：启动、运行、死亡</p>
+<ul>
+<li><p><strong>启动</strong>：当启动一个 Java 程序时，通过引导类加载器（bootstrap class loader）创建一个初始类（initial class），对于拥有 main 函数的类就是 JVM 实例运行的起点</p>
+</li>
+<li><p><strong>运行</strong>：</p>
+<ul>
+<li><p>main() 方法是一个程序的初始起点，任何线程均可由在此处启动</p>
+</li>
+<li><p>在 JVM 内部有两种线程类型，分别为：用户线程和守护线程，<strong>JVM 使用的是守护线程，main() 和其他线程使用的是用户线程</strong>，守护线程会随着用户线程的结束而结束</p>
+</li>
+<li><p>执行一个 Java 程序时，真真正正在执行的是一个 <strong>Java 虚拟机的进程</strong></p>
+</li>
+<li><p>JVM 有两种运行模式 Server 与 Client，两种模式的区别在于：Client 模式启动速度较快，Server 模式启动较慢；但是启动进入稳定期长期运行之后 Server 模式的程序运行速度比 Client 要快很多</p>
+<p>Server 模式启动的 JVM 采用的是重量级的虚拟机，对程序采用了更多的优化；Client 模式启动的 JVM 采用的是轻量级的虚拟机</p>
+</li>
+</ul>
+</li>
+<li><p><strong>死亡</strong>：</p>
+<ul>
+<li>当程序中的用户线程都中止，JVM 才会退出</li>
+<li>程序正常执行结束、程序异常或错误而异常终止、操作系统错误导致终止</li>
+<li>线程调用 Runtime 类 halt 方法或 System 类 exit 方法，并且 Java 安全管理器允许这次 exit 或 halt 操作</li>
+</ul>
+</li>
+</ul>
+<h1 id="②内存结构"><a href="#②内存结构" class="headerlink" title="②内存结构"></a>②内存结构</h1><h2 id="⓿简介"><a href="#⓿简介" class="headerlink" title="⓿简介"></a>⓿简介</h2><p><strong>内存结构</strong>是 JVM 中非常重要的一部分，是非常重要的系统资源，是硬盘和 CPU 的桥梁，承载着操作系统和应用程序的实时运行，又叫<strong>运行时数据区</strong>。</p>
+<p>JVM 内存结构规定了 Java 在运行过程中内存申请、分配、管理的策略，保证了 JVM 的高效稳定运行</p>
+<p><img src="https://img.jwt1399.top/img/202212042053847.png"></p>
+<p>常见 Out Of Memory（OOM） 错误：</p>
+<ul>
+<li>java.lang.StackOverflowError</li>
+<li>java.lang.OutOfMemoryError：java heap space</li>
+<li>java.lang.OutOfMemoryError：GC overhead limit exceeded</li>
+<li>java.lang.OutOfMemoryError：Direct buffer memory</li>
+<li>java.lang.OutOfMemoryError：unable to create new native thread</li>
+<li>java.lang.OutOfMemoryError：Metaspace</li>
+</ul>
+<h2 id="❶程序计数器"><a href="#❶程序计数器" class="headerlink" title="❶程序计数器"></a>❶程序计数器</h2><blockquote>
+<p>Program Counter Register 程序计数器（寄存器）</p>
+</blockquote>
+<p>作用：内部保存字节码的行号，用于记录正在执行的字节码指令地址（如果正在执行的是本地方法则为空）</p>
+<p>原理：</p>
+<ul>
+<li>JVM 对于多线程是通过线程轮流切换并且分配线程执行时间，一个处理器只会处理执行一个线程</li>
+<li>切换线程需要从程序计数器中来回切换到当前的线程上一次执行的行号</li>
+</ul>
+<p>特点：</p>
+<ul>
+<li>是线程私有的</li>
+<li><strong>不会存在内存溢出</strong>，是 JVM 规范中唯一一个不出现 OOM 的区域，所以这个空间不会进行 GC</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212042201899.png"></p>
+<p>Java 编译指令：<code>javac -g 文件名.java</code></p>
+<p>Java 反编译指令：<code>javap -v 文件名.class</code></p>
+<h2 id="❷虚拟机栈"><a href="#❷虚拟机栈" class="headerlink" title="❷虚拟机栈"></a>❷虚拟机栈</h2><blockquote>
+<p>Java 虚拟机栈：Java Virtual Machine Stacks，<strong>每个线程</strong>运行时所需要的<strong>内存</strong></p>
+</blockquote>
+<p><img src="https://img.jwt1399.top/img/202212042241637.png"></p>
+<ul>
+<li><p>每个方法被执行时，都会在虚拟机栈中创建一个栈帧 stack frame（<strong>一个方法一个栈帧</strong>）</p>
+</li>
+<li><p>Java 虚拟机规范允许 <strong>Java 栈的大小是动态的或者是固定不变的</strong></p>
+</li>
+<li><p>虚拟机栈是<strong>每个线程私有的</strong>，每个线程只能有一个活动栈帧，对应方法调用到执行完成的整个过程</p>
+</li>
+<li><p><strong>每个栈由多个栈帧（Frame）组成</strong>，对应着每次方法调用时所占用的内存，每个栈帧中存储着：</p>
+<ul>
+<li>局部变量表：存储方法里的 Java 基本数据类型以及对象的引用</li>
+<li>动态链接：也叫指向运行时常量池的方法引用</li>
+<li>方法返回地址：方法正常退出或者异常退出的定义</li>
+<li>操作数栈或表达式栈和其他一些附加信息</li>
+</ul>
+</li>
+</ul>
+<p>设置栈内存大小：<code>-Xss size</code>   <code>-Xss 1024k</code>（在 VM options 中设置）</p>
+<ul>
+<li>在 JDK 1.4 中默认为 256K，而在 JDK 1.5+ 默认为 1M</li>
+</ul>
+<p>虚拟机栈特点：</p>
+<ul>
+<li><p>栈内存<strong>不需要进行GC</strong>，方法开始执行的时候会进栈，方法调用后自动弹栈，相当于清空了数据</p>
+</li>
+<li><p>栈内存分配越大，可用的线程数越少（内存越大，每个线程拥有的内存越大）</p>
+</li>
+<li><p>方法内的局部变量是否<strong>线程安全</strong>：</p>
+<ul>
+<li>如果方法内局部变量没有逃离方法的作用访问，它是线程安全的（逃逸分析）</li>
+<li>如果是局部变量引用了对象，并逃离方法的作用范围，需要考虑线程安全</li>
+</ul>
+</li>
+</ul>
+<p>异常：</p>
+<ul>
+<li>栈帧过多导致栈内存溢出 （超过了栈的容量），会抛出 OutOfMemoryError 异常</li>
+<li>当线程请求的栈深度超过虚拟机允许的最大深度时，会抛出 StackOverflowError 异常</li>
+</ul>
+<p>线程运行诊断：</p>
+<ul>
+<li>定位：<ul>
+<li>jps 定位进程 ID</li>
+<li>top定位哪个进程对cpu的占用过高</li>
+<li>ps  -eo pid,%cpu | grep 进程id （用ps命令进一步定位是哪个线程引起的cpu占用过高）</li>
+</ul>
+</li>
+<li>jstack 进程 ID：用于打印出给定的 Java 进程 ID 或 core file 或远程调试服务的 Java 堆栈信息</li>
+</ul>
+<h2 id="❸本地方法栈"><a href="#❸本地方法栈" class="headerlink" title="❸本地方法栈"></a>❸本地方法栈</h2><h2 id="❹堆"><a href="#❹堆" class="headerlink" title="❹堆"></a>❹堆</h2><h2 id="❺方法区"><a href="#❺方法区" class="headerlink" title="❺方法区"></a>❺方法区</h2><h2 id="❻本地内存"><a href="#❻本地内存" class="headerlink" title="❻本地内存"></a>❻本地内存</h2><h1 id="③内存管理"><a href="#③内存管理" class="headerlink" title="③内存管理"></a>③内存管理</h1><h1 id="④类加载"><a href="#④类加载" class="headerlink" title="④类加载"></a>④类加载</h1><h1 id="⑤运行机制"><a href="#⑤运行机制" class="headerlink" title="⑤运行机制"></a>⑤运行机制</h1><h1 id="⑥系统优化"><a href="#⑥系统优化" class="headerlink" title="⑥系统优化"></a>⑥系统优化</h1><h1 id="⭐️面试题"><a href="#⭐️面试题" class="headerlink" title="⭐️面试题"></a>⭐️面试题</h1><h3 id="JVM-内存结构"><a href="#JVM-内存结构" class="headerlink" title="JVM 内存结构"></a>JVM 内存结构</h3><p>JVM内存结构分为5大区域，<strong>程序计数器</strong>、<strong>虚拟机栈</strong>、<strong>本地方法栈</strong>、<strong>堆</strong>、<strong>方法区</strong></p>
+<p><strong>线程私有的：</strong>程序计数器、虚拟机栈、本地方法栈</p>
+<p><strong>线程共享的：</strong>堆、方法区</p>
+<h3 id="Java-对象的创建过程"><a href="#Java-对象的创建过程" class="headerlink" title="Java 对象的创建过程"></a>Java 对象的创建过程</h3><p>（五步，建议能默写出来并且要知道每一步虚拟机做了什么）</p>
+<h3 id="Java对象的定位方式"><a href="#Java对象的定位方式" class="headerlink" title="Java对象的定位方式"></a>Java对象的定位方式</h3><p>Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有：<strong>句柄</strong>、<strong>直接指针</strong>。</p>
+<p><strong>句柄</strong></p>
+<ul>
+<li>Java 堆中将会划分出一块内存来作为句柄池，<strong>reference 中存储的就是对象的句柄地址</strong>，而句柄中包含了对象实例数据与类型数据各自的具体地址信息。</li>
+<li>使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。</li>
+</ul>
+<p><strong>直接指针</strong></p>
+<ul>
+<li><strong>reference 中存储的直接就是对象的地址</strong>。对象包含到对象类型数据的指针，通过这个指针可以访问对象类型数据。</li>
+<li>使用直接指针访问方式最大的好处是访问对象速度快，它节省了一次指针定位的时间开销，虚拟机HotSpot主要是使用直接指针来访问对象。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43715214/article/details/126694782">Java虚拟机（JVM）面试专题 上_面向鸿蒙编程的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_50280576/article/details/113742011">JVM 学习笔记（一）内存结构_CodeAli的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/baihang111/category_11890188.html?spm=1001.2014.3001.5482">JVM_Demon_bh的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_32265569/article/details/107575286">JAVA相关的深度技术博客链接_不埋雷的探长的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_32265569/article/details/107904061">Java字节码的一段旅行经历——提升硬实力1_不埋雷的探长的博客-CSDN博客_class文件的旅程</a></p>
+<h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
      <tr>
@@ -1672,7 +1844,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">740.4k</span>&nbsp;字
+                class="white-color">747.9k</span>&nbsp;字
             
             
             
