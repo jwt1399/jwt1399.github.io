@@ -867,14 +867,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-13
+                    2022-12-15
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    43.1k
+                    43.5k
                 </div>
                 
 
@@ -7081,8 +7081,66 @@ root<span class="token punctuation">.</span>val <span class="token operator">=</
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/convert-sorted-list-to-binary-search-tree/description/">109. 有序链表转换二叉搜索树</a></p>
-<p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/balance-a-binary-search-tree/">1382. 将二叉搜索树变平衡 </a></p>
+<h4 id="109-有序链表转换二叉搜索树"><a href="#109-有序链表转换二叉搜索树" class="headerlink" title="109. 有序链表转换二叉搜索树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/convert-sorted-list-to-binary-search-tree/description/">109. 有序链表转换二叉搜索树</a></h4><p>给定一个单链表的头节点  <code>head</code> ，其中的元素 <strong>按升序排序</strong> ，将其转换为高度平衡的二叉搜索树。</p>
+<p>本题中，一个高度平衡二叉树是指一个二叉树<em>每个节点</em> 的左右两个子树的高度差不超过 1。</p>
+<p><strong>示例 1:</strong></p>
+<img src="https://assets.leetcode.com/uploads/2020/08/17/linked.jpg" style="zoom:67%;" />
+
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入</span><span class="token punctuation">:</span> <span class="token attr-value">head = [-10,-3,0,5,9]</span>
+<span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">[0,-3,9,-10,null,5]</span>
+<span class="token attr-name">解释</span><span class="token punctuation">:</span> <span class="token attr-value">一个可能的答案是[0，-3,9，-10,null,5]，它表示所示的高度平衡的二叉搜索树。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2:</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入</span><span class="token punctuation">:</span> <span class="token attr-value">head = []</span>
+<span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">[]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p>思路：</p>
+<p>方法1：把链表转化成数组，然后直接复用 <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/">108. 将有序数组转换为二叉搜索树</a>的解法。</p>
+<p>方法2：如果深刻理解二叉树算法，可以利用中序遍历的特点写出最优化的解法。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//方法1</span>
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">sortedListToBST</span><span class="token punctuation">(</span>ListNode head<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> <span class="token number">0</span> <span class="token punctuation">,</span> index <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>ListNode p <span class="token operator">=</span> head<span class="token punctuation">;</span> p <span class="token operator">!=</span> null<span class="token punctuation">;</span> p <span class="token operator">=</span> p<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            len<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">int</span><span class="token punctuation">[</span>len<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>ListNode p <span class="token operator">=</span> head<span class="token punctuation">;</span> p <span class="token operator">!=</span> null<span class="token punctuation">;</span> p <span class="token operator">=</span> p<span class="token punctuation">.</span>next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            nums<span class="token punctuation">[</span>index<span class="token operator">++</span><span class="token punctuation">]</span> <span class="token operator">=</span> p<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> <span class="token function">build</span><span class="token punctuation">(</span>nums<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> len <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    TreeNode <span class="token function">build</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums<span class="token punctuation">,</span> <span class="token keyword">int</span> left<span class="token punctuation">,</span> <span class="token keyword">int</span> right<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>left <span class="token operator">></span> right<span class="token punctuation">)</span> <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token keyword">int</span> mid <span class="token operator">=</span> left <span class="token operator">+</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>right <span class="token operator">-</span> left<span class="token punctuation">)</span> <span class="token operator">>></span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">// 防止溢出 等同于(left + right)/2</span>
+        TreeNode root <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TreeNode</span><span class="token punctuation">(</span>nums<span class="token punctuation">[</span>mid<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 递归构建左子树</span>
+        root<span class="token punctuation">.</span>left <span class="token operator">=</span> <span class="token function">build</span><span class="token punctuation">(</span>nums<span class="token punctuation">,</span> left<span class="token punctuation">,</span> mid <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 递归构造右子树</span>
+        root<span class="token punctuation">.</span>right <span class="token operator">=</span> <span class="token function">build</span><span class="token punctuation">(</span>nums<span class="token punctuation">,</span> mid <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">//方法2</span>
+
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="1382-将二叉搜索树变平衡"><a href="#1382-将二叉搜索树变平衡" class="headerlink" title="1382. 将二叉搜索树变平衡 "></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/balance-a-binary-search-tree/">1382. 将二叉搜索树变平衡 </a></h4><h4 id="538-把二叉搜索树转换为累加树"><a href="#538-把二叉搜索树转换为累加树" class="headerlink" title="538. 把二叉搜索树转换为累加树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/convert-bst-to-greater-tree/">538. 把二叉搜索树转换为累加树</a></h4><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    
+    <span class="token keyword">int</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> TreeNode <span class="token function">convertBST</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token keyword">return</span> null<span class="token punctuation">;</span>
+        <span class="token function">convertBST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        sum <span class="token operator">+=</span> root<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+        root<span class="token punctuation">.</span>val <span class="token operator">=</span> sum<span class="token punctuation">;</span>
+        <span class="token function">convertBST</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> root<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="层序遍历相关题目"><a href="#层序遍历相关题目" class="headerlink" title="层序遍历相关题目"></a>层序遍历相关题目</h3><h4 id="107-二叉树的层序遍历-II"><a href="#107-二叉树的层序遍历-II" class="headerlink" title="107. 二叉树的层序遍历 II "></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/binary-tree-level-order-traversal-ii/">107. 二叉树的层序遍历 II </a></h4><p>给你二叉树的根节点 <code>root</code> ，返回其节点值 <strong>自底向上的层序遍历</strong> 。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
     <span class="token keyword">public</span> List<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>Integer<span class="token operator">>></span> <span class="token function">levelOrderBottom</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -7982,7 +8040,10 @@ cur<span class="token punctuation">.</span>right<span class="token punctuation">
 <li>java.util.Comparator：是挽救的比较接口，需要单独定义一个比较类，里面有compare比较方法。</li>
 </ul>
 <p>两种方法各有优劣， 用Comparable简单， 只要实现Comparable接口的对象直接就成为一个可以比较的对象，但是需要修改源代码。 用Comparator的好处是不需要修改源代码， 而是另外实现一个比较器， 当某个自定义的对象需要作比较的时候，把比较器和对象一起传递过去就可以比大小了， 并且在Comparator 里面用户可以自己实现复杂的可以通用的逻辑，使其可以匹配一些比较简单的对象，那样就可以节省很多重复劳动了。</p>
-<h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIxMDAwMDAxMw==&mid=2650732437&idx=1&sn=cf71cc01b4fdbfefb1471729fad74fbb&chksm=8f611677b8169f614e86d1537d83a48536a4198c2cca36ff4f3dc8eb54d64fce1c946bb46ec6&mpshare=1&scene=23&srcid=112131aewg4cW6yA0hrqkIEZ&sharer_sharetime=1670135117489&sharer_shareid=6a42f6adcb98a88421502c27789dc6ea#rd">《程序员数学：位运算》</a></p>
+<h2 id="④回溯"><a href="#④回溯" class="headerlink" title="④回溯"></a>④回溯</h2><blockquote>
+<p>关系：回溯 &lt; DFS &lt; 递归</p>
+</blockquote>
+<h3 id="77-组合"><a href="#77-组合" class="headerlink" title="77. 组合"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/combinations/">77. 组合</a></h3><h2 id="DFS"><a href="#DFS" class="headerlink" title="DFS"></a>DFS</h2><h2 id="BFS"><a href="#BFS" class="headerlink" title="BFS"></a>BFS</h2><h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><h2 id="迭代"><a href="#迭代" class="headerlink" title="迭代"></a>迭代</h2><h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzIxMDAwMDAxMw==&mid=2650732437&idx=1&sn=cf71cc01b4fdbfefb1471729fad74fbb&chksm=8f611677b8169f614e86d1537d83a48536a4198c2cca36ff4f3dc8eb54d64fce1c946bb46ec6&mpshare=1&scene=23&srcid=112131aewg4cW6yA0hrqkIEZ&sharer_sharetime=1670135117489&sharer_shareid=6a42f6adcb98a88421502c27789dc6ea#rd">《程序员数学：位运算》</a></p>
 <h2 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h2><blockquote>
 <p>KMP 算法是一个快速查找匹配串的算法，它的作用是：<strong>如何快速在「原字符串」中找到「匹配字符串」。</strong></p>
 <p>暴力查找复杂度是 O(m∗n)，KMP 算法的复杂度为 O(m+n)，其中m为原字符串长度，m为匹配字符串长度</p>
@@ -8031,8 +8092,7 @@ cur<span class="token punctuation">.</span>right<span class="token punctuation">
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="DFS"><a href="#DFS" class="headerlink" title="DFS"></a>DFS</h2><h2 id="BFS"><a href="#BFS" class="headerlink" title="BFS"></a>BFS</h2><h2 id="回溯"><a href="#回溯" class="headerlink" title="回溯"></a>回溯</h2><p>关系：回溯 &lt; DFS &lt; 递归</p>
-<h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><h2 id="迭代"><a href="#迭代" class="headerlink" title="迭代"></a>迭代</h2><h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><h2 id="交换元素"><a href="#交换元素" class="headerlink" title="交换元素"></a>交换元素</h2><h3 id="普通方法"><a href="#普通方法" class="headerlink" title="普通方法"></a>普通方法</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">swap</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> a<span class="token punctuation">,</span> <span class="token keyword">int</span> i<span class="token punctuation">,</span> <span class="token keyword">int</span> j<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<h2 id="交换元素"><a href="#交换元素" class="headerlink" title="交换元素"></a>交换元素</h2><h3 id="普通方法"><a href="#普通方法" class="headerlink" title="普通方法"></a>普通方法</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">void</span> <span class="token function">swap</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> a<span class="token punctuation">,</span> <span class="token keyword">int</span> i<span class="token punctuation">,</span> <span class="token keyword">int</span> j<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">int</span> tmp <span class="token operator">=</span> a<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
     a<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> a<span class="token punctuation">[</span>j<span class="token punctuation">]</span>
     a<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> tmp
@@ -8837,7 +8897,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">762k</span>&nbsp;字
+                class="white-color">769k</span>&nbsp;字
             
             
             
