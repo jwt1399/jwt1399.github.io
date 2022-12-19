@@ -854,14 +854,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-18
+                    2022-12-19
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    16.1k
+                    22.1k
                 </div>
                 
 
@@ -989,7 +989,7 @@
 </li>
 <li><p><strong>每个栈由多个栈帧（Frame）组成</strong>，对应着每次方法调用时所占用的内存，每个栈帧中存储着：</p>
 <ul>
-<li>局部变量表：存储方法里的 Java 基本数据类型以及对象的引用</li>
+<li>局部变量表：存储方法里的 Java 基本数据类型以及对象的引用（reference 类型）</li>
 <li>动态链接：也叫指向运行时常量池的方法引用</li>
 <li>方法返回地址：方法正常退出或者异常退出的定义</li>
 <li>操作数栈或表达式栈和其他一些附加信息</li>
@@ -1848,7 +1848,7 @@ String b <span class="token operator">=</span> <span class="token string">"ilove
 <ul>
 <li><p>当线程运行到 Safe Region 的代码时，首先标识已经进入了 Safe Region，如果这段时间内发生 GC，JVM 会忽略标识为 Safe Region 状态的线程</p>
 </li>
-<li><p>当线程即将离开 Safe Region 时，会检查 JVM 是否已经完成 GC，如果完成了则继续运行，否则线程必须等待 GC 完成，收到可以安全离开 SafeRegion 的信号</p>
+<li><p>当线程即将离开 Safe Region 时，会检查 JVM 是否已经完成 GC，如果完成了则继续运行，否则线程必须等待 GC 完成，收到可以安全离开 Safe Region 的信号</p>
 </li>
 </ul>
 <h2 id="❸垃圾判断"><a href="#❸垃圾判断" class="headerlink" title="❸垃圾判断"></a>❸垃圾判断</h2><h3 id="1-垃圾介绍"><a href="#1-垃圾介绍" class="headerlink" title="1.垃圾介绍"></a>1.垃圾介绍</h3><p>垃圾：<strong>如果一个或多个对象没有任何的引用指向它了，那么这个对象现在就是垃圾</strong></p>
@@ -1895,65 +1895,155 @@ String b <span class="token operator">=</span> <span class="token string">"ilove
 </ul>
 <p>分析工作必须在一个保障<strong>一致性的快照</strong>中进行，否则结果的准确性无法保证，这也是导致 GC 进行时必须 <code>Stop The World</code> 的一个原因</p>
 <h3 id="4-引用分析"><a href="#4-引用分析" class="headerlink" title="4.引用分析"></a>4.引用分析</h3><p>无论是通过引用计数算法判断对象的引用数量，还是通过可达性分析算法判断对象是否可达，判定对象是否可被回收都与引用有关，Java 提供了四种强度不同的引用类型</p>
-<ol>
-<li><p>强引用：被强引用关联的对象不会被回收，只有当所有 GC Roots 都不通过【强引用】引用该对象，才能被垃圾回收</p>
 <ul>
-<li>强引用可以直接访问目标对象</li>
-<li>虚拟机宁愿抛出 OOM 异常，也不会回收强引用所指向对象</li>
-<li>强引用可能导致<strong>内存泄漏</strong></li>
+<li><p>1.<strong>强引用</strong>：被强引用关联的对象不会被回收，只有当所有 GC Roots 都不通过【强引用】引用该对象，才能被垃圾回收</p>
+<ul>
+<li><p>强引用可以直接访问目标对象</p>
+</li>
+<li><p>虚拟机宁愿抛出 OOM 异常，也不会回收强引用所指向对象</p>
+</li>
+<li><p>强引用可能导致<strong>内存泄漏</strong></p>
+</li>
 </ul>
 <pre class="line-numbers language-java"><code class="language-java">Object obj <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//使用 new 一个新对象的方式来创建强引用</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 </li>
-<li><p>软引用（SoftReference）：被软引用关联的对象只有在内存不够的情况下才会被回收</p>
+<li><p>2.<strong>软引用（SoftReference）</strong>：被软引用关联的对象只有在内存不够的情况下才会被回收</p>
 <ul>
-<li><p><strong>仅（可能有强引用，一个对象可以被多个引用）</strong>有软引用引用该对象时，在垃圾回收后，内存仍不足时会再次出发垃圾回收，回收软引用对象</p>
-</li>
-<li><p>配合<strong>引用队列来释放软引用自身</strong>，在构造软引用时，可以指定一个引用队列，当软引用对象被回收时，就会加入指定的引用队列，通过这个队列可以跟踪对象的回收情况</p>
-</li>
-<li><p>软引用通常用来实现内存敏感的缓存，比如高速缓存就有用到软引用；如果还有空闲内存，就可以暂时保留缓存，当内存不足时清理掉，这样就保证了使用缓存的同时不会耗尽内存</p>
-</li>
+<li><strong>仅（可能有强引用，一个对象可以被多个引用）</strong>有软引用引用该对象时，在垃圾回收后，内存仍不足时会再次出发垃圾回收，回收软引用对象</li>
+</ul>
+<ul>
+<li>配合<strong>引用队列来释放软引用自身</strong>，在构造软引用时，可以指定一个引用队列，当软引用对象被回收时，就会加入指定的引用队列，通过这个队列可以跟踪对象的回收情况</li>
+</ul>
+<ul>
+<li>软引用通常用来实现内存敏感的缓存，比如高速缓存就有用到软引用；如果还有空闲内存，就可以暂时保留缓存，当内存不足时清理掉，这样就保证了使用缓存的同时不会耗尽内存</li>
 </ul>
 <pre class="line-numbers language-java"><code class="language-java">Object obj <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 SoftReference<span class="token operator">&lt;</span>Object<span class="token operator">></span> sf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SoftReference</span><span class="token operator">&lt;</span>Object<span class="token operator">></span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
 obj <span class="token operator">=</span> null<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 使对象只被软引用关联</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
-<li><p>弱引用（WeakReference）：被弱引用关联的对象一定会被回收，只能存活到下一次垃圾回收发生之前</p>
+<li><p>3.<strong>弱引用（WeakReference）</strong>：被弱引用关联的对象一定会被回收，只能存活到下一次垃圾回收发生之前</p>
 <ul>
-<li><p>仅有弱引用引用该对象时，在垃圾回收时，无论内存是否充足，都会回收弱引用对象</p>
-</li>
-<li><p>配合引用队列来释放弱引用自身</p>
-</li>
-<li><p>WeakHashMap 用来存储图片信息，可以在内存不足的时候及时回收，避免了 OOM</p>
-</li>
+<li>仅有弱引用引用该对象时，在垃圾回收时，无论内存是否充足，都会回收弱引用对象</li>
+</ul>
+<ul>
+<li>配合引用队列来释放弱引用自身</li>
+</ul>
+<ul>
+<li>WeakHashMap 用来存储图片信息，可以在内存不足的时候及时回收，避免了 OOM</li>
 </ul>
 <pre class="line-numbers language-java"><code class="language-java">Object obj <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 WeakReference<span class="token operator">&lt;</span>Object<span class="token operator">></span> wf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">WeakReference</span><span class="token operator">&lt;</span>Object<span class="token operator">></span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
 obj <span class="token operator">=</span> null<span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
-<li><p>虚引用（PhantomReference）：也称为幽灵引用或者幻影引用，是所有引用类型中最弱的一个</p>
+<li><p>4.<strong>虚引用（PhantomReference）</strong>：也称为幽灵引用或者幻影引用，是所有引用类型中最弱的一个</p>
 <ul>
 <li>必须配合引用队列使用，主要配合 ByteBuffer 使用，被引用对象回收时会将虚引用入队，由 Reference Handler 线程调用虚引用相关方法释放直接内存</li>
 </ul>
 <ul>
-<li><p>一个对象是否有虚引用的存在，不会对其生存时间造成影响，也无法通过虚引用得到一个对象</p>
-</li>
-<li><p>为对象设置虚引用的唯一目的是在于跟踪垃圾回收过程，能在这个对象被回收时收到一个系统通知</p>
-</li>
+<li>一个对象是否有虚引用的存在，不会对其生存时间造成影响，也无法通过虚引用得到一个对象</li>
+</ul>
+<ul>
+<li>为对象设置虚引用的唯一目的是在于跟踪垃圾回收过程，能在这个对象被回收时收到一个系统通知</li>
 </ul>
 <pre class="line-numbers language-java"><code class="language-java">Object obj <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Object</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 PhantomReference<span class="token operator">&lt;</span>Object<span class="token operator">></span> pf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PhantomReference</span><span class="token operator">&lt;</span>Object<span class="token operator">></span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> null<span class="token punctuation">)</span><span class="token punctuation">;</span>
 obj <span class="token operator">=</span> null<span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
-<li><p>终结器引用（finalization）</p>
+<li><p>5.<strong>终结器引用（finalization）</strong></p>
 <ul>
 <li>无需手动编码，但其内部配合引用队列使用，在垃圾回收时，终结器引用入队（被引用对象暂时没有被回收），再由 Finalizer 线程通过终结器引用找到被引用对象并调用它的 finalize 方法，第二次 GC 时才能回收被引用对象</li>
 </ul>
 </li>
+</ul>
+<h3 id="5-三色标记"><a href="#5-三色标记" class="headerlink" title="5.三色标记"></a>5.三色标记</h3><h4 id="基本算法"><a href="#基本算法" class="headerlink" title="基本算法"></a>基本算法</h4><p>三色标记法把遍历对象图过程中遇到的对象，标记成以下三种颜色：</p>
+<ul>
+<li>白色：尚未访问过</li>
+<li>灰色：正在访问的（本对象已访问过，但是本对象引用到的其他对象尚未全部访问）</li>
+<li>黑色：访问完成的（本对象已访问过，而且本对象引用到的其他对象也全部访问完成）</li>
+</ul>
+<p>当 Stop The World (STW) 时，对象间的引用是不会发生变化的，可以轻松完成标记，遍历访问过程为：</p>
+<ol>
+<li><p>初始时，所有对象都在 【白色集合】中；</p>
+</li>
+<li><p>将 GC Roots 直接引用到的对象挪到 【灰色集合】中；</p>
+</li>
+<li><p>从灰色集合中获取对象：</p>
+<ul>
+<li>将本对象引用到的其他对象全部挪到 【灰色集合】中；</li>
+<li> 将本对象挪到 【黑色集合】里面。</li>
+</ul>
+</li>
+<li><p>重复步骤3，直至【灰色集合】为空时结束。</p>
+</li>
+<li><p>结束后，仍在【白色集合】的对象即为 GC Roots 不可达，可以进行回收。</p>
+</li>
 </ol>
+<img src="https://img.jwt1399.top/img/202212191451907." alt="三色标记遍历过程" style="zoom:67%;" />
+
+<p>并发标记时，对象间的引用可能发生变化，多标和漏标的情况就有可能发生</p>
+<h4 id="多标-浮动垃圾"><a href="#多标-浮动垃圾" class="headerlink" title="多标-浮动垃圾"></a>多标-浮动垃圾</h4><p><strong>多标情况：</strong>当 E 变为灰色时，断开 D 对 E 的引用，导致对象 E/F/G 仍会被标记为存活，本轮 GC 不会回收这部分内存，这部分本应该回收但是没有回收到的内存，被称之为<strong>浮动垃圾</strong></p>
+<ul>
+<li>针对并发标记开始后的<strong>新对象</strong>，通常的做法是直接全部当成黑色，也算浮动垃圾</li>
+<li>浮动垃圾并不会影响应用程序的正确性，只是需要等到下一轮垃圾回收中才被清除</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212191503059.png" style="zoom: 50%;" />
+
+<h4 id="漏标-读写屏障"><a href="#漏标-读写屏障" class="headerlink" title="漏标-读写屏障"></a>漏标-读写屏障</h4><p><strong>漏标情况：</strong>当 E 变为灰色时，断开 E 对 G 的引用，再让 D 引用 G。此时切回 GC 线程继续跑，因为 E 已经没有对 G 的引用了，所以不会将 G 放到灰色集合；尽管 D 重新引用了G，但 D 已经是黑色了，不会再重新做遍历处理。<br> 最终导致的结果是：G 会一直停留在白色集合中，<strong>最后被当作垃圾进行清除</strong>。这直接<strong>影响到了应用程序的正确性</strong>，是不可接受的。</p>
+<img src="https://img.jwt1399.top/img/202212191513939.png" style="zoom:50%;" />
+
+<p>即漏标只有<strong>同时满足</strong>以下两个条件时才会发生：</p>
+<ul>
+<li>条件一：灰色对象断开了对一个白色对象的引用（直接或间接），即灰色对象原成员变量的引用发生了变化</li>
+<li>条件二：其他线程中修改了黑色对象，插入了一条或多条对该白色对象的新引用</li>
+<li>结果：导致该白色对象当作垃圾被 GC，影响到了程序的正确性</li>
+</ul>
+<p>代码角度解释漏标：</p>
+<pre class="line-numbers language-java"><code class="language-java">var G <span class="token operator">=</span> objE<span class="token punctuation">.</span>fieldG<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 1.读</span>
+objE<span class="token punctuation">.</span>fieldG <span class="token operator">=</span> null<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 2.写</span>
+objD<span class="token punctuation">.</span>fieldG <span class="token operator">=</span> G<span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">// 3.写</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<ol>
+<li><strong>读取</strong> 对象E的成员变量fieldG的引用值，即对象G；</li>
+<li>对象E 往其成员变量fieldG，<strong>写入</strong> null值。</li>
+<li>对象D 往其成员变量fieldG，<strong>写入</strong> 对象G ；</li>
+</ol>
+<p>为了解决问题，我们只要在上面这三步中的任意一步中做一些“手脚”，<strong>将对象G记录起来，然后作为灰色对象再进行遍历</strong>即可。比如放到一个特定的集合，等初始的GC Roots遍历完（并发标记），再遍历该集合（重新标记）。</p>
+<blockquote>
+<p><strong>重新标记通常是需要STW的</strong>，因为应用程序一直在跑的话，该集合可能会一直增加新的对象，导致永远都跑不完。当然，并发标记期间也可以将该集合中的大部分先跑了，从而缩短重新标记STW的时间，这个是优化问题了。</p>
+</blockquote>
+<p>解决方法：添加读写屏障，读屏障拦截第一步，写屏障拦截第二三步，在读写前后进行一些后置处理：</p>
+<ul>
+<li><p><strong>写屏障 + 增量更新</strong>：黑色对象新增引用，会将黑色对象变成灰色对象，最后对该节点重新扫描，增量更新 (Incremental Update) 破坏了条件二，从而保证了不会漏标</p>
+<p>缺点：对黑色变灰的对象重新扫描所有引用，比较耗费时间</p>
+</li>
+<li><p><strong>写屏障 (Store Barrier) + SATB</strong>：当原来成员变量的引用发生变化之前，记录下原来的引用对象</p>
+<p>保留 GC 开始时的对象图，即原始快照 SATB，当 GC Roots 确定后，对象图就已经确定，那后续的标记也应该是按照这个时刻的对象图走，如果期间对白色对象有了新的引用会记录下来，并且将白色对象变灰（说明可达了，并且原始快照中本来就应该是灰色对象），最后重新扫描该对象的引用关系</p>
+<p>SATB (Snapshot At The Beginning) 破坏了条件一，从而保证了不会漏标</p>
+</li>
+<li><p>**读屏障 (Load Barrier)**：破坏条件二，黑色对象引用白色对象的前提是获取到该对象，此时读屏障发挥作用</p>
+</li>
+</ul>
+<p>以 Java HotSpot VM 为例，其并发标记时对漏标的处理方案如下：</p>
+<ul>
+<li>CMS：写屏障 + 增量更新</li>
+<li>G1：写屏障 + SATB</li>
+<li>ZGC：读屏障</li>
+</ul>
+<h3 id="6-无用属性"><a href="#6-无用属性" class="headerlink" title="6.无用属性"></a>6.无用属性</h3><h4 id="无用类"><a href="#无用类" class="headerlink" title="无用类"></a>无用类</h4><p>方法区主要回收的是无用的类</p>
+<p>判定一个类是否是无用的类，需要同时满足下面 3 个条件：</p>
+<ul>
+<li>该类所有的实例都已经被回收，也就是 Java 堆中不存在该类的任何实例</li>
+<li>加载该类的 <code>ClassLoader</code> 已经被回收</li>
+<li>该类对应的 <code>java.lang.Class</code> 对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法</li>
+</ul>
+<p>虚拟机可以对满足上述 3 个条件的无用类进行回收，这里说的<strong>仅仅是可以</strong>，而并不是和对象一样不使用了就会必然被回收</p>
+<h4 id="废弃常量"><a href="#废弃常量" class="headerlink" title="废弃常量"></a>废弃常量</h4><p>在常量池中存在字符串 “abc”，如果当前没有任何 String 对象引用该常量，说明常量 “abc” 是废弃常量，如果这时发生内存回收的话<strong>而且有必要的话</strong>（内存不够用），”abc” 就会被系统清理出常量池</p>
+<h4 id="静态变量"><a href="#静态变量" class="headerlink" title="静态变量"></a>静态变量</h4><p>类加载时（第一次访问），这个类中所有静态成员就会被加载到静态变量区，该区域的成员一旦创建，直到程序退出才会被回收</p>
+<p>如果是静态引用类型的变量，静态变量区只存储一份对象的引用地址，真正的对象在堆内，如果要回收该对象可以设置引用为 null</p>
 <h2 id="❹回收算法"><a href="#❹回收算法" class="headerlink" title="❹回收算法"></a>❹回收算法</h2><h3 id="1-复制算法"><a href="#1-复制算法" class="headerlink" title="1.复制算法"></a>1.复制算法</h3><p>复制算法的核心就是，<strong>将原有的内存空间一分为二，每次只用其中的一块</strong>，在垃圾回收时，将正在使用的对象复制到另一个内存空间中，然后将该内存空间清理，交换两个内存的角色，完成垃圾的回收</p>
 <p><img src="https://img.jwt1399.top/img/202212181546444.png"></p>
 <p>算法优点：</p>
@@ -2023,7 +2113,178 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <td align="center">是</td>
 </tr>
 </tbody></table>
-<h2 id="❺垃圾回收器"><a href="#❺垃圾回收器" class="headerlink" title="❺垃圾回收器"></a>❺垃圾回收器</h2><h1 id="④类加载"><a href="#④类加载" class="headerlink" title="④类加载"></a>④类加载</h1><h1 id="⑤运行机制"><a href="#⑤运行机制" class="headerlink" title="⑤运行机制"></a>⑤运行机制</h1><h1 id="⑥系统优化"><a href="#⑥系统优化" class="headerlink" title="⑥系统优化"></a>⑥系统优化</h1><h1 id="调试参数"><a href="#调试参数" class="headerlink" title="调试参数"></a>调试参数</h1><ul>
+<h2 id="❺垃圾回收器"><a href="#❺垃圾回收器" class="headerlink" title="❺垃圾回收器"></a>❺垃圾回收器</h2><h3 id="0-概述"><a href="#0-概述" class="headerlink" title="0.概述"></a>0.概述</h3><h4 id="a-垃圾收集器分类"><a href="#a-垃圾收集器分类" class="headerlink" title="a.垃圾收集器分类"></a>a.垃圾收集器分类</h4><ul>
+<li>按线程数分（垃圾回收线程数），可以分为<strong>串行垃圾回收器</strong>和<strong>并行垃圾回收器</strong><ul>
+<li>除了 CMS 和 G1 之外，其它垃圾收集器都是以串行(并发也是串行)的方式执行</li>
+</ul>
+</li>
+<li>按照工作模式分，可以分为<strong>并发式垃圾回收器</strong>和<strong>独占式垃圾回收器</strong><ul>
+<li>并发式垃圾回收器与应用程序线程交替工作，以尽可能减少应用程序的停顿时间</li>
+<li>独占式垃圾回收器（Stop the world）一旦运行，就停止应用程序中的所有用户线程，直到垃圾回收过程完全结束</li>
+</ul>
+</li>
+<li>按碎片处理方式分，可分为<strong>压缩式垃圾回收器</strong>和<strong>非压缩式垃圾回收器</strong><ul>
+<li>压缩式垃圾回收器在回收完成后进行压缩整理，消除回收后的碎片，再分配对象空间使用指针碰撞</li>
+<li>非压缩式的垃圾回收器不进行这步操作，再分配对象空间使用空闲列表</li>
+</ul>
+</li>
+<li>按工作的内存区间分，又可分为<strong>年轻代垃圾回收器</strong>和<strong>老年代垃圾回收器</strong></li>
+</ul>
+<h4 id="b-GC-性能指标"><a href="#b-GC-性能指标" class="headerlink" title="b.GC 性能指标"></a>b.GC 性能指标</h4><ul>
+<li>吞吐量：程序的运行时间占总运行时间的比例（总运行时间 = 程序的运行时间 + 内存回收的时间）</li>
+<li>垃圾收集开销：吞吐量的补数，垃圾收集所用时间与总运行时间的比例</li>
+<li>暂停时间：执行垃圾收集时，程序的工作线程被暂停的时间</li>
+<li>收集频率：相对于应用程序的执行，收集操作发生的频率</li>
+<li>内存占用：Java 堆区所占的内存大小</li>
+<li>快速：一个对象从诞生到被回收所经历的时间</li>
+<li>吞吐量优先：单位时间内，STW（stop the world，停掉其他所有工作线程）时间最短</li>
+<li>响应时间优先：尽可能让单次STW时间变短（尽量不影响其他线程运行）</li>
+</ul>
+<h4 id="c-垃圾收集器的组合关系"><a href="#c-垃圾收集器的组合关系" class="headerlink" title="c.垃圾收集器的组合关系"></a>c.垃圾收集器的组合关系</h4><ul>
+<li><p>新生代收集器：Serial、ParNew、Parallel Scavenge</p>
+</li>
+<li><p>老年代收集器：Serial old、Parallel old、CMS</p>
+</li>
+<li><p>整堆收集器：G1</p>
+</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212191543682.png">红色虚线在 JDK9 移除、绿色虚线在 JDK14 弃用该组合、青色虚线在 JDK14 删除 CMS 垃圾回收器</p>
+<p>Serial GC、Parallel GC、Concurrent Mark Sweep GC 这三个 GC  不同：</p>
+<ul>
+<li>最小化地使用内存和并行开销，选 Serial GC</li>
+<li>最大化应用程序的吞吐量，选 Parallel GC</li>
+<li>最小化 GC 的中断或停顿时间，选 CMS GC</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212181620954.png"></p>
+<p>查看默认的垃圾收回收器：</p>
+<ul>
+<li><p><code>-XX:+PrintcommandLineFlags</code>：查看命令行相关参数（包含使用的垃圾收集器）</p>
+</li>
+<li><p>使用命令行指令：jinfo -flag 相关垃圾回收器参数  进程 ID</p>
+</li>
+</ul>
+<h3 id="1-Serial-Serial-old"><a href="#1-Serial-Serial-old" class="headerlink" title="1.Serial/Serial old"></a>1.Serial/Serial old</h3><p><strong>Serial</strong>：串行垃圾收集器，作用于新生代，使用单线程进行垃圾回收，采用<strong>复制算法</strong>，新生代基本都是复制算法</p>
+<p><strong>STW（Stop-The-World）</strong>：垃圾回收时，只有一个线程在工作，并且 Java 应用中的所有线程都要暂停，等待垃圾回收的完成</p>
+<p><strong>Serial old</strong>：执行老年代垃圾回收的串行收集器，内存回收算法使用的是<strong>标记-整理算法</strong>，同样也采用了串行回收和 STW 机制</p>
+<ul>
+<li>Serial old 是 Client 模式下默认的老年代的垃圾回收器</li>
+<li>Serial old 在 Server 模式下主要有两个用途：<ul>
+<li>在 JDK 1.5 以及之前版本（Parallel Old 诞生以前）中与 Parallel Scavenge 收集器搭配使用</li>
+<li>作为老年代 CMS 收集器的<strong>后备垃圾回收方案</strong>，在并发收集发生 Concurrent Mode Failure 时使用</li>
+</ul>
+</li>
+</ul>
+<p>开启参数：<code>-XX:+UseSerialGC</code> 等价于新生代用 Serial GC 且老年代用 Serial old GC</p>
+<p><img src="https://img.jwt1399.top/img/202212191545395.png"></p>
+<p>优点：简单而高效（与其他收集器的单线程比），对于限定单个 CPU 的环境来说，Serial 收集器由于没有线程交互的开销，可以获得最高的单线程收集效率</p>
+<p>缺点：对于交互性较强的应用而言，这种垃圾收集器是不能够接受的，比如 JavaWeb 应用</p>
+<h3 id="2-ParNew"><a href="#2-ParNew" class="headerlink" title="2.ParNew"></a>2.ParNew</h3><p>Par 是 Parallel 并行的缩写，New 是只能处理的是新生代</p>
+<p>并行垃圾收集器在串行垃圾收集器的基础之上做了改进，<strong>采用复制算法</strong>，将单线程改为了多线程进行垃圾回收，可以缩短垃圾回收的时间</p>
+<p>对于其他的行为（收集算法、stop the world、对象分配规则、回收策略等）同 Serial 收集器一样，应用在年轻代，除 Serial 外，只有<strong>ParNew GC 能与 CMS 收集器配合工作</strong></p>
+<p>相关参数：</p>
+<ul>
+<li><p><code>-XX：+UseParNewGC</code>：表示新生代使用并行收集器，不影响老年代</p>
+</li>
+<li><p><code>-XX:ParallelGCThreads</code>：默认开启和 CPU 数量相同的线程数</p>
+</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212191545235.png"></p>
+<p>ParNew 是很多 JVM 运行在 Server 模式下新生代的默认垃圾收集器</p>
+<ul>
+<li>对于新生代，回收次数频繁，使用并行方式高效</li>
+<li>对于老年代，回收次数少，使用串行方式节省资源（CPU 并行需切换线程，串行可以省去切换线程的资源）</li>
+</ul>
+<h3 id="3-Parallel-Parallel-Old"><a href="#3-Parallel-Parallel-Old" class="headerlink" title="3.Parallel/Parallel Old"></a>3.Parallel/Parallel Old</h3><p>Parallel Scavenge 收集器：是应用于新生代的并行垃圾回收器，<strong>采用复制算法</strong>、并行回收和 Stop the World 机制</p>
+<p>Parallel Old ：是应用于老年代的并行垃圾回收器，<strong>采用标记-整理算法</strong></p>
+<p>对比其他回收器：</p>
+<ul>
+<li>其它收集器目标是尽可能缩短垃圾收集时用户线程的停顿时间</li>
+<li>Parallel 目标是达到一个可控制的吞吐量，被称为<strong>吞吐量优先</strong>收集器</li>
+<li>Parallel Scavenge 对比 ParNew 拥有<strong>自适应调节策略</strong>，可以通过一个开关参数打开 GC Ergonomics</li>
+</ul>
+<p>应用场景：</p>
+<ul>
+<li>停顿时间越短就越适合需要与用户交互的程序，良好的响应速度能提升用户体验</li>
+<li>高吞吐量可以高效率地利用 CPU 时间，尽快完成程序的运算任务，适合在后台运算而不需要太多交互</li>
+</ul>
+<p>停顿时间和吞吐量的关系：新生代空间变小 → 缩短停顿时间 → 垃圾回收变得频繁 → 导致吞吐量下降</p>
+<p>在注重吞吐量及 CPU 资源敏感的场合，都可以优先考虑 Parallel Scavenge + Parallel Old 收集器，在 Server 模式下的内存回收性能很好，<strong>Java8 默认是此垃圾收集器组合</strong></p>
+<p><img src="https://img.jwt1399.top/img/202212191559772.png"></p>
+<p>参数配置：</p>
+<ul>
+<li><code>-XX：+UseParallelGC</code>：手动指定年轻代使用 Paralle 并行收集器执行内存回收任务</li>
+<li><code>-XX：+UseParalleloldcc</code>：手动指定老年代使用并行回收收集器执行内存回收任务<ul>
+<li>上面两个参数，默认开启一个，另一个也会被开启（互相激活），默认 JDK8 是开启的</li>
+</ul>
+</li>
+<li><code>-XX:+UseAdaptivesizepplicy</code>：设置 Parallel Scavenge 收集器具有<strong>自适应调节策略</strong>，在这种模式下，年轻代的大小、Eden 和 Survivor 的比例、晋升老年代的对象年龄等参数会被自动调整，虚拟机会根据当前系统的运行情况收集性能监控信息，动态调整这些参数以提供最合适的停顿时间或者最大的吞吐量</li>
+<li><code>-XX:ParallelGcThreads</code>：设置年轻代并行收集器的线程数，一般与 CPU 数量相等，以避免过多的线程数影响垃圾收集性能<ul>
+<li>在默认情况下，当 CPU 数量小于 8 个，ParallelGcThreads 的值等于 CPU 数量</li>
+<li>当 CPU 数量大于 8 个，ParallelGCThreads 的值等于 3+[5*CPU Count]/8]</li>
+</ul>
+</li>
+<li><code>-XX:MaxGCPauseMillis</code>：设置垃圾收集器最大停顿时间（即 STW 的时间），单位是毫秒<ul>
+<li>对于用户来讲，停顿时间越短体验越好；在服务器端，注重高并发，整体的吞吐量</li>
+<li>为了把停顿时间控制在 MaxGCPauseMillis 以内，收集器在工作时会调整 Java 堆大小或其他一些参数</li>
+</ul>
+</li>
+<li><code>-XX:GCTimeRatio</code>：垃圾收集时间占总时间的比例 =1/(N+1)，用于衡量吞吐量的大小<ul>
+<li>取值范围（0，100）。默认值 99，也就是垃圾回收时间不超过 1</li>
+<li>与 <code>-xx:MaxGCPauseMillis</code> 参数有一定矛盾性，暂停时间越长，Radio 参数就容易超过设定的比例</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-CMS"><a href="#4-CMS" class="headerlink" title="4.CMS"></a>4.CMS</h3><blockquote>
+<p>Concurrent Mark Sweep（CMS），是一款<strong>并发的、使用标记-清除</strong>算法、<strong>响应时间优先</strong>、<strong>针对老年代</strong>的垃圾回收器，其最大特点是<strong>让垃圾收集线程与用户线程同时工作</strong></p>
+</blockquote>
+<p>CMS 收集器的关注点是尽可能缩短垃圾收集时用户线程的停顿时间，停顿时间越短（<strong>低延迟</strong>）越适合与用户交互的程序，良好的响应速度能提升用户体验</p>
+<p>分为以下四个流程：</p>
+<ul>
+<li><strong>初始标记</strong>：使用 STW 出现短暂停顿，仅标记一下 GC Roots 能直接关联到的对象，速度很快</li>
+<li><strong>并发标记</strong>：进行 GC Roots 开始遍历整个对象图，在整个回收过程中耗时最长，不需要 STW，可以与用户线程并发运行</li>
+<li><strong>重新标记</strong>：修正并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象，比初始标记时间长但远比并发标记时间短，需要 STW（不停顿就会一直变化，采用写屏障 + 增量更新来避免漏标情况）</li>
+<li><strong>并发清除</strong>：清除标记为可以回收的对象，<strong>不需要移动存活对象</strong>，所以这个阶段可以与用户线程同时并发的</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212192100642.png"></p>
+<p>Mark Sweep 会造成内存碎片，不把算法换成 Mark Compact 的原因：Mark Compact 算法会整理内存，导致用户线程使用的<strong>对象的地址改变</strong>，影响用户线程继续执行</p>
+<p>在整个过程中耗时最长的并发标记和并发清除过程中，收集器线程都可以与用户线程一起工作，不需要进行停顿</p>
+<p>优点：并发收集、低延迟</p>
+<p>缺点：</p>
+<ul>
+<li><p>吞吐量降低：在并发阶段虽然不会导致用户停顿，但是会因为占用了一部分线程而导致应用程序变慢，CPU 利用率不够高</p>
+</li>
+<li><p>CMS 收集器<strong>无法处理浮动垃圾</strong>，可能出现 Concurrent Mode Failure 导致另一次 Full GC 的产生</p>
+<p>浮动垃圾是指并发清除阶段由于用户线程继续运行而产生的垃圾（产生了新对象），这部分垃圾只能到下一次 GC 时才能进行回收。由于浮动垃圾的存在，CMS 收集需要预留出一部分内存，不能等待老年代快满的时候再回收。如果预留的内存不够存放浮动垃圾，就会出现 Concurrent Mode Failure，这时虚拟机将临时启用 Serial Old 来替代 CMS，导致很长的停顿时间</p>
+</li>
+<li><p>标记 - 清除算法导致的空间碎片，往往出现老年代空间无法找到足够大连续空间来分配当前对象，不得不提前触发一次 Full GC；为新对象分配内存空间时，将无法使用指针碰撞（Bump the Pointer）技术，而只能够选择空闲列表（Free List）执行内存分配</p>
+</li>
+</ul>
+<p>参数设置：</p>
+<ul>
+<li><p><code>-XX：+UseConcMarkSweepGC</code>：手动指定使用 CMS 收集器执行内存回收任务</p>
+<p>开启该参数后会自动将 <code>-XX:+UseParNewGC</code> 打开，即：ParNew + CMS + Serial old的组合</p>
+</li>
+<li><p><code>-XX:CMSInitiatingoccupanyFraction</code>：设置堆内存使用率的阈值，一旦达到该阈值，便开始进行回收</p>
+<ul>
+<li>JDK5 及以前版本的默认值为 68，即当老年代的空间使用率达到 68% 时，会执行一次CMS回收</li>
+<li>JDK6 及以上版本默认值为 92%</li>
+</ul>
+</li>
+<li><p><code>-XX:+UseCMSCompactAtFullCollection</code>：用于指定在执行完 Full GC 后对内存空间进行压缩整理，以此避免内存碎片的产生，由于内存压缩整理过程无法并发执行，所带来的问题就是停顿时间变得更长</p>
+</li>
+<li><p><code>-XX:CMSFullGCsBeforecompaction</code>：<strong>设置在执行多少次 Full GC 后对内存空间进行压缩整理</strong></p>
+</li>
+<li><p><code>-XX:ParallelCMSThreads</code>：设置 CMS 的线程数量</p>
+<ul>
+<li>CMS 默认启动的线程数是 (ParallelGCThreads+3)/4，ParallelGCThreads 是年轻代并行收集器的线程数</li>
+<li>收集线程占用的 CPU 资源多于25%，对用户程序影响可能较大；当 CPU 资源比较紧张时，受到 CMS 收集器线程的影响，应用程序的性能在垃圾回收阶段可能会非常糟糕</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-G1"><a href="#5-G1" class="headerlink" title="5.G1"></a>5.G1</h3><blockquote>
+<p>G1（Garbage-First）是一款面向服务端应用的垃圾收集器，<strong>应用于新生代和老年代</strong>、采用<strong>标记-整理</strong>算法、<strong>响应时间优先</strong>、软实时、低延迟、可设定目标（最大 STW 停顿时间）的垃圾回收器，用于代替 CMS，适用于较大的堆（&gt;4 ~ 6G），在 JDK9 之后默认使用 G1</p>
+</blockquote>
+<h1 id="④类加载"><a href="#④类加载" class="headerlink" title="④类加载"></a>④类加载</h1><h1 id="⑤运行机制"><a href="#⑤运行机制" class="headerlink" title="⑤运行机制"></a>⑤运行机制</h1><h1 id="⑥系统优化"><a href="#⑥系统优化" class="headerlink" title="⑥系统优化"></a>⑥系统优化</h1><h1 id="调试参数"><a href="#调试参数" class="headerlink" title="调试参数"></a>调试参数</h1><ul>
 <li><p>设置堆内存指令：<code>-Xmx Size</code></p>
 </li>
 <li><p>设置栈内存大小：<code>-Xss size</code>   </p>
@@ -2051,6 +2312,16 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <li><p><code>-XX:+PrintEliminateAllocations</code>：查看标量替换情况</p>
 </li>
 </ul>
+<p><em>含义参数</em></p>
+<p><em>堆初始大小-Xms</em></p>
+<p><em>堆最大大小-Xmx 或 -XX:MaxHeapSize=size</em></p>
+<p><em>新生代大小-Xmn 或 (-XX:NewSize=size + -XX:MaxNewSize=size )</em></p>
+<p><em>幸存区比例（动态） -XX:InitialSurvivorRatio=ratio 和 -XX:+UseAdaptiveSizePolicy</em></p>
+<p><em>幸存区比例-XX:SurvivorRatio=ratio</em></p>
+<p><em>晋升阈值-XX:MaxTenuringThreshold=threshold</em></p>
+<p><em>晋升详情-XX:+PrintTenuringDistribution</em></p>
+<p><em>GC详情-XX:+PrintGCDetails -verbose:gc</em></p>
+<p><em>FullGC 前 MinorGC -XX:+ScavengeBeforeFullGC</em></p>
 <h1 id="JVM监控及诊断工具"><a href="#JVM监控及诊断工具" class="headerlink" title="JVM监控及诊断工具"></a>JVM监控及诊断工具</h1><ul>
 <li><p>jps ：定位进程 ID</p>
 </li>
@@ -2063,9 +2334,9 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <li><p>jvisualvm：图形界面的，多功能的监测工具，可以连续监测</p>
 </li>
 </ul>
-<h1 id="⭐️面试题"><a href="#⭐️面试题" class="headerlink" title="⭐️面试题"></a>⭐️面试题</h1><h3 id="JVM-内存结构"><a href="#JVM-内存结构" class="headerlink" title="JVM 内存结构"></a>JVM 内存结构</h3><p>JVM内存结构分为5大区域，<strong>程序计数器</strong>、<strong>虚拟机栈</strong>、<strong>本地方法栈</strong>、<strong>堆</strong>、<strong>方法区</strong></p>
-<p><strong>线程私有的：</strong>程序计数器、虚拟机栈、本地方法栈</p>
-<p><strong>线程共享的：</strong>堆、方法区</p>
+<h1 id="⭐️面试题"><a href="#⭐️面试题" class="headerlink" title="⭐️面试题"></a>⭐️面试题</h1><h2 id="内存结构"><a href="#内存结构" class="headerlink" title="内存结构"></a>内存结构</h2><h3 id="JVM-内存结构"><a href="#JVM-内存结构" class="headerlink" title="JVM 内存结构"></a>JVM 内存结构</h3><p>JVM内存结构分为5大区域，<strong>程序计数器</strong>、<strong>虚拟机栈</strong>、<strong>本地方法栈</strong>、<strong>堆</strong>、<strong>方法区</strong></p>
+<p><strong>线程私有：</strong>程序计数器、虚拟机栈、本地方法栈</p>
+<p><strong>线程共享：</strong>堆、方法区</p>
 <p><img src="https://img.jwt1399.top/img/202212051821230.png"></p>
 <h3 id="Java-对象的创建过程"><a href="#Java-对象的创建过程" class="headerlink" title="Java 对象的创建过程"></a>Java 对象的创建过程</h3><p>Step1:类加载检查</p>
 <p>当虚拟机遇到一条 <code>new</code> 指令时，首先检查是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那先执行类加载。</p>
@@ -2077,7 +2348,16 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <p>初始化零值完成之后，<strong>虚拟机要对对象进行必要的设置</strong>，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 <strong>这些信息存放在对象头中。</strong> 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
 <p>Step5:执行 init 方法</p>
 <p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
-<h3 id="Java对象的定位方式"><a href="#Java对象的定位方式" class="headerlink" title="Java对象的定位方式"></a>Java对象的定位方式</h3><p>Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有：<strong>句柄</strong>、<strong>直接指针</strong>。</p>
+<h3 id="Java对象的内存布局"><a href="#Java对象的内存布局" class="headerlink" title="Java对象的内存布局"></a>Java对象的内存布局</h3><p>在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
+<ul>
+<li><p><strong>对象头包括两部分信息</strong>，<strong>第一部分用于存储对象自身的运行时数据</strong>（哈希码、GC 分代年龄、锁状态标志等），<strong>另一部分是类型指针</strong>，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
+</li>
+<li><p><strong>实例数据部分是对象真正存储的有效信息</strong>，也是在程序中所定义的各种类型的字段内容。</p>
+</li>
+<li><p><strong>对齐填充部分不是必然存在的，也没有什么特别的含义，仅仅起占位作用。</strong> 因为 Hotspot 虚拟机的自动内存管理系统要求对象起始地址必须是 8 字节的整数倍，换句话说就是对象的大小必须是 8 字节的整数倍。而对象头部分正好是 8 字节的倍数（1 倍或 2 倍），因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全。</p>
+</li>
+</ul>
+<h3 id="Java对象的访问定位"><a href="#Java对象的访问定位" class="headerlink" title="Java对象的访问定位"></a>Java对象的访问定位</h3><p>Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有：<strong>句柄</strong>、<strong>直接指针</strong>。</p>
 <p><strong>句柄</strong></p>
 <ul>
 <li>Java 堆中将会划分出一块内存来作为句柄池，<strong>reference 中存储的就是对象的句柄地址</strong>，而句柄中包含了对象实例数据与类型数据各自的具体地址信息。</li>
@@ -2088,7 +2368,7 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <li><strong>reference 中存储的直接就是对象的地址</strong>。对象包含到对象类型数据的指针，通过这个指针可以访问对象类型数据。</li>
 <li>使用直接指针访问方式最大的好处是访问对象速度快，它节省了一次指针定位的时间开销，虚拟机HotSpot主要是使用直接指针来访问对象。</li>
 </ul>
-<h2 id="说一下堆栈的区别？"><a href="#说一下堆栈的区别？" class="headerlink" title="说一下堆栈的区别？"></a>说一下堆栈的区别？</h2><table>
+<h3 id="说一下堆栈的区别？"><a href="#说一下堆栈的区别？" class="headerlink" title="说一下堆栈的区别？"></a>说一下堆栈的区别？</h3><table>
 <thead>
 <tr>
 <th align="center">堆</th>
@@ -2116,11 +2396,66 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <td align="center">线程私有</td>
 </tr>
 </tbody></table>
-<h2 id="什么情况下会发生栈溢出？"><a href="#什么情况下会发生栈溢出？" class="headerlink" title="什么情况下会发生栈溢出？"></a>什么情况下会发生栈溢出？</h2><ul>
+<h3 id="什么情况下会发生栈溢出？"><a href="#什么情况下会发生栈溢出？" class="headerlink" title="什么情况下会发生栈溢出？"></a>什么情况下会发生栈溢出？</h3><ul>
 <li>当线程请求的栈深度超过了虚拟机允许的最大深度时，会抛出<code>StackOverFlowError</code>异常。这种情况通常是因为方法递归没终止条件。</li>
 <li>新建线程的时候没有足够的内存去创建对应的虚拟机栈，虚拟机会抛出<code>OutOfMemoryError</code>异常。比如线程启动过多就会出现这种情况。</li>
 </ul>
-<h3 id="Java-类的加载流程是怎样的？"><a href="#Java-类的加载流程是怎样的？" class="headerlink" title="Java 类的加载流程是怎样的？"></a>Java 类的加载流程是怎样的？</h3><h3 id="什么是双亲委派机制？"><a href="#什么是双亲委派机制？" class="headerlink" title="什么是双亲委派机制？"></a>什么是双亲委派机制？</h3><p>JVM 内存是如何对应到操作系统内存的？</p>
+<h2 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h2><blockquote>
+<ul>
+<li></li>
+<li><p>简单的介绍一下强引用、软引用、弱引用、虚引用（虚引用与软引用和弱引用的区别、使用软引用能带来的好处）。</p>
+</li>
+<li><p>如何判断一个常量是废弃常量</p>
+</li>
+<li><p>如何判断一个类是无用的类</p>
+</li>
+<li><p>垃圾收集有哪些算法，各自的特点？</p>
+</li>
+<li><p>HotSpot 为什么要分为新生代和老年代？</p>
+</li>
+<li><p>常见的垃圾回收器有哪些？</p>
+</li>
+<li><p>介绍一下 CMS,G1 收集器。</p>
+</li>
+<li><p>Minor Gc 和 Full GC 有什么不同呢？</p>
+</li>
+<li><p>26.Java GC 过程<br>27.什么时候触发 full gc<br>28.对象什么时候晋升老年代<br>29.垃圾回收算法有哪些<br>30.ZGC 为什么零停机</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="堆空间的基本结构"><a href="#堆空间的基本结构" class="headerlink" title="堆空间的基本结构"></a>堆空间的基本结构</h3><p>Java 自动内存管理最核心的功能是 <strong>堆</strong> 内存中<strong>对象的分配与回收</strong>。</p>
+<p>从垃圾回收的角度来说，由于现在收集器基本都采用分代垃圾收集算法，所以 Java 堆被划分为了几个不同的区域，这样我们就可以根据各个区域的特点选择合适的垃圾收集算法。</p>
+<p>在 JDK 7 版本及 JDK 7 版本之前，堆内存被通常分为下面三部分：</p>
+<ol>
+<li>新生代(Young Generation)</li>
+<li>老生代(Old Generation)</li>
+<li>永久代(Permanent Generation)</li>
+</ol>
+<p><strong>JDK 8 版本之后 PermGen(永久代) 已被 Metaspace(元空间) 取代，元空间使用的是直接内存</strong> 。</p>
+<h3 id="如何判断对象是否死亡"><a href="#如何判断对象是否死亡" class="headerlink" title="如何判断对象是否死亡"></a>如何判断对象是否死亡</h3><ul>
+<li><p>引用计数法</p>
+<ul>
+<li>对每个对象添加一个整型的引用计数器属性，用于记录对象被引用的情况；</li>
+<li>每当有一个地方引用它，计数器就加 1；</li>
+<li>当引用失效，计数器就减 1；</li>
+<li>当计数器为 0 的对象就是不能再被使用的。</li>
+</ul>
+<p><strong>这个方法实现简单，效率高，但是目前主流的虚拟机中并没有选择这个算法来管理内存，其最主要的原因是它很难解决对象之间相互循环引用的问题。</strong></p>
+</li>
+<li><p>可达性分析算法</p>
+</li>
+</ul>
+<p>通过一系列的称为 <strong>“GC Roots”</strong> 的对象作为起点，从这些节点开始向下搜索，节点所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连的话，则证明此对象是不可用的，需要被回收。</p>
+<h3 id="哪些对象可以作为-GC-Roots-呢？"><a href="#哪些对象可以作为-GC-Roots-呢？" class="headerlink" title="哪些对象可以作为 GC Roots 呢？"></a><strong>哪些对象可以作为 GC Roots 呢？</strong></h3><ul>
+<li>虚拟机栈(栈帧中的本地变量表)中引用的对象</li>
+<li>本地方法栈(Native 方法)中引用的对象</li>
+<li>方法区中类静态属性引用的对象</li>
+<li>方法区中常量引用的对象</li>
+<li>所有被同步锁持有的对象</li>
+</ul>
+<p>Java 类的加载流程是怎样的？</p>
+<p>什么是双亲委派机制？</p>
+<p>JVM 内存是如何对应到操作系统内存的？</p>
 <p>什么是指令序列重排序？</p>
 <p>简述 CMS 与 G1 机制的区别</p>
 <p>JVM 是怎么去调优的？了解哪些参数和指令？</p>
@@ -2134,6 +2469,7 @@ obj <span class="token operator">=</span> null<span class="token punctuation">;<
 <p><a target="_blank" rel="noopener" href="https://github.com/Seazean/JavaNote">Seazean/JavaNote: 📁我不是的知识的生产者，我只是知识的搬运工 (github.com)</a></p>
 <p><a target="_blank" rel="noopener" href="http://wangwren.com/2019/11/JVM%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/#JVM%E7%9A%84%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86">JVM的运行原理</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.yuque.com/u21195183/jvm/qpoa81">尚硅谷JVM</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/12544c0ad5c1">三色标记法与读写屏障 - 简书 (jianshu.com)</a></p>
 <h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -2925,7 +3261,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">769k</span>&nbsp;字
+                class="white-color">777.3k</span>&nbsp;字
             
             
             
