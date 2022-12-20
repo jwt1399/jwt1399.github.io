@@ -854,14 +854,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-19
+                    2022-12-20
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    4.2k
+                    4.8k
                 </div>
                 
 
@@ -1381,7 +1381,7 @@ counter<span class="token operator">++</span><span class="token punctuation">;</
 counter<span class="token operator">--</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>竞态条件（Race Condition）：多个线程在临界区内执行，由于代码的执行序列不同而导致结果无法预测，称之为发生了竞态条件</p>
+<h2 id="竞态条件-Race-Condition"><a href="#竞态条件-Race-Condition" class="headerlink" title="竞态条件-Race Condition"></a>竞态条件-Race Condition</h2><p>多个线程在临界区内执行，由于代码的执行序列不同而导致结果无法预测，称之为发生了竞态条件</p>
 <p>一个程序运行多个线程是没有问题，多个线程读共享资源也没有问题，在多个线程对共享资源读写操作时发生指令交错，就会出现问题</p>
 <p>为了避免临界区的竞态条件发生（解决线程安全问题）：</p>
 <ul>
@@ -1389,17 +1389,16 @@ counter<span class="token operator">--</span><span class="token punctuation">;</
 <li>非阻塞式的解决方案：原子变量</li>
 </ul>
 <p>管程（monitor）：指的是管理共享变量以及对共享变量的操作过程，让它们支持并发。翻译为 Java 就是管理类的成员变量和成员方法，让这个类是线程安全的。</p>
+<h2 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h2><blockquote>
+<p>synchronized 是可重入、不公平的重量级锁</p>
+</blockquote>
 <p><strong>synchronized：对象锁，保证了临界区内代码的原子性</strong>，采用互斥的方式让同一时刻至多只有一个线程能持有对象锁，其它线程获取这个对象锁时会阻塞，保证拥有锁的线程可以安全的执行临界区内的代码，不用担心线程上下文切换</p>
 <p>互斥和同步都可以采用 synchronized 关键字来完成，区别：</p>
 <ul>
 <li>互斥是保证临界区的竞态条件发生，同一时刻只能有一个线程执行临界区代码</li>
 <li>同步是由于线程执行的先后、顺序不同、需要一个线程等待其它线程运行到某个点</li>
 </ul>
-<h2 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h2><blockquote>
-<p>synchronized 是可重入、不公平的重量级锁</p>
-</blockquote>
-<p>同步代码块格式：</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">synchronized</span><span class="token punctuation">(</span>锁对象<span class="token punctuation">)</span><span class="token punctuation">{</span>
+<h3 id="同步代码块"><a href="#同步代码块" class="headerlink" title="同步代码块"></a>同步代码块</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">synchronized</span><span class="token punctuation">(</span>锁对象<span class="token punctuation">)</span><span class="token punctuation">{</span>
     <span class="token comment" spellcheck="true">// 访问共享资源的核心代码</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
@@ -1431,26 +1430,41 @@ counter<span class="token operator">--</span><span class="token punctuation">;</
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>方法上的 synchronized:</p>
+<h3 id="同步方法"><a href="#同步方法" class="headerlink" title="同步方法"></a>同步方法</h3><p>解决线程安全问题的核心方法是使用锁，每次只能一个线程进入访问</p>
+<p>synchronized 修饰的方法的不具备继承性，所以子类是线程不安全的</p>
+<p>如果子类的方法也被 synchronized 修饰，两个锁对象其实是一把锁，而且是<strong>子类对象作为锁</strong></p>
+<p>用法：直接给方法加上一个修饰符 synchronized</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//同步方法</span>
+修饰符 <span class="token keyword">synchronized</span> 返回值类型 方法名<span class="token punctuation">(</span>方法参数<span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+    方法体；
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">//同步静态方法</span>
+修饰符 <span class="token keyword">static</span> <span class="token keyword">synchronized</span> 返回值类型 方法名<span class="token punctuation">(</span>方法参数<span class="token punctuation">)</span> <span class="token punctuation">{</span> 
+    方法体；
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li><p>如果方法是实例方法：同步方法默认用 this 作为的锁对象</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token comment" spellcheck="true">//等价于</span>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> 
+
+<span class="token comment" spellcheck="true">//等价于</span>
 <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">synchronized</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p>如果方法是静态方法：同步方法默认用类名 .class 作为的锁对象</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Test</span><span class="token punctuation">{</span>
     <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
+
 <span class="token comment" spellcheck="true">//等价于</span>
 <span class="token keyword">class</span> <span class="token class-name">Test</span><span class="token punctuation">{</span>
     <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">synchronized</span><span class="token punctuation">(</span>Test<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 </ul>
 <p>线程八锁</p>
@@ -1496,6 +1510,62 @@ counter<span class="token operator">--</span><span class="token punctuation">;</
     <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token operator">></span><span class="token punctuation">{</span> n2<span class="token punctuation">.</span><span class="token function">b</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="线程安全分析"><a href="#线程安全分析" class="headerlink" title="线程安全分析"></a>线程安全分析</h2><ol>
+<li>成员变量和静态变量：</li>
+</ol>
+<ul>
+<li>如果它们没有共享，则线程安全</li>
+<li>如果它们被共享了，根据它们的状态是否能够改变，分两种情况：<ul>
+<li>如果只有读操作，则线程安全</li>
+<li>如果有读写操作，则这段代码是临界区，需要考虑线程安全问题</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>局部变量：</li>
+</ol>
+<ul>
+<li>局部变量是线程安全的</li>
+<li>局部变量引用的对象不一定线程安全（逃逸分析）：<ul>
+<li>如果该对象没有逃离方法的作用范围，它是线程安全的（每一个方法有一个栈帧）</li>
+<li>如果该对象逃离方法的作用范围，需要考虑线程安全问题（暴露引用）</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li><p>线程安全类：String、Integer、StringBuffer、Random、Vector、Hashtable、java.util.concurrent 包</p>
+</li>
+<li><p><strong>每个方法是原子的，但多个方法的组合不是原子的</strong>，只能保证调用的方法内部安全：</p>
+</li>
+</ol>
+<pre class="line-numbers language-java"><code class="language-java">Hashtable table <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Hashtable</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 线程1，线程2</span>
+<span class="token keyword">if</span><span class="token punctuation">(</span>table<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"key"</span><span class="token punctuation">)</span> <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    table<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span><span class="token string">"key"</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// get、put 两个方法分别是线程安全的，一起使用就是不安全的</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<img src="https://img.jwt1399.top/img/202212201746213.png" style="zoom:50%;" />
+
+<ol start="5">
+<li><p>无状态类（就是没有成员变量的类）是线程安全的</p>
+</li>
+<li><p>不可变类线程安全：String、Integer 等都是不可变类，<strong>内部的状态不可以改变</strong>，方法是线程安全</p>
+</li>
+</ol>
+<ul>
+<li><p>String 的 replace 等方法底层是新建一个对象，复制过去</p>
+<pre class="line-numbers language-java"><code class="language-java">Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Object<span class="token operator">></span> map <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">// 线程不安全</span>
+String S1 <span class="token operator">=</span> <span class="token string">"..."</span><span class="token punctuation">;</span>                              <span class="token comment" spellcheck="true">// 线程安全</span>
+<span class="token keyword">final</span> String S2 <span class="token operator">=</span> <span class="token string">"..."</span><span class="token punctuation">;</span>                    <span class="token comment" spellcheck="true">// 线程安全</span>
+Date D1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                          <span class="token comment" spellcheck="true">// 线程不安全</span>
+<span class="token keyword">final</span> Date D2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">// 线程不安全，final让D2引用的对象不能变，但对象的内容可以变</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<ol start="7">
+<li>抽象方法如果有参数，被重写后行为不确定可能造成线程不安全，被称之为外星方法：<code>public abstract foo(Student s);</code></li>
+</ol>
 <h1 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -2282,7 +2352,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">777.3k</span>&nbsp;字
+                class="white-color">783k</span>&nbsp;字
             
             
             
