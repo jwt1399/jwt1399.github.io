@@ -854,14 +854,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-12-20
+                    2022-12-22
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    27.2k
+                    34.8k
                 </div>
                 
 
@@ -1059,6 +1059,7 @@
 <li><strong>字符串常量池</strong> StringTable/String Pool： JVM 为了提升性能和减少内存消耗针对字符串（String 类）专门开辟的一块区域，主要目的是为了避免字符串的重复创建。<ul>
 <li>字符串常量池原本存放于方法区，JDK7 开始放置于堆中</li>
 <li>字符串常量池<strong>存储的是 String 对象的直接引用或者对象</strong>，是一张 <strong>stringTable</strong></li>
+<li>在jdk 7之后，原先位于方法区里的字符串常量池已被移动到了java堆中。</li>
 </ul>
 </li>
 <li><strong>静态变量</strong>：静态变量是有 static 修饰的变量，JDK8 时从方法区迁移至堆中</li>
@@ -1580,7 +1581,120 @@ String b <span class="token operator">=</span> <span class="token string">"ilove
 </ul>
 <img src="https://img.jwt1399.top/img/202212061923172.jpg" style="zoom:50%;" />
 
-<h2 id="❹总结"><a href="#❹总结" class="headerlink" title="❹总结"></a>❹总结</h2><h3 id="1-异常"><a href="#1-异常" class="headerlink" title="1.异常"></a>1.异常</h3><p>常见 Out Of Memory（OOM） 错误：</p>
+<h2 id="❹对象实例化"><a href="#❹对象实例化" class="headerlink" title="❹对象实例化"></a>❹对象实例化</h2><h3 id="1-对象内存结构"><a href="#1-对象内存结构" class="headerlink" title="1.对象内存结构"></a>1.对象内存结构</h3><p>一个 Java 对象内存中存储为三部分：对象头（Header）、实例数据（Instance Data）和对齐填充 （Padding）</p>
+<p>对象头：</p>
+<ul>
+<li><p>普通对象：分为两部分</p>
+<ul>
+<li><p><strong>Mark Word</strong>：用于存储对象自身的运行时数据， 如哈希码（HashCode）、GC 分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等等</p>
+<pre class="line-numbers language-ruby"><code class="language-ruby"><span class="token function">hash</span><span class="token punctuation">(</span><span class="token number">25</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">age</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">lock</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">=</span> 32bit                    <span class="token comment" spellcheck="true">#32位系统</span>
+<span class="token function">unused</span><span class="token punctuation">(</span><span class="token number">25</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">hash</span><span class="token punctuation">(</span><span class="token number">31</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">age</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">lock</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span> <span class="token operator">=</span> 64bit    <span class="token comment" spellcheck="true">#64位系统</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+<li><p><strong>Klass Word</strong>：类型指针，<strong>指向该对象的 Class 类对象的指针</strong>，虚拟机通过这个指针来确定这个对象是哪个类的实例；</p>
+<ul>
+<li><p>在 64 位系统中，默认开启指针压缩（<code>-XX:+UseCompressedOops</code>），使用32bits指针</p>
+</li>
+<li><p>堆内存大于32G时，压缩指针会失效，会强制使用64bits来进行对象寻址</p>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="line-numbers language-ruby"><code class="language-ruby"><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span>
+<span class="token operator">|</span>                   <span class="token builtin">Object</span> <span class="token function">Header</span> <span class="token punctuation">(</span><span class="token number">64</span> bits<span class="token punctuation">)</span>                         <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span>
+<span class="token operator">|</span>      <span class="token constant">Mark</span> <span class="token function">Word</span> <span class="token punctuation">(</span><span class="token number">32</span> bits<span class="token punctuation">)</span>      <span class="token operator">|</span>  <span class="token constant">Klass</span> <span class="token function">Word</span> <span class="token punctuation">(</span><span class="token number">32</span> bits<span class="token punctuation">)</span>   <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>数组对象：如果对象是一个数组，那在对象头中还有一块数据用于记录数组长度（12 字节）</p>
+<pre class="line-numbers language-ruby"><code class="language-ruby"><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span>
+<span class="token operator">|</span>                                       <span class="token builtin">Object</span> <span class="token function">Header</span> <span class="token punctuation">(</span><span class="token number">96</span> bits<span class="token punctuation">)</span>                                           <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span>
+<span class="token operator">|</span>  <span class="token constant">Mark</span> <span class="token function">Word</span><span class="token punctuation">(</span>32bits<span class="token punctuation">)</span>    <span class="token operator">|</span>       <span class="token constant">Klass</span> <span class="token function">Word</span><span class="token punctuation">(</span>32bits<span class="token punctuation">)</span>         <span class="token operator">|</span>   array <span class="token function">length</span><span class="token punctuation">(</span>32bits<span class="token punctuation">)</span>  <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">|</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<p>实例数据：实例数据部分是对象真正存储的有效信息，也是在程序代码中所定义的各种类型的字段内容，无论是从父类继承下来的，还是在子类中定义的，都需要记录起来</p>
+<p>对齐填充：Padding 起占位符的作用。64 位系统，由于 HotSpot VM 的自动内存管理系统要求<strong>对象起始地址必须是 8 字节的整数倍</strong>，就是对象的大小必须是 8 字节的整数倍，而对象头部分正好是 8 字节的倍数（1 倍或者 2 倍），因此当对象实例数据部分没有对齐时，就需要通过对齐填充来补全</p>
+<p>32 位系统：</p>
+<ul>
+<li><p>一个 int 在 java 中占据 4byte，所以 Integer 的大小为：</p>
+<pre class="line-numbers language-ruby"><code class="language-ruby"><span class="token comment" spellcheck="true"># 需要补位4byte</span>
+<span class="token function">4</span><span class="token punctuation">(</span><span class="token constant">Mark</span> <span class="token constant">Word</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">4</span><span class="token punctuation">(</span><span class="token constant">Klass</span> <span class="token constant">Word</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">4</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">4</span><span class="token punctuation">(</span><span class="token constant">Padding</span><span class="token punctuation">)</span> <span class="token operator">=</span> 16byte
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+<li><p><code>int[] arr = new int[10]</code></p>
+<pre class="line-numbers language-ruby"><code class="language-ruby"><span class="token comment" spellcheck="true"># 由于需要8位对齐，所以最终大小为56byte</span>
+<span class="token function">4</span><span class="token punctuation">(</span><span class="token constant">Mark</span> <span class="token constant">Word</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">4</span><span class="token punctuation">(</span><span class="token constant">Klass</span> <span class="token constant">Word</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">4</span><span class="token punctuation">(</span>length<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">4</span><span class="token operator">*</span><span class="token function">10</span><span class="token punctuation">(</span><span class="token number">10</span>个int大小<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token function">4</span><span class="token punctuation">(</span><span class="token constant">Padding</span><span class="token punctuation">)</span> <span class="token operator">=</span> 56sbyte
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212221542828.png" style="zoom: 50%;" />
+
+<h3 id="2-对象访问方式"><a href="#2-对象访问方式" class="headerlink" title="2.对象访问方式"></a>2.对象访问方式</h3><p>JVM 是通过<strong>栈帧中的对象引用（reference）</strong>访问到堆中的对象实例：</p>
+<ul>
+<li><p>句柄访问：Java 堆中会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据和类型数据各自的具体地址信息</p>
+<p>优点：reference 中存储的是稳定的句柄地址，在对象被移动（垃圾收集）时只会改变句柄中的实例数据指针，而 reference 本身不需要被修改</p>
+<p><img src="https://img.jwt1399.top/img/202212221546450.jpeg"></p>
+</li>
+<li><p>直接指针（HotSpot 采用）：reference 中直接存储的对象地址，对象中包含对象类型数据的指针，通过这个指针可以访问对象类型数据。</p>
+<p>优点：速度更快，<strong>节省了一次指针定位的时间开销</strong></p>
+<p>缺点：对象被移动时（如进行 GC 后的内存重新排列），对象的 reference 也需要同步更新</p>
+<p><img src="https://img.jwt1399.top/img/202212221547695.jpeg"></p>
+</li>
+</ul>
+<h3 id="3-对象创建过程"><a href="#3-对象创建过程" class="headerlink" title="3.对象创建过程"></a>3.对象创建过程</h3><p><strong>创建对象的方式</strong></p>
+<ul>
+<li><p>new：最常见的方式</p>
+</li>
+<li><p>Class的newInstance方法（反射机制）</p>
+</li>
+<li><p>Constructor的newInstance(XXX)（反射机制）</p>
+</li>
+<li><p>使用clone()：不调用任何的构造器，要求当前的类需要实现Cloneable接口，实现clone()</p>
+</li>
+<li><p>使用序列化：从文件中、从网络中获取一个对象的二进制流</p>
+</li>
+<li><p>第三方库 Objenesis</p>
+</li>
+</ul>
+<p><strong>创建对象的过程</strong></p>
+<ol>
+<li>类加载检查</li>
+</ol>
+<p>当虚拟机遇到一条 <code>new</code> 指令时，首先检查是否能在运行时常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那先执行类加载。</p>
+<ol start="2">
+<li>为对象分配内存</li>
+</ol>
+<p>首先计算对象占用空间的大小，接着在堆中划分一块内存给新对象。</p>
+<ul>
+<li><p><strong>如果内存规整</strong>：虚拟机将采用的是指针碰撞法（Bump The Point）来为对象分配内存。</p>
+</li>
+<li><p><strong>如果内存不规整</strong>：虚拟机需要维护一个空闲列表（Free List）来为对象分配内存。</p>
+</li>
+</ul>
+<p>选择哪种分配方式由堆是否规整所决定，而堆是否规整又由所采用的GC收集器是否带有压缩整理功能决定。</p>
+<p><strong>内存分配并发问题</strong></p>
+<p>在创建对象的时候有一个很重要的问题，就是线程安全，虚拟机采用两种方式来保证线程安全：</p>
+<ul>
+<li><strong>CAS+失败重试：</strong> CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。<strong>虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</strong></li>
+<li><strong>TLAB：</strong> 为每一个线程预先在 Eden 区分配一块内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配，通过设置 <code>-XX:+UseTLAB</code>参数来设定</li>
+</ul>
+<ol start="3">
+<li>初始化零值</li>
+</ol>
+<p>分配到的内存空间都初始化为零值，通过这个操作保证了对象的字段可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
+<ol start="4">
+<li>设置对象头</li>
+</ol>
+<p>将对象的所属类（即类的元数据信息）、对象的哈希码、对象的GC分代年龄、锁信息等数据存储在对象的对象头中。另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
+<ol start="5">
+<li>执行 init 方法</li>
+</ol>
+<p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法（初始化成员变量，执行实例化代码块，调用类的构造方法，并把堆内对象的首地址赋值给引用变量），把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+<h2 id="❺总结"><a href="#❺总结" class="headerlink" title="❺总结"></a>❺总结</h2><h3 id="1-异常"><a href="#1-异常" class="headerlink" title="1.异常"></a>1.异常</h3><p>常见 Out Of Memory（OOM） 错误：</p>
 <ul>
 <li><p>java.lang.StackOverflowError</p>
 <ul>
@@ -1623,8 +1737,8 @@ String b <span class="token operator">=</span> <span class="token string">"ilove
 </ul>
 </li>
 </ul>
-<p>Java 编译指令：<code>javac -g 文件名.java</code></p>
-<p>Java 反编译指令：<code>javap -v 文件名.class</code></p>
+<p>Java 编译指令：<code>javac -g 文件名.java</code>  -g 可以生成所有相关信息</p>
+<p>Java 反编译指令：<code>javap -v 文件名.class</code> -v 输出附加信息</p>
 <p>后台运行：<code>nohup java 全路径名</code></p>
 <h3 id="2-三种常量池"><a href="#2-三种常量池" class="headerlink" title="2.三种常量池"></a>2.三种常量池</h3><p><strong>常量池</strong>：主要存放编译期生成的各种**字面量(Literal)和符号引用(Symbolic References)**。</p>
 <ul>
@@ -2352,71 +2466,99 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 <li>相较于 CMS，G1 还不具备全方位、压倒性优势。比如在用户程序运行过程中，G1 无论是为了垃圾收集产生的内存占用还是程序运行时的额外执行负载都要比 CMS 要高</li>
 <li>从经验上来说，在小内存应用上 CMS 的表现大概率会优于 G1，而 G1 在大内存应用上则发挥其优势，平衡点在 6-8GB 之间</li>
 </ul>
-<h4 id="记忆集"><a href="#记忆集" class="headerlink" title="记忆集"></a>记忆集</h4><p>为解决对象跨代引用所带来的问题，垃圾收集器在新生代中建立了名为记忆集（Remembered Set）的数据结构，用以避免把整个老年代加进GC Roots扫描范围。</p>
+<h4 id="记忆集-RSet"><a href="#记忆集-RSet" class="headerlink" title="记忆集-RSet"></a>记忆集-RSet</h4><p>为解决对象跨代引用所带来的问题，垃圾收集器在新生代中建立了名为记忆集（Remembered Set）的数据结构，用以避免把整个老年代加进 GC Roots 扫描范围。</p>
 <p>记忆集 Remembered Set 在新生代中，每个 Region 都有一个 Remembered Set，用来记录被哪些其他 Region 里的对象引用（谁引用了我就记录谁）</p>
-<img src="../images/Java-JVM/JUC-G1记忆集.png" style="zoom:67%;" />
+<img src="https://img.jwt1399.top/img/202212211532056.png" style="zoom:67%;" />
 
-<p>程序对 Reference 类型数据写操作时，产生一个 Write Barrier 暂时中断操作，检查该对象和 Reference 类型数据是否在不同的 Region（跨代引用），不同就将相关引用信息记录到 Reference 类型所属的 Region 的 Remembered Set 之中</p>
-<p>进行内存回收时，在 GC 根节点的枚举范围中加入 Remembered Set 即可保证不对全堆扫描也不会有遗漏</p>
-<p>垃圾收集器在新生代中建立了记忆集这样的数据结构，可以理解为它是一个抽象类，具体实现记忆集的三种方式：</p>
+<p>通过写屏障来更新记忆集：</p>
+<p>程序对 Reference 类型数据写操作时，产生一个写屏障 Write Barrier 暂时中断操作，检查该对象和 Reference 类型数据是否在不同的 Region（跨代引用），不同就将相关引用信息记录到 Reference 类型所属的 Region 的 Remembered Set 之中，进行内存回收时，在 GC 根节点的枚举范围中加入 Remembered Set 即可保证不对全堆扫描也不会有遗漏</p>
+<h4 id="卡表-Card-Table"><a href="#卡表-Card-Table" class="headerlink" title="卡表-Card Table"></a>卡表-Card Table</h4><p>垃圾收集器在新生代中建立了<strong>记忆集</strong>这样的数据结构，可以理解为它是一个抽象类，具体实现记忆集的三种方式：</p>
 <ul>
 <li><p>字长精度：每个记录精确到一个机器字长（就是处理器的寻址位数，如常见的32位或64位，这个精度决定了机器访问物理内存地址的指针长度），该字包含跨代指针。</p>
 </li>
 <li><p>对象精度：每个记录精确到一个对象，该对象里有字段含有跨代指针。</p>
 </li>
-<li><p>卡精度(卡表)：每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
+<li><p>**卡精度(卡表)**：每个记录精确到一块内存区域，该区域内有对象含有跨代指针。</p>
 </li>
 </ul>
-<p>卡表（Card Table）在老年代中，是一种对记忆集的具体实现，主要定义了记忆集的记录精度、与堆内存的映射关系等，卡表中的每一个元素都对应着一块特定大小的内存块，这个内存块称之为卡页（card page），当存在跨代引用时，会将卡页标记为 dirty，在垃圾收集发生时，只要筛选出卡表中 dirty 的元素，就能轻易得出哪些卡页内存块中包含跨代指针，把它们加入GC Roots中一并扫描。JVM 对于卡页的维护也是通过写屏障的方式</p>
-<p>收集集合 CSet 代表每次 GC 暂停时回收的一系列目标分区，在任意一次收集暂停中，CSet 所有分区都会被释放，内部存活的对象都会被转移到分配的空闲分区中。年轻代收集 CSet 只容纳年轻代分区，而混合收集会通过启发式算法，在老年代候选回收分区中，筛选出回收收益最高的分区添加到 CSet 中</p>
-<ul>
-<li>CSet of Young Collection</li>
-<li>CSet of Mix Collection</li>
-</ul>
-<h4 id="写屏障"><a href="#写屏障" class="headerlink" title="写屏障"></a>写屏障</h4><p>我们已经解决了如何使用记忆集来缩减GC Roots扫描范围的问题，但还没有解决卡表元素如何维护的问题，例如它们何时变脏、谁来把它们变脏等。</p>
-<p>卡表元素何时变脏的答案是很明确的——有其他分代区域中对象引用了本区域对象时，其对应的卡表元素就应该变脏，变脏时间点原则上应该发生在引用类型字段赋值的那一刻。</p>
-<p>但问题是如何变脏，即如何在对象赋值的那一刻去更新维护卡表呢？</p>
+<blockquote>
+<p>卡表（Card Table）在老年代中，是一种对记忆集的具体实现，主要定义了记忆集的记录精度、与堆内存的映射关系等</p>
+</blockquote>
+<p>卡表中的每一个元素都对应着一块特定大小的内存块，这个内存块称之为卡页（card page），当存在跨代引用时，会将卡页标记为 dirty，在垃圾收集发生时，只要筛选出卡表中 dirty 的元素，就能轻易得出哪些卡页内存块中包含跨代指针，把它们加入GC Roots中一并扫描。JVM 对于卡页的维护也是通过写屏障的方式</p>
+<p><img src="https://img.jwt1399.top/img/202212211651174.png"></p>
+<h4 id="写屏障-Write-Barrier"><a href="#写屏障-Write-Barrier" class="headerlink" title="写屏障-Write Barrier"></a>写屏障-Write Barrier</h4><blockquote>
+<p>我们已经解决了如何使用记忆集来缩减GC Roots扫描范围的问题，但还没有解决卡表元素如何维护的问题，例如它们何时变脏、谁来把它们变脏等。</p>
+</blockquote>
+<p><strong>卡表元素何时变脏</strong></p>
+<p>有其他分代区域中对象引用了本区域对象时，其对应的卡表元素就应该变脏，变脏时间点原则上应该发生在引用类型字段赋值的那一刻。</p>
+<p><strong>如何变脏，即如何在对象赋值的那一刻去更新维护卡表呢？</strong></p>
 <p>在HotSpot虚拟机里是通过写屏障（Write Barrier）技术维护卡表状态的。</p>
-<p>先请读者注意将这里提到的“写屏障”，以及后面在低延迟收集器中会提到的“读屏障”与解决并发乱序执行问题中的“内存屏障”区分开来，避免混淆。</p>
 <p>写屏障可以看作在虚拟机层面对“引用类型字段赋值”这个动作的AOP切面，在引用对象赋值时会产生一个环形（Around）通知，供程序执行额外的动作，也就是说赋值的前后都在写屏障的覆盖范畴内。在赋值前的部分的写屏障叫作写前屏障（Pre-Write Barrier），在赋值后的则叫作写后屏障（Post-Write Barrier）。HotSpot虚拟机的许多收集器中都有使用到写屏障，但直至G1收集器出现之前，其他收集器都只用到了写后屏障。</p>
 <p>应用写屏障后，虚拟机就会为所有赋值操作生成相应的指令，一旦收集器在写屏障中增加了更新卡表操作，无论更新的是不是老年代对新生代对象的引用，每次只要对引用进行更新，就会产生额外的开销，不过这个开销与Minor GC时扫描整个老年代的代价相比还是低得多的。</p>
+<h4 id="回收集-CSet"><a href="#回收集-CSet" class="headerlink" title="回收集-CSet"></a>回收集-CSet</h4><p>Collection Set 代表每次 GC 暂停时回收的一系列目标分区，在任意一次收集暂停中，CSet 所有分区都会被释放，内部存活的对象都会被转移到分配的空闲分区中。年轻代收集 CSet 只容纳年轻代分区，而混合收集会通过启发式算法，在老年代候选回收分区中，筛选出回收收益最高的分区添加到 CSet 中</p>
+<p>CSet根据两种不同的回收类型分为两种不同CSet。</p>
+<ul>
+<li><p>CSet of Young Collection</p>
+<ul>
+<li>只专注回收 Young Region 跟 Survivor Region</li>
+</ul>
+</li>
+<li><p>CSet of Mix Collection</p>
+<ul>
+<li><p>则会通过RSet计算Region中对象的活跃度，</p>
+</li>
+<li><p>活跃度阈值<code>-XX:G1MixedGCLiveThresholdPercent</code>(默认85%)，只有活跃度高于这个阈值的才会准入CSet</p>
+</li>
+<li><p>还可通过<code>-XX:G1OldCSetRegionThresholdPercent</code>(默认10%)设置，CSet跟整个堆的比例的数量上限。</p>
+</li>
+</ul>
+</li>
+</ul>
 <h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><p>G1 中提供了三种垃圾回收模式：YoungGC、Mixed GC 和 Full GC，在不同的条件下被触发</p>
 <ul>
 <li>当堆内存使用达到一定值（默认 45%）时，开始老年代并发标记过程</li>
 <li>标记完成马上开始混合回收过程</li>
 </ul>
-<img src="../images/Java-JVM/JVM-G1回收过程.png" style="zoom: 50%;" />
+<img src="https://img.jwt1399.top/img/202212211518167.png" style="zoom: 50%;" />
 
-<p>顺时针：Young GC → Young GC + Concurrent Mark → Mixed GC 顺序，进行垃圾回收</p>
+<p>顺时针：Minor GC → Minor GC + Concurrent Mark → Mixed GC 顺序，进行垃圾回收</p>
 <ul>
-<li><p><strong>Young GC</strong>：发生在年轻代的 GC 算法，一般对象（除了巨型对象）都是在 eden region 中分配内存，当所有 eden region 被耗尽无法申请内存时，就会触发一次 Young GC，G1 停止应用程序的执行 STW，把活跃对象放入老年代，垃圾对象回收</p>
+<li><p><strong>Minor GC</strong>：发生在年轻代的 GC 算法，一般对象（除了巨型对象）都是在 Eden 区 中分配内存，当Eden 区被耗尽无法申请内存时，就会触发一次 Minor GC，G1 停止应用程序的执行 STW，把活跃对象放入老年代，垃圾对象回收</p>
 <p><strong>回收过程</strong>：</p>
 <ol>
 <li>扫描根：根引用连同 RSet 记录的外部引用作为扫描存活对象的入口</li>
-<li>更新 RSet：处理 dirty card queue 更新 RS，此后 RSet 准确的反映对象的引用关系<ul>
+<li>更新 RSet：处理 dirty card queue 更新 RSet，此后 RSet 准确的反映对象的引用关系<ul>
 <li>dirty card queue：类似缓存，产生了引用先记录在这里，然后更新到 RSet</li>
 <li>作用：产生引用直接更新 RSet 需要线程同步开销很大，使用队列性能好</li>
 </ul>
 </li>
 <li>处理 RSet：识别被老年代对象指向的 Eden 中的对象，这些被指向的对象被认为是存活的对象，把需要回收的分区放入 Young CSet 中进行回收</li>
-<li>复制对象：Eden 区内存段中存活的对象会被复制到 survivor 区，survivor 区内存段中存活的对象如果年龄未达阈值，年龄会加1，达到阀值会被会被复制到 old 区中空的内存分段，如果 survivor 空间不够，Eden 空间的部分数据会直接晋升到老年代空间</li>
+<li>复制对象：Eden 区内存段中存活的对象会被复制到 survivor 区，survivor 区内存段中存活的对象如果年龄未达阈值，年龄会加1，达到阀值会被会被复制到 Old 区中空的内存分段，如果 survivor 空间不够，Eden 空间的部分数据会直接晋升到老年代空间</li>
 <li>处理引用：处理 Soft，Weak，Phantom，JNI Weak  等引用，最终 Eden 空间的数据为空，GC 停止工作</li>
 </ol>
 </li>
 <li><p>**Concurrent Mark **：</p>
 <ul>
-<li>初始标记：标记从根节点直接可达的对象，这个阶段是 STW 的，并且会触发一次年轻代 GC</li>
-<li>并发标记 (Concurrent Marking)：在整个堆中进行并发标记（应用程序并发执行），可能被 YoungGC 中断。会计算每个区域的对象活性，即区域中存活对象的比例，若区域中的所有对象都是垃圾，则这个区域会被立即回收（<strong>实时回收</strong>），给浮动垃圾准备出更多的空间，把需要收集的 Region 放入 CSet 当中</li>
-<li>最终标记：为了修正在并发标记期间因用户程序继续运作而导致标记产生变动的那一部分标记记录，虚拟机将这段时间对象变化记录在线程的 Remembered Set Logs 里面，最终标记阶段需要把 Remembered Set Logs 的数据合并到 Remembered Set 中，这阶段需要停顿线程，但是可并行执行（<strong>防止漏标</strong>）</li>
-<li>筛选回收：并发清理阶段，首先对 CSet 中各个 Region 中的回收价值和成本进行排序，根据用户所期望的 GC 停顿时间来制定回收计划，也需要 STW</li>
+<li><p><strong>初始标记</strong>（Initial Marking）：仅仅只是标记一下GC Roots能直接关联到的对象，这个阶段是 STW 的，并且会触发一次 Minor GC</p>
+</li>
+<li><p><strong>并发标记</strong> (Concurrent Marking）：从GC Root开始对堆中对象进行可达性分析，递归扫描整个堆里的对象图，找出要回收的对象，这阶段耗时较长，但可与用户程序并发执行。当对象图扫描完成以后，还要重新处理SATB记录下的在并发时有引用变动的对象。</p>
+<ul>
+<li>老年代占用堆空间比例达到阈值时，就会进行并发标记 </li>
+<li><code>-XX:InitiatingHeapOccupancyPercent</code> 设置阈值（默认45%）</li>
+</ul>
+</li>
+<li><p><strong>最终标记</strong>（Final Marking）：为了修正在并发标记期间因用户程序继续运作而导致标记产生变动的那一部分标记记录，虚拟机将这段时间对象变化记录在线程的 Remembered Set Logs 里面，最终标记阶段需要把 Remembered Set Logs 的数据合并到 Remembered Set 中，对用户线程做另一个短暂 STW，用于处理并发阶段结束后仍遗留下来的最后那少量的SATB记录。但是可并行执行（<strong>防止漏标</strong>）</p>
+</li>
+<li><p>筛选回收（Live Data Counting and Evacuation）：首先对 CSet 中各个 Region 中的回收价值和成本进行排序，根据用户所期望的 GC 停顿时间来制定回收计划，也需要 STW，由多条收集器线程并行完成的。</p>
+</li>
 </ul>
 <p><img src="https://img.jwt1399.top/img/202212201631402.jpg"></p>
 </li>
-<li><p><strong>Mixed GC</strong>：当很多对象晋升到老年代时，为了避免堆内存被耗尽，虚拟机会触发一个混合的垃圾收集器，即 Mixed GC，除了回收整个 young region，还会回收一部分的 old region，过程同 YGC</p>
-<p>注意：<strong>是一部分老年代，而不是全部老年代</strong>，可以选择哪些老年代 region 收集，对垃圾回收的时间进行控制</p>
-<p>在 G1 中，Mixed GC 可以通过 <code>-XX:InitiatingHeapOccupancyPercent</code> 设置阈值</p>
+<li><p><strong>Mixed GC</strong>：当很多对象晋升到老年代时，为了避免堆内存被耗尽，虚拟机会触发一个混合的垃圾收集器，即 Mixed GC，除了回收整个 young region，还会回收一部分的 old region。</p>
+<p>注意：<strong>是一部分老年代，而不是全部老年代</strong>，选择回收价值高的老年代 region 进行回收，从而对垃圾回收的时间进行控制</p>
+<p><code>-XX:MaxGCPauseMillis</code>：设置期望达到的最大 GC 停顿时间指标，JVM会尽力实现，但不保证达到，默认值是 200ms</p>
 </li>
-<li><p><strong>Full GC</strong>：对象内存分配速度过快，Mixed GC 来不及回收，导致老年代被填满，就会触发一次 Full GC，G1 的 Full GC 算法就是单线程执行的垃圾回收，会导致异常长时间的暂停时间，需要进行不断的调优，尽可能的避免 Full GC</p>
+<li><p><strong>Full GC</strong>：对象内存分配速度过快，Mixed GC 来不及回收，导致老年代被填满，就会触发一次 Full GC，G1 的 Full GC 算法就是单线程执行的垃圾回收，会导致长时间的暂停时间，需要进行不断的调优，尽可能的避免 Full GC</p>
 <p>产生 Full GC 的原因：</p>
 <ul>
 <li>晋升时没有足够的空间存放晋升的对象</li>
@@ -2430,13 +2572,504 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 <li><code>-XX:MaxGCPauseMillis</code>：设置期望达到的最大 GC 停顿时间指标，JVM会尽力实现，但不保证达到，默认值是 200ms</li>
 <li><code>-XX:+ParallelGcThread</code>：设置 STW 时 GC 线程数的值，最多设置为 8</li>
 <li><code>-XX:ConcGCThreads</code>：设置并发标记线程数，设置为并行垃圾回收线程数 ParallelGcThreads 的1/4左右</li>
-<li><code>-XX:InitiatingHeapoccupancyPercent</code>：设置触发并发 Mixed GC 周期的 Java 堆占用率阈值，超过此值，就触发 GC，默认值是 45</li>
+<li><code>-XX:InitiatingHeapOccupancyPercent</code>：设置并发标记阈值，默认值是 45</li>
 <li><code>-XX:+ClassUnloadingWithConcurrentMark</code>：并发标记类卸载，默认启用，所有对象都经过并发标记后，就可以知道哪些类不再被使用，当一个类加载器的所有类都不再使用，则卸载它所加载的所有类</li>
 <li><code>-XX:G1NewSizePercent</code>：新生代占用整个堆内存的最小百分比（默认5％） </li>
 <li><code>-XX:G1MaxNewSizePercent</code>：新生代占用整个堆内存的最大百分比（默认60％） </li>
-<li><code>-XX:G1ReservePercent=10</code>：保留内存区域，防止 to space（Survivor中的 to 区）溢出</li>
+<li><code>-XX:G1ReservePercent=10</code>：保留内存区域，防止Survivor中的 to 区溢出</li>
 </ul>
-<h1 id="④类加载"><a href="#④类加载" class="headerlink" title="④类加载"></a>④类加载</h1><h1 id="⑤运行机制"><a href="#⑤运行机制" class="headerlink" title="⑤运行机制"></a>⑤运行机制</h1><h1 id="⑥系统优化"><a href="#⑥系统优化" class="headerlink" title="⑥系统优化"></a>⑥系统优化</h1><h1 id="⑦调试参数"><a href="#⑦调试参数" class="headerlink" title="⑦调试参数"></a>⑦调试参数</h1><ul>
+<h4 id="调优"><a href="#调优" class="headerlink" title="调优"></a>调优</h4><p>G1 的设计原则就是简化 JVM 性能调优，只需要简单的三步即可完成调优：</p>
+<ol>
+<li>开启 G1 垃圾收集器</li>
+<li>设置堆的最大内存</li>
+<li>设置最大的停顿时间（STW）</li>
+</ol>
+<p>不断调优暂停时间指标：</p>
+<ul>
+<li><code>-XX:MaxGCPauseMillis=x</code> 可以设置启动应用程序暂停的时间，G1会根据这个参数选择 CSet 来满足响应时间的设置</li>
+<li>设置到 100ms 或者 200ms 都可以（不同情况下会不一样），但设置成50ms就不太合理</li>
+<li>暂停时间设置的太短，就会导致出现 G1 跟不上垃圾产生的速度，最终退化成 Full GC</li>
+<li>对这个参数的调优是一个持续的过程，逐步调整到最佳状态</li>
+</ul>
+<p>不要设置新生代和老年代的大小：</p>
+<ul>
+<li>避免使用 <code>-Xmn</code> 或 <code>-XX:NewRatio</code> 等相关选项显式设置年轻代大小，G1 收集器在运行的时候会调整新生代和老年代的大小，从而达到我们为收集器设置的暂停时间目标</li>
+<li>设置了新生代大小相当于放弃了 G1 的自动调优，我们只需要设置整个堆内存的大小，剩下的交给 G1 自己去分配各个代的大小</li>
+</ul>
+<h3 id="6-ZGC"><a href="#6-ZGC" class="headerlink" title="6.ZGC"></a>6.ZGC</h3><blockquote>
+<p>ZGC 收集器是JDK 11中推出的一个可伸缩的、低延迟的垃圾收集器，基于 Region 内存布局的，不设分代，使用了<strong>读屏障</strong>、<strong>染色指针</strong>和<strong>内存多重映射</strong>等技术来实现<strong>可并发的标记-整理算法</strong></p>
+</blockquote>
+<ul>
+<li>在 CMS 和 G1 中都用到了写屏障，而 ZGC 用到了读屏障</li>
+<li>染色指针：直接<strong>将少量额外的信息存储在指针上的技术</strong>，从 64 位的指针中拿高 4 位来标识对象此时的状态<ul>
+<li>染色指针可以使某个 Region 的存活对象被移走之后，这个 Region 立即就能够被释放和重用</li>
+<li>可以直接从指针中看到引用对象的三色标记状态（Marked0、Marked1）、是否进入了重分配集、是否被移动过（Remapped）、是否只能通过 finalize() 方法才能被访问到（Finalizable）</li>
+<li>可以大幅减少在垃圾收集过程中内存屏障的使用数量，写屏障的目的通常是为了记录对象引用的变动情况，如果将这些信息直接维护在指针中，显然就可以省去一些专门的记录操作</li>
+<li>可以作为一种可扩展的存储结构用来记录更多与对象标记、重定位过程相关的数据</li>
+</ul>
+</li>
+<li>内存多重映射：多个虚拟地址指向同一个物理地址</li>
+</ul>
+<ul>
+<li>可并发的标记整理算法：染色指针标识对象是否被标记或移动，读屏障保证在每次应用程序或 GC 程序访问对象时先根据染色指针的标识判断是否被移动，如果被移动就根据转发表访问新的移动对象，<strong>并更新引用</strong>，不会像 G1 一样必须等待垃圾回收完成才能访问</li>
+</ul>
+<p>ZGC 目标：</p>
+<ul>
+<li>停顿时间不会超过 10ms</li>
+<li>停顿时间不会随着堆的增大而增大（不管多大的堆都能保持在 10ms 以下）</li>
+<li>可支持几百 M，甚至几 T 的堆大小（最大支持4T）</li>
+</ul>
+<p>ZGC 的工作过程可以分为 4 个阶段：</p>
+<ul>
+<li><strong>并发标记</strong>（Concurrent Mark）： 遍历对象图做可达性分析的阶段，做可达性分析的阶段，前后也要经过类似于G1的初始标记和最终标记的短暂停顿。与G1不同的是，ZGC的标记是在指针上而不是在对象上进行的，标记阶段会更新染色指针中的Marked 0、Marked 1标志位。</li>
+<li><strong>并发预备重分配</strong>（Concurrent Prepare for Relocate）：根据特定的查询条件统计得出本次收集过程要清理哪些 Region，将这些 Region 组成重分配集（Relocation Set）</li>
+<li><strong>并发重分配</strong>（Concurrent Relocate）： 重分配是 ZGC 执行过程中的核心阶段，这个过程要把重分配集中的存活对象复制到新的 Region 上，并为重分配集中的<strong>每个 Region 维护一个转发表</strong>（Forward Table），记录从旧地址到新地址的转向关系</li>
+<li><strong>并发重映射</strong>（Concurrent Remap）：修正整个堆中指向重分配集中旧对象的所有引用，ZGC 的并发映射并不是一个必须要立即完成的任务，ZGC 很巧妙地把并发重映射阶段要做的工作，合并到下一次垃圾收集循环中的并发标记阶段里去完成，因为都是要遍历所有对象，这样合并节省了一次遍历的开销</li>
+</ul>
+<p>ZGC 几乎在所有地方并发执行的，除了初始标记的是 STW 的，但这部分的实际时间是非常少的，所以响应速度快，在尽可能对吞吐量影响不大的前提下，实现在任意堆内存大小下都可以把垃圾收集的停顿时间限制在十毫秒以内的低延迟</p>
+<p>优点：高吞吐量、低延迟</p>
+<p>缺点：浮动垃圾，当 ZGC 准备要对一个很大的堆做一次完整的并发收集，其全过程要持续十分钟以上，由于应用的对象分配速率很高，将创造大量的新对象产生浮动垃圾</p>
+<p>对比：</p>
+<p>G1 需要通过写屏障来维护记忆集，才能处理跨代指针，得以实现Region的增量回收。记忆集要占用大量的内存空间，写屏障也对正常程序运行造成额外负担，这些都是权衡选择的代价。</p>
+<p>ZGC就完全没有使用记忆集，它甚至连分代都没有，连像CMS中那样只记录新生代和老年代间引用的卡表也不需要，因而完全没有用到写屏障，所以给用户线程带来的运行负担也要小得多。可是，当 ZGC 准备要对一个很大的堆做一次完整的并发收集，其全过程要持续十分钟以上，由于应用的对象分配速率很高，将创造大量的新对象产生浮动垃圾</p>
+<p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html">新一代垃圾回收器ZGC的探索与实践 - 美团技术团队 (meituan.com)</a></p>
+<h1 id="④类加载"><a href="#④类加载" class="headerlink" title="④类加载"></a>④类加载</h1><h2 id="❶类文件结构"><a href="#❶类文件结构" class="headerlink" title="❶类文件结构"></a>❶类文件结构</h2><pre class="line-numbers language-java"><code class="language-java">ClassFile <span class="token punctuation">{</span>
+    u4             magic<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//Class 文件的标志</span>
+    u2             minor_version<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//Class 的小版本号</span>
+    u2             major_version<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//Class 的大版本号</span>
+    u2             constant_pool_count<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//常量池的数量</span>
+    cp_info        constant_pool<span class="token punctuation">[</span>constant_pool_count<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//常量池</span>
+    u2             access_flags<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//Class 的访问标记</span>
+    u2             this_class<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//当前类</span>
+    u2             super_class<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//父类</span>
+    u2             interfaces_count<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//接口</span>
+    u2             interfaces<span class="token punctuation">[</span>interfaces_count<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//一个类可以实现多个接口</span>
+    u2             fields_count<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//Class 文件的字段属性</span>
+    field_info     fields<span class="token punctuation">[</span>fields_count<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//一个类可以有多个字段</span>
+    u2             methods_count<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//Class 文件的方法数量</span>
+    method_info    methods<span class="token punctuation">[</span>methods_count<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//一个类可以有个多个方法</span>
+    u2             attributes_count<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//此类的属性表中的属性数</span>
+    attribute_info attributes<span class="token punctuation">[</span>attributes_count<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//属性表集合</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>说明</th>
+<th>长度</th>
+<th>数量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>u4</td>
+<td>magic</td>
+<td>魔数，识别类文件格式</td>
+<td>4个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>minor_version</td>
+<td>副版本号(小版本)</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>major_version</td>
+<td>主版本号(大版本)</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>constant_pool_count</td>
+<td>常量池计数器</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>cp_info</td>
+<td>constant_pool</td>
+<td>常量池表</td>
+<td>n个字节</td>
+<td>constant_pool_count-1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>access_flags</td>
+<td>访问标识</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>this_class</td>
+<td>类索引</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>super_class</td>
+<td>父类索引</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>interfaces_count</td>
+<td>接口计数</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>interfaces</td>
+<td>接口索引集合</td>
+<td>2个字节</td>
+<td>interfaces_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>fields_count</td>
+<td>字段计数器</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>field_info</td>
+<td>fields</td>
+<td>字段表</td>
+<td>n个字节</td>
+<td>fields_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>methods_count</td>
+<td>方法计数器</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>method_info</td>
+<td>methods</td>
+<td>方法表</td>
+<td>n个字节</td>
+<td>methods_count</td>
+</tr>
+<tr>
+<td>u2</td>
+<td>attributes_count</td>
+<td>属性计数器</td>
+<td>2个字节</td>
+<td>1</td>
+</tr>
+<tr>
+<td>attribute_info</td>
+<td>attributes</td>
+<td>属性表</td>
+<td>n个字节</td>
+<td>attributes_count</td>
+</tr>
+</tbody></table>
+<p>Class 文件格式只有两种数据类型：无符号数和表</p>
+<ul>
+<li>无符号数属于基本的数据类型，以 u1、u2、u4、u8 来分别代表1个字节、2个字节、4个字节和8个字节的无符号数，无符号数可以用来描述数字、索引引用、数量值或者按照 UTF-8 编码构成字符串</li>
+<li>表是由多个无符号数或者其他表作为数据项构成的复合数据类型，表都以 <code>_info</code> 结尾，用于描述有层次关系的数据，整个 Class 文件本质上就是一张表，由于表没有固定长度，所以通常会在其前面加上个数说明</li>
+</ul>
+<p>Class 文件获取方式：</p>
+<ul>
+<li>HelloWorld.java 执行 <code>javac -g xxx.java</code>指令</li>
+<li>写入文件指令 <code>javap -v xxx.class &gt;xxx.txt</code></li>
+<li>IDEA 插件 jclasslib 、桌面版 <a target="_blank" rel="noopener" href="https://github.com/ingokegel/jclasslib">jclasslib</a>、<a target="_blank" rel="noopener" href="https://github.com/Konloch/bytecode-viewer">bytecode-viewer</a></li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212221701410.jpeg" style="zoom: 25%;" />
+
+<p><img src="../images/Java-JVM/JVM-%E7%B1%BB%E7%BB%93%E6%9E%84.png"></p>
+<h3 id="魔数"><a href="#魔数" class="headerlink" title="魔数"></a>魔数</h3><p>每个 Class 文件开头的 4 个字节的无符号整数称为魔数（Magic Number），是 Class 文件的标识符，代表这是一个能被虚拟机接受的有效合法的 Class 文件，</p>
+<ul>
+<li><p>魔数值固定为 0xCAFEBABE，不符合则会抛出错误</p>
+</li>
+<li><p>使用魔数而不是扩展名来进行识别主要是基于安全方面的考虑，因为文件扩展名可以随意地改动</p>
+</li>
+</ul>
+<h3 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h3><p>4 个 字节，5 6两个字节代表的是编译的副版本号 minor_version，7 8 两个字节是编译的主版本号 major_version</p>
+<ul>
+<li>不同版本的 Java 编译器编译的 Class 文件对应的版本是不一样的，高版本的 Java 虚拟机可以执行由低版本编译器生成的 Class 文件，反之 JVM 会抛出异常 <code>java.lang.UnsupportedClassVersionError</code></li>
+<li>34 转换成 10 进制 16*3+4 = 52，代表 JDK1.8</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>主版本（十进制）</th>
+<th>副版本（十进制）</th>
+<th>编译器版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>45</td>
+<td>3</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>46</td>
+<td>0</td>
+<td>1.2</td>
+</tr>
+<tr>
+<td>47</td>
+<td>0</td>
+<td>1.3</td>
+</tr>
+<tr>
+<td>48</td>
+<td>0</td>
+<td>1.4</td>
+</tr>
+<tr>
+<td>49</td>
+<td>0</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>50</td>
+<td>0</td>
+<td>1.6</td>
+</tr>
+<tr>
+<td>51</td>
+<td>0</td>
+<td>1.7</td>
+</tr>
+<tr>
+<td>52</td>
+<td>0</td>
+<td>1.8</td>
+</tr>
+<tr>
+<td>53</td>
+<td>0</td>
+<td>1.9</td>
+</tr>
+<tr>
+<td>54</td>
+<td>0</td>
+<td>1.10</td>
+</tr>
+<tr>
+<td>55</td>
+<td>0</td>
+<td>1.11</td>
+</tr>
+</tbody></table>
+<h3 id="常量池计数器"><a href="#常量池计数器" class="headerlink" title="常量池计数器"></a>常量池计数器</h3><p>常量池中常量的数量是不固定的，所以在常量池的入口需要放置一项 u2 类型的无符号数，代表常量池计数器（constant_pool_count），这个计数器是从 1 而不是 0 开始，是为了满足后面某些指向常量池的索引值的数据在特定情况下需要表达不引用任何一个常量池项目，这种情况可用索引值 0 来表示</p>
+<h3 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h3><p>constant_pool 是一种表结构，以 1 ~ constant_pool_count - 1 为索引，表明有多少个常量池表项。表项中存放编译时期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池</p>
+<ul>
+<li><p>字面量（Literal） ：基本数据类型、字符串类型常量、声明为 final 的常量值等</p>
+</li>
+<li><p>符号引用（Symbolic References）：类和接口的全限定名、字段的名称和描述符、方法的名称和描述符</p>
+<ul>
+<li><p>全限定名：com/test/Demo 这个就是类的全限定名，仅仅是把包名的 <code>.</code> 替换成 <code>/</code>，为了使连续的多个全限定名之间不产生混淆，在使用时最后一般会加入一个 <code>;</code> 表示全限定名结束</p>
+</li>
+<li><p>简单名称：指没有类型和参数修饰的方法或者字段名称，比如字段 x 的简单名称就是 x</p>
+</li>
+<li><p>描述符：用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值</p>
+<table>
+<thead>
+<tr>
+<th>标志符</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B</td>
+<td>基本数据类型 byte</td>
+</tr>
+<tr>
+<td>C</td>
+<td>基本数据类型 char</td>
+</tr>
+<tr>
+<td>D</td>
+<td>基本数据类型 double</td>
+</tr>
+<tr>
+<td>F</td>
+<td>基本数据类型 float</td>
+</tr>
+<tr>
+<td>I</td>
+<td>基本数据类型 int</td>
+</tr>
+<tr>
+<td>J</td>
+<td>基本数据类型 long</td>
+</tr>
+<tr>
+<td>S</td>
+<td>基本数据类型 short</td>
+</tr>
+<tr>
+<td>Z</td>
+<td>基本数据类型 boolean</td>
+</tr>
+<tr>
+<td>V</td>
+<td>代表 void 类型</td>
+</tr>
+<tr>
+<td>L</td>
+<td>对象类型，比如：<code>Ljava/lang/Object;</code>，不同方法间用<code>;</code>隔开</td>
+</tr>
+<tr>
+<td>[</td>
+<td>数组类型，代表一维数组。比如：<code>double[][][] is [[[D</code></td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+</ul>
+<p>常量类型和结构：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>标志(或标识)</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CONSTANT_utf8_info</td>
+<td>1</td>
+<td>UTF-8编码的字符串</td>
+</tr>
+<tr>
+<td>CONSTANT_Integer_info</td>
+<td>3</td>
+<td>整型字面量</td>
+</tr>
+<tr>
+<td>CONSTANT_Float_info</td>
+<td>4</td>
+<td>浮点型字面量</td>
+</tr>
+<tr>
+<td>CONSTANT_Long_info</td>
+<td>5</td>
+<td>长整型字面量</td>
+</tr>
+<tr>
+<td>CONSTANT_Double_info</td>
+<td>6</td>
+<td>双精度浮点型字面量</td>
+</tr>
+<tr>
+<td>CONSTANT_Class_info</td>
+<td>7</td>
+<td>类或接口的符号引用</td>
+</tr>
+<tr>
+<td>CONSTANT_String_info</td>
+<td>8</td>
+<td>字符串类型字面量</td>
+</tr>
+<tr>
+<td>CONSTANT_Fieldref_info</td>
+<td>9</td>
+<td>字段的符号引用</td>
+</tr>
+<tr>
+<td>CONSTANT_Methodref_info</td>
+<td>10</td>
+<td>类中方法的符号引用</td>
+</tr>
+<tr>
+<td>CONSTANT_InterfaceMethodref_info</td>
+<td>11</td>
+<td>接口中方法的符号引用</td>
+</tr>
+<tr>
+<td>CONSTANT_NameAndType_info</td>
+<td>12</td>
+<td>字段或方法的符号引用</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodHandle_info</td>
+<td>15</td>
+<td>表示方法句柄</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodType_info</td>
+<td>16</td>
+<td>标志方法类型</td>
+</tr>
+<tr>
+<td>CONSTANT_InvokeDynamic_info</td>
+<td>18</td>
+<td>表示一个动态方法调用点</td>
+</tr>
+</tbody></table>
+<p>18 种常量没有出现 byte、short、char，boolean 的原因：编译之后都可以理解为 Integer</p>
+<h3 id="访问标识"><a href="#访问标识" class="headerlink" title="访问标识"></a>访问标识</h3><p>访问标识（access_flag），又叫访问标志、访问标记，该标识用两个字节表示，用于识别一些类或者接口层次的访问信息，包括这个 Class 是类还是接口，是否定义为 public类型，是否定义为 abstract类型等</p>
+<ul>
+<li>类的访问权限通常为 ACC_ 开头的常量</li>
+<li>每一种类型的表示都是通过设置访问标记的 32 位中的特定位来实现的，比如若是 public final 的类，则该标记为 <code>ACC_PUBLIC | ACC_FINAL</code></li>
+<li>使用 <code>ACC_SUPER</code> 可以让类更准确地定位到父类的方法，确定类或接口里面的 invokespecial 指令使用的是哪一种执行语义，现代编译器都会设置并且使用这个标记</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>标志名称</th>
+<th>标志值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ACC_PUBLIC</td>
+<td>0x0001</td>
+<td>标志为 public 类型</td>
+</tr>
+<tr>
+<td>ACC_FINAL</td>
+<td>0x0010</td>
+<td>标志被声明为 final，只有类可以设置</td>
+</tr>
+<tr>
+<td>ACC_SUPER</td>
+<td>0x0020</td>
+<td>标志允许使用 invokespecial 字节码指令的新语义，JDK1.0.2之后编译出来的类的这个标志默认为真，使用增强的方法调用父类方法</td>
+</tr>
+<tr>
+<td>ACC_INTERFACE</td>
+<td>0x0200</td>
+<td>标志这是一个接口</td>
+</tr>
+<tr>
+<td>ACC_ABSTRACT</td>
+<td>0x0400</td>
+<td>是否为 abstract 类型，对于接口或者抽象类来说，次标志值为真，其他类型为假</td>
+</tr>
+<tr>
+<td>ACC_SYNTHETIC</td>
+<td>0x1000</td>
+<td>标志此类并非由用户代码产生（由编译器产生的类，没有源码对应）</td>
+</tr>
+<tr>
+<td>ACC_ANNOTATION</td>
+<td>0x2000</td>
+<td>标志这是一个注解</td>
+</tr>
+<tr>
+<td>ACC_ENUM</td>
+<td>0x4000</td>
+<td>标志这是一个枚举</td>
+</tr>
+</tbody></table>
+<h2 id="❷类加载过程"><a href="#❷类加载过程" class="headerlink" title="❷类加载过程"></a>❷类加载过程</h2><h2 id="❸类加载器"><a href="#❸类加载器" class="headerlink" title="❸类加载器"></a>❸类加载器</h2><h1 id="⑤运行机制"><a href="#⑤运行机制" class="headerlink" title="⑤运行机制"></a>⑤运行机制</h1><h1 id="⑥系统优化"><a href="#⑥系统优化" class="headerlink" title="⑥系统优化"></a>⑥系统优化</h1><h1 id="⑦调试参数"><a href="#⑦调试参数" class="headerlink" title="⑦调试参数"></a>⑦调试参数</h1><ul>
 <li><p>设置堆内存指令：<code>-Xmx Size</code></p>
 </li>
 <li><p>设置栈内存大小：<code>-Xss size</code>   </p>
@@ -2464,6 +3097,10 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 <li><p><code>-XX:+PrintEliminateAllocations</code>：查看标量替换情况</p>
 </li>
 </ul>
+<ul>
+<li>-XX:PremSize：设置永久代的初始大小</li>
+<li>-XX:MaxPermSize: 设置永久代的最大值 </li>
+</ul>
 <p><em>含义参数</em></p>
 <p><em>堆初始大小-Xms</em></p>
 <p><em>堆最大大小-Xmx 或 -XX:MaxHeapSize=size</em></p>
@@ -2486,20 +3123,121 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 <li><p>jvisualvm：图形界面的，多功能的监测工具，可以连续监测</p>
 </li>
 </ul>
-<h1 id="⭐️面试题"><a href="#⭐️面试题" class="headerlink" title="⭐️面试题"></a>⭐️面试题</h1><h2 id="内存结构"><a href="#内存结构" class="headerlink" title="内存结构"></a>内存结构</h2><h3 id="JVM-内存结构"><a href="#JVM-内存结构" class="headerlink" title="JVM 内存结构"></a>JVM 内存结构</h3><p>JVM内存结构分为5大区域，<strong>程序计数器</strong>、<strong>虚拟机栈</strong>、<strong>本地方法栈</strong>、<strong>堆</strong>、<strong>方法区</strong></p>
+<h1 id="⭐️面试题"><a href="#⭐️面试题" class="headerlink" title="⭐️面试题"></a>⭐️面试题</h1><h2 id="内存结构"><a href="#内存结构" class="headerlink" title="内存结构"></a>内存结构</h2><h3 id="JVM内存结构题"><a href="#JVM内存结构题" class="headerlink" title="JVM内存结构题"></a>JVM内存结构题</h3><p><strong>说一下JVM内存模型吧，有哪些区？分别干什么的？详细到每个区放什么</strong></p>
+<ol>
+<li>方法区</li>
+</ol>
+<p>JVM 运行时数据区域的一块逻辑区域，而永久代，元空间是它的具体实现，是各个线程共享的内存区域。在 Java 8 中，方法区也叫做元空间（MetaSpace）。</p>
+<p>存储类的相关信息，包括类名、访问修饰符、常量池、字段描述、方法描述等。</p>
+<ol start="2">
+<li>虚拟机栈</li>
+</ol>
+<p>每个线程都有一个私有的虚拟机栈，每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存。</p>
+<p>每个栈帧中存储着局部变量表、操作栈、动态链接、方法出口等信息。</p>
+<ul>
+<li>局部变量表：存储方法中的局部变量，局部变量表的大小是在编译期间就已经确定的，并且局部变量表的每个变量都有类型和长度。</li>
+<li>操作栈：用于存储操作数和操作符，操作栈是动态扩展的，可以根据需要动态地增加或减少操作数。</li>
+<li>动态链接：用于解决方法调用时的符号引用问题，动态链接的信息包括方法名、方法描述符、类名等。</li>
+<li>方法出口：存储当前方法执行完后应当跳转到的位置。</li>
+</ul>
+<ol start="3">
+<li>本地方法栈</li>
+</ol>
+<p>本地方法栈中存储的信息与虚拟机栈类似，但它用于执行本地方法，通常是与操作系统相关的方法，如文件操作、网络通信等。</p>
+<ol start="4">
+<li>堆</li>
+</ol>
+<p>存储对象实例，是垃圾收集器管理的主要区域。所有的对象实例以及数组都要在堆上分配内存。堆是被所有线程共享的。</p>
+<p>堆中存储的信息主要是对象实例、 字符串常量池、静态变量、线程分配缓冲区</p>
+<ul>
+<li>对象实例：new 创建的对象，类初始化生成的对象，<strong>基本数据类型的数组也是对象实例</strong>(new 创建)</li>
+<li>字符串常量池： JVM 为了提升性能和减少内存消耗针对字符串（String 类）专门开辟的一块区域，主要目的是为了避免字符串的重复创建。</li>
+<li>静态变量：静态变量是有 static 修饰的变量，JDK8 时从方法区迁移至堆中</li>
+<li>线程分配缓冲区 TLAB：线程私有但不影响堆的共性，可以提升对象分配的效率</li>
+</ul>
+<ol start="5">
+<li>程序计数器</li>
+</ol>
+<p>每个线程都有一个程序计数器，用于存储当前线程所执行的字节码的行号指示器，用于指示当前线程执行到了哪一行字节码。如果线程执行的是本地方法，则程序计数器值为空。</p>
+<p><strong>jvm的永久代中会发生垃圾回收吗</strong></p>
+<p>在触发full gc的情况下，永久代也会被进行垃圾回收</p>
+<p><strong>Java8 的内存模型做了什么改动</strong></p>
+<p>Java8开始，永久代就已经消失了，由元空间取而代之。</p>
+<p><strong>为什么使用元空间替换永久代</strong></p>
+<ul>
+<li>为了解决永久代的OOM问题，元数据和class对象存放在永久代中，字符串常量池（Java7之后移到堆中）也存在于永久代中，容易出现性能问题和内存溢出。</li>
+<li>类、方法的大小比较难确定，因此对于永久代大小指定比较困难，太小容易出现永久代溢出，太大容易导致虚拟机内存紧张。</li>
+<li>永久代会为GC带来不必要的复杂度，并且回收效率偏低。</li>
+</ul>
+<p>两者最大的区别是永久代使用的是JVM的内存，与堆中的老年代是连续的，元空间使用本地内存，不再与堆连续，所以，理论上系统可以使用的内存有多大，元空间就有多大，所以不会出现永久代存在时的内存溢出问题。</p>
+<p><strong>Java堆为什么要有新生代和老年代</strong></p>
+<p>主要是因为对象大小不一样，对象生命周期不一样。分代为了使 JVM 能够更好的管理堆内存中的对象，包括内存的分配以及回收。从而提高垃圾回收效率，节省资源，提升对象利用率等等。</p>
+<ul>
+<li><p>新生代(Young Gen)：年轻代主要存放新创建的对象，内存大小相对会比较小，垃圾回收会比较频繁。年轻代分成1个Eden Space和2个Suvivor Space（from 和 to）。</p>
+</li>
+<li><p>老年代(Tenured Gen)：年老代主要存放JVM认为生命周期比较长的对象（经过几次的Minor Gen的垃圾回收后仍然存在），内存大小相对会比较大，垃圾回收也相对没有那么频繁。</p>
+</li>
+</ul>
+<p> <strong>新生代中为什么要分为Eden和survivor、 Eden和survior的比例分配、 为什么两个survivor区？</strong></p>
+<ul>
+<li>如果没有Survivor，Eden区每进行一次Minor GC，存活的对象就会被送到老年代。老年代很快被<br>填满，触发Major GC。老年代的内存空间远大于新生代，进行一次Full GC消耗的时间比Minor GC<br>长得多，所以需要分为Eden和Survivor。Survivor的存在意义，就是减少被送到老年代的对象，进而减少Full GC的发生。</li>
+<li> Eden和survior的比例分配：【8：1：1】，老年代和和新生代比例分配：【1：2】</li>
+<li>设置两个Survivor区最大的好处就是<strong>解决了内存碎片化</strong>，新生代垃圾回收采用了复制算法，这保证了to区中来自from区和Eden区两部分的存活对象占用连续的内存空间，避免了碎片化的发生。</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212071718619.png"  />
+
+
+
+<p><strong>什么时候对象会进入老年代？</strong></p>
+<ul>
+<li><p><strong>大对象直接进入老年代</strong>：大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。为了避免在 Eden 和 Survivor 之间的大量复制而降低效率。</p>
+<p><code>-XX:PretenureSizeThreshold</code>：大于此值的对象直接在老年代分配</p>
+</li>
+<li><p><strong>长期存活的对象进入老年代</strong>：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中</p>
+<p><code>-XX:MaxTenuringThreshold</code>：定义年龄的阈值，对象头中用 4 个 bit 存储，所以最大值是 15，默认也是 15</p>
+</li>
+<li><p><strong>动态对象年龄判定</strong>：Hotspot 遍历所有对象时，按照年龄从小到大对其所占用的大小进行累加，当累加到某个年龄时，所占用大小超过了 Survivor 空间的 50% 时，则大于等于该年龄的对象就可以直接进入老年代，无须等到<code>MaxTenuringThreshold</code>中要求的年龄。</p>
+<p><code>-XX:TargetSurvivorRatio=percent</code> ：设定survivor区的目标使用率，默认值是 50%</p>
+<p>取这个年龄和 <code>MaxTenuringThreshold</code> 中更小的一个值，作为新的晋升年龄的阈值</p>
+</li>
+</ul>
+<h3 id="JVM线程共享区域"><a href="#JVM线程共享区域" class="headerlink" title="JVM线程共享区域"></a>JVM线程共享区域</h3><p>JVM内存结构分为5大区域，<strong>程序计数器</strong>、<strong>虚拟机栈</strong>、<strong>本地方法栈</strong>、<strong>堆</strong>、<strong>方法区</strong></p>
 <p><strong>线程私有：</strong>程序计数器、虚拟机栈、本地方法栈</p>
 <p><strong>线程共享：</strong>堆、方法区</p>
 <p><img src="https://img.jwt1399.top/img/202212051821230.png"></p>
-<h3 id="Java-对象的创建过程"><a href="#Java-对象的创建过程" class="headerlink" title="Java 对象的创建过程"></a>Java 对象的创建过程</h3><p>Step1:类加载检查</p>
-<p>当虚拟机遇到一条 <code>new</code> 指令时，首先检查是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那先执行类加载。</p>
-<p>Step2:分配内存</p>
-<p>在类加载检查通过后，接下来虚拟机将为对象实例分配内存。</p>
-<p>Step3:初始化零值</p>
+<h3 id="Java-对象的创建过程"><a href="#Java-对象的创建过程" class="headerlink" title="Java 对象的创建过程"></a>Java 对象的创建过程</h3><ol>
+<li>类加载检查</li>
+</ol>
+<p>当虚拟机遇到一条 <code>new</code> 指令时，首先检查是否能在运行时常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那先执行类加载。</p>
+<ol start="2">
+<li>为对象分配内存</li>
+</ol>
+<p>首先计算对象占用空间的大小，接着在堆中划分一块内存给新对象。</p>
+<ul>
+<li><p><strong>如果内存规整</strong>：虚拟机将采用的是指针碰撞法（Bump The Point）来为对象分配内存。</p>
+</li>
+<li><p><strong>如果内存不规整</strong>：虚拟机需要维护一个空闲列表（Free List）来为对象分配内存。</p>
+</li>
+</ul>
+<p>选择哪种分配方式由堆是否规整所决定，而堆是否规整又由所采用的GC收集器是否带有压缩整理功能决定。</p>
+<p><strong>内存分配并发问题</strong></p>
+<p>在创建对象的时候有一个很重要的问题，就是线程安全，虚拟机采用两种方式来保证线程安全：</p>
+<ul>
+<li><strong>CAS+失败重试：</strong> CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。<strong>虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</strong></li>
+<li><strong>TLAB：</strong> 为每一个线程预先在 Eden 区分配一块内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配，通过设置 <code>-XX:+UseTLAB</code>参数来设定</li>
+</ul>
+<ol start="3">
+<li>初始化零值</li>
+</ol>
 <p>分配到的内存空间都初始化为零值，通过这个操作保证了对象的字段可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
-<p>Step4:设置对象头</p>
-<p>初始化零值完成之后，<strong>虚拟机要对对象进行必要的设置</strong>，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 <strong>这些信息存放在对象头中。</strong> 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
-<p>Step5:执行 init 方法</p>
-<p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+<ol start="4">
+<li>设置对象头</li>
+</ol>
+<p>将对象的所属类（即类的元数据信息）、对象的哈希码、对象的GC分代年龄、锁信息等数据存储在对象的对象头中。另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
+<ol start="5">
+<li>执行 init 方法</li>
+</ol>
+<p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法（初始化成员变量，执行实例化代码块，调用类的构造方法，并把堆内对象的首地址赋值给引用变量），把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
 <h3 id="Java对象的内存布局"><a href="#Java对象的内存布局" class="headerlink" title="Java对象的内存布局"></a>Java对象的内存布局</h3><p>在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
 <ul>
 <li><p><strong>对象头包括两部分信息</strong>，<strong>第一部分用于存储对象自身的运行时数据</strong>（哈希码、GC 分代年龄、锁状态标志等），<strong>另一部分是类型指针</strong>，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
@@ -2515,15 +3253,13 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 <li>Java 堆中将会划分出一块内存来作为句柄池，<strong>reference 中存储的就是对象的句柄地址</strong>，而句柄中包含了对象实例数据与类型数据各自的具体地址信息。</li>
 <li>使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。</li>
 </ul>
-<img src="https://img.jwt1399.top/img/202212202140892.png" alt="对象的访问定位-使用句柄" style="zoom:67%;" />
-
+<p><img src="https://img.jwt1399.top/img/202212221546450.jpeg"></p>
 <p><strong>直接指针</strong></p>
 <ul>
 <li><strong>reference 中存储的直接就是对象的地址</strong>。对象中包含对象类型数据的指针，通过这个指针可以访问对象类型数据。</li>
 <li>使用直接指针访问方式最大的好处是访问对象速度快，它节省了一次指针定位的时间开销，虚拟机HotSpot主要是使用直接指针来访问对象。</li>
 </ul>
-<img src="https://img.jwt1399.top/img/202212202140810.png" alt="对象的访问定位-直接指针" style="zoom: 67%;" />
-
+<p><img src="https://img.jwt1399.top/img/202212221547695.jpeg"></p>
 <h3 id="说一下堆栈的区别？"><a href="#说一下堆栈的区别？" class="headerlink" title="说一下堆栈的区别？"></a>说一下堆栈的区别？</h3><table>
 <thead>
 <tr>
@@ -2598,8 +3334,8 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 <h3 id="内存分配和-GC-过程"><a href="#内存分配和-GC-过程" class="headerlink" title="内存分配和 GC 过程"></a>内存分配和 GC 过程</h3><p>对象优先在 Eden 分配：</p>
 <ul>
 <li>当创建一个对象的时候，对象会被分配在新生代的 Eden 区，当 Eden 区没有足够空间进行分配时，触发 Minor GC</li>
-<li>当进行 Minor GC 时，将 Eden 区存活的对象移动到 Survivor 的 to 区，并且当前对象的年龄会加 1，清空 Eden 区，再将 from 区 和 to 区进行互换</li>
-<li>当再一次触发 Minor GC 的时候，会把 Eden 区和 Survivor 的  from 区中存活下来的对象，移动到 to 区中，这些对象的年龄会加 1，清空 Eden 区和 from 区，再将 from 区 和 to 区进行互换</li>
+<li>当进行 Minor GC 时，将 Eden 区存活的对象复制到 Survivor 的 to 区，并且当前对象的年龄会加 1，清空 Eden 区，再将 from 区 和 to 区进行互换</li>
+<li>当再一次触发 Minor GC 的时候，会把 Eden 区和 Survivor 的  from 区中存活下来的对象，复制到 to 区中，这些对象的年龄会加 1，清空 Eden 区和 from 区，再将 from 区 和 to 区进行互换</li>
 </ul>
 <p>晋升到老年代：</p>
 <ul>
@@ -2655,6 +3391,12 @@ objD<span class="token punctuation">.</span>fieldG <span class="token operator">
 </ol>
 <h3 id="软、弱、虚引用的区别"><a href="#软、弱、虚引用的区别" class="headerlink" title="软、弱、虚引用的区别"></a>软、弱、虚引用的区别</h3><p>虚引用必须和引用队列（ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之关联的引用队列中。</p>
 <h3 id="使用软引用能带来的好处"><a href="#使用软引用能带来的好处" class="headerlink" title="使用软引用能带来的好处"></a>使用软引用能带来的好处</h3><p>特别注意，在程序设计中一般很少使用弱引用与虚引用，使用软引用的情况较多，这是因为<strong>软引用可以加速 JVM 对垃圾内存的回收速度，可以维护系统的运行安全，防止内存溢出（OutOfMemory）等问题的产生</strong>。</p>
+<h3 id="CMS收集器和G1收集器的区别"><a href="#CMS收集器和G1收集器的区别" class="headerlink" title="CMS收集器和G1收集器的区别"></a>CMS收集器和G1收集器的区别</h3><ul>
+<li>CMS收集器是老年代的收集器，一般配合新生代的Serial和ParNew收集器一起使用；G1收<br>集器收集范围是老年代和新生代，不需要结合其他收集器使用；</li>
+<li>CMS收集器是一种以获取最短回收停顿时间为目标的收集器，G1收集器可预测垃圾回收<br>的停顿时间。</li>
+<li>CMS收集器是使用”标记-清除”算法进行的垃圾回收，容易产生内存碎片；而G1收集器使<br>用的是”标记-整理”算法，进行了空间整合，降低了内存空间碎片。</li>
+<li>CMS和G1的回收过程不一样，垃圾回收的过程不一样。CMS是初始标记、并发标记、重新<br>标记、并发清理;G1是初始标记、并发标记、最终标记、筛选回收。</li>
+</ul>
 <hr>
 <p>Java 类的加载流程是怎样的？</p>
 <p>什么是双亲委派机制？</p>
@@ -3464,7 +4206,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">783.4k</span>&nbsp;字
+                class="white-color">791k</span>&nbsp;字
             
             
             
