@@ -861,7 +861,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    45.9k
+                    45.8k
                 </div>
                 
 
@@ -4817,25 +4817,25 @@ Iterator iter <span class="token operator">=</span> list<span class="token punct
 <p><strong>为什么使用元空间替换永久代</strong></p>
 <ul>
 <li>为了解决永久代的OOM问题。永久代内存是有上限的（使用的是JVM的内存，与堆中的老年代是连续的），虽然可以通过参数来设置，但是JVM加载的类、方法的大小是很难确定的，所以很容易出现OOM问题。</li>
-<li>元空间是存储在本地内存里面，不再与堆连续，内存上限比较大，可以很好的避免这个问题。</li>
+<li>元空间是存储在本地内存里面，不再与堆连续，内存上限比较大，可以很好的避免OOM。</li>
 <li>永久代的对象是通过 Full GC 进行垃圾收集，也就是和老年代同时实现垃圾收集。</li>
-<li>替换成元空间以后，简化了Full GC。可以在不进行暂停的情况下并发地释放类数据，同时也提升了GC的性能</li>
+<li>替换成元空间以后，简化了Full GC。可以在不暂停的情况下并发地释放类数据，同时也提升了GC的性能</li>
 <li>Oracle要合并Hotspot和JRockit的代码，而JRockit没有永久代。</li>
 </ul>
-<p><strong>Java堆为什么要有新生代和老年代</strong></p>
-<p>主要是因为对象大小不一样，对象生命周期不一样。分代为了使 JVM 能够更好的管理堆内存中的对象，包括内存的分配以及回收。从而提高垃圾回收效率，节省资源，提升对象利用率等等。</p>
+<p><strong>Java堆为什么要有新生代和老年代/为什么分代</strong></p>
+<p>主要是因为对象大小不一样，对象生命周期不一样。分代为了使 JVM 能够更好的管理堆中的对象，包括内存的分配以及回收。从而提高垃圾回收效率。</p>
 <ul>
-<li><p>新生代(Young Gen)：年轻代主要存放新创建的对象，内存大小相对会比较小，垃圾回收会比较频繁。年轻代分成1个Eden Space和2个Suvivor Space（from 和 to）。</p>
+<li><p>新生代(Young Gen)：新生代主要存放新创建的对象，内存会相对比较小，垃圾回收会比较频繁。</p>
 </li>
-<li><p>老年代(Tenured Gen)：老年代主要存放JVM认为生命周期比较长的对象（经过几次的 Minor GC 后仍然存活），内存大小相对会比较大，垃圾回收也相对没有那么频繁。</p>
+<li><p>老年代(Tenured Gen)：老年代主要存放JVM认为生命周期比较长的对象（经过几次 Minor GC 后仍然存活），内存相对会比较大，垃圾回收也相对没有那么频繁。</p>
 </li>
 </ul>
 <p> <strong>新生代中为什么要分为Eden和survivor、 为什么两个survivor区、 Eden和survior的比例分配</strong></p>
 <ul>
 <li>Survivor的存在意义，就是减少被送到老年代的对象，进而减少Full GC的发生。</li>
-<li>如果没有Survivor区，Eden区每进行一次Minor GC，存活的对象就会被送到老年代。老年代很快被<br>填满，触发 Full GC，进行一次Full GC消耗的时间比Minor GC长得多，所以需要分为Eden和Survivor。</li>
+<li>如果没有Survivor区，Eden区每进行一次Minor GC，存活的对象就会被送到老年代。老年代很快被填满，触发 Full GC，进行一次Full GC消耗的时间比Minor GC长得多，所以需要分为Eden和Survivor。</li>
 <li>设置两个Survivor区最大的好处就是<strong>解决了内存碎片化</strong>，新生代垃圾回收采用了复制算法，这保证了to区中来自from区和Eden区的存活对象占用连续的内存空间，避免了碎片化的发生。</li>
-<li>Eden和survior的比例分配：【8：1：1】，老年代和和新生代比例分配：【1：2】</li>
+<li>Eden和survior的比例分配：【8：1：1】，新生代和老年代比例分配：【1：2】</li>
 </ul>
 <img src="https://img.jwt1399.top/img/202212071718619.png"  />
 
