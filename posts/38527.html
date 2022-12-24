@@ -1,0 +1,2379 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="JVM-面试题, 简简,简简博客,网络安全,计算机,Java开发">
+    <meta name="description" content="①内存结构❶运行时数据区🌟说一下JVM内存模型吧
+有哪些区？分别干什么的？每个区放什么
+
+
+方法区
+
+JVM 运行时数据区域的一块逻辑区域，而永久代，元空间是它的具体实现，是各个线程共享的内存区域。在 Java 8 中，方法区也叫做元空间">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
+    <meta name="sogou_site_verification" content="VTcD33rrfd" />
+    <meta name="google-site-verification" content="mHsYpjV9Rl0e0UzjioJFLg8RMtOhxw8HB3D21dIWvmc" />
+	<meta name="referrer" content="unsafe-url">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>JVM-面试题 | 简言之</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+	<!--变灰-->
+	<!-- <link href="http://static.isenyu.cn/file/css/MemorialDay.css"; rel="stylesheet" type="text/css" /> -->
+    <!-- <style type="text/css">
+     html{ filter: grayscale(100%); /* 标准写法 just for IE6-9 */ 
+        -webkit-filter: grayscale(100%); /* webkit 内核支持程度较好 */ 
+        -moz-filter: grayscale(100%); /* 其他内核现在并不支持，为了将来兼容性书写 */ 
+        -ms-filter: grayscale(100%); 
+        -o-filter: grayscale(100%); filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+        filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */ }
+     </style> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/6.0.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/aos/0.1.0/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+	<!--valine_人机验证-->
+	<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+	<script src="/js/Valine-RJyanzheng.js"></script>
+
+    
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img no-lazy src="/medias/logo.png" class="logo-img" alt="">
+                    
+                    <span class="logo-span">简言之</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Home</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-user-secret" style="zoom: 0.6;"></i>
+      
+      <span>Sec</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Web/">
+          
+          <i class="fab fa-internet-explorer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Web</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/CTF/">
+          
+          <i class="fas fa-flag" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CTF</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Crypto/">
+          
+          <i class="fa-solid fa-shield" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Data</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fab fa-java" style="zoom: 0.6;"></i>
+      
+      <span>Java</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/JavaSE/">
+          
+          <i class="fa-solid fa-mug-saucer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaSE</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/JavaWeb/">
+          
+          <i class="fa-solid fa-globe" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaWeb</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Spring/">
+          
+          <i class="fa-solid fa-leaf" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Spring</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/">
+          
+          <i class="fa-solid fa-cubes" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>面试题</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-desktop" style="zoom: 0.6;"></i>
+      
+      <span>CS</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/CS%E5%9F%BA%E7%A1%80/">
+          
+          <i class="fa-solid fa-server" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CS基础</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/SQL/">
+          
+          <i class="fas fa-database" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>数据库</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">
+          
+          <i class="fa-solid fa-bezier-curve" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>结构-算法</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-layer-group" style="zoom: 0.6;"></i>
+      
+      <span>Others</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Python/">
+          
+          <i class="fab fa-python" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Python</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Course/">
+          
+          <i class="fa-solid fa-graduation-cap" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Course</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Share/">
+          
+          <i class="fa-solid fa-crown" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Share~</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Tools/">
+          
+          <i class="fas fa-tools" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Tools~</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-list" style="zoom: 0.6;"></i>
+      
+      <span>整理</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/tags/">
+          
+          <i class="fas fa-bookmark" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归类</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/archives/">
+          
+          <i class="fas fa-file-contract" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归档</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-paper-plane" style="zoom: 0.6;"></i>
+      
+      <span>交流</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/friends/">
+          
+          <i class="fas fa-venus-mars" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>友链</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/artitalk/">
+          
+          <i class="fa-solid fa-message" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>说说</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/contact/">
+          
+          <i class="fas fa-envelope" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>留言</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about/" class="waves-effect waves-light">
+      
+      <i class="fas fa-id-card-alt" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img no-lazy src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">简言之</div>
+        <div class="logo-desc">
+            
+            悄无声息地变坚强，安静地变优秀！
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Home
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-user-secret"></i>
+			
+			Sec
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Web/ " style="margin-left:50px";>
+				  
+				   <i class="fab fa-internet-explorer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Web</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/CTF/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-flag" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CTF</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Crypto/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-shield" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Data</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fab fa-java"></i>
+			
+			Java
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/JavaSE/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-mug-saucer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaSE</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/JavaWeb/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-globe" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaWeb</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Spring/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-leaf" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Spring</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-cubes" style="position: absolute;left:28px" ></i>
+			      
+		          <span>面试题</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-desktop"></i>
+			
+			CS
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/CS%E5%9F%BA%E7%A1%80/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-server" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CS基础</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/SQL/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-database" style="position: absolute;left:28px" ></i>
+			      
+		          <span>数据库</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-bezier-curve" style="position: absolute;left:28px" ></i>
+			      
+		          <span>结构-算法</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-layer-group"></i>
+			
+			Others
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Python/ " style="margin-left:50px";>
+				  
+				   <i class="fab fa-python" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Python</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Course/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-graduation-cap" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Course</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Share/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-crown" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Share~</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Tools/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-tools" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Tools~</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-list"></i>
+			
+			整理
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/tags/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-bookmark" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归类</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/archives/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-file-contract" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归档</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-paper-plane"></i>
+			
+			交流
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/friends/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-venus-mars" style="position: absolute;left:28px" ></i>
+			      
+		          <span>友链</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/artitalk/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-message" style="position: absolute;left:28px" ></i>
+			      
+		          <span>说说</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/contact/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-envelope" style="position: absolute;left:28px" ></i>
+			      
+		          <span>留言</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-id-card-alt"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('猜猜密码是什么呢ヾﾉ≧∀≦)o')).toString(CryptoJS.enc.Hex)) {
+                alert('哎呦！密码好像不对哟，将返回主页！');
+                location.href = '/';	
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.jwt1399.top/img/202212242334320.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">JVM-面试题</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    /*.toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }*/
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+        /* 毛玻璃 */
+        /*background-color: rgba(162,101,228, 0.08);*/
+        /*backdrop-filter: saturate(180%) blur(20px);*/
+        /*目录样式修改*/
+        background-color: rgb(255, 255, 255,0.7);
+        border-radius: 10px;
+        box-shadow: 0 10px 35px 2px rgba(0, 0, 0, .15), 0 5px 15px rgba(0, 0, 0, .07), 0 2px 5px -5px rgba(0, 0, 0, .1) !important;
+    }
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/JVM/">
+                                <span class="chip bg-color">JVM</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-category">
+                                面试题
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2022-12-24
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2022-12-24
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    7.5k
+                </div>
+                
+
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="①内存结构"><a href="#①内存结构" class="headerlink" title="①内存结构"></a>①内存结构</h1><h2 id="❶运行时数据区"><a href="#❶运行时数据区" class="headerlink" title="❶运行时数据区"></a>❶运行时数据区</h2><h3 id="🌟说一下JVM内存模型吧"><a href="#🌟说一下JVM内存模型吧" class="headerlink" title="🌟说一下JVM内存模型吧"></a>🌟<strong>说一下JVM内存模型吧</strong></h3><blockquote>
+<p><strong>有哪些区？分别干什么的？每个区放什么</strong></p>
+</blockquote>
+<ol>
+<li>方法区</li>
+</ol>
+<p>JVM 运行时数据区域的一块逻辑区域，而永久代，元空间是它的具体实现，是各个线程共享的内存区域。在 Java 8 中，方法区也叫做元空间（MetaSpace）。</p>
+<p>存储类的相关信息，包括类名、访问修饰符、常量池、字段描述、方法描述等。</p>
+<ol start="2">
+<li>虚拟机栈</li>
+</ol>
+<p>每个线程都有一个私有的虚拟机栈，每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存。</p>
+<p>每个栈帧中存储着局部变量表、操作栈、动态链接、方法出口等信息。</p>
+<ul>
+<li>局部变量表：存储方法中的局部变量，局部变量表的大小是在编译期间就已经确定的，并且局部变量表的每个变量都有类型和长度。</li>
+<li>操作栈：用于存储操作数和操作符，操作栈是动态扩展的，可以根据需要动态地增加或减少操作数。</li>
+<li>动态链接：用于解决方法调用时的符号引用问题，动态链接的信息包括方法名、方法描述符、类名等。</li>
+<li>方法出口：存储当前方法执行完后应当跳转到的位置。</li>
+</ul>
+<ol start="3">
+<li>本地方法栈</li>
+</ol>
+<p>本地方法栈中存储的信息与虚拟机栈类似，但它用于执行本地方法，通常是与操作系统相关的方法，如文件操作、网络通信等。</p>
+<ol start="4">
+<li>堆</li>
+</ol>
+<p>存储对象实例，是垃圾收集器管理的主要区域。所有的对象实例以及数组都要在堆上分配内存。堆是被所有线程共享的。</p>
+<p>堆中存储的信息主要是对象实例、 字符串常量池、静态变量、线程分配缓冲区</p>
+<ul>
+<li>对象实例：new 创建的对象，类初始化生成的对象，<strong>基本数据类型的数组也是对象实例</strong>(new 创建)</li>
+<li>字符串常量池： JVM 为了提升性能和减少内存消耗针对字符串（String 类）专门开辟的一块区域，主要目的是为了避免字符串的重复创建。</li>
+<li>静态变量：静态变量是有 static 修饰的变量，JDK8 时从方法区迁移至堆中</li>
+<li>线程分配缓冲区 TLAB：线程私有但不影响堆的共性，可以提升对象分配的效率</li>
+</ul>
+<ol start="5">
+<li>程序计数器</li>
+</ol>
+<p>每个线程都有一个程序计数器，用于存储当前线程所执行的字节码的行号指示器，用于指示当前线程执行到了哪一行字节码。如果线程执行的是本地方法，则程序计数器值为空。</p>
+<h3 id="🌟堆空间的基本结构"><a href="#🌟堆空间的基本结构" class="headerlink" title="🌟堆空间的基本结构"></a>🌟堆空间的基本结构</h3><p>Java 自动内存管理最核心的功能是 <strong>堆</strong> 内存中<strong>对象的分配与回收</strong>。</p>
+<p>从垃圾回收的角度来说，由于现在收集器基本都采用分代垃圾收集算法，所以 Java 堆被划分为了几个不同的区域，这样我们就可以根据各个区域的特点选择合适的垃圾收集算法。</p>
+<p>在 JDK 7 及其之前，堆内存被通常分为下面三部分：</p>
+<ol>
+<li>新生代(Young Generation)</li>
+<li>老年代(Old Generation)</li>
+<li>永久代(Permanent Generation)</li>
+</ol>
+<p><strong>JDK 8 之后 PermGen(永久代) 已被 Metaspace(元空间) 取代，元空间使用的是直接内存</strong> 。</p>
+<h3 id="🌟JVM线程共享区域"><a href="#🌟JVM线程共享区域" class="headerlink" title="🌟JVM线程共享区域"></a>🌟<strong>JVM线程共享区域</strong></h3><p><strong>线程私有：</strong>程序计数器、虚拟机栈、本地方法栈</p>
+<p><strong>线程共享：</strong>堆、方法区</p>
+<img src="https://img.jwt1399.top/img/202212051821230.png" style="zoom: 50%;" />
+
+<h3 id="🌟说一下堆栈的区别"><a href="#🌟说一下堆栈的区别" class="headerlink" title="🌟说一下堆栈的区别"></a>🌟<strong>说一下堆栈的区别</strong></h3><table>
+<thead>
+<tr>
+<th align="center">堆</th>
+<th align="center">栈</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">人为申请开辟</td>
+<td align="center">由系统自动分配</td>
+</tr>
+<tr>
+<td align="center">性能较慢</td>
+<td align="center">性能相对较快</td>
+</tr>
+<tr>
+<td align="center">物理地址分配是不连续</td>
+<td align="center">物理地址分配是连续的</td>
+</tr>
+<tr>
+<td align="center">存放的是<strong>对象的实例和数组</strong></td>
+<td align="center">存放的是<strong>局部变量，操作数栈，返回结果</strong>等</td>
+</tr>
+<tr>
+<td align="center">线程共享</td>
+<td align="center">线程私有</td>
+</tr>
+</tbody></table>
+<h3 id="🌟什么情况下会发生栈溢出"><a href="#🌟什么情况下会发生栈溢出" class="headerlink" title="🌟什么情况下会发生栈溢出"></a>🌟<strong>什么情况下会发生栈溢出</strong></h3><ul>
+<li>当线程请求的栈深度超过了虚拟机允许的最大深度时，会抛出<code>StackOverFlowError</code>异常。这种情况通常是因为方法递归没终止条件。</li>
+<li>新建线程的时候没有足够的内存去创建对应的虚拟机栈，虚拟机会抛出<code>OutOfMemoryError</code>异常。比如线程启动过多就会出现这种情况。</li>
+</ul>
+<h3 id="🌟栈相关问题"><a href="#🌟栈相关问题" class="headerlink" title="🌟栈相关问题"></a>🌟栈相关问题</h3><p>调整栈大小，就能保证不出现溢出么？ </p>
+<ul>
+<li>不能保证不溢出</li>
+</ul>
+<p>分配的栈内存越大越好么？ </p>
+<ul>
+<li>不是，一定时间内降低了OOM概率，但是会挤占其它的线程空间，因为整个空间是有限的。</li>
+</ul>
+<p>垃圾回收是否涉及到虚拟机栈？ </p>
+<ul>
+<li>不会</li>
+</ul>
+<p>方法中定义的局部变量是否线程安全？ </p>
+<ul>
+<li>如果对象是在内部产生，并在内部消亡，没有返回到外部，那么它就是线程安全的，反之则是线程不安全的。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>运行时数据区</th>
+<th>是否存在Error</th>
+<th>是否存在GC</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>程序计数器</td>
+<td>否</td>
+<td>否</td>
+</tr>
+<tr>
+<td>虚拟机栈</td>
+<td>是（SOE）</td>
+<td>否</td>
+</tr>
+<tr>
+<td>本地方法栈</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>方法区</td>
+<td>是（OOM）</td>
+<td>是</td>
+</tr>
+<tr>
+<td>堆</td>
+<td>是</td>
+<td>是</td>
+</tr>
+</tbody></table>
+<h2 id="❷Java对象"><a href="#❷Java对象" class="headerlink" title="❷Java对象"></a>❷Java对象</h2><h3 id="🌟Java-对象的创建过程"><a href="#🌟Java-对象的创建过程" class="headerlink" title="🌟Java 对象的创建过程"></a>🌟<strong>Java 对象的创建过程</strong></h3><ol>
+<li>类加载检查</li>
+</ol>
+<p>当虚拟机遇到一条 <code>new</code> 指令时，首先检查是否能在运行时常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有，那先执行类加载。</p>
+<ol start="2">
+<li>为对象分配内存</li>
+</ol>
+<p>首先计算对象占用空间的大小，接着在堆中划分一块内存给新对象。</p>
+<ul>
+<li><p><strong>如果内存规整</strong>：虚拟机将采用的是指针碰撞法（Bump The Point）来为对象分配内存。</p>
+</li>
+<li><p><strong>如果内存不规整</strong>：虚拟机需要维护一个空闲列表（Free List）来为对象分配内存。</p>
+</li>
+</ul>
+<p>选择哪种分配方式由堆是否规整所决定，而堆是否规整又由所采用的GC收集器是否带有压缩整理功能决定。</p>
+<p><strong>内存分配并发问题</strong>：在创建对象的时候有一个很重要的问题，就是线程安全，虚拟机采用两种方式来保证线程安全：</p>
+<ul>
+<li><strong>CAS+失败重试：</strong> CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。<strong>虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</strong></li>
+<li><strong>TLAB：</strong> 为每一个线程预先在 Eden 区分配一块内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配，通过设置 <code>-XX:+UseTLAB</code>参数来设定</li>
+</ul>
+<ol start="3">
+<li>初始化零值</li>
+</ol>
+<p>分配到的内存空间都初始化为零值，通过这个操作保证了对象的字段可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
+<ol start="4">
+<li>设置对象头</li>
+</ol>
+<p>将对象的所属类（即类的元数据信息）、对象的哈希码、对象的GC分代年龄、锁信息等数据存储在对象的对象头中。另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
+<ol start="5">
+<li>执行 init 方法</li>
+</ol>
+<p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法（初始化成员变量，执行实例化代码块，调用类的构造方法，并把堆内对象的首地址赋值给引用变量），把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+<h3 id="🌟Java对象的内存布局"><a href="#🌟Java对象的内存布局" class="headerlink" title="🌟Java对象的内存布局"></a>🌟<strong>Java对象的内存布局</strong></h3><blockquote>
+<p>对象在JVM中是怎么存储的？</p>
+<p>对象头信息里面有哪些东西？</p>
+</blockquote>
+<p>在 Hotspot 虚拟机中，对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
+<ul>
+<li><p><strong>对象头包括两部分信息</strong>，<strong>第一部分用于存储对象自身的运行时数据</strong>（哈希码、GC 分代年龄、锁状态标志等），<strong>另一部分是类型指针</strong>，即对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。如果对象是一个数组，那在对象头中还有一块数据用于记录数组长度</p>
+</li>
+<li><p><strong>实例数据部分是对象真正存储的有效信息</strong>，也是在程序中所定义的各种类型的字段内容。</p>
+</li>
+<li><p><strong>对齐填充部分不是必然存在的，也没有什么特别的含义，仅仅起占位作用。</strong> 因为 Hotspot 虚拟机的自动内存管理系统要求对象起始地址必须是 8 字节的整数倍，换句话说就是对象的大小必须是 8 字节的整数倍。而对象头部分正好是 8 字节的倍数（1 倍或 2 倍），因此，当对象实例数据部分没有对齐时，就需要通过对齐填充来补全。</p>
+</li>
+</ul>
+<h3 id="🌟Java对象的访问定位"><a href="#🌟Java对象的访问定位" class="headerlink" title="🌟Java对象的访问定位"></a>🌟<strong>Java对象的访问定位</strong></h3><p>Java 程序通过栈上的 reference 数据来操作堆上的具体对象。对象的访问方式由虚拟机实现而定，目前主流的访问方式有：<strong>句柄</strong>、<strong>直接指针</strong>。</p>
+<p><strong>句柄</strong></p>
+<ul>
+<li>Java 堆中将会划分出一块内存来作为句柄池，<strong>reference 中存储的就是对象的句柄地址</strong>，而句柄中包含了对象实例数据与类型数据各自的具体地址信息。</li>
+<li>使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212221546450.jpeg"></p>
+<p><strong>直接指针</strong></p>
+<ul>
+<li><strong>reference 中存储的直接就是对象的地址</strong>。对象中包含对象类型数据的指针，通过这个指针可以访问对象类型数据。</li>
+<li>使用直接指针访问方式最大的好处是访问对象速度快，它节省了一次指针定位的时间开销，虚拟机HotSpot主要是使用直接指针来访问对象。</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202212221547695.jpeg"></p>
+<h1 id="②垃圾回收"><a href="#②垃圾回收" class="headerlink" title="②垃圾回收"></a>②垃圾回收</h1><h2 id="❶垃圾判断"><a href="#❶垃圾判断" class="headerlink" title="❶垃圾判断"></a>❶垃圾判断</h2><h3 id="🌟-哪些对象可以作为-GC-Roots"><a href="#🌟-哪些对象可以作为-GC-Roots" class="headerlink" title="🌟**哪些对象可以作为 GC Roots **"></a>🌟**哪些对象可以作为 GC Roots **</h3><ul>
+<li>1.虚拟机栈中引用的对象(栈帧中的本地变量表)</li>
+<li>2.本地方法栈中引用的对象(Native 方法)</li>
+<li>3.方法区中类静态属性引用的对象</li>
+<li>4.方法区中常量引用的对象</li>
+<li>5.所有被同步锁持有的对象</li>
+</ul>
+<h3 id="🌟如何判断对象是否死亡"><a href="#🌟如何判断对象是否死亡" class="headerlink" title="🌟如何判断对象是否死亡"></a>🌟如何判断对象是否死亡</h3><blockquote>
+<p>GC的两种判定方法？</p>
+</blockquote>
+<p>判断对象是否存活有两种方法：引用计数法和可达性分析。</p>
+<ol>
+<li>引用计数法</li>
+</ol>
+<p>对每个对象添加一个整型的引用计数器属性，用于记录对象被引用的情况；每当有一个地方引用它，计数器就加 1；当引用失效，计数器就减 1；当计数器为 0 的对象就是不可用的。</p>
+<p><strong>这个方法实现简单，效率高，但是目前主流的虚拟机中并没有选择这个算法来管理内存，其最主要的原因是它很难解决对象之间相互循环引用的问题。</strong></p>
+<ol start="2">
+<li>可达性分析算法</li>
+</ol>
+<p>通过 GC Roots 对象作为起点，开始向下搜索，所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连的话，则说明此对象是不可用的，需要被回收。</p>
+<h3 id="🌟引用类型总结"><a href="#🌟引用类型总结" class="headerlink" title="🌟引用类型总结"></a>🌟引用类型总结</h3><blockquote>
+<p>强、软、弱、虚引用有什么区别？具体使用场景是什么？</p>
+</blockquote>
+<p>无论是通过引用计数法判断对象引用数量，还是通过可达性分析法判断对象的引用链是否可达，判定对象的存活都与“引用”有关。</p>
+<ol>
+<li><p><strong>强引用</strong>：在程序中普遍存在的引用赋值，只要强引用关系还存在，垃圾收集器就永远不会回收掉被引用的对象。</p>
+</li>
+<li><p><strong>软引用</strong>：如果内存空间足够，垃圾回收器就不会回收它，如果内存空间不足了，就会回收这些对象。软引用可用来实现内存敏感的高速缓存。</p>
+</li>
+<li><p><strong>弱引用</strong>：在进行垃圾回收时，不管当前内存空间足够与否，都会回收只具有弱引用的对象。</p>
+</li>
+<li><p><strong>虚引用</strong>：虚引用并不会决定对象的生命周期。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收。<strong>虚引用的唯一目的是在于跟踪垃圾回收过程，能在对象被回收时收到一个系统通知</strong></p>
+</li>
+</ol>
+<h3 id="🌟软、弱、虚引用的区别"><a href="#🌟软、弱、虚引用的区别" class="headerlink" title="🌟软、弱、虚引用的区别"></a>🌟软、弱、虚引用的区别</h3><p>虚引用必须和引用队列（ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之关联的引用队列中。</p>
+<h3 id="🌟使用软引用能带来的好处"><a href="#🌟使用软引用能带来的好处" class="headerlink" title="🌟使用软引用能带来的好处"></a>🌟使用软引用能带来的好处</h3><p>特别注意，在程序设计中一般很少使用弱引用与虚引用，使用软引用的情况较多，这是因为<strong>软引用可以加速 JVM 对垃圾内存的回收速度，可以维护系统的运行安全，防止内存溢出（OutOfMemory）等问题的产生</strong>。</p>
+<h2 id="❷垃圾回收算法"><a href="#❷垃圾回收算法" class="headerlink" title="❷垃圾回收算法"></a>❷垃圾回收算法</h2><p>垃圾收集策略和算法 </p>
+<p> 讲一讲垃圾回收算法。 </p>
+<p>常见的垃圾回收器算法有哪些，各有什么优劣？</p>
+<p>如何选择合适的垃圾收集算法？ </p>
+<p>包括原理，流程，优缺点。垃圾回收算法的实现原理 </p>
+<p>Java对象的回收方式，回收算法。</p>
+<p>垃圾回收算法有哪些</p>
+<p>JVM GC算法有哪些，目前的JDK版本采用什么回收算法？ </p>
+<p>垃圾收集有哪些算法，各自的特点？</p>
+<h2 id="❸垃圾回收器"><a href="#❸垃圾回收器" class="headerlink" title="❸垃圾回收器"></a>❸垃圾回收器</h2><p>介绍一下 CMS,G1 收集器。</p>
+<p>常见的垃圾回收器有哪些？</p>
+<p>你知道哪几种垃圾回收器，各自的优缺点，重点讲一下cms和G1？</p>
+<p>G1回收器讲下回收过程GC是什么？为什么要有GC？ </p>
+<ul>
+<li><p> CMS收集器与G1收集器的特点 </p>
+</li>
+<li><p> CMS特点，垃圾回收算法有哪些？各自的优缺点，他们共同的缺点是什么？ </p>
+</li>
+<li><p>Java的垃圾回收器都有哪些，说下g1的应用场景，平时你是如何搭配使用垃圾回收器的</p>
+</li>
+<li><p> 你知道哪几种垃圾收集器，各自的优缺点，重点讲下cms和G1， </p>
+</li>
+<li><p> ZGC 为什么零停机</p>
+</li>
+<li><p> CMS和G1了解么，CMS解决什么问题，说一下回收的过程。</p>
+</li>
+<li><p> CMS回收停顿了几次，为什么要停顿两次?</p>
+</li>
+</ul>
+<h3 id="🌟CMS收集器和G1收集器的区别"><a href="#🌟CMS收集器和G1收集器的区别" class="headerlink" title="🌟CMS收集器和G1收集器的区别"></a>🌟CMS收集器和G1收集器的区别</h3><ul>
+<li>CMS收集器是老年代的收集器，一般配合新生代的Serial和ParNew收集器一起使用；G1收<br>集器收z集范围是老年代和新生代，不需要结合其他收集器使用；</li>
+<li>CMS收集器是一种以获取最短回收停顿时间为目标的收集器，G1收集器可预测垃圾回收<br>的停顿时间。</li>
+<li>CMS收集器是使用”标记-清除”算法进行的垃圾回收，容易产生内存碎片；而G1收集器使<br>用的是”标记-整理”算法，进行了空间整合，降低了内存空间碎片。</li>
+<li>CMS和G1的回收过程不一样，垃圾回收的过程不一样。CMS是初始标记、并发标记、重新<br>标记、并发清理;G1是初始标记、并发标记、最终标记、筛选回收。</li>
+</ul>
+<h2 id="❹分代思想"><a href="#❹分代思想" class="headerlink" title="❹分代思想"></a>❹分代思想</h2><h3 id="🌟永久代中会发生垃圾回收吗"><a href="#🌟永久代中会发生垃圾回收吗" class="headerlink" title="🌟永久代中会发生垃圾回收吗"></a><strong>🌟永久代中会发生垃圾回收吗</strong></h3><p>在触发 Full GC 的情况下，永久代也会被进行垃圾回收</p>
+<h3 id="🌟Java8-的内存模型做了什么改动"><a href="#🌟Java8-的内存模型做了什么改动" class="headerlink" title="🌟Java8 的内存模型做了什么改动"></a><strong>🌟Java8 的内存模型做了什么改动</strong></h3><p>Java8 开始，永久代就已经消失了，由元空间取而代之</p>
+<h3 id="🌟为什么使用元空间替换永久代"><a href="#🌟为什么使用元空间替换永久代" class="headerlink" title="🌟为什么使用元空间替换永久代"></a><strong>🌟为什么使用元空间替换永久代</strong></h3><ul>
+<li>为了解决永久代的OOM问题。永久代内存是有上限的（使用的是JVM的内存，与堆中的老年代是连续的），虽然可以通过参数来设置，但是JVM加载的类、方法的大小是很难确定的，所以很容易出现OOM问题。</li>
+<li>元空间是存储在本地内存里面，不再与堆连续，内存上限比较大，可以很好的避免OOM。</li>
+<li>永久代的对象是通过 Full GC 进行垃圾收集，也就是和老年代同时实现垃圾收集。</li>
+<li>替换成元空间以后，简化了Full GC。可以在不暂停的情况下并发地释放类数据，同时也提升了GC的性能</li>
+<li>Oracle要合并Hotspot和JRockit的代码，而JRockit没有永久代。</li>
+</ul>
+<h3 id="🌟为什么要有新生代和老年代-为什么分代"><a href="#🌟为什么要有新生代和老年代-为什么分代" class="headerlink" title="🌟为什么要有新生代和老年代/为什么分代"></a>🌟为什么要有新生代和老年代/为什么分代</h3><p>主要是因为对象大小不一样，对象生命周期不一样。分代为了使 JVM 能够更好的管理堆中的对象，包括内存的分配以及回收。从而提高垃圾回收效率。</p>
+<ul>
+<li><p>新生代(Young Gen)：新生代主要存放新创建的对象，内存会相对比较小，垃圾回收会比较频繁。</p>
+</li>
+<li><p>老年代(Tenured Gen)：老年代主要存放JVM认为生命周期比较长的对象（经过几次 Minor GC 后仍然存活），内存相对会比较大，垃圾回收也相对没有那么频繁。</p>
+</li>
+</ul>
+<h3 id="🌟新生代中为什么要分为Eden和survivor"><a href="#🌟新生代中为什么要分为Eden和survivor" class="headerlink" title="🌟新生代中为什么要分为Eden和survivor"></a><strong>🌟新生代中为什么要分为Eden和survivor</strong></h3><blockquote>
+<p>为什么两个survivor区、 Eden和survior的比例分配</p>
+</blockquote>
+<ul>
+<li>Survivor的存在意义，就是减少被送到老年代的对象，进而减少Full GC的发生。</li>
+<li>如果没有Survivor区，Eden区每进行一次Minor GC，存活的对象就会被送到老年代。老年代很快被填满，触发 Full GC，进行一次Full GC消耗的时间比Minor GC长得多，所以需要分为Eden和Survivor。</li>
+<li>设置两个Survivor区最大的好处就是<strong>解决了内存碎片化</strong>，新生代垃圾回收采用了复制算法，这保证了to区中来自from区和Eden区的存活对象占用连续的内存空间，避免了碎片化的发生。</li>
+<li>Eden和survior的比例分配：【8：1：1】，新生代和老年代比例分配：【1：2】</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212071718619.png"  />
+
+<h3 id="🌟什么时候对象会进入老年代"><a href="#🌟什么时候对象会进入老年代" class="headerlink" title="🌟什么时候对象会进入老年代"></a><strong>🌟什么时候对象会进入老年代</strong></h3><ul>
+<li><p><strong>大对象直接进入老年代</strong>：大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。为了避免在 Eden 和 Survivor 之间的大量复制而降低效率。</p>
+</li>
+<li><p><strong>长期存活的对象进入老年代</strong>：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄(默认15)则移动到老年代中</p>
+</li>
+<li><p><strong>动态对象年龄判定</strong>：Hotspot 遍历所有对象时，按照年龄从小到大对其所占用的大小进行累加，当累加到某个年龄时，所占用大小超过了 Survivor 空间的 50% 时，则大于等于该年龄的对象就可以直接进入老年代，无须等到阈值中要求的年龄。</p>
+</li>
+</ul>
+<h2 id="❺GC原理"><a href="#❺GC原理" class="headerlink" title="❺GC原理"></a>❺GC原理</h2><p>如何优化 JVM 频繁 minor GC</p>
+<p>Java GC 过程</p>
+<p>Minor GC 和 Full GC 有什么不同呢？</p>
+<p>说一下GC算法，分代回收说下 </p>
+<p>JVM GC原理，JVM怎么回收内存 </p>
+<p>什么情况下触发垃圾回收？ </p>
+<p>System.gc（）和Runtime.gc（）会做什么事情？</p>
+<p>Java GC机制？</p>
+<h3 id="🌟Full-GC触发机制"><a href="#🌟Full-GC触发机制" class="headerlink" title="🌟Full GC触发机制"></a>🌟Full GC触发机制</h3><p>触发Full GC执行的情况有如下五种：</p>
+<ol>
+<li><p>调用System.gc()时，系统建议执行Full GC，但是不必然执行</p>
+</li>
+<li><p>老年代空间不足</p>
+</li>
+<li><p>方法区空间不足</p>
+</li>
+<li><p>通过Minor GC后进入老年代的平均大小大于老年代的可用内存</p>
+</li>
+<li><p>由Eden区、survivor space0（From Space）区向survivor space1（To Space）区复制时，对象大小大于To Space可用内存，则把该对象转存到老年代，且老年代的可用内存小于该对象大小</p>
+</li>
+</ol>
+<h3 id="🌟内存分配和-GC-过程"><a href="#🌟内存分配和-GC-过程" class="headerlink" title="🌟内存分配和 GC 过程"></a>🌟内存分配和 GC 过程</h3><p>对象优先在 Eden 分配：</p>
+<ul>
+<li>当创建一个对象的时候，对象会被分配在新生代的 Eden 区，当 Eden 区没有足够空间进行分配时，触发 Minor GC</li>
+<li>当进行 Minor GC 时，将 Eden 区存活的对象复制到 Survivor 的 to 区，并且当前对象的年龄会加 1，清空 Eden 区，再将 from 区 和 to 区进行互换</li>
+<li>当再一次触发 Minor GC 的时候，会把 Eden 区和 Survivor 的  from 区中存活下来的对象，复制到 to 区中，这些对象的年龄会加 1，清空 Eden 区和 from 区，再将 from 区 和 to 区进行互换</li>
+</ul>
+<p>晋升到老年代：</p>
+<ul>
+<li><p><strong>大对象直接进入老年代</strong>：大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。为了避免在 Eden 和 Survivor 之间的大量复制而降低效率。</p>
+<p><code>-XX:PretenureSizeThreshold</code>：大于此值的对象直接在老年代分配</p>
+</li>
+<li><p><strong>长期存活的对象进入老年代</strong>：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中</p>
+<p><code>-XX:MaxTenuringThreshold</code>：定义年龄的阈值，对象头中用 4 个 bit 存储，所以最大值是 15，默认也是 15</p>
+</li>
+<li><p><strong>动态对象年龄判定</strong>：Hotspot 遍历所有对象时，按照年龄从小到大对其所占用的大小进行累加，当累加到某个年龄时，所占用大小超过了 Survivor 空间的 50% 时，则大于等于该年龄的对象就可以直接进入老年代，无须等到<code>MaxTenuringThreshold</code>中要求的年龄。</p>
+<p><code>-XX:TargetSurvivorRatio=percent</code> ：设定survivor区的目标使用率，默认值是 50%</p>
+<p>取这个年龄和 <code>MaxTenuringThreshold</code> 中更小的一个值，作为新的晋升年龄的阈值</p>
+</li>
+</ul>
+<p>空间分配担保：</p>
+<ul>
+<li>空间分配担保是为了确保在 Minor GC 之前老年代本身还有容纳新生代所有对象的剩余空间。</li>
+</ul>
+<ul>
+<li>在发生 Minor GC 之前，虚拟机先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果条件成立的话，那么 Minor GC 可以确认是安全的</li>
+<li>如果不成立，虚拟机会先查看 <code>-XX:HandlePromotionFailure</code> 参数的设置值是否允许担保失败(Handle Promotion Failure)  ，如果允许那么就会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于将尝试着进行一次 Minor GC；如果小于或者  <code>-XX: HandlePromotionFailure</code> 设置不允许冒险，那么就要进行一次 Full GC</li>
+</ul>
+<p>老年代垃圾回收。随着新生代对象的不断晋升，老年代的对象变得越来越多，达到容量阈值后老年代也会发生垃圾回收，我们称之为Major GC</p>
+<h3 id="🌟⼀个对象从加载到JVM，再到被GC清除，都经历了什么过程？"><a href="#🌟⼀个对象从加载到JVM，再到被GC清除，都经历了什么过程？" class="headerlink" title="🌟⼀个对象从加载到JVM，再到被GC清除，都经历了什么过程？"></a><strong>🌟⼀个对象从加载到JVM，再到被GC清除，都经历了什么过程？</strong></h3><ol>
+<li><p>⽤户创建⼀个对象，JVM⾸先需要到⽅法区去找对象的类型信息。然后再创建对象。</p>
+</li>
+<li><p>JVM要实例化⼀个对象，⾸先要在堆当中先创建⼀个对象。</p>
+</li>
+<li><p>对象⾸先会分配在堆内存中新⽣代的Eden。然后经过⼀次Minor GC，对象如果存活，就会进⼊S区。在后续的每次GC中，如果对象⼀直存活，就会在S区来回拷⻉，每移动⼀次，年龄加1。超过⼀定年龄后，对象转⼊⽼年代。</p>
+</li>
+<li><p>当⽅法执⾏结束后，栈中的指针会先移除掉。</p>
+</li>
+<li><p>堆中的对象，经过Full GC，就会被标记为垃圾，然后被GC线程清理掉。</p>
+</li>
+</ol>
+<ul>
+<li>如何判断一个常量是废弃常量</li>
+<li>如何判断一个类是无用的类</li>
+<li>JVM 内存是如何对应到操作系统内存的？</li>
+<li>什么是指令序列重排序？</li>
+</ul>
+<h1 id="③类加载"><a href="#③类加载" class="headerlink" title="③类加载"></a>③类加载</h1><h2 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h2><p>类加载的时机</p>
+<p>哪些情况会触发类的加载？ </p>
+<h3 id="描述一下JVM加载class文件的原理机制？"><a href="#描述一下JVM加载class文件的原理机制？" class="headerlink" title="描述一下JVM加载class文件的原理机制？"></a><strong>描述一下JVM加载class文件的原理机制？</strong></h3><ol>
+<li>装载:查找和导入class文件;</li>
+<li>连接:<br>① 检查:检查载入的class文件数据的正确性;<br>② 准备:为类的静态变量分配存储空间;<br>③ 解析:将符号引用转换成直接引用(这一步是可选的)</li>
+<li>初始化:初始化静态变量，静态代码块。<br>这样的过程在程序调用类的静态成员的时候开始执行，所以静态方法main()才会成为一般程序的入口方法。类的构造器也会引发该动作。</li>
+</ol>
+<h3 id="🌟什么是类加载？类加载的过程？"><a href="#🌟什么是类加载？类加载的过程？" class="headerlink" title="🌟什么是类加载？类加载的过程？"></a>🌟什么是类加载？类加载的过程？</h3><blockquote>
+<p>JVM中类加载机制，类加载过程？</p>
+</blockquote>
+<p><strong>类加载</strong>指的是将类的<code>class</code>文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个此类的对象，通过这个对象可以访问到方法区对应的类信息。</p>
+<p><strong>加载</strong></p>
+<ol>
+<li>通过类的全限定名获取定义此类的二进制字节流</li>
+<li>将字节流所代表的静态存储结构转换为方法区的运行时数据结构</li>
+<li>在内存中生成一个代表该类的<code>Class</code>对象，作为方法区类信息的访问入口</li>
+</ol>
+<p><strong>验证</strong></p>
+<p>确保Class文件的字节流中包含的信息符合虚拟机规范，保证在运行后不会危害虚拟机自身的安全。主要包括四种验证：<strong>文件格式验证，元数据验证，字节码验证，符号引用验证</strong>。</p>
+<p><strong>准备</strong></p>
+<p>为类变量分配内存并设置类变量初始值的阶段。</p>
+<p><strong>解析</strong></p>
+<p>虚拟机将常量池内的符号引用替换为直接引用的过程。符号引用用于描述目标，直接引用直接指向目标的地址。</p>
+<p><strong>初始化</strong></p>
+<p>开始执行类中定义的<code>Java</code>代码，初始化阶段是调用类构造器的过程。</p>
+<h3 id="🌟类的实例化顺序？"><a href="#🌟类的实例化顺序？" class="headerlink" title="🌟类的实例化顺序？"></a>🌟类的实例化顺序？</h3><ol>
+<li>父类中的<code>static</code>代码块，</li>
+<li>当前类的<code>static</code>代码块</li>
+<li>父类的普通代码块</li>
+<li>父类的构造函数</li>
+<li>当前类普通代码块</li>
+<li>当前类的构造函数</li>
+</ol>
+<h2 id="双亲委派"><a href="#双亲委派" class="headerlink" title="双亲委派"></a>双亲委派</h2><p>深入分析ClassLoader，双亲委派机制</p>
+<p>类加载器的双亲委派模型是什么？</p>
+<p>双亲委派机制及使用原因</p>
+<p>什么是双亲委派模型？</p>
+<p>双亲委派机制可以打破吗？为什么</p>
+<p>讲一下双亲委派模型，以及其优点</p>
+<p>类加载器的双亲委派模型是什么？</p>
+<h2 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h2><h3 id="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"><a href="#🌟什么是类加载器、类加载器有哪些？都加载哪些文件" class="headerlink" title="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"></a>🌟什么是类加载器、类加载器有哪些？都加载哪些文件</h3><p>实现通过类的全限定名获取该类的二进制字节流的代码块叫做<strong>类加载器</strong>。</p>
+<p>主要有以下四种 ClassLoader，除启动类加载器外其他类加载器均由 Java 实现且全部继承自<code>java.lang.ClassLoader</code>：</p>
+<ul>
+<li><strong>启动类加载器</strong>：用来加载 Java 核心类库，由 C++实现，无法被 Java 程序直接引用。<ul>
+<li>即加载 <code>%JAVA_HOME%/lib</code>目录下的 jar 包和类或者被 <code>-Xbootclasspath</code>参数指定的路径中的所有类</li>
+</ul>
+</li>
+<li><strong>扩展类加载器</strong>：用来加载 Java 的扩展库。Java 虚拟机的实现会提供一个扩展库目录。该类加载器在此目录里面查找并加载 Java 类。<ul>
+<li>即负责加载 <code>%JRE_HOME%/lib/ext</code> 目录下的 jar 包和类，或被 <code>java.ext.dirs</code> 系统变量所指定的路径下的 jar 包。</li>
+</ul>
+</li>
+<li><strong>系统类加载器</strong>：用来加载当前应用 classpath 下的所有 jar 包和类。<ul>
+<li>可通过<code>ClassLoader.getSystemClassLoader()</code>获取它。</li>
+</ul>
+</li>
+<li><strong>自定义类加载器</strong>：通过继承<code>java.lang.ClassLoader</code>类的方式实现。</li>
+</ul>
+<p>手写一个类加载器Demo</p>
+<p>Class的forName（“java.lang.String”）和Class的getClassLoader（）的Loadclass（“java.lang.String”）有什么区别？</p>
+<h1 id="④调优"><a href="#④调优" class="headerlink" title="④调优"></a>④调优</h1><p>JVM 是怎么去调优的？了解哪些参数和指令？</p>
+<p> JVM性能调优都做了什么？</p>
+<p>Java 中如何进行 GC 调优？ </p>
+<p>有做过JVM内存优化吗？</p>
+<p>从SQL、JVM、架构、数据库四个方面讲讲优化思路</p>
+<p>JVM的编译优化</p>
+<p>jvm性能调优都做了什么</p>
+<p>JVM诊断调优工具用过哪些？</p>
+<p>jvm怎样调优，堆内存、栈空间设置多少合适</p>
+<p>JVM相关的分析工具使用过的有哪些？具体的性能调优步骤如何</p>
+<p>如何进行JVM调优？有哪些方法？</p>
+<p>如何理解内存泄漏问题？有哪些情况会导致内存泄漏？如何解决？</p>
+<p>JVM如何调优、参数怎么调？</p>
+<p>JVM诊断调优工具用过哪些？</p>
+<p>每秒几十万并发的秒杀系统为什么会频繁发生GC？</p>
+<p>日均百万级交易系统如何优化JVM？</p>
+<p>线上生产系统OOM如何监控及定位与解决？</p>
+<p>高并发系统如何基于G1垃圾回收器优化性能？</p>
+<h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://tobebetterjavaer.com/jvm/zongjie.html">JVM 核心知识点总结</a></li>
+<li></li>
+</ul>
+<h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
+<table>
+  <tbody>
+     <tr>
+         <td style="text-align:center;">支付宝</td>
+         <td style="text-align:center;">微信</td>
+     </tr>
+   <tr>
+    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/sponor_wechat.png"></td>     
+  </tr>
+</tbody></table>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top" rel="external nofollow noreferrer">简简</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top/posts/38527.html">https://jwt1399.top/posts/38527.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://jwt1399.top" target="_blank">简简</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/JVM/">
+                                    <span class="chip bg-color">JVM</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,linkedin,facebook,twitter,google,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">打</a>
+	<a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        /*max-width: 100%;*/
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+    .v[data-class=v] .vinput {
+     padding: 0px 0px;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论<center>填上邮箱会收到评论回复提醒哦!!!</center></span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/libs/valine/av-min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/valine/1.4.18/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'Awf92dhT3VWqTfENqbCDoqbA-gzGzoHsz',
+        appKey: '9uN7ODvigK9GAp8CYBz0fOrX',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: '',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: '[填上邮箱，会给你发送评论提醒]，ヾﾉ≧∀≦)o 请畅所欲言~',
+        enableQQ: true,
+        boolean: true,
+    });
+</script>
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/posts/38527.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top/img/202212242334320.png" class="responsive-img" alt="JVM-面试题">
+                        
+                        <span class="card-title">JVM-面试题</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            ①内存结构❶运行时数据区🌟说一下JVM内存模型吧
+有哪些区？分别干什么的？每个区放什么
+
+
+方法区
+
+JVM 运行时数据区域的一块逻辑区域，而永久代，元空间是它的具体实现，是各个线程共享的内存区域。在 Java 8 中，方法区也叫做元空间
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-24
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/" class="post-category">
+                                    面试题
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/JVM/">
+                        <span class="chip bg-color">JVM</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/63937.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top/img/20220118195531.png" class="responsive-img" alt="可搜索加密：B-SSE方案">
+                        
+                        <span class="card-title">可搜索加密：B-SSE方案</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            论文名称：《Encrypted Keyword Search Mechanism Based on Bitmap Index for Personal Storage Services》
+
+
+作者：Yong Ho Hwang; Jae Wo
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-12
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Crypto/" class="post-category">
+                                    Crypto
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86/">
+                        <span class="chip bg-color">可搜索加密</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('100')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: 简言之<br />'
+            + '文章作者: 简简<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('2'),
+            headingSelector: 'h1, h2, h3, h4, h5, h6'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h1, h2, h3, h4, h5, h6').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2019</span>
+            <a href="https://jwt1399.top" target="_blank">简简</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>&nbsp;|
+
+			<!-- <span>为♥️️发电</span> -->
+            <a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img no-lazy src="https://img.jwt1399.top/img/20200824181422.png" style="width: 47px; vertical-align: middle;" ></a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">810.7k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "7";
+                    var startDate = "2";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            <a href="https://search.google.com/search-console?resource_id=http%3A%2F%2Fjwt1399.top%2F" target="_blank"
+                rel="nofollow noopener">谷歌统计</a>&nbsp;|
+            
+            <span id="icp"><img no-lazy src="/medias/icp.png" style="vertical-align: text-bottom;" />
+                <a href="http://www.beian.miit.gov.cn/" target="_blank">蜀ICP备19020450号</a>
+            </span>
+            |
+            
+            <a href="https://tongji.baidu.com/web/10000159136/overview/index?siteId=14519996" target="_blank"
+                rel="nofollow noopener">百度统计</a>
+
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+    <a href="https://jwt1399.top/baidusitemap.xml" class="tooltipped" target="_blank" data-tooltip="访问我的sitemap" data-position="top" data-delay="50">
+        <i class="fas fa-sitemap"></i>
+    </a>
+
+
+    <a href="https://pl.jwt1399.top" class="tooltipped" target="_blank" data-tooltip="valine评论: https://pl.jwt1399.top" data-position="top" data-delay="50">
+        <i class="fab fa-optin-monster"></i>
+    </a>
+
+
+    <a href="mailto:1019084218@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1019084218" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1019084218" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.json", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="https://cdn.staticfile.org/aos/3.0.0-beta.6/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+	<!--valine_人机验证-->
+	<button id="TencentCaptcha"data-appid="2046265119"data-cbfn="callback"type="button" hidden></button>
+	
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160042502-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160042502-1');
+</script>
+
+
+    <!-- Baidu Analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0e306ce3426983ae6367d094d39f1190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" color="0,0,255"
+        pointColor="0,0,255" opacity='0.7'
+        zIndex="-1" count="99"
+        src="/libs/background/canvas-nest.js"></script>
+    
+
+    
+    
+    <script type="text/javascript" size="150" alpha='0.6'
+        zIndex="-1" src="/libs/background/ribbon.min.js" async="async"></script>
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+        
+</body>
+
+</html>
