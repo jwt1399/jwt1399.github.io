@@ -43,9 +43,9 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+</head>
 
 
 <body>
@@ -880,7 +880,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    12.5k
+                    15.7k
                 </div>
                 
 
@@ -1092,10 +1092,25 @@
 </ol>
 <h3 id="🌟对象创建时内存是如何分配的"><a href="#🌟对象创建时内存是如何分配的" class="headerlink" title="🌟对象创建时内存是如何分配的"></a>🌟对象创建时内存是如何分配的</h3><p>JVM 为对象分配内存的过程：首先计算对象占用空间大小，接着在堆中划分一块内存给新对象</p>
 <ul>
-<li>如果内存规整，使用<strong>指针碰撞</strong>（Bump The Pointer）。所有用过的内存在一边，空闲的内存在另外一边，中间有一个指针作为分界点的指示器，分配内存仅是把指针向空闲那边挪动一段与对象大小相等的距离</li>
-<li>如果内存不规整，虚拟机维护一个<strong>空闲列表</strong>（Free List）。已使用的内存和未使用的内存相互交错，列表上记录哪些内存块是可用的，分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的内容</li>
+<li><p>如果内存规整，使用<strong>指针碰撞</strong>（Bump The Pointer）。所有用过的内存在一边，空闲的内存在另外一边，中间有一个指针作为分界点的指示器，分配内存仅是把指针向空闲那边挪动一段与对象大小相等的距离</p>
+<ul>
+<li>由于堆空间是线程共享的，所以该方式存在着并发问题，通常有以下两种解决方案：<pre><code>          1. 线程本地分配缓存(TLAB)：在线程初始化时，虚拟机会为每个线程分配一块TLAB空间，只给当前线程使用，这样每个线程都单独拥有一个空间，如果需要分配内存，就在自己的空间上分配，这样就不存在竞争的情况，可以大大提升分配效率。
+          2. 对内存分配的动作进行同步处理；（使用加锁机制确保数据操作的原子性）
+</code></pre>
+</li>
 </ul>
-<p> 注：选择哪种分配方式由Java堆内存是否规整决定，Java堆是否规整由所采用的垃圾收集器是否带有压缩整理功能决定。因此，在使用<code>Serial</code>、<code>ParNew</code>等垃圾收集器时系统采用的是<strong>指针碰撞</strong>，在使用<code>CMS</code>等基于标记清除算法的收集器时，采用的是<strong>空闲列表</strong>。</p>
+</li>
+<li><p>如果内存不规整，虚拟机维护一个<strong>空闲列表</strong>（Free List）。已使用的内存和未使用的内存相互交错，列表上记录哪些内存块是可用的，分配的时候从列表中找到一块足够大的空间划分给对象实例，并更新列表上的内容</p>
+</li>
+</ul>
+<p> 注：选择哪种分配方式由Java堆内存是否规整决定，Java堆是否规整由所采用的垃圾收集器是否带有压缩整理功能决定。因此，在使用<code>Serial</code>、<code>ParNew</code>等基于复制算法或标记整理算法的垃圾收集器时系统采用的是<strong>指针碰撞</strong>，在使用<code>CMS</code>等基于标记清除算法的收集器时，采用的是<strong>空闲列表</strong>。</p>
+<h3 id="🌟Java对象内存分配流程"><a href="#🌟Java对象内存分配流程" class="headerlink" title="🌟Java对象内存分配流程"></a>🌟Java对象内存分配流程</h3><p>逃逸分析中若可进行<strong>栈上分配</strong>优化，会优先进行对象栈上直接分配内存；然后尝试 <strong>TLAB 分配</strong>，一旦对象在 TLAB 空间分配内存失败时，JVM 就会通过使用加锁机制确保数据操作的原子性，从而<strong>直接在堆中分配</strong>内存</p>
+<p>**栈上分配 (Stack Allocations)**：如果一个对象不会逃逸到线程外，那么将会在栈上分配内存来创建这个对象，而不是 Java 堆上，此时对象所占用的内存空间就会随着栈帧的出栈而销毁，从而可以减轻垃圾回收的压力。</p>
+<ul>
+<li>栈上分配使用的是栈来进行对象内存的分配</li>
+<li>TLAB 分配使用的是 Eden 区域进行内存分配，属于堆内存</li>
+</ul>
+<p><img src="https://img.jwt1399.top/img/202301041428735.png"></p>
 <h3 id="🌟对象创建时如何处理并发安全问题"><a href="#🌟对象创建时如何处理并发安全问题" class="headerlink" title="🌟对象创建时如何处理并发安全问题"></a>🌟对象创建时如何处理并发安全问题</h3><blockquote>
 <p>在Java对象创建过程的第二步（分配内存）的时候有一个很重要的问题，就是线程安全，可能出现正在给对象A分配内存，指针还没来得及修改，对象B又同时使用了原来的指针来分配内存的情况</p>
 </blockquote>
@@ -1150,6 +1165,12 @@
 <li>可达性分析算法</li>
 </ol>
 <p>通过 GC Roots 对象作为起点，开始向下搜索，所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连的话，则说明此对象是不可用的，需要被回收。</p>
+<h3 id="🌟可达性分析是广度优先还是深度优先？"><a href="#🌟可达性分析是广度优先还是深度优先？" class="headerlink" title="🌟可达性分析是广度优先还是深度优先？"></a>🌟可达性分析是广度优先还是深度优先？</h3><p>新生代深度，老年代广度</p>
+<p>原因：新生代对象少，老年代对象多</p>
+<p>深度优先DFS一般采用递归方式实现，递归情况下容易爆栈。</p>
+<p>广度优先的拷贝顺序使得GC后对象的空间局部性（memory locality）变差（相关变量散开了）。</p>
+<p>广度优先搜索法一般无回溯操作，即入栈和出栈的操作，所以运行速度比深度优先搜索算法法要快些。</p>
+<p>深度优先搜索法占内存少但速度较慢，广度优先搜索算法占内存多但速度较快。</p>
 <h3 id="🌟被标记为垃圾的对象一定会被回收吗"><a href="#🌟被标记为垃圾的对象一定会被回收吗" class="headerlink" title="🌟被标记为垃圾的对象一定会被回收吗"></a>🌟被标记为垃圾的对象一定会被回收吗</h3><p>不一定。要真正宣告一个对象死亡，至少要经历两次标记过程。  </p>
 <p>第一次标记：如果对象在进行可达性分析后发现没有与 GC Roots 相连接的引用链，那它将会被第一次标记；  </p>
 <p>第二次标记：第一次标记后接着会进行一次筛选，筛选的条件是此对象是否有必要执行 finalize() 方法。在 finalize() 方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记成功的对象将真的会被回收，如果对象在 finalize() 方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
@@ -1253,6 +1274,7 @@
 <li>如果不成立，虚拟机会先查看 <code>-XX:HandlePromotionFailure</code> 参数的设置值是否允许担保失败(Handle Promotion Failure)  ，如果允许那么就会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于将尝试着进行一次 Minor GC；如果小于或者  <code>-XX: HandlePromotionFailure</code> 设置不允许冒险，那么就要进行一次 Full GC</li>
 </ul>
 <p>老年代垃圾回收。随着新生代对象的不断晋升，老年代的对象变得越来越多，达到容量阈值后老年代也会发生垃圾回收，我们称之为Major GC</p>
+<h3 id="🌟空间分配担保机制是什么？"><a href="#🌟空间分配担保机制是什么？" class="headerlink" title="🌟空间分配担保机制是什么？"></a>🌟空间分配担保机制是什么？</h3><p>在发生Minor GC之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象空间，如果大于，直接进行Minor GC；如果不大于，则会查看是否允许担保失败，如果允许，会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，则尝试进行一次Minor GC；如果小于，则进行一次Full GC。</p>
 <h3 id="🌟对象从加载到JVM，再到被GC，经历了什么"><a href="#🌟对象从加载到JVM，再到被GC，经历了什么" class="headerlink" title="🌟对象从加载到JVM，再到被GC，经历了什么"></a><strong>🌟对象从加载到JVM，再到被GC，经历了什么</strong></h3><ol>
 <li><p>⽤户创建⼀个对象，JVM⾸先需要到⽅法区去找对象的类型信息。然后再创建对象。</p>
 </li>
@@ -1423,7 +1445,7 @@
 <td align="center">面向服务端应用，将来替换CMS</td>
 </tr>
 </tbody></table>
-<h3 id="重点讲一下cms和G1？"><a href="#重点讲一下cms和G1？" class="headerlink" title="重点讲一下cms和G1？"></a>重点讲一下cms和G1？</h3><p>介绍一下 CMS,G1 收集器。</p>
+<h3 id="🌟重点讲一下cms和G1？"><a href="#🌟重点讲一下cms和G1？" class="headerlink" title="🌟重点讲一下cms和G1？"></a>🌟重点讲一下cms和G1？</h3><p>介绍一下 CMS,G1 收集器。</p>
 <p>CMS收集器与G1收集器的特点 </p>
 <p>G1回收器讲下回收过程GC是什么？为什么要有GC？ </p>
 <p>CMS和G1了解么，CMS解决什么问题，说一下回收的过程。</p>
@@ -1479,15 +1501,34 @@
 <li><p><strong>动态对象年龄判定</strong>：Hotspot 遍历所有对象时，按照年龄从小到大对其所占用的大小进行累加，当累加到某个年龄时，所占用大小超过了 Survivor 空间的 50% 时，则大于等于该年龄的对象就可以直接进入老年代，无须等到阈值中要求的年龄。</p>
 </li>
 </ul>
-<h1 id="③类加载"><a href="#③类加载" class="headerlink" title="③类加载"></a>③类加载</h1><h2 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h2><p>类加载的时机</p>
+<h1 id="③类加载"><a href="#③类加载" class="headerlink" title="③类加载"></a>③类加载</h1><h2 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h2><h3 id="🌟类加载的时机"><a href="#🌟类加载的时机" class="headerlink" title="🌟类加载的时机"></a>🌟类加载的时机</h3><blockquote>
 <p>哪些情况会触发类的加载？ </p>
-<h3 id="🌟描述一下JVM加载class文件的原理机制？"><a href="#🌟描述一下JVM加载class文件的原理机制？" class="headerlink" title="🌟描述一下JVM加载class文件的原理机制？"></a><strong>🌟描述一下JVM加载class文件的原理机制？</strong></h3><ol>
-<li>装载:查找和导入class文件;</li>
-<li>连接:<br>① 检查:检查载入的class文件数据的正确性;<br>② 准备:为类的静态变量分配存储空间;<br>③ 解析:将符号引用转换成直接引用(这一步是可选的)</li>
-<li>初始化:初始化静态变量，静态代码块。<br>这样的过程在程序调用类的静态成员的时候开始执行，所以静态方法main()才会成为一般程序的入口方法。类的构造器也会引发该动作。</li>
+</blockquote>
+<p><strong>主动引用</strong>：对于初始化阶段，虚拟机严格规范了有且只有 6 种情况下，必须对类进行初始化</p>
+<ol>
+<li>当遇到 <code>new</code>、<code>getstatic</code>、<code>putstatic</code>、<code>invokestatic</code> 这 4 条直接码指令时<ul>
+<li>当 jvm 执行 <code>new</code> 指令时会初始化类。即当程序创建一个类的实例对象。</li>
+<li>当 jvm 执行 <code>getstatic</code> 指令时会初始化类。即程序访问类的静态变量(不是静态常量，常量会被加载到运行时常量池)。</li>
+<li>当 jvm 执行 <code>putstatic</code> 指令时会初始化类。即程序给类的静态变量赋值。</li>
+<li>当 jvm 执行 <code>invokestatic</code> 指令时会初始化类。即程序调用类的静态方法。</li>
+</ul>
+</li>
+<li>使用 <code>java.lang.reflect</code> 包的方法对类进行反射调用时如 <code>Class.forname(&quot;...&quot;)</code>, <code>newInstance()</code> 等等。如果类没初始化，需要触发其初始化。</li>
+<li>初始化一个类，如果其父类还未初始化，则先触发该父类的初始化。</li>
+<li>当虚拟机启动时，用户需要定义一个要执行的主类 (包含 <code>main</code> 方法的那个类)，虚拟机会先初始化这个类。</li>
+<li><code>MethodHandle</code> 和 <code>VarHandle</code> 可以看作是轻量级的反射调用机制，而要想使用这 2 个调用， 就必须先使用 <code>findStaticVarHandle</code> 来初始化要调用的类。</li>
+<li>当一个接口中定义了 JDK8 新加入的默认方法（被 default 关键字修饰的接口方法）时，如果有这个接口的实现类发生了初始化，那该接口要在其之前被初始化。</li>
 </ol>
+<p><strong>被动引用</strong>：所有引用类的方式都不会触发初始化，称为被动引用</p>
+<ul>
+<li>通过子类引用父类的静态字段，不会导致子类初始化，只会触发父类的初始化</li>
+<li>通过数组定义来引用类，不会触发此类的初始化。该过程会对数组类进行初始化，数组类是一个由虚拟机自动生成的、直接继承自 Object 的子类，其中包含了数组的属性和方法</li>
+<li>常量（final 修饰）在编译阶段会存入调用类的常量池中，本质上没有直接引用到定义常量的类，因此不会触发定义常量的类的初始化</li>
+<li>调用 ClassLoader 类的 loadClass() 方法加载一个类，并不是对类的主动使用，不会导致类的初始化</li>
+</ul>
 <h3 id="🌟什么是类加载？类加载的过程？"><a href="#🌟什么是类加载？类加载的过程？" class="headerlink" title="🌟什么是类加载？类加载的过程？"></a>🌟什么是类加载？类加载的过程？</h3><blockquote>
 <p>JVM中类加载机制，类加载过程？</p>
+<p>描述一下JVM加载class文件的原理机制？</p>
 </blockquote>
 <p><strong>类加载</strong>指的是将类的<code>class</code>文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个此类的对象，通过这个对象可以访问到方法区对应的类信息。</p>
 <ol>
@@ -1519,10 +1560,15 @@
 </li>
 <li><p><strong>初始化</strong></p>
 <ul>
-<li>开始执行类中定义的<code>Java</code>代码，初始化阶段就是执行类构造器的 <code>&lt;clinit&gt;()</code> 方法的过程</li>
+<li>开始执行类中定义的<code>Java</code>代码，初始化阶段就是执行类构造器的 <code>&lt;clinit&gt;()</code> 方法的过程<ul>
+<li>初始化静态变量，静态代码块。</li>
+</ul>
+</li>
 </ul>
 </li>
 </ol>
+<img src="https://img.jwt1399.top/img/202212241155714.png" style="zoom: 50%;" />
+
 <h3 id="🌟类的实例化顺序？"><a href="#🌟类的实例化顺序？" class="headerlink" title="🌟类的实例化顺序？"></a>🌟类的实例化顺序？</h3><ol>
 <li>父类中的<code>static</code>代码块，</li>
 <li>当前类的<code>static</code>代码块</li>
@@ -1531,13 +1577,68 @@
 <li>当前类普通代码块</li>
 <li>当前类的构造函数</li>
 </ol>
-<h2 id="双亲委派"><a href="#双亲委派" class="headerlink" title="双亲委派"></a>双亲委派</h2><p>深入分析ClassLoader，双亲委派机制</p>
-<p>类加载器的双亲委派模型是什么？</p>
+<h2 id="双亲委派"><a href="#双亲委派" class="headerlink" title="双亲委派"></a>双亲委派</h2><h3 id="类加载器的双亲委派模型是什么？"><a href="#类加载器的双亲委派模型是什么？" class="headerlink" title="类加载器的双亲委派模型是什么？"></a>类加载器的双亲委派模型是什么？</h3><blockquote>
+<p>深入分析ClassLoader，双亲委派机制</p>
 <p>双亲委派机制及使用原因</p>
 <p>什么是双亲委派模型？</p>
-<p>双亲委派机制可以打破吗？为什么</p>
+</blockquote>
+<p>双亲委派机制：如果一个类加载器收到了类加载请求时，它首先不会自己尝试去加载它，而是把这个请求<strong>委派</strong>给父类加载器去完成，这样层层委派，因此所有的加载请求最终都会传送到顶层的启动类加载器中，只有当父类加载器反馈自己无法完成这个加载请求时，子加载器才会尝试自己去加载。</p>
+<ul>
+<li><strong>向上委托</strong>：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器。如果父类加载器可以完成类加载任务，就成功返回；</li>
+<li><strong>向下委派</strong>：倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式。</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212241706954.png" style="zoom:50%;" />
+
+<h3 id="双亲委派模型的好处"><a href="#双亲委派模型的好处" class="headerlink" title="双亲委派模型的好处"></a>双亲委派模型的好处</h3><blockquote>
+<p>为什么需要双亲委派模型？</p>
 <p>讲一下双亲委派模型，以及其优点</p>
-<p>类加载器的双亲委派模型是什么？</p>
+</blockquote>
+<ol>
+<li><p>保证了 Java 程序的稳定运行，可以避免类被重复加载，当父类已经加载后则无需重复加载，保证类的全局唯一性</p>
+</li>
+<li><p>保护程序安全，防止类库的核心 API 被随意篡改</p>
+</li>
+</ol>
+<p>如果没有使用双亲委派模型，而是每个类加载器加载自己的话就会出现一些问题，比如我们编写一个称为 <code>java.lang.Object</code> 类的话，那么程序运行的时候，系统就会出现多个不同的 <code>Object</code> 类。</p>
+<h3 id="双亲委派模型的缺点"><a href="#双亲委派模型的缺点" class="headerlink" title="双亲委派模型的缺点"></a>双亲委派模型的缺点</h3><p>检查类是否加载的委托过程是单向的，这个方式虽然从结构上看比较清晰，使各个 ClassLoader 的职责非常明确，但<strong>顶层的 ClassLoader 无法访问底层的 ClassLoader 所加载的类</strong>（可见性）</p>
+<p>通常情况下，启动类加载器中的类为<u>系统核心类</u>，包括一些重要的系统接口，而在应用类加载器中，为<u>应用类</u>。按照这种模式，应用类访问系统类自然是没有问题，但是系统类访问应用类就会出现问题。</p>
+<h3 id="双亲委派机制可以打破吗？为什么"><a href="#双亲委派机制可以打破吗？为什么" class="headerlink" title="双亲委派机制可以打破吗？为什么"></a>双亲委派机制可以打破吗？为什么</h3><ul>
+<li>  在双亲委派出现之前，双亲委派模型是在JDK1.2引入的，在此之前就有自定义类加载器了，这些自然是没遵循双亲委派机制的</li>
+<li>  JIDI服务及前面提到的JDBC服务，如何解决这个问题呢？Java设计团队引入了上下文类加载器，通过上下文类加载器可以使得父类加载器请求子类加载器去完成类的加载动作。</li>
+<li>  用户对程序动态性的追求导致的，比如代码热替换、模块热部署等，已经成为Java模块化标准的OSGi实现模块化热部署的关键是它自定义的类加载，没和程序模块都有自己的类加载器，当需要更换一个程序模块时，会把程序模块和类加载器一起替换掉实现代码的热替换</li>
+<li>  tomcat等web服务器，因为一个web容器可以部署多个应用程序，不同的应用程序可能会依赖同一个第三方类库的不同版本，但不同版本的类库中的全限定名很可能是一样的，如果采取双亲委派机制，这里就无法加载多个相同的类，解决方法就是，破坏双亲委派原则，提供隔离的机制，为每个web容器提供一个单独的类加载器</li>
+</ul>
+<p>破坏双亲委派模型的方式：</p>
+<ul>
+<li><p>1.自定义 ClassLoader</p>
+<ul>
+<li>如果不想破坏双亲委派模型，只需要重写 findClass 方法</li>
+<li>如果想要去破坏双亲委派模型，需要去**重写 loadClass **方法</li>
+</ul>
+</li>
+<li><p>2.引入线程上下文类加载器</p>
+<p>Java 提供了很多服务提供者接口（Service Provider Interface，SPI），允许第三方为这些接口提供实现。常见的有 JDBC、JCE、JNDI 等。这些 SPI 接口由 Java 核心库来提供，而 SPI 的实现代码则是作为 Java 应用所依赖的 jar 包被包含进类路径 classpath 里，SPI 接口中的代码需要加载具体的实现类：</p>
+<ul>
+<li>SPI 的接口是 Java 核心库的一部分，是由启动类加载器来加载的</li>
+<li>SPI 的实现类是由系统类加载器加载，启动类加载器是无法找到 SPI 的实现类，因为双亲委派模型中 BootstrapClassloader 无法委派 AppClassLoader 来加载类</li>
+</ul>
+<p>JDK 开发人员引入了线程上下文类加载器（Thread Context ClassLoader），这种类加载器可以通过 Thread  类的 setContextClassLoader 方法设置线程上下文类加载器，在执行线程中抛弃双亲委派加载模式，使程序可以逆向使用类加载器，使 Bootstrap 加载器拿到了 Application 加载器加载的类，破坏了双亲委派模型</p>
+</li>
+<li><p>3.实现程序的动态性，如代码热替换（Hot Swap）、模块热部署（Hot Deployment）</p>
+<p>IBM 公司主导的 JSR一291（OSGiR4.2）实现模块化热部署的关键是它自定义的类加载器机制的实现，每一个程序模块（OSGi 中称为 Bundle）都有一个自己的类加载器，当更换一个 Bundle 时，就把 Bundle 连同类加载器一起换掉以实现代码的热替换，在 OSGi 环境下，类加载器不再双亲委派模型推荐的树状结构，而是进一步发展为更加复杂的网状结构</p>
+<p>当收到类加载请求时，OSGi 将按照下面的顺序进行类搜索:</p>
+<ol>
+<li>将以 java.* 开头的类，委派给父类加载器加载</li>
+<li>否则，将委派列表名单内的类，委派给父类加载器加载</li>
+<li>否则，将 Import 列表中的类，委派给 Export 这个类的 Bundle 的类加载器加载</li>
+<li>否则，查找当前 Bundle 的 ClassPath，使用自己的类加载器加载</li>
+<li>否则，查找类是否在自己的 Fragment Bundle 中，如果在就委派给 Fragment Bundle 类加载器加载</li>
+<li>否则，查找 Dynamic Import 列表的 Bundle，委派给对应 Bundle 的类加载器加载</li>
+<li>否则，类查找失败</li>
+</ol>
+<p>热替换是指在程序的运行过程中，不停止服务，只通过替换程序文件来修改程序的行为，<strong>热替换的关键需求在于服务不能中断</strong>，修改必须立即表现正在运行的系统之中</p>
+</li>
+</ul>
 <h2 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h2><h3 id="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"><a href="#🌟什么是类加载器、类加载器有哪些？都加载哪些文件" class="headerlink" title="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"></a>🌟什么是类加载器、类加载器有哪些？都加载哪些文件</h3><p>实现通过类的全限定名获取该类的二进制字节流的代码块叫做<strong>类加载器</strong>。</p>
 <p>主要有以下四种 ClassLoader，除启动类加载器外其他类加载器均由 Java 实现且全部继承自<code>java.lang.ClassLoader</code>：</p>
 <ul>
@@ -1561,6 +1662,7 @@
 <p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/12/29/jvm-optimize.html">从实际案例聊聊Java应用的GC优化 - 美团技术团队 (meituan.com)</a></p>
 <h3 id="🌟如何优化-JVM-频繁-minor-GC"><a href="#🌟如何优化-JVM-频繁-minor-GC" class="headerlink" title="🌟如何优化 JVM 频繁 minor GC"></a>🌟如何优化 JVM 频繁 minor GC</h3><p><code>Minor GC</code>频繁问题，通常情况下，由于新生代空间较小，Eden区很快被填满，就会导致频繁Minor GC，因此可以通过增大新生代空间来降低 Minor GC的频率。例如在相同的内存分配率的前提下，新生代中的Eden区增加一倍，Minor GC的次数就会减少一半。</p>
 <p>如何选择各分区大小应该依赖应用程序中<strong>对象生命周期的分布情况：如果应用存在大量的短期对象，应该选择较大的年轻代；如果存在相对较多的持久对象，老年代应该适当增大。</strong></p>
+<h3 id="🌟频繁-full-gc-怎么解决？"><a href="#🌟频繁-full-gc-怎么解决？" class="headerlink" title="🌟频繁 full gc 怎么解决？"></a>🌟频繁 full gc 怎么解决？</h3><p>线下：利用 jvisualvm 去查看内存使用量曲线图，如果内存使用量一直维持在较高水平，那就是堆内存不够，需要调大一点。如果频繁发生抖动，那就是程序频繁生成对象并且进行回收，优化代码，保存可重用的对象不要频繁生成。如果内存使用量一直增长，那就是发生内存泄漏或者内存碎片，需要排查代码或者把 cms 收集器调成 gc 几次就执行一次标记整理算法来搞定内存碎片。<br>另外要注意虚拟机参数的配置，比如是否只配置了 xmx 而没有配置 xms，是否只设置了 maxNewSize 而没有设置 newSize (这两个参数默认是不一样的，会发生堆收缩)。<br>如果是 cms 频繁产生大对象的话调整 newradio 的大小来增加新生代的比例也是个不错的思路。因为 cms 在老年代采用标记清除算法，会产生大量内存碎片，使得老年代剩余空间很大但是没有足够的连续空间分配给当前对象 不得不提前触发一次 full gc。<br>线上：用 jmap -dump 分析哪些类占用比较多就知道哪些类内存泄漏或者 new 的太频繁了。</p>
 <h3 id="🌟JVM是如何避免Minor-GC时扫描全堆的？"><a href="#🌟JVM是如何避免Minor-GC时扫描全堆的？" class="headerlink" title="🌟JVM是如何避免Minor GC时扫描全堆的？"></a><strong>🌟JVM是如何避免Minor GC时扫描全堆的？</strong></h3><p>经过统计信息显示，老年代持有新生代对象引用的情况不足1%，根据这一特性JVM引入了卡表（card table）来实现这一目的。</p>
 <p><strong>卡表</strong>的具体策略是将老年代的空间分成大小为512B的若干张卡（card）。卡表本身是单字节数组，数组中的每个元素对应着一张卡，当发生老年代引用新生代时，虚拟机将该卡对应的卡表元素设置为适当的值。如上图所示，卡表3被标记为脏（卡表还有另外的作用，标识并发标记阶段哪些块被修改过），之后Minor GC时通过扫描卡表就可以很快的识别哪些卡中存在老年代指向新生代的引用。这样虚拟机通过空间换时间的方式，避免了全堆扫描。</p>
 <p>总结来说，CMS的设计聚焦在获取最短的时延，为此它“不遗余力”地做了很多工作，包括尽量让应用程序和GC线程并发、增加可中断的并发预清理阶段、引入卡表等，虽然这些操作牺牲了一定吞吐量但获得了更短的回收停顿时间。</p>
@@ -2113,8 +2215,8 @@
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            线程线程和进程的区别？进程：是程序运行和资源分配的基本单位，一个程序至少有一个进程，一个进程至少有一个线程。进程在执行过程中拥有独立的内存单元，而多个线程共享内存资源，减少切换次数，从而效率更高。
-线程：是进程的一个实体，是 cpu 调度和
+                            线程🌟线程和进程的区别？进程：是程序运行和资源分配的基本单位，一个程序至少有一个进程，一个进程至少有一个线程。进程在执行过程中拥有独立的内存单元，而多个线程共享内存资源，减少切换次数，从而效率更高。
+线程：是进程的一个实体，是 cpu 调
                         
                     </div>
                     <div class="publish-info">
@@ -2375,7 +2477,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">872.2k</span>&nbsp;字
+                class="white-color">898.8k</span>&nbsp;字
             
             
             
