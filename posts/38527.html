@@ -43,9 +43,9 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-</head>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -873,14 +873,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-02-03
+                    2023-02-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    18.3k
+                    18.4k
                 </div>
                 
 
@@ -1637,69 +1637,7 @@
 <li>当前类普通代码块</li>
 <li>当前类的构造函数</li>
 </ol>
-<h2 id="❷双亲委派"><a href="#❷双亲委派" class="headerlink" title="❷双亲委派"></a>❷双亲委派</h2><h3 id="🌟类加载器的双亲委派模型是什么？"><a href="#🌟类加载器的双亲委派模型是什么？" class="headerlink" title="🌟类加载器的双亲委派模型是什么？"></a>🌟类加载器的双亲委派模型是什么？</h3><blockquote>
-<p>深入分析ClassLoader，双亲委派机制</p>
-<p>双亲委派机制及使用原因</p>
-<p>什么是双亲委派模型？</p>
-</blockquote>
-<p>双亲委派机制：如果一个类加载器收到了类加载请求时，它首先不会自己尝试去加载它，而是把这个请求<strong>委派</strong>给父类加载器去完成，这样层层委派，因此所有的加载请求最终都会传送到顶层的启动类加载器中，只有当父类加载器反馈自己无法完成这个加载请求时，子加载器才会尝试自己去加载。</p>
-<ul>
-<li><strong>向上委托</strong>：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器。如果父类加载器可以完成类加载任务，就成功返回；</li>
-<li><strong>向下委派</strong>：倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式。</li>
-</ul>
-<img src="https://img.jwt1399.top/img/202212241706954.png" style="zoom:50%;" />
-
-<h3 id="🌟双亲委派模型的好处"><a href="#🌟双亲委派模型的好处" class="headerlink" title="🌟双亲委派模型的好处"></a>🌟双亲委派模型的好处</h3><blockquote>
-<p>为什么需要双亲委派模型？</p>
-<p>讲一下双亲委派模型，以及其优点</p>
-</blockquote>
-<ol>
-<li><p>保证了 Java 程序的稳定运行，可以避免类被重复加载，当父类已经加载后则无需重复加载，保证类的全局唯一性</p>
-</li>
-<li><p>保护程序安全，防止类库的核心 API 被随意篡改</p>
-</li>
-</ol>
-<p>如果没有使用双亲委派模型，而是每个类加载器加载自己的话就会出现一些问题，比如我们编写一个称为 <code>java.lang.Object</code> 类的话，那么程序运行的时候，系统就会出现多个不同的 <code>Object</code> 类。</p>
-<h3 id="🌟双亲委派模型的缺点"><a href="#🌟双亲委派模型的缺点" class="headerlink" title="🌟双亲委派模型的缺点"></a>🌟双亲委派模型的缺点</h3><p>检查类是否加载的委托过程是单向的，这个方式虽然从结构上看比较清晰，使各个 ClassLoader 的职责非常明确，但<strong>顶层的 ClassLoader 无法访问底层的 ClassLoader 所加载的类</strong>（可见性）</p>
-<p>通常情况下，启动类加载器中的类为<u>系统核心类</u>，包括一些重要的系统接口，而在应用类加载器中，为<u>应用类</u>。按照这种模式，应用类访问系统类自然是没有问题，但是系统类访问应用类就会出现问题。</p>
-<h3 id="🌟双亲委派机制可以打破吗？为什么"><a href="#🌟双亲委派机制可以打破吗？为什么" class="headerlink" title="🌟双亲委派机制可以打破吗？为什么"></a>🌟双亲委派机制可以打破吗？为什么</h3><ul>
-<li>  在双亲委派出现之前，双亲委派模型是在JDK1.2引入的，在此之前就有自定义类加载器了，这些自然是没遵循双亲委派机制的</li>
-<li>  JIDI服务及前面提到的JDBC服务，如何解决这个问题呢？Java设计团队引入了上下文类加载器，通过上下文类加载器可以使得父类加载器请求子类加载器去完成类的加载动作。</li>
-<li>  用户对程序动态性的追求导致的，比如代码热替换、模块热部署等，已经成为Java模块化标准的OSGi实现模块化热部署的关键是它自定义的类加载，没和程序模块都有自己的类加载器，当需要更换一个程序模块时，会把程序模块和类加载器一起替换掉实现代码的热替换</li>
-<li>  tomcat等web服务器，因为一个web容器可以部署多个应用程序，不同的应用程序可能会依赖同一个第三方类库的不同版本，但不同版本的类库中的全限定名很可能是一样的，如果采取双亲委派机制，这里就无法加载多个相同的类，解决方法就是，破坏双亲委派原则，提供隔离的机制，为每个web容器提供一个单独的类加载器</li>
-</ul>
-<p>破坏双亲委派模型的方式：</p>
-<ul>
-<li><p>1.自定义 ClassLoader</p>
-<ul>
-<li>如果不想破坏双亲委派模型，只需要重写 findClass 方法</li>
-<li>如果想要去破坏双亲委派模型，需要去**重写 loadClass **方法</li>
-</ul>
-</li>
-<li><p>2.引入线程上下文类加载器</p>
-<p>Java 提供了很多服务提供者接口（Service Provider Interface，SPI），允许第三方为这些接口提供实现。常见的有 JDBC、JCE、JNDI 等。这些 SPI 接口由 Java 核心库来提供，而 SPI 的实现代码则是作为 Java 应用所依赖的 jar 包被包含进类路径 classpath 里，SPI 接口中的代码需要加载具体的实现类：</p>
-<ul>
-<li>SPI 的接口是 Java 核心库的一部分，是由启动类加载器来加载的</li>
-<li>SPI 的实现类是由系统类加载器加载，启动类加载器是无法找到 SPI 的实现类，因为双亲委派模型中 BootstrapClassloader 无法委派 AppClassLoader 来加载类</li>
-</ul>
-<p>JDK 开发人员引入了线程上下文类加载器（Thread Context ClassLoader），这种类加载器可以通过 Thread  类的 setContextClassLoader 方法设置线程上下文类加载器，在执行线程中抛弃双亲委派加载模式，使程序可以逆向使用类加载器，使 Bootstrap 加载器拿到了 Application 加载器加载的类，破坏了双亲委派模型</p>
-</li>
-<li><p>3.实现程序的动态性，如代码热替换（Hot Swap）、模块热部署（Hot Deployment）</p>
-<p>IBM 公司主导的 JSR一291（OSGiR4.2）实现模块化热部署的关键是它自定义的类加载器机制的实现，每一个程序模块（OSGi 中称为 Bundle）都有一个自己的类加载器，当更换一个 Bundle 时，就把 Bundle 连同类加载器一起换掉以实现代码的热替换，在 OSGi 环境下，类加载器不再双亲委派模型推荐的树状结构，而是进一步发展为更加复杂的网状结构</p>
-<p>当收到类加载请求时，OSGi 将按照下面的顺序进行类搜索:</p>
-<ol>
-<li>将以 java.* 开头的类，委派给父类加载器加载</li>
-<li>否则，将委派列表名单内的类，委派给父类加载器加载</li>
-<li>否则，将 Import 列表中的类，委派给 Export 这个类的 Bundle 的类加载器加载</li>
-<li>否则，查找当前 Bundle 的 ClassPath，使用自己的类加载器加载</li>
-<li>否则，查找类是否在自己的 Fragment Bundle 中，如果在就委派给 Fragment Bundle 类加载器加载</li>
-<li>否则，查找 Dynamic Import 列表的 Bundle，委派给对应 Bundle 的类加载器加载</li>
-<li>否则，类查找失败</li>
-</ol>
-<p>热替换是指在程序的运行过程中，不停止服务，只通过替换程序文件来修改程序的行为，<strong>热替换的关键需求在于服务不能中断</strong>，修改必须立即表现正在运行的系统之中</p>
-</li>
-</ul>
-<h2 id="❸类加载器"><a href="#❸类加载器" class="headerlink" title="❸类加载器"></a>❸类加载器</h2><h3 id="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"><a href="#🌟什么是类加载器、类加载器有哪些？都加载哪些文件" class="headerlink" title="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"></a>🌟什么是类加载器、类加载器有哪些？都加载哪些文件</h3><p>实现通过类的全限定名获取该类的二进制字节流的代码块叫做<strong>类加载器</strong>。</p>
+<h2 id="❷类加载器"><a href="#❷类加载器" class="headerlink" title="❷类加载器"></a>❷类加载器</h2><h3 id="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"><a href="#🌟什么是类加载器、类加载器有哪些？都加载哪些文件" class="headerlink" title="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"></a>🌟什么是类加载器、类加载器有哪些？都加载哪些文件</h3><p>实现通过类的全限定名获取该类的二进制字节流的代码块叫做<strong>类加载器</strong>。</p>
 <p>主要有以下四种 ClassLoader，除启动类加载器外其他类加载器均由 Java 实现且全部继承自<code>java.lang.ClassLoader</code>：</p>
 <ul>
 <li><strong>启动类加载器</strong>：用来加载 Java 核心类库，由 C++实现，无法被 Java 程序直接引用。<ul>
@@ -1718,6 +1656,10 @@
 </ul>
 <img src="https://img.jwt1399.top/img/202301201331894.png" style="zoom: 33%;" />
 
+<h3 id="🌟类加载器基本特征"><a href="#🌟类加载器基本特征" class="headerlink" title="🌟类加载器基本特征"></a>🌟类加载器基本特征</h3><ul>
+<li><strong>可见性</strong>，子类加载器可以访问父加载器加载的类型，但是反过来是不允许的</li>
+<li><strong>单一性</strong>，父加载器的类型对于子加载器是可见的，所以父加载器中加载过的类型，不会在子加载器中重复加载</li>
+</ul>
 <h3 id="🌟类加载的方式"><a href="#🌟类加载的方式" class="headerlink" title="🌟类加载的方式"></a>🌟类加载的方式</h3><ul>
 <li><p>隐式加载：使用 new + 构造方法，隐式的调用类加载器，加载对应的类到 JVM 中，是最常见的类加载方式。</p>
 <ul>
@@ -1739,11 +1681,6 @@ Class <span class="token class-name">clazz</span> <span class="token operator">=
 <span class="token comment" spellcheck="true">//显式加载，但不初始化</span>
 ClassLoader<span class="token punctuation">.</span><span class="token function">getSystemClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">loadClass</span><span class="token punctuation">(</span><span class="token string">"com.test.java.Parent"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>类加载器基本特征：</p>
-<ul>
-<li><strong>可见性</strong>，子类加载器可以访问父加载器加载的类型，但是反过来是不允许的</li>
-<li><strong>单一性</strong>，父加载器的类型对于子加载器是可见的，所以父加载器中加载过的类型，不会在子加载器中重复加载</li>
-</ul>
 <p>两种类加载方式的区别：</p>
 <ul>
 <li>隐式加载能够直接获取对象的实例，而显式加载需要调用 Class 对象的 newInstance() 方法来生成对象的实例。</li>
@@ -1756,7 +1693,74 @@ ClassLoader<span class="token punctuation">.</span><span class="token function">
 </li>
 </ul>
 <p>有些情况是只需要知道这个类的存在而不需要初始化的情况使用Classloder.loaderClass，而有些时候又必须执行初始化就选择Class.forName</p>
-<h3 id="手写一个类加载器Demo"><a href="#手写一个类加载器Demo" class="headerlink" title="手写一个类加载器Demo"></a>手写一个类加载器Demo</h3><h1 id="④调优"><a href="#④调优" class="headerlink" title="④调优"></a>④调优</h1><p><img src="https://pdai.tech/images/jvm/java-jvm-debug.png"></p>
+<h3 id="手写一个类加载器Demo"><a href="#手写一个类加载器Demo" class="headerlink" title="手写一个类加载器Demo"></a>手写一个类加载器Demo</h3><h2 id="❸双亲委派"><a href="#❸双亲委派" class="headerlink" title="❸双亲委派"></a>❸双亲委派</h2><h3 id="🌟类加载器的双亲委派模型是什么"><a href="#🌟类加载器的双亲委派模型是什么" class="headerlink" title="🌟类加载器的双亲委派模型是什么"></a>🌟类加载器的双亲委派模型是什么</h3><blockquote>
+<p>深入分析ClassLoader，双亲委派机制</p>
+<p>双亲委派机制及使用原因</p>
+<p>什么是双亲委派模型？</p>
+</blockquote>
+<p>当某个类加载器需要加载某个<code>.class</code>文件时，它首先把这个任务委托给他的上级类加载器，递归这个操作，如果上级的类加载器没有加载，自己才会去加载这个类。</p>
+<p>双亲委派机制：如果一个类加载器收到了类加载请求时，它首先不会自己尝试去加载它，而是把这个请求<strong>委派</strong>给父类加载器去完成，这样层层委派，因此所有的加载请求最终都会传送到顶层的启动类加载器中，只有当父类加载器反馈自己无法完成这个加载请求时，子加载器才会尝试自己去加载。</p>
+<ul>
+<li><strong>向上委托</strong>：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，依次递归，请求最终将到达顶层的启动类加载器。如果父类加载器可以完成类加载任务，就成功返回；</li>
+<li><strong>向下委派</strong>：倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载，这就是双亲委派模式。</li>
+</ul>
+<img src="https://img.jwt1399.top/img/202212241706954.png" style="zoom:50%;" />
+
+<h3 id="🌟双亲委派模型的好处"><a href="#🌟双亲委派模型的好处" class="headerlink" title="🌟双亲委派模型的好处"></a>🌟双亲委派模型的好处</h3><blockquote>
+<p>为什么需要双亲委派模型？</p>
+<p>讲一下双亲委派模型，以及其优点</p>
+</blockquote>
+<p><strong>使用双亲委派机制加载类的好处</strong>就是可以提高系统的安全性和稳定性；</p>
+<ol>
+<li>保证程序稳定性。通过划分不同层级类加载器的职责，使得核心类可以被优先加载，确保了程序的稳定性</li>
+<li>保证程序安全性。该机制可以避免类被重复加载，保证类的全局唯一性，防止类库的核心 API 被随意篡改</li>
+</ol>
+<p>如果没有使用双亲委派模型，而是每个类加载器加载自己的话就会出现一些问题，比如我们编写一个称为 <code>java.lang.Object</code> 类的话，那么程序运行的时候，系统就会出现多个不同的 <code>Object</code> 类。</p>
+<h3 id="🌟双亲委派模型的缺点"><a href="#🌟双亲委派模型的缺点" class="headerlink" title="🌟双亲委派模型的缺点"></a>🌟双亲委派模型的缺点</h3><blockquote>
+<p>为什么要破坏双亲委派？</p>
+</blockquote>
+<p>使用双亲委派存在一定的局限性，在正常情况下，用户代码是依赖核心类库的，所以按照正常的双亲委派加载流程是没问题的；但是在加载核心类库时，如果需要使用用户代码，双亲委派流程就无法满足；即<strong>顶层的 ClassLoader 无法访问底层的 ClassLoader 所加载的类</strong>（可见性）</p>
+<p>比如在使用JDBC时， 利用DriverManager.getConnection获取连接时，就会存在这样的问题。</p>
+<p>DriverManager是由启动类加载器加载的，在加载DriverManager时，会执行其静态方法，加载初始驱动程序，也就是Driver接口的实现类；但是这些实现类基本都是第三方厂商提供的，根据双亲委派原则，第三方的类不可能被根类加载器加载。</p>
+<h3 id="🌟破坏双亲委派模型的方式"><a href="#🌟破坏双亲委派模型的方式" class="headerlink" title="🌟破坏双亲委派模型的方式"></a>🌟破坏双亲委派模型的方式</h3><ul>
+<li><p>1.自定义 ClassLoader</p>
+<ul>
+<li>如果不想破坏双亲委派模型，只需要重写 findClass 方法</li>
+<li>如果想要去破坏双亲委派模型，需要去重写 loadClass 方法</li>
+</ul>
+</li>
+<li><p>2.引入线程上下文类加载器</p>
+<p>JDK 开发人员引入了线程上下文类加载器（Thread Context ClassLoader），这种类加载器可以通过 Thread  类的 setContextClassLoader 方法设置线程上下文类加载器，在执行线程中抛弃双亲委派加载模式，使程序可以逆向使用类加载器，使 Bootstrap 加载器拿到了 Application 加载器加载的类，破坏了双亲委派模型</p>
+<p>Java 提供了很多服务提供者接口（Service Provider Interface，SPI），允许第三方为这些接口提供实现。常见的有 JDBC、JCE、JNDI 等。这些 SPI 接口由 Java 核心库来提供，而 SPI 的实现代码则是作为 Java 应用所依赖的 jar 包被包含进类路径 classpath 里，SPI 接口中的代码需要加载具体的实现类：</p>
+<ul>
+<li>SPI 的接口是 Java 核心库的一部分，是由启动类加载器来加载的</li>
+<li>SPI 的实现类是由系统类加载器加载，启动类加载器是无法找到 SPI 的实现类，因为双亲委派模型中 BootstrapClassloader 无法委派 AppClassLoader 来加载类</li>
+</ul>
+<p>有了线程上下文加载器，JNDI服务就可以使用它去加载所需要的SPI代码，也就是父类加载器请求子类加载器去完成类加载的动作，这种行为实际上就是打通了双亲委派模型层次结构来逆向使用类加载器，实际上已经违背了双亲委派模型的一般性原则，但这也是无可奈何的事情。Java中所有涉及SPI的加载动作基本上都采用这种方式，例如JNDI、JDBC、JCE、JAXB和JBI等。</p>
+</li>
+<li><p>3.实现程序的动态性，如代码热替换（Hot Swap）、模块热部署（Hot Deployment）</p>
+<p>IBM 公司主导的 JSR一291（OSGiR4.2）实现模块化热部署的关键是它自定义的类加载器机制的实现，每一个程序模块（OSGi 中称为 Bundle）都有一个自己的类加载器，当更换一个 Bundle 时，就把 Bundle 连同类加载器一起换掉以实现代码的热替换，在 OSGi 环境下，类加载器不再双亲委派模型推荐的树状结构，而是进一步发展为更加复杂的网状结构</p>
+<p>当收到类加载请求时，OSGi 将按照下面的顺序进行类搜索:</p>
+<ol>
+<li>将以 java.* 开头的类，委派给父类加载器加载</li>
+<li>否则，将委派列表名单内的类，委派给父类加载器加载</li>
+<li>否则，将 Import 列表中的类，委派给 Export 这个类的 Bundle 的类加载器加载</li>
+<li>否则，查找当前 Bundle 的 ClassPath，使用自己的类加载器加载</li>
+<li>否则，查找类是否在自己的 Fragment Bundle 中，如果在就委派给 Fragment Bundle 类加载器加载</li>
+<li>否则，查找 Dynamic Import 列表的 Bundle，委派给对应 Bundle 的类加载器加载</li>
+<li>否则，类查找失败</li>
+</ol>
+<p>热替换是指在程序的运行过程中，不停止服务，只通过替换程序文件来修改程序的行为，<strong>热替换的关键需求在于服务不能中断</strong>，修改必须立即表现正在运行的系统之中</p>
+</li>
+</ul>
+<h3 id="🌟打破双亲委派机制案例：Tomcat"><a href="#🌟打破双亲委派机制案例：Tomcat" class="headerlink" title="🌟打破双亲委派机制案例：Tomcat"></a><strong>🌟打破双亲委派机制案例：</strong>Tomcat</h3><ul>
+<li>为了Web应用程序类之间隔离，为每个应用程序创建WebAppClassLoader类加载器</li>
+<li>为了Web应用程序类之间共享，把ShareClassLoader作为WebAppClassLoader的父类加载器，如果WebAppClassLoader加载器找不到，则尝试用ShareClassLoader进行加载</li>
+<li>为了Tomcat本身与Web应用程序类隔离，用CatalinaClassLoader类加载器进行隔离，CatalinaClassLoader加载Tomcat本身的类</li>
+<li>为了Tomcat与Web应用程序类共享，用CommonClassLoader作为CatalinaClassLoader和ShareClassLoader的父类加载器</li>
+<li>ShareClassLoader、CatalinaClassLoader、CommonClassLoader的目录可以在Tomcat的catalina.properties进行配置</li>
+</ul>
+<h1 id="④调优"><a href="#④调优" class="headerlink" title="④调优"></a>④调优</h1><p><img src="https://pdai.tech/images/jvm/java-jvm-debug.png"></p>
 <p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/12/29/jvm-optimize.html">从实际案例聊聊Java应用的GC优化 - 美团技术团队 (meituan.com)</a></p>
 <h3 id="🌟如何优化-JVM-频繁-minor-GC"><a href="#🌟如何优化-JVM-频繁-minor-GC" class="headerlink" title="🌟如何优化 JVM 频繁 minor GC"></a>🌟如何优化 JVM 频繁 minor GC</h3><p><code>Minor GC</code>频繁问题，通常情况下，由于新生代空间较小，Eden区很快被填满，就会导致频繁Minor GC，因此可以通过增大新生代空间来降低 Minor GC的频率。例如在相同的内存分配率的前提下，新生代中的Eden区增加一倍，Minor GC的次数就会减少一半。</p>
 <p>如何选择各分区大小应该依赖应用程序中<strong>对象生命周期的分布情况：如果应用存在大量的短期对象，应该选择较大的年轻代；如果存在相对较多的持久对象，老年代应该适当增大。</strong></p>
@@ -2580,7 +2584,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">921.8k</span>&nbsp;字
+                class="white-color">921.9k</span>&nbsp;字
             
             
             
