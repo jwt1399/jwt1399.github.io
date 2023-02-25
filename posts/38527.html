@@ -873,14 +873,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-02-06
+                    2023-02-25
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    18.4k
+                    18.2k
                 </div>
                 
 
@@ -1158,12 +1158,12 @@
 <li>可达性分析算法</li>
 </ol>
 <p>通过 GC Roots 对象作为起点，开始向下搜索，所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连的话，则说明此对象是不可用的，需要被回收。</p>
-<h3 id="🌟可达性分析是广度优先还是深度优先？"><a href="#🌟可达性分析是广度优先还是深度优先？" class="headerlink" title="🌟可达性分析是广度优先还是深度优先？"></a>🌟可达性分析是广度优先还是深度优先？</h3><p>新生代深度优先，老年代广度优先</p>
+<h3 id="🌟可达性分析是DFS还是BFS？"><a href="#🌟可达性分析是DFS还是BFS？" class="headerlink" title="🌟可达性分析是DFS还是BFS？"></a>🌟可达性分析是DFS还是BFS？</h3><p>新生代深度优先，老年代广度优先</p>
 <p>原因：深度优先搜索法占内存少但速度较慢(递归)，广度优先搜索算法占内存多但速度较快。</p>
-<h3 id="🌟被标记为垃圾的对象一定会被回收吗"><a href="#🌟被标记为垃圾的对象一定会被回收吗" class="headerlink" title="🌟被标记为垃圾的对象一定会被回收吗"></a>🌟被标记为垃圾的对象一定会被回收吗</h3><p>不一定。要真正宣告一个对象死亡，至少要经历两次标记过程。  </p>
+<h3 id="🌟标记为垃圾的对象一定会被回收吗"><a href="#🌟标记为垃圾的对象一定会被回收吗" class="headerlink" title="🌟标记为垃圾的对象一定会被回收吗"></a>🌟标记为垃圾的对象一定会被回收吗</h3><p>不一定。要真正宣告一个对象死亡，至少要经历两次标记过程。  </p>
 <p>第一次标记：如果对象在进行可达性分析后发现没有与 GC Roots 相连接的引用链，那它将会被第一次标记；  </p>
 <p>第二次标记：第一次标记后接着会进行一次筛选，筛选的条件是此对象是否有必要执行 finalize() 方法。在 finalize() 方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记成功的对象将真的会被回收，如果对象在 finalize() 方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
-<h3 id="🌟什么是浮动垃圾？"><a href="#🌟什么是浮动垃圾？" class="headerlink" title="🌟什么是浮动垃圾？"></a>🌟什么是浮动垃圾？</h3><p>由于在应用运行的同时进行垃圾回收，所以有些垃圾可能在垃圾回收进行完成时产生，这样就造成了“Floating Garbage”，这些垃圾需要在下次垃圾回收周期时才能回收掉。所以，并发收集器一般需要20%的预留空间用于这些浮动垃圾。</p>
+<h3 id="🌟什么是浮动垃圾？"><a href="#🌟什么是浮动垃圾？" class="headerlink" title="🌟什么是浮动垃圾？"></a>🌟什么是浮动垃圾？</h3><p>在并发回收时，应用运行的同时进行垃圾回收，所以有些垃圾可能在垃圾回收进行完成时产生，这样就造成了“Floating Garbage”，这些垃圾需要在下次垃圾回收周期时才能回收掉。所以，并发收集器一般需要20%的预留空间用于这些浮动垃圾。</p>
 <h3 id="🌟如何判断一个常量是废弃常量"><a href="#🌟如何判断一个常量是废弃常量" class="headerlink" title="🌟如何判断一个常量是废弃常量"></a>🌟如何判断一个常量是废弃常量</h3><p>运行时常量池主要回收的是废弃的常量。假如在字符串常量池中存在字符串 “abc”，如果当前没有任何 String 对象引用该常量，说明常量 “abc” 是废弃常量，如果这时发生内存回收的话<strong>而且有必要的话</strong>（内存不够用），”abc” 就会被系统清理出常量池</p>
 <h3 id="🌟如何判断一个类是无用的类"><a href="#🌟如何判断一个类是无用的类" class="headerlink" title="🌟如何判断一个类是无用的类"></a>🌟如何判断一个类是无用的类</h3><p>方法区主要回收的是无用的类，判定一个类是否是无用的类，需要同时满足下面 3 个条件：</p>
 <ul>
@@ -1188,7 +1188,7 @@
 </ol>
 <h3 id="🌟使用软引用能带来的好处"><a href="#🌟使用软引用能带来的好处" class="headerlink" title="🌟使用软引用能带来的好处"></a>🌟使用软引用能带来的好处</h3><p>特别注意，在程序设计中一般很少使用弱引用与虚引用，使用软引用的情况较多，这是因为<strong>软引用可以加速 JVM 对垃圾内存的回收速度，可以维护系统的运行安全，防止内存溢出（OutOfMemory）等问题的产生</strong>。</p>
 <p><img src="https://img.jwt1399.top/img/202301191116789.png"></p>
-<h2 id="❷垃圾回收策略"><a href="#❷垃圾回收策略" class="headerlink" title="❷垃圾回收策略"></a>❷垃圾回收策略</h2><h3 id="🌟说下对垃圾回收策略的理解-垃圾回收时机？"><a href="#🌟说下对垃圾回收策略的理解-垃圾回收时机？" class="headerlink" title="🌟说下对垃圾回收策略的理解/垃圾回收时机？"></a>🌟说下对垃圾回收策略的理解/垃圾回收时机？</h3><blockquote>
+<h2 id="❷垃圾回收策略"><a href="#❷垃圾回收策略" class="headerlink" title="❷垃圾回收策略"></a>❷垃圾回收策略</h2><h3 id="🌟说下对垃圾回收策略的理解-触发条件？"><a href="#🌟说下对垃圾回收策略的理解-触发条件？" class="headerlink" title="🌟说下对垃圾回收策略的理解/触发条件？"></a>🌟说下对垃圾回收策略的理解/触发条件？</h3><blockquote>
 <p>Minor GC 和 Full GC 有什么不同呢？</p>
 <p>什么情况下触发垃圾回收？ </p>
 <p>Full GC触发机制</p>
@@ -1209,7 +1209,6 @@
 <li><p>CMS GC时出现promotion failed和concurrent mode failure（concurrent mode failure发生的原因一般是CMS正在进行，但是由于老年代空间不足，需要尽快回收老年代里面的不再被使用的对象，这时停止所有的线程，同时终止CMS，直接进行Serial Old GC）；</p>
 </li>
 </ol>
-<h3 id="🌟System-gc-和Runtime-gc-会做什么事情？"><a href="#🌟System-gc-和Runtime-gc-会做什么事情？" class="headerlink" title="🌟System.gc()和Runtime.gc()会做什么事情？"></a>🌟System.gc()和Runtime.gc()会做什么事情？</h3><p><code>java.lang.System.gc()</code>只是<code>java.lang.Runtime.getRuntime().gc()</code>的简写，两者的行为没有任何不同。都会显式触发Full GC，同时对老年代和新生代进行回收，尝试释放被丢弃对象占用的内存。</p>
 <h3 id="🌟为什么需要垃圾回收"><a href="#🌟为什么需要垃圾回收" class="headerlink" title="🌟为什么需要垃圾回收?"></a>🌟为什么需要垃圾回收?</h3><p>在Java中垃圾回收的目的是回收释放不再被引用的实例对象，这样做可以减少内存泄漏、内存溢出问题的出现</p>
 <h3 id="🌟内存分配和-GC-过程"><a href="#🌟内存分配和-GC-过程" class="headerlink" title="🌟内存分配和 GC 过程"></a>🌟内存分配和 GC 过程</h3><blockquote>
 <p>JVM GC原理，JVM怎么回收内存 </p>
@@ -1244,7 +1243,7 @@
 </ul>
 <p>老年代垃圾回收。随着新生代对象的不断晋升，老年代的对象变得越来越多，达到容量阈值后老年代也会发生垃圾回收，我们称之为Major GC</p>
 <h3 id="🌟空间分配担保机制是什么？"><a href="#🌟空间分配担保机制是什么？" class="headerlink" title="🌟空间分配担保机制是什么？"></a>🌟空间分配担保机制是什么？</h3><p>在发生Minor GC之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象空间，如果大于，直接进行Minor GC；如果不大于，则会查看是否允许担保失败，如果允许，会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，则尝试进行一次Minor GC；如果小于，则进行一次Full GC。</p>
-<h3 id="🌟对象从加载到JVM，再到被GC，经历了什么"><a href="#🌟对象从加载到JVM，再到被GC，经历了什么" class="headerlink" title="🌟对象从加载到JVM，再到被GC，经历了什么"></a><strong>🌟对象从加载到JVM，再到被GC，经历了什么</strong></h3><ol>
+<h3 id="🌟对象从加载到JVM再到被GC经历了什么"><a href="#🌟对象从加载到JVM再到被GC经历了什么" class="headerlink" title="🌟对象从加载到JVM再到被GC经历了什么"></a><strong>🌟对象从加载到JVM再到被GC经历了什么</strong></h3><ol>
 <li><p>⽤户创建⼀个对象，JVM⾸先需要到⽅法区去找对象的类型信息。然后再创建对象。</p>
 </li>
 <li><p>JVM要实例化⼀个对象，⾸先要在堆当中先创建⼀个对象。</p>
@@ -1306,7 +1305,7 @@
 </tr>
 </thead>
 <tbody><tr>
-<td align="center"><strong>标记复制</strong></td>
+<td align="center"><strong>复制</strong></td>
 <td align="center">最快</td>
 <td align="center">通常需要活对象的 2 倍大小（不堆积碎片）</td>
 <td align="center">是</td>
@@ -1327,42 +1326,27 @@
 <h2 id="❹垃圾回收器"><a href="#❹垃圾回收器" class="headerlink" title="❹垃圾回收器"></a>❹垃圾回收器</h2><p>目前在 Hotspot VM 中主要有分代收集和分区收集两大类，未来会逐渐向分区收集发展</p>
 <p><img src="https://img.jwt1399.top/img/202301191331234.jpg"></p>
 <h3 id="🌟GC是什么？为什么要有GC？"><a href="#🌟GC是什么？为什么要有GC？" class="headerlink" title="🌟GC是什么？为什么要有GC？"></a>🌟GC是什么？为什么要有GC？</h3><p>GC是垃圾收集的意思，Java语言没有提供释放已分配内存的显示操作方法，Java提供的GC功能可以自动监测对象是否超过作用域从而达到自动回收内存的目的。Java程序员不用担心内存管理，因为垃圾收集器会自动进行管理。</p>
-<p>垃圾回收可以有效的防止内存泄露，垃圾回收器通常是作为一个单独的低优先级的线程运行，不可预知的情况下对内存堆中已经死亡的或者长时间没有使用的对象进行清除和回收，程序员不能实时的调用垃圾回收器对某个对象或所有对象进行垃圾回收。</p>
+<p>垃圾回收可以有效的防止内存泄露，内存溢出</p>
 <h3 id="🌟评判-GC-的两个核心指标"><a href="#🌟评判-GC-的两个核心指标" class="headerlink" title="🌟评判 GC 的两个核心指标"></a>🌟评判 GC 的两个核心指标</h3><ul>
 <li><strong>延迟（Latency）：</strong> 也可以理解为最大停顿时间，即垃圾收集过程中一次 STW 的最长时间，越短越好，一定程度上可以接受频次的增大，GC 技术的主要发展方向。</li>
-<li><strong>吞吐量（Throughput）：</strong> 应用系统的生命周期内，由于 GC 线程会占用程 当前可用的 CPU 时钟周期，吞吐量即为程序有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。</li>
+<li><strong>吞吐量（Throughput）：</strong> 应用系统的生命周期内，由于 GC 线程会占用当前可用的 CPU 时钟周期，吞吐量即为程序有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。</li>
 </ul>
-<h3 id="🌟为什么要STW"><a href="#🌟为什么要STW" class="headerlink" title="🌟为什么要STW"></a>🌟为什么要STW</h3><p>如果不暂停用户线程，就意味着不断有垃圾的产生，永远也清理不干净；<br>如果清理垃圾用的标记清除算法，用户线程的运行必然会导致对象的引用关系发生变化，即标记的变化，，这样就会导致两种情况：漏标和错标。</p>
+<h3 id="🌟为什么要STW"><a href="#🌟为什么要STW" class="headerlink" title="🌟为什么要STW"></a>🌟为什么要STW</h3><ul>
+<li><p>如果不暂停用户线程，就意味着不断有垃圾的产生，永远也清理不干净；</p>
+</li>
+<li><p>如果清理垃圾用的标记清除算法，用户线程的运行必然会导致对象的引用关系发生变化，即标记的变化，这样就会导致两种情况：漏标和错标。</p>
 <ul>
-<li><p>漏标：原来不是垃圾，但是在GC的过程中，用户线程将其引用关系修改，变成了null引用，成为了垃圾，这种情况还好，无非就是产生了一些浮动垃圾，下次GC再清理就好了；</p>
+<li>漏标：原来不是垃圾，但是在GC的过程中，用户线程将其引用关系修改，变成了null引用，成为了垃圾，这种情况还好，无非就是产生了一些浮动垃圾，下次GC再清理就好了；</li>
+</ul>
 </li>
-<li><p>错标：与漏标对应的就是错标，一个对象，开始没有引用，但是GC的同时，用户线程又重新引用了它，但是这个时候，我们把它当作垃圾清理掉了，这将会导致程序运行错误。</p>
-</li>
+</ul>
+<ul>
+<li>错标：一个对象，开始没有引用，但是GC的同时，用户线程又重新引用了它，但是这个时候，我们把它当作垃圾清理掉了，这将会导致程序运行错误。</li>
 </ul>
 <h3 id="🌟常见的垃圾回收器有哪些？"><a href="#🌟常见的垃圾回收器有哪些？" class="headerlink" title="🌟常见的垃圾回收器有哪些？"></a>🌟常见的垃圾回收器有哪些？</h3><blockquote>
 <p>你知道哪几种垃圾回收器，各自的优缺点</p>
 </blockquote>
 <p>垃圾回收器主要分为：<code>Serial、ParNew、Parallel Scavenge、Serial Old、Parallel Old、CMS、G1、ZGC</code>。</p>
-<p>**Serial **</p>
-<p>单线程收集器，使用一个垃圾收集线程去进行垃圾回收，在进行垃圾回收的时候必须暂停其他所有的工作线程（ <code>Stop The World</code> ），直到它收集结束。</p>
-<p>优点：简单高效；内存消耗小；没有线程交互的开销，单线程收集效率高；</p>
-<p>缺点：需暂停所有的工作线程，用户体验不好。</p>
-<p>**ParNew **</p>
-<p><code>Serial</code>收集器的多线程版本，除了使用多线程进行垃圾收集外，其他行为、参数与 <code>Serial</code> 收集器基本一致。</p>
-<p>**Parallel Scavenge **</p>
-<p>能够并行收集的多线程收集器，允许多个垃圾回收线程同时运行，降低垃圾收集时间，采用吞吐量优先。</p>
-<p><code>Parallel Scavenge</code> 收集器关注点是吞吐量【 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）】，高效率的利用 CPU 资源。<code>CMS</code> 垃圾收集器关注点更多的是用户线程的停顿时间。</p>
-<p>**Serial Old **</p>
-<p><code>Serial</code> 收集器的老年代版本，单线程收集器，使用<strong>标记整理算法</strong>。</p>
-<p>**Parallel Old **</p>
-<p><code>Parallel Scavenge</code> 收集器的老年代版本。多线程垃圾收集，使用<strong>标记整理算法</strong>。</p>
-<p><strong>CMS</strong></p>
-<p><code>Concurrent Mark Sweep</code> ，并发标记清除，追求获取<strong>最短停顿时间</strong>，实现了让<strong>垃圾收集线程与用户线程基本上同时工作</strong>。分 4 大步进行垃圾收集，其中初始标记和重新标记会 STW ，多数应用于互联网站或者 B/S 系统的服务器端上，JDK9 被标记弃用，JDK14 被删除</p>
-<p><strong>G1</strong></p>
-<p><code>Garbage First</code>，一种服务器端的垃圾收集器，应用在多处理器和大容量内存环境中，在实现高吞吐量的同时，尽可能地满足垃圾收集低暂停时间的要求。<strong>追求高吞吐量和低停顿之间的最佳平衡</strong></p>
-<p><strong>ZGC</strong></p>
-<p>它是一款低停顿高并发的收集器。ZGC几乎在所有地方并发执行，除了初始标记的是STW的。所以停顿时间几乎就耗费在初始标记上。适用于大内存低延迟服务的内存管理和回收</p>
-<p>ZGC主要新增了两项技术，一个是着色指针Colored Pointer，另一个是读屏障Load Barrier。ZGC 是一个并发、基于区域（region）、增量式压缩的收集器。Stop-The-World 阶段只会在根对象扫描（root scanning）阶段发生，这样的话 GC 暂停时间并不会随着堆和存活对象的数量而增加。</p>
 <p>垃圾收集器的特点：</p>
 <table>
 <thead>
@@ -1427,19 +1411,53 @@
 <td align="center"><strong>G1</strong></td>
 <td align="center">并发</td>
 <td align="center">both</td>
-<td align="center">标记整理/复制算法</td>
+<td align="center">复制算法/标记整理</td>
 <td align="center">响应速度优先</td>
 <td align="center">面向服务端应用，多处理器和大容量内存</td>
 </tr>
 <tr>
-<td align="center">ZGC</td>
-<td align="center"></td>
+<td align="center"><strong>ZGC</strong></td>
+<td align="center">并发</td>
 <td align="center"></td>
 <td align="center">复制算法</td>
 <td align="center"></td>
 <td align="center">大内存低延迟服务的内存管理和回收</td>
 </tr>
 </tbody></table>
+<ul>
+<li>Serial </li>
+</ul>
+<p>单线程收集器，使用一个垃圾收集线程去进行垃圾回收，在进行垃圾回收的时候必须暂停其他所有的工作线程（ <code>Stop The World</code> ），直到它收集结束。</p>
+<p>优点：简单高效；内存消耗小；没有线程交互的开销，单线程收集效率高；</p>
+<p>缺点：需暂停所有的工作线程，用户体验不好。</p>
+<ul>
+<li>ParNew</li>
+</ul>
+<p><code>Serial</code>收集器的多线程版本，除了使用多线程进行垃圾收集外，其他行为、参数与 <code>Serial</code> 收集器基本一致。</p>
+<ul>
+<li>Parallel Scavenge </li>
+</ul>
+<p>能够并行收集的多线程收集器，允许多个垃圾回收线程同时运行，降低垃圾收集时间，采用吞吐量优先。</p>
+<p><code>Parallel Scavenge</code> 收集器关注点是吞吐量【 运行用户代码时间 /（运行用户代码时间 + 垃圾收集时间）】，高效率的利用 CPU 资源。<code>CMS</code> 垃圾收集器关注点更多的是用户线程的停顿时间。</p>
+<ul>
+<li>Serial Old</li>
+</ul>
+<p><code>Serial</code> 收集器的老年代版本，单线程收集器，使用<strong>标记整理算法</strong>。</p>
+<p>Parallel Old </p>
+<p><code>Parallel Scavenge</code> 收集器的老年代版本。多线程垃圾收集，使用<strong>标记整理算法</strong>。</p>
+<ul>
+<li>CMS</li>
+</ul>
+<p><code>Concurrent Mark Sweep</code> ，并发标记清除，追求获取<strong>最短停顿时间</strong>，实现了让<strong>垃圾收集线程与用户线程基本上同时工作</strong>。分 4 大步进行垃圾收集，其中初始标记和重新标记会 STW ，多数应用于互联网站或者 B/S 系统的服务器端上，JDK9 被标记弃用，JDK14 被删除</p>
+<ul>
+<li>G1</li>
+</ul>
+<p><code>Garbage First</code>，一种服务器端的垃圾收集器，应用在多处理器和大容量内存环境中，在实现高吞吐量的同时，尽可能地满足垃圾收集低暂停时间的要求。<strong>追求高吞吐量和低停顿之间的最佳平衡</strong></p>
+<ul>
+<li>ZGC</li>
+</ul>
+<p>它是一款低停顿高并发的收集器。ZGC几乎在所有地方并发执行，除了初始标记的是STW的。所以停顿时间几乎就耗费在初始标记上。适用于大内存低延迟服务的内存管理和回收</p>
+<p>ZGC主要新增了两项技术，一个是着色指针Colored Pointer，另一个是读屏障Load Barrier。ZGC 是一个并发、基于区域（region）、增量式压缩的收集器。Stop-The-World 阶段只会在根对象扫描（root scanning）阶段发生，这样的话 GC 暂停时间并不会随着堆和存活对象的数量而增加。</p>
 <h3 id="🌟CMS收集器"><a href="#🌟CMS收集器" class="headerlink" title="🌟CMS收集器"></a>🌟CMS收集器</h3><blockquote>
 <p>CMS收集器与G1收集器的特点 </p>
 <p>CMS和G1了解么，CMS解决什么问题，说一下回收的过程。</p>
@@ -1462,35 +1480,26 @@
 <li><p><strong>吞吐量降低</strong>：在并发阶段虽然不会导致用户停顿，但是会因为占用了一部分线程而导致应用程序变慢，CPU 利用率不够高</p>
 </li>
 <li><p><strong>无法处理浮动垃圾</strong>，可能出现 Concurrent Mode Failure 导致另一次 Full GC 的产生</p>
-<p>浮动垃圾是指并发清除阶段由于用户线程继续运行而产生的垃圾（产生了新对象），这部分垃圾只能到下一次 GC 时才能进行回收。由于浮动垃圾的存在，CMS 收集需要预留出一部分内存，不能等待老年代快满的时候再回收。如果老年区预留的内存不够存放浮动垃圾，就会出现 Concurrent Mode Failure，这时虚拟机将临时启用 Serial Old 来替代 CMS，导致很长的停顿时间</p>
+<p>浮动垃圾是指并发清除阶段由于用户线程继续运行而产生的垃圾，这部分垃圾只能到下一次 GC 时才能进行回收。由于浮动垃圾的存在，CMS 收集需要预留出一部分内存，不能等待老年代快满的时候再回收。如果老年区预留的内存不够存放浮动垃圾，就会出现 Concurrent Mode Failure，这时虚拟机将临时启用 Serial Old 来替代 CMS，导致很长的停顿时间</p>
 </li>
 <li><p><strong>标记 - 清除算法导致的空间碎片</strong>，往往出现老年代空间无法找到足够大连续空间来分配当前对象，不得不提前触发一次 Full GC；为新对象分配内存空间时，将无法使用指针碰撞（Bump the Pointer）技术，而只能够选择空闲列表（Free List）执行内存分配</p>
 </li>
 </ul>
-<h3 id="🌟CMS回收停顿了几次，为什么要停顿两次"><a href="#🌟CMS回收停顿了几次，为什么要停顿两次" class="headerlink" title="🌟CMS回收停顿了几次，为什么要停顿两次?"></a>🌟CMS回收停顿了几次，为什么要停顿两次?</h3><p> 两次，分别是初始标记阶段和重新标记阶段</p>
-<p>以最少的STW（暂停用户线程 - Stop The World）成本，找出要清理的垃圾。</p>
+<h3 id="🌟CMS回收停顿了几次，为什么"><a href="#🌟CMS回收停顿了几次，为什么" class="headerlink" title="🌟CMS回收停顿了几次，为什么"></a>🌟CMS回收停顿了几次，为什么</h3><p> 两次，分别是初始标记阶段和重新标记阶段</p>
+<ul>
+<li><p>以最少的STW（暂停用户线程 - Stop The World）成本，找出要清理的垃圾。</p>
+</li>
+<li><p>重新标记阶段是为了修正并发标记期间因为用户程序继续运行而导致标记产生变动的那一部分对象的标记记录</p>
+</li>
+</ul>
 <p>清理的第一步，就是为了找出产生全量垃圾根对象，并打上标记为初始标记（耗时短，STW），同时把用户访问线程打开，并让后台线程去执行第二步并发标记，这些其实就是找出我们全量垃圾。</p>
 <p>然后找出在我们执行并发标记这段时间由用户线程产生的增量垃圾进行重新标记（耗时短，STW），这个时候的GC标记，就是截止到当前时间，完整的垃圾信息，再执行并发清理。</p>
-<p>重新标记阶段就是为了修正并发标记期间因为用户程序继续运行而导致标记产生变动的那一部分对象的标记记录</p>
-<p> <a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/11/12/java-9-cms-gc.html">Java中9种常见的CMS GC问题分析与解决</a></p>
 <h3 id="🌟G1收集器"><a href="#🌟G1收集器" class="headerlink" title="🌟G1收集器"></a>🌟G1收集器</h3><blockquote>
 <p>G1回收器讲下回收过程, </p>
 <p>说下g1的应用场景，平时你是如何搭配使用垃圾回收器的</p>
 </blockquote>
-<p><strong>G1 (Garbage-First) 是一款面向服务器的垃圾收集器,主要针对配备多颗处理器及大容量内存的机器. 以极高概率满足 GC 停顿时间要求的同时,还具备高吞吐量性能特征.</strong></p>
-<p>G1 优点：</p>
-<ul>
-<li><strong>并行与并发</strong>：G1 能充分利用 CPU、多核环境下的硬件优势，使用多个 CPU（CPU 或者 CPU 核心）来缩短 Stop-The-World 停顿时间。部分其他收集器原本需要停顿 Java 线程执行的 GC 动作，G1 收集器仍然可以通过并发的方式让 java 程序继续执行。</li>
-<li><strong>分代收集</strong>：虽然 G1 可以不需要其他收集器配合就能独立管理整个 GC 堆，但是还是保留了分代的概念。</li>
-<li><strong>空间整合</strong>：与 CMS 的“标记-清理”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</li>
-<li><strong>可预测的停顿</strong>：这是 G1 相对于 CMS 的另一个大优势，降低停顿时间是 G1 和 CMS 共同的关注点，但 G1 除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M 毫秒的时间片段内。</li>
-</ul>
-<p>G1 缺点</p>
-<ul>
-<li>相较于 CMS，G1 还不具备全方位、压倒性优势。比如在用户程序运行过程中，G1 无论是为了垃圾收集产生的内存占用还是程序运行时的额外执行负载都要比 CMS 要高</li>
-<li>从经验上来说，在小内存应用上 CMS 的表现大概率会优于 G1，而 G1 在大内存应用上则发挥其优势，平衡点在 6-8GB 之间</li>
-</ul>
-<p>G1 收集器的运作大致分为以下几个步骤：</p>
+<p><strong>G1 (Garbage-First)</strong> ，是一款<strong>并发的</strong>、使用<strong>标记-整理/复制</strong>算法、<strong>响应时间优先</strong>、<strong>针对新生代/老年代</strong>，<strong>面向服务器</strong>的垃圾收集器，主要针对配备多颗处理器及大容量内存的机器，以极高概率满足 GC 停顿时间要求的同时，还具备高吞吐量性能特征</p>
+<p>分为以下四个流程：</p>
 <ul>
 <li><p><strong>初始标记</strong>（Initial Marking）：仅仅只是标记一下GC Roots能直接关联到的对象，这个阶段是 STW 的，并且会触发一次 Minor GC</p>
 </li>
@@ -1503,7 +1512,20 @@
 </ul>
 <p><img src="../images/Q&A%EF%BC%9AJVM/202212201631402.jpg"></p>
 <p><strong>G1 收集器避免全区域垃圾收集，它把堆内存划分为大小固定的几个独立区域</strong>，并且跟踪这些区域的垃圾收集进度，同时在后台维护一个优先级列表，每次根据所允许的收集时间，优先回收垃圾最多的区域。区域划分和优先级区域回收机制，确保 G1 收集器可以在有限时间获得最高的垃圾收集效率。</p>
-<h3 id="🌟CMS收集器和G1收集器的区别"><a href="#🌟CMS收集器和G1收集器的区别" class="headerlink" title="🌟CMS收集器和G1收集器的区别"></a>🌟CMS收集器和G1收集器的区别</h3><ul>
+<p>G1 优点：</p>
+<ul>
+<li><strong>并行与并发</strong>：G1 能充分利用 CPU、多核环境下的硬件优势，使用多个 CPU（CPU 或者 CPU 核心）来缩短 Stop-The-World 停顿时间。部分其他收集器原本需要停顿 Java 线程执行的 GC 动作，G1 收集器仍然可以通过并发的方式让 java 程序继续执行。</li>
+<li><strong>分代收集</strong>：虽然 G1 可以不需要其他收集器配合就能独立管理整个 GC 堆，但是还是保留了分代的概念。</li>
+<li><strong>空间整合</strong>：与 CMS 的“标记-清理”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</li>
+<li><strong>可预测的停顿</strong>：这是 G1 相对于 CMS 的另一个大优势，降低停顿时间是 G1 和 CMS 共同的关注点，但 G1 除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M 毫秒的时间片段内。</li>
+</ul>
+<p>G1 缺点</p>
+<ul>
+<li>相较于 CMS，G1 还不具备全方位、压倒性优势。比如在用户程序运行过程中，G1 无论是为了垃圾收集产生的内存占用还是程序运行时的额外执行负载都要比 CMS 要高</li>
+<li>从经验上来说，在小内存应用上 CMS 的表现大概率会优于 G1，而 G1 在大内存应用上则发挥其优势，平衡点在 6-8GB 之间</li>
+</ul>
+<h3 id="🌟CMS收集器和G1收集器的区别"><a href="#🌟CMS收集器和G1收集器的区别" class="headerlink" title="🌟CMS收集器和G1收集器的区别"></a>🌟CMS收集器和G1收集器的区别</h3><p><img src="https://p1.meituan.net/travelcube/3a6dacdd87bfbec847d33d09dbe6226d199915.png" alt="内存结构"></p>
+<ul>
 <li>CMS收集器是老年代的收集器，一般配合新生代的Serial和ParNew收集器一起使用；G1收<br>集器收集范围是老年代和新生代，不需要结合其他收集器使用；</li>
 <li>CMS收集器是一种以获取最短回收停顿时间为目标的收集器，G1收集器可预测垃圾回收<br>的停顿时间。</li>
 <li>CMS收集器是使用”标记-清除”算法进行的垃圾回收，容易产生内存碎片；而G1收集器使<br>用的是”标记-整理”算法，进行了空间整合，降低了内存空间碎片。</li>
@@ -1519,7 +1541,7 @@
 <p>即，ZGC几乎所有暂停都只依赖于GC Roots集合大小，停顿时间不会随着堆的大小或者活跃对象的大小而增加。与ZGC对比，G1的转移阶段完全STW的，且停顿时间随存活对象的大小增加而增加。</p>
 <p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html">新一代垃圾回收器ZGC的探索与实践 - 美团技术团队 (meituan.com)</a></p>
 <h3 id="🌟目前的JDK版本采用什么回收器？"><a href="#🌟目前的JDK版本采用什么回收器？" class="headerlink" title="🌟目前的JDK版本采用什么回收器？"></a>🌟目前的JDK版本采用什么回收器？</h3><ul>
-<li><p>JDK 8 默认垃圾收集器Parallel Scavenge（新生代）+Parallel Old（老年代）</p>
+<li><p>JDK 8 默认垃圾收集器Parallel Scavenge（新生代）+ Parallel Old（老年代）</p>
 </li>
 <li><p>JDK 9 默认垃圾收集器G1</p>
 </li>
@@ -1770,6 +1792,7 @@ ClassLoader<span class="token punctuation">.</span><span class="token function">
 <p>总结来说，CMS的设计聚焦在获取最短的时延，为此它“不遗余力”地做了很多工作，包括尽量让应用程序和GC线程并发、增加可中断的并发预清理阶段、引入卡表等，虽然这些操作牺牲了一定吞吐量但获得了更短的回收停顿时间。</p>
 <h3 id="🌟什么是指令序列重排序？"><a href="#🌟什么是指令序列重排序？" class="headerlink" title="🌟什么是指令序列重排序？"></a>🌟什么是指令序列重排序？</h3><p>简单来说，就是指你在程序中写的代码，在执行时并不一定按照写的顺序。在Java中，JVM能够根据处理器特性（CPU多级缓存系统、多核处理器等）适当对机器指令进行重排序，最大限度发挥机器性能。</p>
 <p>Java中的指令重排序有两次，第一次发生在将字节码编译成机器码的阶段，第二次发生在CPU执行的时候，也会适当对指令进行重排。</p>
+<p>CMS调优： <a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/11/12/java-9-cms-gc.html">Java中9种常见的CMS GC问题分析与解决</a></p>
 <p>JVM 是怎么去调优的？了解哪些参数和指令？</p>
 <p> JVM性能调优都做了什么？</p>
 <p>Java 中如何进行 GC 调优？ </p>
@@ -2580,7 +2603,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">946.1k</span>&nbsp;字
+                class="white-color">948.7k</span>&nbsp;字
             
             
             
