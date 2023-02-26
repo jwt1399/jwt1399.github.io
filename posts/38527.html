@@ -880,7 +880,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    18.2k
+                    18.1k
                 </div>
                 
 
@@ -1467,7 +1467,7 @@
 <p>分为以下四个流程：</p>
 <ul>
 <li><strong>初始标记</strong>：仅标记 GC Roots 能直接关联到的对象，速度很快，出现短暂STW</li>
-<li><strong>并发标记</strong>：进行 GC Roots 开始遍历整个对象图，在整个回收过程中耗时最长，不需要 STW，可以与用户线程并发运行</li>
+<li><strong>并发标记</strong>：从 GC Roots 开始遍历整个对象图，在整个回收过程中耗时最长，不需要 STW，可以与用户线程并发运行</li>
 <li><strong>重新标记</strong>：修正并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象，比初始标记时间长但远比并发标记时间短，需要 STW（不停顿就会一直变化，采用写屏障 + 增量更新来避免漏标情况）</li>
 <li><strong>并发清除</strong>：清除标记为可以回收的对象，<strong>不需要移动存活对象</strong>，所以这个阶段可以与用户线程同时并发的</li>
 </ul>
@@ -1480,7 +1480,7 @@
 <li><p><strong>吞吐量降低</strong>：在并发阶段虽然不会导致用户停顿，但是会因为占用了一部分线程而导致应用程序变慢，CPU 利用率不够高</p>
 </li>
 <li><p><strong>无法处理浮动垃圾</strong>，可能出现 Concurrent Mode Failure 导致另一次 Full GC 的产生</p>
-<p>浮动垃圾是指并发清除阶段由于用户线程继续运行而产生的垃圾，这部分垃圾只能到下一次 GC 时才能进行回收。由于浮动垃圾的存在，CMS 收集需要预留出一部分内存，不能等待老年代快满的时候再回收。如果老年区预留的内存不够存放浮动垃圾，就会出现 Concurrent Mode Failure，这时虚拟机将临时启用 Serial Old 来替代 CMS，导致很长的停顿时间</p>
+<p>浮动垃圾是指并发清除阶段由于用户线程继续运行而产生的垃圾，这部分垃圾只能到下一次 GC 时才能进行回收。由于浮动垃圾的存在，CMS 收集需要预留出一部分内存，不能等待老年代快满的时候再回收。如果老年区预留的内存不够存放浮动垃圾，就会出现 Concurrent Mode Failure，这时虚拟机将临时启用 <strong>Serial Old</strong> 来替代 CMS，导致很长的停顿时间</p>
 </li>
 <li><p><strong>标记 - 清除算法导致的空间碎片</strong>，往往出现老年代空间无法找到足够大连续空间来分配当前对象，不得不提前触发一次 Full GC；为新对象分配内存空间时，将无法使用指针碰撞（Bump the Pointer）技术，而只能够选择空闲列表（Free List）执行内存分配</p>
 </li>
@@ -1501,22 +1501,23 @@
 <p><strong>G1 (Garbage-First)</strong> ，是一款<strong>并发的</strong>、使用<strong>标记-整理/复制</strong>算法、<strong>响应时间优先</strong>、<strong>针对新生代/老年代</strong>，<strong>面向服务器</strong>的垃圾收集器，主要针对配备多颗处理器及大容量内存的机器，以极高概率满足 GC 停顿时间要求的同时，还具备高吞吐量性能特征</p>
 <p>分为以下四个流程：</p>
 <ul>
-<li><p><strong>初始标记</strong>（Initial Marking）：仅仅只是标记一下GC Roots能直接关联到的对象，这个阶段是 STW 的，并且会触发一次 Minor GC</p>
+<li><p><strong>初始标记</strong>（Initial Marking）：仅标记 GC Roots 能直接关联到的对象，这个阶段是 STW 的，并且会触发一次 Minor GC</p>
 </li>
-<li><p><strong>并发标记</strong> (Concurrent Marking）：从GC Root开始对堆中对象进行可达性分析，递归扫描整个堆里的对象图，找出要回收的对象，这阶段耗时较长，但可与用户程序并发执行。当对象图扫描完成以后，还要重新处理SATB记录下的在并发时有引用变动的对象。</p>
+<li><p><strong>并发标记</strong> (Concurrent Marking）：从GC Root开始对堆中对象进行可达性分析，递归扫描整个堆里的对象图，找出要回收的对象，这阶段耗时较长，但可与用户程序并发执行。当对象图扫描完成以后，还要重新处理SATB（Snapshot-at-the-beginning）记录下的在并发时有引用变动的对象。</p>
 </li>
-<li><p><strong>最终标记</strong>（Final Marking）：为了修正在并发标记期间因用户程序继续运作而导致标记产生变动的那一部分标记记录，虚拟机将这段时间对象变化记录在线程的 Remembered Set Logs 里面，最终标记阶段需要把 Remembered Set Logs 的数据合并到 Remembered Set 中，对用户线程做另一个短暂 STW，用于处理并发阶段结束后仍遗留下来的最后那少量的SATB记录。但是可并行执行（<strong>防止漏标</strong>）</p>
+<li><p><strong>最终标记</strong>（Final Marking）：为了修正在并发标记期间因用户程序继续运作而导致标记产生变动的那一部分标记记录，虚拟机将这段时间对象变化记录在线程的 Remembered Set Logs 里面，最终标记阶段需要把 Remembered Set Logs 的数据合并到 Remembered Set 中，对用户线程做另一个短暂 STW，用于处理并发阶段结束后仍遗留下来的最后那少量的SATB记录，但是可并行执行（<strong>防止漏标</strong>）</p>
 </li>
 <li><p><strong>筛选回收</strong>（Live Data Counting and Evacuation）：首先对 CSet 中各个 Region 中的回收价值和成本进行排序，根据用户所期望的 GC 停顿时间来制定回收计划，也需要 STW，由多条收集器线程并行完成的。</p>
 </li>
 </ul>
 <p><img src="../images/Q&A%EF%BC%9AJVM/202212201631402.jpg"></p>
-<p><strong>G1 收集器避免全区域垃圾收集，它把堆内存划分为大小固定的几个独立区域</strong>，并且跟踪这些区域的垃圾收集进度，同时在后台维护一个优先级列表，每次根据所允许的收集时间，优先回收垃圾最多的区域。区域划分和优先级区域回收机制，确保 G1 收集器可以在有限时间获得最高的垃圾收集效率。</p>
+<p><strong>G1 收集器避免全区域垃圾收集，它把堆内存划分为大小固定的几个独立区域</strong>，并且跟踪这些区域的垃圾收集进度，同时在后台维护一个优先级列表，每次根据所允许的收集时间，优先回收垃圾最多的区域。</p>
+<p>区域划分和优先级区域回收机制，确保 G1 收集器可以在有限时间获得最高的垃圾收集效率。</p>
 <p>G1 优点：</p>
 <ul>
-<li><strong>并行与并发</strong>：G1 能充分利用 CPU、多核环境下的硬件优势，使用多个 CPU（CPU 或者 CPU 核心）来缩短 Stop-The-World 停顿时间。部分其他收集器原本需要停顿 Java 线程执行的 GC 动作，G1 收集器仍然可以通过并发的方式让 java 程序继续执行。</li>
+<li><strong>并行与并发</strong>：G1 能充分利用 CPU、多核环境下的硬件优势，使用多个 CPU/ CPU 核心来缩短 STW 时间。</li>
 <li><strong>分代收集</strong>：虽然 G1 可以不需要其他收集器配合就能独立管理整个 GC 堆，但是还是保留了分代的概念。</li>
-<li><strong>空间整合</strong>：与 CMS 的“标记-清理”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</li>
+<li><strong>空间整合</strong>：与 CMS 的“标记-清除”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</li>
 <li><strong>可预测的停顿</strong>：这是 G1 相对于 CMS 的另一个大优势，降低停顿时间是 G1 和 CMS 共同的关注点，但 G1 除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M 毫秒的时间片段内。</li>
 </ul>
 <p>G1 缺点</p>
@@ -1538,7 +1539,7 @@
 <p>ZGC 原理是什么，它为什么能做到低延时？</p>
 </blockquote>
 <p>ZGC只有三个STW阶段：<strong>初始标记</strong>，<strong>再标记</strong>，<strong>初始转移</strong>。其中，初始标记和初始转移分别都只需要扫描所有GC Roots，其处理时间和GC Roots的数量成正比，一般情况耗时非常短；再标记阶段STW时间很短，最多1ms，超过1ms则再次进入并发标记阶段。</p>
-<p>即，ZGC几乎所有暂停都只依赖于GC Roots集合大小，停顿时间不会随着堆的大小或者活跃对象的大小而增加。与ZGC对比，G1的转移阶段完全STW的，且停顿时间随存活对象的大小增加而增加。</p>
+<p>即ZGC几乎所有暂停都只依赖于GC Roots集合大小，停顿时间不会随着堆的大小或者活跃对象的大小而增加。与ZGC对比，G1的转移阶段完全STW的，且停顿时间随存活对象的大小增加而增加。</p>
 <p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2020/08/06/new-zgc-practice-in-meituan.html">新一代垃圾回收器ZGC的探索与实践 - 美团技术团队 (meituan.com)</a></p>
 <h3 id="🌟目前的JDK版本采用什么回收器？"><a href="#🌟目前的JDK版本采用什么回收器？" class="headerlink" title="🌟目前的JDK版本采用什么回收器？"></a>🌟目前的JDK版本采用什么回收器？</h3><ul>
 <li><p>JDK 8 默认垃圾收集器Parallel Scavenge（新生代）+ Parallel Old（老年代）</p>
@@ -1652,7 +1653,7 @@
 <img src="https://img.jwt1399.top/img/202212241155714.png" style="zoom: 50%;" />
 
 <h3 id="🌟类的实例化顺序？"><a href="#🌟类的实例化顺序？" class="headerlink" title="🌟类的实例化顺序？"></a>🌟类的实例化顺序？</h3><ol>
-<li>父类中的<code>static</code>代码块，</li>
+<li>父类中的<code>static</code>代码块</li>
 <li>当前类的<code>static</code>代码块</li>
 <li>父类的普通代码块</li>
 <li>父类的构造函数</li>
@@ -2603,7 +2604,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">948.7k</span>&nbsp;字
+                class="white-color">955.5k</span>&nbsp;字
             
             
             
