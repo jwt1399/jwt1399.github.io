@@ -882,7 +882,7 @@ Mac mysql安装：在MAC上安装mysql_码农伍的博客-CSDN博客_mac安装my
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    7k
+                    3.5k
                 </div>
                 
 
@@ -1367,202 +1367,6 @@ date_add<span class="token punctuation">(</span><span class="token function">now
 <h3 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h3><p>SQL JOIN 用于把来自两个或多个表的行结合起来。</p>
 <p>下图展示了 LEFT JOIN、RIGHT JOIN、INNER JOIN、OUTER JOIN 相关的 7 种用法。</p>
 <p><img src="https://img.jwt1399.top/img/sql-join.png"></p>
-<h3 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h3><h4 id="🌟MySQL-基础架构"><a href="#🌟MySQL-基础架构" class="headerlink" title="🌟MySQL 基础架构"></a>🌟MySQL 基础架构</h4><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/javaguide/13526879-3037b144ed09eb88.png" style="zoom:50%;" />
-
-<p>MySQL 主要由下面几部分构成：</p>
-<ul>
-<li>  <strong>连接器：</strong> 身份认证和权限相关(登录 MySQL 的时候)。</li>
-<li><strong>查询缓存：</strong> 执行查询语句的时候，会先查询缓存（MySQL 8.0 版本后移除，因为这个功能不太实用）。<ul>
-<li>  缓存虽能够提升查询性能，但也带来了额外的开销，每次查询后都要做一次缓存操作，失效后还要销毁。</li>
-</ul>
-</li>
-<li>  <strong>分析器：</strong> 没有命中缓存的话，SQL 语句就会经过分析器，分析器说白了就是要先看你的 SQL 语句要干嘛，再检查你的 SQL 语句语法是否正确。</li>
-<li>  <strong>优化器：</strong> 按照 MySQL 认为最优的方案去执行。</li>
-<li>  <strong>执行器：</strong> 执行语句，然后从存储引擎返回数据。 执行语句之前会先判断是否有权限，如果没有权限的话，就会报错。</li>
-<li>  <strong>插件式存储引擎</strong> ： 主要负责数据的存储和读取，采用的是插件式架构，支持 InnoDB、MyISAM、Memory 等多种存储引擎。</li>
-</ul>
-<h4 id="🌟MySQL-有哪些常见的存储引擎？区别是什么？"><a href="#🌟MySQL-有哪些常见的存储引擎？区别是什么？" class="headerlink" title="🌟MySQL 有哪些常见的存储引擎？区别是什么？"></a>🌟MySQL 有哪些常见的存储引擎？区别是什么？</h4><p>MySQL 存储引擎有 MyISAM 、InnoDB、Memory</p>
-<p>MySQL 5.5 之前，MyISAM 是 MySQL 的默认存储引擎，MySQL 5.5 之后，  InnoDB 成为 MySQL 的默认存储引擎。</p>
-<ul>
-<li>  <strong>1.是否支持行级锁</strong>。InnoDB 支持行级别的锁粒度，MyISAM 不支持，只支持表级别的锁粒度。</li>
-<li>  <strong>2.是否支持事务</strong>。MyISAM 不提供事务支持。InnoDB 提供事务支持，实现了 SQL 标准定义了四个隔离级别。</li>
-<li>  <strong>3.是否支持外键</strong>。MyISAM 不支持外键，而 InnoDB 支持。</li>
-<li>  <strong>4.是否支持数据库异常崩溃后的安全恢复</strong>。MyISAM 不支持数据库异常崩溃后的安全恢复，而 InnoDB 支持。</li>
-<li>  <strong>5.是否支持 MVCC</strong>。MyISAM 不支持 MVVC，而 InnoDB 支持。</li>
-<li>  <strong>6.索引实现不一样。</strong>虽然 MyISAM 引擎和 InnoDB 引擎都是使用 B+Tree 作为索引结构，但是两者的实现方式不太一样。</li>
-<li>  <strong>7.性能有差别。</strong>InnoDB 的性能比 MyISAM 更强大。</li>
-</ul>
-<h4 id="🌟B-树简介"><a href="#🌟B-树简介" class="headerlink" title="🌟B+ 树简介"></a>🌟B+ 树简介</h4><table>
-<thead>
-<tr>
-<th>标准 B+ 树</th>
-<th>Innodb 里的 B+ 树</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><img src="https://img-blog.csdnimg.cn/img_convert/b6678c667053a356f46fc5691d2f5878.png" style="zoom:50%;"  /></td>
-<td><img src="https://img-blog.csdnimg.cn/img_convert/dd076212a7637b9032c97a615c39dcd7.png"  style="zoom:50%;" /></td>
-</tr>
-</tbody></table>
-<p> 但是 Innodb 使用的 B+ 树有一些特别的点，比如：</p>
-<ul>
-<li>B+ 树的叶子节点之间是用「双向链表」进行连接，这样的好处是既能向右遍历，也能向左遍历。</li>
-<li>B+ 树点节点内容是数据页，数据页里存放了用户的记录以及各种信息，每个数据页默认大小是 16 KB。</li>
-</ul>
-<h4 id="🌟MySQL-为什么使用-B-树来作索引？"><a href="#🌟MySQL-为什么使用-B-树来作索引？" class="headerlink" title="🌟MySQL 为什么使用 B+ 树来作索引？"></a>🌟MySQL 为什么使用 B+ 树来作索引？</h4><p>B 树和 B+ 都是通过多叉树的方式，会将树的高度变矮，所以这两个数据结构非常适合检索存于磁盘中的数据。</p>
-<p>但是 MySQL 默认的存储引擎 InnoDB 采用的是 B+ 作为索引的数据结构，原因有：</p>
-<ul>
-<li>B+ 树的非叶子节点不存放实际的记录数据，仅存放索引，因此数据量相同的情况下，相比存储即存索引又存记录的 B 树，B+树的非叶子节点可以存放更多的索引，因此 B+ 树可以比 B 树更「矮胖」，查询底层节点的磁盘 I/O次数会更少。</li>
-<li>B+ 树有大量的冗余节点（所有非叶子节点都是冗余索引），这些冗余索引让 B+ 树在插入、删除的效率都更高，比如删除根节点的时候，不会像 B 树那样会发生复杂的树的变化；</li>
-<li>B+ 树叶子节点之间用链表连接了起来，有利于范围查询，而 B 树要实现范围查询，因此只能通过树的遍历来完成范围查询，这会涉及多个节点的磁盘 I/O 操作，范围查询效率不如 B+ 树。</li>
-</ul>
-<h4 id="🌟B-tree优点"><a href="#🌟B-tree优点" class="headerlink" title="🌟B+-tree优点"></a>🌟B+-tree优点</h4><ol>
-<li><strong>I/O次数更少</strong>：B+-tree 的内部结点没有存储关键字，所以同样大小的磁盘页能容纳更多结点。一次性读入内存中的也就越多，相对来说IO读写次数也就降低了</li>
-<li><strong>查询速度更稳定</strong>：B+-tree 所有关键字数据地址都存在<strong>叶子结点</strong>上，所以每次查找的次数都相同所以查询速度要比B树更稳定;</li>
-<li><strong>范围查询更简便</strong>：B+-tree 所有的叶子节点数据构成了一个有序链表，在查询大小区间的数据时候更方便，数据紧密性很高，缓存的命中率也会比B树高。</li>
-<li><strong>全结点遍历更快：</strong>B+-tree 遍历整棵树只需要遍历所有的叶子节点即可， B-tree 需要对每一层进行遍历，这有利于数据库做全表扫描。</li>
-</ol>
-<h4 id="🌟B-tree和B-tree的区别"><a href="#🌟B-tree和B-tree的区别" class="headerlink" title="🌟B+-tree和B-tree的区别"></a>🌟B+-tree和B-tree的区别</h4><ul>
-<li>B 树的所有节点既存放键(key) 也存放 数据(data)，B+树只有叶子节点存放 key 和 data，其他内节点只存放 key。</li>
-<li>B 树的叶子节点都是独立的；B+-tree 相邻的叶子节点之间是通过链表指针连起来的。</li>
-<li>B 树的检索的过程相当于对范围内的每个节点的关键字做二分查找，可能还没有到达叶子节点，检索就结束了。B+树的检索效率就很稳定了，任何查找都是从根节点到叶子节点的过程，叶子节点的顺序检索很明显。</li>
-</ul>
-<h4 id="🌟InnoDB-和-MyISAM-实现的-B-树区别"><a href="#🌟InnoDB-和-MyISAM-实现的-B-树区别" class="headerlink" title="🌟InnoDB 和 MyISAM 实现的 B+ 树区别"></a>🌟InnoDB 和 MyISAM 实现的 B+ 树区别</h4><p>InnoDB 和 MyISAM 都支持 B+ 树索引，但是它们数据的存储结构实现方式不同。不同之处在于：</p>
-<ul>
-<li>InnoDB 存储引擎：B+ 树索引的叶子节点保存数据本身；</li>
-<li>MyISAM 存储引擎：B+ 树索引的叶子节点保存数据的物理地址；</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>MyISAM实现的 B+ 树</th>
-<th>InnoDB实现的 B+ 树</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><img src="https://img-blog.csdnimg.cn/img_convert/f287701eba9bf6f32a2d09b013bb451b.png"></td>
-<td><img src="https://img.jwt1399.top/img/202302271534986.png"></td>
-</tr>
-</tbody></table>
-<h4 id="🌟聚集索引和二级索引的区别"><a href="#🌟聚集索引和二级索引的区别" class="headerlink" title="🌟聚集索引和二级索引的区别"></a>🌟聚集索引和二级索引的区别</h4><p>Innodb 根据索引类型不同，分为聚集和二级索引。他们区别在于，</p>
-<ul>
-<li><p>聚集索引的叶子节点存放的是<strong>实际数据</strong>，所有完整的用户记录都存放在聚集索引的叶子节点，</p>
-</li>
-<li><p>二级索引的叶子节点存放的是<strong>主键值</strong>，而不是实际数据。</p>
-</li>
-</ul>
-<p>因为表的数据都是存放在聚集索引的叶子节点里，所以 InnoDB 存储引擎一定会为表创建一个聚集索引，且由于数据在物理上只会保存一份，所以聚簇索引只能有一个，而二级索引可以创建多个。</p>
-<p>如下左图为聚集索引，右图为二级索引（name 字段设置为二级索引）</p>
-<table>
-<thead>
-<tr>
-<th>聚集索引</th>
-<th>二级索引</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><img src="https://img.jwt1399.top/img/202302271534986.png"></td>
-<td><img src="https://img.jwt1399.top/img/202302271541291.png"></td>
-</tr>
-</tbody></table>
-<p>在我们使用「主键索引」字段作为条件查询的时候，如果要查询的数据都在「聚簇索引」的叶子节点里，那么就会在「聚簇索引」中的 B+ 树检索到对应的叶子节点，然后直接读取要查询的数据。如下面这条语句：</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">// id 字段为主键索引</span>
-<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> t_user <span class="token keyword">where</span> id<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>在我们使用「二级索引」字段作为条件查询的时候，如果要查询的数据都在「聚簇索引」的叶子节点里，那么需要检索两颗B+树：</p>
-<ul>
-<li>先在「二级索引」的 B+ 树找到对应的叶子节点，获取主键值；</li>
-<li>然后用上一步获取的主键值，在「聚簇索引」中的 B+ 树检索到对应的叶子节点，然后获取要查询的数据。</li>
-</ul>
-<p>上面这个过程叫做<strong>回表</strong>，如下面这条语句：</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">// name 字段为二级索引</span>
-<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> t_user <span class="token keyword">where</span> name<span class="token operator">=</span><span class="token string">"林某"</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>在我们使用「二级索引」字段作为条件查询的时候，如果要查询的数据在「二级索引」的叶子节点，那么只需要在「二级索引」的 B+ 树找到对应的叶子节点，然后读取要查询的数据，这个过程叫做<strong>覆盖索引</strong>。如下面这条语句：</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">// name 字段为二级索引</span>
-<span class="token keyword">select</span> id <span class="token keyword">from</span> t_user <span class="token keyword">where</span> name<span class="token operator">=</span><span class="token string">"林某"</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<h4 id="🌟MySQL-的索引什么情况下会失效？"><a href="#🌟MySQL-的索引什么情况下会失效？" class="headerlink" title="🌟MySQL 的索引什么情况下会失效？"></a>🌟MySQL 的索引什么情况下会失效？</h4><ul>
-<li>当我们使用左或者左右模糊匹配的时候，也就是 <code>like %xx</code> 或者 <code>like %xx%</code>这两种方式都会造成索引失效；</li>
-<li>当我们在查询条件中对索引列使用函数，就会导致索引失效。</li>
-<li>当我们在查询条件中对索引列进行表达式计算，也是无法走索引的。</li>
-<li>MySQL 在遇到字符串和数字比较的时候，会自动把字符串转为数字，然后再进行比较。如果字符串是索引列，而条件语句中的输入参数是数字的话，那么索引列会发生隐式类型转换，由于隐式类型转换是通过 CAST 函数实现的，等同于对索引列使用了函数，所以就会导致索引失效。</li>
-<li>联合索引要能正确使用需要遵循最左匹配原则，也就是按照最左优先的方式进行索引的匹配，否则就会导致索引失效。</li>
-<li>在 WHERE 子句中，如果在 OR 前的条件列是索引列，而在 OR 后的条件列不是索引列，那么索引会失效。</li>
-</ul>
-<h4 id="🌟聚簇索引和非聚簇索引有什么区别？"><a href="#🌟聚簇索引和非聚簇索引有什么区别？" class="headerlink" title="🌟聚簇索引和非聚簇索引有什么区别？"></a>🌟聚簇索引和非聚簇索引有什么区别？</h4><ul>
-<li><p>聚簇索引即索引结构和数据一起存放的索引，InnoDB 中的主键索引就属于聚簇索引</p>
-</li>
-<li><p>非聚簇索引即索引结构和数据分开存放的索引，二级索引就属于非聚簇索引。MySQL 的 MyISAM 引擎，不管主键还是非主键，使用的都是非聚簇索引。</p>
-</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/20210420165311654.png"></p>
-<h4 id="唯一索引与普通索引的区别是什么？使用索引会有哪些优缺点？"><a href="#唯一索引与普通索引的区别是什么？使用索引会有哪些优缺点？" class="headerlink" title="唯一索引与普通索引的区别是什么？使用索引会有哪些优缺点？"></a>唯一索引与普通索引的区别是什么？使用索引会有哪些优缺点？</h4><h4 id="🌟简述-MySQL-常见索引类型，介绍一下覆盖索引"><a href="#🌟简述-MySQL-常见索引类型，介绍一下覆盖索引" class="headerlink" title="🌟简述 MySQL 常见索引类型，介绍一下覆盖索引"></a>🌟简述 MySQL 常见索引类型，介绍一下覆盖索引</h4><ul>
-<li>按「数据结构」分类：<strong>B+树索引、Hash索引、Full-text索引</strong>。</li>
-<li>按「物理存储」分类：<strong>聚簇索引（主键索引）、二级索引（辅助索引）</strong>。</li>
-<li>按「字段特性」分类：<strong>主键索引、唯一索引、普通索引、前缀索引</strong>。</li>
-<li>按「字段个数」分类：<strong>单列索引、联合索引</strong>。</li>
-</ul>
-<p>按照应用维度划分：</p>
-<p>主键索引：加速查询 + 列值唯一（不可以有 NULL）+ 表中只有一个。</p>
-<p>普通索引：仅加速查询。</p>
-<p>唯一索引：加速查询 + 列值唯一（可以有 NULL）。</p>
-<p>覆盖索引：一个索引包含（或者说覆盖）所有需要查询的字段的值。</p>
-<p>联合索引：多列值组成一个索引，专门用于组合搜索，其效率大于索引合并。</p>
-<p>全文索引：对文本的内容进行分词，进行搜索。目前只有 <code>CHAR</code>、<code>VARCHAR</code> ，<code>TEXT</code> 列上可以创建全文索引。一般不会使用，效率较低，通常使用搜索引擎如 ElasticSearch 代替。</p>
-<p>MySQL 8.x 中实现的索引新特性：</p>
-<ul>
-<li>隐藏索引：也称为不可见索引，不会被优化器使用，但是仍然需要维护，通常会软删除和灰度发布的场景中使用。主键不能设置为隐藏（包括显式设置或隐式设置）。</li>
-<li>降序索引：之前的版本就支持通过 desc 来指定索引为降序，但实际上创建的仍然是常规的升序索引。直到 MySQL 8.x 版本才开始真正支持降序索引。另外，在 MySQL 8.x 版本中，不再对 GROUP BY 语句进行隐式排序。</li>
-<li>函数索引：从 MySQL 8.0.13 版本开始支持在索引中使用函数或者表达式的值，也就是在索引中可以包含函数或者表达式。</li>
-</ul>
-<h4 id="🌟MySQL-索引使用什么数据结构？"><a href="#🌟MySQL-索引使用什么数据结构？" class="headerlink" title="🌟MySQL 索引使用什么数据结构？"></a>🌟MySQL 索引使用什么数据结构？</h4><ul>
-<li><p>哈希表结构</p>
-</li>
-<li><p>B+树结构</p>
-</li>
-</ul>
-<p><strong>为什么 MySQL 没有使用其作为索引的数据结构呢？</strong> 主要是因为 Hash 索引不支持顺序和范围查询</p>
-<h4 id="🌟假设建立联合索引-a-b-c-如果对字段-a-和-c-查询，会用到这个联合索引吗？"><a href="#🌟假设建立联合索引-a-b-c-如果对字段-a-和-c-查询，会用到这个联合索引吗？" class="headerlink" title="🌟假设建立联合索引 (a, b, c) 如果对字段 a 和 c 查询，会用到这个联合索引吗？"></a>🌟假设建立联合索引 (a, b, c) 如果对字段 a 和 c 查询，会用到这个联合索引吗？</h4><p><code>(a, b, c)</code> 联合索引，是先按 a 排序，在 a 相同的情况再按 b 排序，在 b 相同的情况再按 c 排序。所以，<strong>b 和 c 是全局无序，局部相对有序的</strong>，这样在没有遵循最左匹配原则的情况下，是无法利用到索引的。</p>
-<h4 id="🌟数据库如何设计索引，如何优化查询？"><a href="#🌟数据库如何设计索引，如何优化查询？" class="headerlink" title="🌟数据库如何设计索引，如何优化查询？"></a>🌟数据库如何设计索引，如何优化查询？</h4><p>要设计一个适合 MySQL 索引的数据结构，至少满足以下要求：</p>
-<ul>
-<li>能在尽可能少的磁盘的 I/O 操作中完成查询工作；</li>
-<li>要能高效地查询某一个记录，也要能高效地执行范围查找；</li>
-</ul>
-<p>MySql 使用索引进行查询优化</p>
-<h4 id="🌟优化索引的方法？"><a href="#🌟优化索引的方法？" class="headerlink" title="🌟优化索引的方法？"></a>🌟优化索引的方法？</h4><ul>
-<li>前缀索引优化；</li>
-<li>覆盖索引优化；</li>
-<li>主键索引最好是自增的；</li>
-<li>防止索引失效；</li>
-</ul>
-<ul>
-<li></li>
-</ul>
-<p>数据库的事务隔离级别有哪些？各有哪些优缺点？</p>
-<p>简述事务的四大特性</p>
-<p>什么是数据库事务，MySQL 为什么会使用 InnoDB 作为默认选项</p>
-<p>MySQL 中 join 与 left join 的区别是什么？</p>
-<p>简述脏读和幻读的发生场景，InnoDB 是如何解决幻读的？</p>
-<p>数据库反范式设计会出现什么问题？</p>
-<p>简述 MySQL MVCC 的实现原理 </p>
-<p>简述数据库中什么情况下进行分库，什么情况下进行分表？</p>
-<p>简述 MySQL 的间隙锁</p>
-<p>MySQL 有什么调优的方式？ </p>
-<p>简述 MySQL 的主从同步机制，如果同步失败会怎么样？ </p>
-<h4 id="什么是-SQL-注入攻击？如何防止这类攻击？"><a href="#什么是-SQL-注入攻击？如何防止这类攻击？" class="headerlink" title="什么是 SQL 注入攻击？如何防止这类攻击？"></a>什么是 SQL 注入攻击？如何防止这类攻击？</h4><p>SQL注入是通过将<code>恶意的SQL语句</code>插入到Web应用的输入参数中，<code>欺骗服务器</code>执行恶意的SQL命令的攻击。</p>
-<p><strong>主要防御：</strong></p>
-<ul>
-<li><strong>选项 1：使用预准备语句（使用参数化查询）</strong></li>
-<li><strong>选项 2：使用正确构造的存储过程</strong></li>
-<li><strong>选项 3：允许列表输入验证</strong></li>
-<li><strong>选项 4：转义所有用户提供的输入</strong></li>
-</ul>
-<p><strong>附加防御：</strong></p>
-<ul>
-<li><strong>另外：强制实施最低特权</strong></li>
-<li><strong>另：执行允许列表输入验证作为辅助防御</strong></li>
-</ul>
 <h2 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h2><p>您的支持是我不断前进的动力，如果您恰巧财力雄厚，又感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -2353,7 +2157,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">960.4k</span>&nbsp;字
+                class="white-color">966.7k</span>&nbsp;字
             
             
             
