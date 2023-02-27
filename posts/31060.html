@@ -877,14 +877,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-02-26
+                    2023-02-27
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    13.1k
+                    13.5k
                 </div>
                 
 
@@ -997,7 +997,7 @@
 <p><strong>为什么不能把服务器发送的 ACK 和 FIN 合并起来，变成三次挥手？</strong></p>
 <p>因为服务器收到客户端断开连接的请求时，可能还有一些数据没有发完，这时先回复 ACK，表示接收到了断开连接的请求。等到数据发完之后再发 FIN，断开服务器到客户端的数据传送。</p>
 <p><strong>如果第二次挥手时服务器的 ACK 没有送达客户端，会怎样？</strong></p>
-<p>客户端没有收到 ACK 确认，会重新发送 FIN 请求，FIN请求中也包含ACK=1。</p>
+<p>客户端没有收到 ACK 确认，会重新发送 FIN 请求。</p>
 <p><strong>为什么第四次挥手客户端需要等待 2MSL时间后才进入 CLOSED 状态？</strong></p>
 <p>第四次挥手时，客户端发送给服务器的 ACK 有可能丢失，如果服务端因为某些原因而没有收到 ACK 的话，服务端就会重发 FIN，如果客户端在 2MSL （报文段最长寿命）的时间内收到了 FIN，就会重新发送 ACK 并再次等待 2MSL，如果客户端在 2MSL的时间内没有收到 FIN了，就证明服务端已正常关闭。<strong>防止 Server 没有收到 ACK 而不断重发 FIN</strong>。</p>
 <blockquote>
@@ -1516,7 +1516,21 @@
 <li><code>Thrift</code>：Thrift是Facebook的一个开源项目，主要是一个跨语言的服务开发框架。它有一个代码生成器来对它所定义的IDL文件自动生成服务代码框架。Thrift对于底层的RPC通讯都是透明的，用户只需要对其进行二次开发即可，省去了一系列重复的前置基础开发工作。</li>
 <li><code>Dubbo</code>：Dubbo是阿里集团开源的一个极为出名的RPC框架，在很多互联网公司和企业应用中广泛使用。协议和序列化框架都可以插拔是及其鲜明的特色。</li>
 </ol>
-<h2 id="④Other"><a href="#④Other" class="headerlink" title="④Other"></a>④Other</h2><h3 id="🌟DNS-的解析过程"><a href="#🌟DNS-的解析过程" class="headerlink" title="🌟DNS 的解析过程"></a>🌟DNS 的解析过程</h3><ol>
+<h2 id="④Other"><a href="#④Other" class="headerlink" title="④Other"></a>④Other</h2><h3 id="🌟ping工作原理"><a href="#🌟ping工作原理" class="headerlink" title="🌟ping工作原理"></a>🌟ping工作原理</h3><p>「ping」是用来探测本机与网络中另一主机之间是否可达的命令</p>
+<p>ping 是基于 <code>ICMP</code> 协议工作的，ICMP 全称是 <strong>Internet Control Message Protocol</strong>，也就是<strong>互联网控制报文协议</strong>。</p>
+<p><code>ICMP</code> 主要的功能包括：<strong>确认 IP 包是否成功送达目标地址、报告发送过程中 IP 包被废弃的原因和改善网络设置等。</strong></p>
+<p>假设<strong>机器A</strong> ping<strong>机器B</strong>，工作过程如下：</p>
+<ol>
+<li> ping通知系统，新建一个固定格式的ICMP请求数据包</li>
+<li> ICMP协议，将该数据包和目标机器B的IP地址打包，一起转交给IP协议层</li>
+<li> IP层协议将本机IP地址为源地址，机器B的IP地址为目标地址，加上一些其他的控制信息，构建一个IP数据包</li>
+<li> 先获取目标机器B的MAC地址。</li>
+<li> 数据链路层构建一个数据帧，目的地址是IP层传过来的 <strong>MAC地址</strong>，源地址是本机的 <strong>MAC地址</strong></li>
+<li> 机器B收到后，对比目标地址，和自己本机的MAC地址是否一致，符合就处理返回，不符合就丢弃。</li>
+<li> 根据目的主机返回的ICMP回送回答报文中的时间戳，从而计算出往返时间</li>
+<li> 最终显示结果有这几项：发送到目的主机的IP地址、发送 &amp; 收到 &amp; 丢失的分组数、往返时间的最小、最大&amp; 平均值</li>
+</ol>
+<h3 id="🌟DNS-的解析过程"><a href="#🌟DNS-的解析过程" class="headerlink" title="🌟DNS 的解析过程"></a>🌟DNS 的解析过程</h3><ol>
 <li><p>浏览器搜索<strong>自己的DNS缓存</strong></p>
 </li>
 <li><p>若没有，则搜索<strong>操作系统中的DNS缓存</strong>和<strong>hosts文件</strong></p>
@@ -2481,7 +2495,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">956.5k</span>&nbsp;字
+                class="white-color">960.4k</span>&nbsp;字
             
             
             
