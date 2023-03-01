@@ -879,14 +879,14 @@ MySQL 主要由下面几部分构成：
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-02-27
+                    2023-03-02
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    8.8k
+                    12.7k
                 </div>
                 
 
@@ -918,14 +918,78 @@ MySQL 主要由下面几部分构成：
 <li>  <strong>执行器：</strong> 执行语句，然后从存储引擎返回数据。 执行语句之前会先判断是否有权限，如果没有权限的话，就会报错。</li>
 <li>  <strong>插件式存储引擎</strong> ： 主要负责数据的存储和读取，采用的是插件式架构，支持 InnoDB、MyISAM、Memory 等多种存储引擎。</li>
 </ul>
-<ul>
-<li>MySQL 主要分为 Server 层和引擎层，Server 层主要包括连接器、查询缓存、分析器、优化器、执行器，同时还有一个日志模块（binlog），这个日志模块所有执行引擎都可以共用，redolog 只有 InnoDB 有。</li>
-<li>引擎层是插件式的，目前主要包括，MyISAM,InnoDB,Memory 等。</li>
-<li>查询语句的执行流程如下：权限校验（如果命中缓存）—&gt;查询缓存—&gt;分析器—&gt;优化器—&gt;权限校验—&gt;执行器—&gt;引擎</li>
-<li>更新语句执行流程如下：分析器—-&gt;权限校验—-&gt;执行器—&gt;引擎—redo log(prepare 状态)—&gt;binlog—&gt;redo log(commit状态)</li>
-</ul>
+<p>MySQL 主要分为 Server 层和引擎层，Server 层主要包括连接器、查询缓存、分析器、优化器、执行器，同时还有一个日志模块（binlog），这个日志模块所有执行引擎都可以共用，redolog 只有 InnoDB 有。</p>
+<p>引擎层是插件式的，目前主要包括，MyISAM,InnoDB,Memory 等。</p>
 <h2 id="🌟MySQL执行计划分析"><a href="#🌟MySQL执行计划分析" class="headerlink" title="🌟MySQL执行计划分析"></a>🌟MySQL执行计划分析</h2><p><strong>执行计划</strong> 是指一条 SQL 语句在经过 <strong>MySQL 查询优化器</strong> 的优化会后，具体的执行方式。</p>
 <p>执行计划通常用于 SQL 性能分析、优化等场景。通过 <code>EXPLAIN</code> 的结果，可以了解到如数据表的查询顺序、数据查询操作的操作类型、哪些索引可以被命中、哪些索引实际会命中、每个数据表有多少行记录被查询等信息。</p>
+<p><code>EXPLAIN</code> 适用于 <code>SELECT</code>, <code>DELETE</code>, <code>INSERT</code>, <code>REPLACE</code>, 和 <code>UPDATE</code>语句，我们一般分析 <code>SELECT</code> 查询较多。</p>
+<p>我们这里简单来演示一下 <code>EXPLAIN</code> 的使用。</p>
+<p><code>EXPLAIN</code> 的输出格式如下：</p>
+<pre class="line-numbers language-sql"><code class="language-sql">mysql<span class="token operator">></span> <span class="token keyword">EXPLAIN</span> <span class="token keyword">SELECT</span> <span class="token punctuation">`</span>score<span class="token punctuation">`</span><span class="token punctuation">,</span><span class="token punctuation">`</span>name<span class="token punctuation">`</span> <span class="token keyword">FROM</span> <span class="token punctuation">`</span>cus_order<span class="token punctuation">`</span> <span class="token keyword">ORDER</span> <span class="token keyword">BY</span> <span class="token punctuation">`</span>score<span class="token punctuation">`</span> <span class="token keyword">DESC</span><span class="token punctuation">;</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">----+-------------+-----------+------------+------+---------------+------+---------+------+--------+----------+----------------+</span>
+<span class="token operator">|</span> id <span class="token operator">|</span> select_type <span class="token operator">|</span> <span class="token keyword">table</span>     <span class="token operator">|</span> partitions <span class="token operator">|</span> <span class="token keyword">type</span> <span class="token operator">|</span> possible_keys <span class="token operator">|</span> <span class="token keyword">key</span>  <span class="token operator">|</span> key_len <span class="token operator">|</span> ref  <span class="token operator">|</span> <span class="token keyword">rows</span>   <span class="token operator">|</span> filtered <span class="token operator">|</span> Extra          <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">----+-------------+-----------+------------+------+---------------+------+---------+------+--------+----------+----------------+</span>
+<span class="token operator">|</span>  <span class="token number">1</span> <span class="token operator">|</span> <span class="token keyword">SIMPLE</span>      <span class="token operator">|</span> cus_order <span class="token operator">|</span> <span class="token boolean">NULL</span>       <span class="token operator">|</span> <span class="token keyword">ALL</span>  <span class="token operator">|</span> <span class="token boolean">NULL</span>          <span class="token operator">|</span> <span class="token boolean">NULL</span> <span class="token operator">|</span> <span class="token boolean">NULL</span>    <span class="token operator">|</span> <span class="token boolean">NULL</span> <span class="token operator">|</span> <span class="token number">997572</span> <span class="token operator">|</span>   <span class="token number">100.00</span> <span class="token operator">|</span> <span class="token keyword">Using</span> filesort <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">----+-------------+-----------+------------+------+---------------+------+---------+------+--------+----------+----------------+</span>
+<span class="token number">1</span> <span class="token keyword">row</span> <span class="token operator">in</span> <span class="token keyword">set</span><span class="token punctuation">,</span> <span class="token number">1</span> warning <span class="token punctuation">(</span><span class="token number">0.00</span> sec<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>各个字段的含义如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>列名</strong></th>
+<th><strong>含义</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>SELECT 查询的序列标识符</td>
+</tr>
+<tr>
+<td>select_type</td>
+<td>SELECT 关键字对应的查询类型</td>
+</tr>
+<tr>
+<td>table</td>
+<td>用到的表名</td>
+</tr>
+<tr>
+<td>partitions</td>
+<td>匹配的分区，对于未分区的表，值为 NULL</td>
+</tr>
+<tr>
+<td>type</td>
+<td>表的访问方法</td>
+</tr>
+<tr>
+<td>possible_keys</td>
+<td>可能用到的索引</td>
+</tr>
+<tr>
+<td>key</td>
+<td>实际用到的索引</td>
+</tr>
+<tr>
+<td>key_len</td>
+<td>所选索引的长度</td>
+</tr>
+<tr>
+<td>ref</td>
+<td>当使用索引等值查询时，与索引作比较的列或常量</td>
+</tr>
+<tr>
+<td>rows</td>
+<td>预计要读取的行数</td>
+</tr>
+<tr>
+<td>filtered</td>
+<td>按表条件过滤后，留存的记录数的百分比</td>
+</tr>
+<tr>
+<td>Extra</td>
+<td>附加信息</td>
+</tr>
+</tbody></table>
 <h2 id="🌟MySQL常见的存储引擎？区别是什么？"><a href="#🌟MySQL常见的存储引擎？区别是什么？" class="headerlink" title="🌟MySQL常见的存储引擎？区别是什么？"></a>🌟MySQL常见的存储引擎？区别是什么？</h2><p>MySQL 存储引擎有 MyISAM 、InnoDB、Memory</p>
 <p>MySQL 5.5 之前，MyISAM 是 MySQL 的默认存储引擎，MySQL 5.5 之后，  InnoDB 成为 MySQL 的默认存储引擎。</p>
 <ul>
@@ -937,7 +1001,24 @@ MySQL 主要由下面几部分构成：
 <li>  <strong>6.索引实现不一样。</strong>虽然 MyISAM 引擎和 InnoDB 引擎都是使用 B+Tree 作为索引结构，但是两者的实现方式不太一样。</li>
 <li>  <strong>7.性能有差别。</strong>InnoDB 的性能比 MyISAM 更强大。</li>
 </ul>
-<h2 id="🌟-InnoDB-四大特性如下"><a href="#🌟-InnoDB-四大特性如下" class="headerlink" title="🌟 InnoDB 四大特性如下"></a>🌟 InnoDB 四大特性如下</h2><ol>
+<h2 id="🌟SQL语句在MySQL中的执行过程"><a href="#🌟SQL语句在MySQL中的执行过程" class="headerlink" title="🌟SQL语句在MySQL中的执行过程"></a>🌟SQL语句在MySQL中的执行过程</h2><p>执行一条 SQL 查询语句，期间发生了什么？</p>
+<ul>
+<li>连接器：建立连接，管理连接、校验用户身份；</li>
+<li>查询缓存：查询语句如果命中查询缓存则直接返回，否则继续往下执行。MySQL 8.0 已删除该模块；</li>
+<li>解析 SQL，通过解析器对 SQL 查询语句进行词法分析、语法分析，然后构建语法树，方便后续模块读取表名、字段、语句类型；</li>
+<li>执行 SQL：执行 SQL 共有三个阶段：<ul>
+<li>预处理阶段：检查表或字段是否存在；将 <code>select *</code> 中的 <code>*</code> 符号扩展为表上的所有列。</li>
+<li>优化阶段：基于查询成本的考虑， 选择查询成本最小的执行计划；</li>
+<li>执行阶段：根据执行计划执行 SQL 查询语句，从存储引擎读取记录，返回给客户端；</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://cdn.xiaolincoding.com/gh/xiaolincoder/mysql/sql%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B/mysql%E6%9F%A5%E8%AF%A2%E6%B5%81%E7%A8%8B.png" alt="查询语句执行流程"></p>
+<p><strong>查询语句</strong></p>
+<p>查询语句的执行流程如下：权限校验（如果命中缓存）—&gt;查询缓存—&gt;分析器—&gt;优化器—&gt;权限校验—&gt;执行器—&gt;引擎</p>
+<p><strong>更新语句</strong></p>
+<p>更新语句执行流程如下：分析器—-&gt;权限校验—-&gt;执行器—&gt;引擎—redo log(prepare 状态)—&gt;binlog—&gt;redo log(commit状态)</p>
+<h2 id="🌟InnoDB-四大特性如下"><a href="#🌟InnoDB-四大特性如下" class="headerlink" title="🌟InnoDB 四大特性如下"></a>🌟InnoDB 四大特性如下</h2><ol>
 <li>插入缓存，Insert buffer</li>
 <li>二次写，double write</li>
 <li>自适应哈希索引，adaptive hash index</li>
@@ -1219,9 +1300,141 @@ SQL1<span class="token punctuation">,</span>SQL2<span class="token punctuation">
 <p>SERIALIZABLE 隔离级别是通过锁来实现的，</p>
 <p>READ-COMMITTED 和 REPEATABLE-READ 隔离级别是基于 MVCC 实现的。</p>
 <p>不过， SERIALIZABLE 之外的其他隔离级别可能也需要用到锁机制，就比如 REPEATABLE-READ 在当前读情况下需要使用加锁读来保证不会出现幻读。</p>
-<h1 id="④锁"><a href="#④锁" class="headerlink" title="④锁"></a>④锁</h1><p>简述 MySQL 的间隙锁</p>
-<h1 id="⑤日志"><a href="#⑤日志" class="headerlink" title="⑤日志"></a>⑤日志</h1><p>简述 undo log 和 redo log 的作用</p>
+<h1 id="④锁"><a href="#④锁" class="headerlink" title="④锁"></a>④锁</h1><h2 id="🌟表级锁和行级锁了解吗？有什么区别？"><a href="#🌟表级锁和行级锁了解吗？有什么区别？" class="headerlink" title="🌟表级锁和行级锁了解吗？有什么区别？"></a>🌟表级锁和行级锁了解吗？有什么区别？</h2><ul>
+<li>MyISAM 仅仅支持表级锁，一锁就锁整张表，这在并发写的情况下性非常差。</li>
+<li>InnoDB 不光支持表级锁，还支持行级锁，默认为行级锁。</li>
+</ul>
+<p><strong>表级锁和行级锁对比</strong> ：</p>
+<ul>
+<li><strong>表级锁：</strong> MySQL 中锁定粒度最大的一种锁（全局锁除外），是针对非索引字段加的锁，对当前操作的整张表加锁，实现简单，资源消耗也比较少，加锁快，不会出现死锁。不过，触发锁冲突的概率最高，高并发下效率极低。表级锁和存储引擎无关，MyISAM 和 InnoDB 引擎都支持表级锁。</li>
+<li><strong>行级锁：</strong> MySQL 中锁定粒度最小的一种锁，是 <strong>针对索引字段加的锁</strong> ，只针对当前操作的行记录进行加锁。 行级锁能大大减少数据库操作的冲突。其加锁粒度最小，并发度高，但加锁的开销也最大，加锁慢，会出现死锁。行级锁和存储引擎有关，是在存储引擎层面实现的。</li>
+</ul>
+<h2 id="🌟行级锁的使用有什么注意事项？"><a href="#🌟行级锁的使用有什么注意事项？" class="headerlink" title="🌟行级锁的使用有什么注意事项？"></a>🌟行级锁的使用有什么注意事项？</h2><p>InnoDB 的行锁是针对索引字段加的锁，表级锁是针对非索引字段加的锁。当我们执行 <code>UPDATE</code>、<code>DELETE</code> 语句时，如果 <code>WHERE</code>条件中字段没有命中唯一索引或者索引失效的话，就会导致扫描全表对表中的所有行记录进行加上 next-key 锁（记录锁 + 间隙锁），相当于把整个表锁住了。</p>
+<p><strong>那 update 语句的 where 带上索引就能避免全表记录加锁了吗？</strong></p>
+<p>并不是。关键还得看这条语句在执行过程种，优化器最终选择的是索引扫描，还是全表扫描，如果走了全表扫描，就会对全表的记录加锁了。</p>
+<p><strong>解决办法</strong></p>
+<p>当我们要执行 update 语句的时候，确保 where 条件中带上了索引列，并且在测试机确认该语句是否走的是索引扫描，防止因为扫描全表，而对表中的所有记录加上锁。</p>
+<p>我们可以打开 MySQL <code>sql_safe_updates</code> 参数，这样可以预防 update 操作时 where 条件没有带上索引列。</p>
+<p>如果发现即使在 where 条件中带上了列索引列，优化器走的还是全标扫描，这时我们就要使用 <code>force index([index_name])</code> 可以告诉优化器使用哪个索引。</p>
+<h2 id="🌟select-…-for-update加什么锁"><a href="#🌟select-…-for-update加什么锁" class="headerlink" title="🌟select … for update加什么锁"></a>🌟select … for update加什么锁</h2><p>如果 <code>WHERE</code>条件中字段命中唯一索引，即当查询用到索引时是行锁</p>
+<p>如果 <code>WHERE</code>条件中字段没有命中唯一索引，即当查询用没用到索引时是表锁</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32565537/article/details/126439743">select … for update学习</a></p>
+<h2 id="🌟InnoDB-有哪几类行锁？"><a href="#🌟InnoDB-有哪几类行锁？" class="headerlink" title="🌟InnoDB 有哪几类行锁？"></a>🌟InnoDB 有哪几类行锁？</h2><p>InnoDB 行锁是通过对索引数据页上的记录加锁实现的，MySQL InnoDB 支持三种行锁定方式：</p>
+<ul>
+<li><strong>记录锁（Record Lock）</strong> ：也被称为记录锁，属于单个行记录上的锁。</li>
+<li><strong>间隙锁（Gap Lock）</strong> ：锁定一个范围，不包括记录本身。</li>
+<li><strong>临键锁（Next-Key Lock）</strong> ：Record Lock+Gap Lock，锁定一个范围，包含记录本身，主要目的是为了解决幻读问题（MySQL 事务部分提到过）。记录锁只能锁住已经存在的记录，为了避免插入新记录，需要依赖间隙锁。</li>
+</ul>
+<p>在 InnoDB 默认的隔离级别 REPEATABLE-READ 下，行锁默认使用的是 Next-Key Lock。但是，如果操作的索引是唯一索引或主键，InnoDB 会对 Next-Key Lock 进行优化，将其降级为 Record Lock，即仅锁住索引本身，而不是范围。</p>
+<h2 id="🌟记录锁"><a href="#🌟记录锁" class="headerlink" title="🌟记录锁"></a>🌟记录锁</h2><p>Record Lock 称为记录锁，锁住的是一条记录。而且记录锁是有 S 锁和 X 锁之分的：</p>
+<ul>
+<li>当一个事务对一条记录加了 S 型记录锁后，其他事务也可以继续对该记录加 S 型记录锁（S 型与 S 锁兼容），但是不可以对该记录加 X 型记录锁（S 型与 X 锁不兼容）;</li>
+<li>当一个事务对一条记录加了 X 型记录锁后，其他事务既不可以对该记录加 S 型记录锁（S 型与 X 锁不兼容），也不可以对该记录加 X 型记录锁（X 型与 X 锁不兼容）。</li>
+</ul>
+<p>举个例子，当一个事务执行了下面这条语句：</p>
+<pre class="line-numbers language-sql"><code class="language-sql">mysql <span class="token operator">></span> <span class="token keyword">begin</span><span class="token punctuation">;</span>
+mysql <span class="token operator">></span> <span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> test <span class="token keyword">where</span> id <span class="token operator">=</span> <span class="token number">1</span> <span class="token keyword">for</span> <span class="token keyword">update</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>就是对 test 表中主键 id 为 1 的这条记录加上 X 型的记录锁，这样其他事务就无法对这条记录进行修改了。</p>
+<p><img src="https://cdn.xiaolincoding.com/gh/xiaolincoder/mysql/%E9%94%81/%E8%AE%B0%E5%BD%95%E9%94%81.drawio.png"></p>
+<p>当事务执行 commit 后，事务过程中生成的锁都会被释放。</p>
+<h2 id="🌟间隙锁"><a href="#🌟间隙锁" class="headerlink" title="🌟间隙锁"></a>🌟间隙锁</h2><p>Gap Lock 称为间隙锁，锁定一个范围，不包括记录本身。只存在于可重复读隔离级别，目的是为了解决可重复读隔离级别下幻读的现象。</p>
+<p>假设，表中有一个范围 id 为（3，5）间隙锁，那么其他事务就无法插入 id = 4 这条记录了，这样就有效的防止幻读现象的发生。</p>
+<p><img src="https://cdn.xiaolincoding.com/gh/xiaolincoder/mysql/%E9%94%81/gap%E9%94%81.drawio.png"></p>
+<p>间隙锁虽然存在 X 型间隙锁和 S 型间隙锁，但是并没有什么区别，<strong>间隙锁之间是兼容的，即两个事务可以同时持有包含共同间隙范围的间隙锁，并不存在互斥关系，因为间隙锁的目的是防止插入幻读记录而提出的</strong>。</p>
+<h2 id="🌟临键锁"><a href="#🌟临键锁" class="headerlink" title="🌟临键锁"></a>🌟临键锁</h2><p>Next-Key Lock 称为临键锁，是 Record Lock + Gap Lock 的组合，锁定一个范围，并且锁定记录本身。</p>
+<p>假设，表中有一个范围 id 为（3，5] 的 next-key lock，那么其他事务即不能插入 id = 4 记录，也不能修改 id = 5 这条记录。</p>
+<p><img src="https://cdn.xiaolincoding.com/gh/xiaolincoder/mysql/%E9%94%81/%E4%B8%B4%E9%94%AE%E9%94%81.drawio.png"></p>
+<p>所以，next-key lock 即能保护该记录，又能阻止其他事务将新纪录插入到被保护记录前面的间隙中。</p>
+<p><strong>next-key lock 是包含间隙锁+记录锁的，如果一个事务获取了 X 型的 next-key lock，那么另外一个事务在获取相同范围的 X 型的 next-key lock 时，是会被阻塞的</strong>。</p>
+<h2 id="🌟当前读和快照读有什么区别？"><a href="#🌟当前读和快照读有什么区别？" class="headerlink" title="🌟当前读和快照读有什么区别？"></a>🌟当前读和快照读有什么区别？</h2><p><strong>快照读</strong>（一致性非锁定读）就是单纯的 <code>SELECT</code> 语句，但不包括下面这两类 <code>SELECT</code> 语句：</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span>
+<span class="token keyword">SELECT</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">LOCK</span> <span class="token operator">IN</span> <span class="token keyword">SHARE MODE</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>快照即记录的历史版本，每行记录可能存在多个历史版本（多版本技术）。</p>
+<p>快照读的情况下，如果读取的记录正在执行 UPDATE/DELETE 操作，读取操作不会因此去等待记录上 X 锁的释放，而是会去读取行的一个快照。</p>
+<p>只有在事务隔离级别 RC(读取已提交) 和 RR（可重读）下，InnoDB 才会使用一致性非锁定读：</p>
+<ul>
+<li>在 RC 级别下，对于快照数据，一致性非锁定读总是读取被锁定行的最新一份快照数据。</li>
+<li>在 RR 级别下，对于快照数据，一致性非锁定读总是读取本事务开始时的行数据版本。</li>
+</ul>
+<p>快照读比较适合对于数据一致性要求不是特别高且追求极致性能的业务场景。</p>
+<p><strong>当前读</strong> （一致性锁定读）就是给行记录加 X 锁或 S 锁。</p>
+<p>当前读的一些常见 SQL 语句类型如下：</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true"># 对读的记录加一个X锁</span>
+<span class="token keyword">SELECT</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token keyword">FOR</span> <span class="token keyword">UPDATE</span>
+<span class="token comment" spellcheck="true"># 对读的记录加一个S锁</span>
+<span class="token keyword">SELECT</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token keyword">LOCK</span> <span class="token operator">IN</span> <span class="token keyword">SHARE MODE</span>
+<span class="token comment" spellcheck="true"># 对修改的记录加一个X锁</span>
+<span class="token keyword">INSERT</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token keyword">UPDATE</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token keyword">DELETE</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="🌟共享锁和排他锁呢？"><a href="#🌟共享锁和排他锁呢？" class="headerlink" title="🌟共享锁和排他锁呢？"></a>🌟共享锁和排他锁呢？</h2><p>不论是表级锁还是行级锁，都存在共享锁（Share Lock，S 锁）和排他锁（Exclusive Lock，X 锁）这两类：</p>
+<ul>
+<li><strong>共享锁（S 锁）</strong> ：又称读锁，事务在读取记录的时候获取共享锁，允许多个事务同时获取（锁兼容）。</li>
+<li><strong>排他锁（X 锁）</strong> ：又称写锁/独占锁，事务在修改记录的时候获取排他锁，不允许多个事务同时获取。如果一个记录已经被加了排他锁，那其他事务不能再对这条事务加任何类型的锁（锁不兼容）。</li>
+</ul>
+<p>排他锁与任何的锁都不兼容，共享锁仅和共享锁兼容。</p>
+<p>共享锁（S锁）满足读读共享，读写互斥。独占锁（X锁）满足写写互斥、读写互斥。</p>
+<p>普通的 select 语句是不会对记录加锁的，因为它属于快照读（由于 MVCC 的存在）。如果要在查询时对记录加行锁，可以使用下面这两个方式，这种查询会加锁的语句称为<strong>锁定读</strong>。</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">//对读取的记录加共享锁</span>
+<span class="token keyword">select</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">lock</span> <span class="token operator">in</span> <span class="token keyword">share mode</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">//对读取的记录加独占锁</span>
+<span class="token keyword">select</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">for</span> <span class="token keyword">update</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>上面这两条语句必须在一个事务中，<strong>因为当事务提交了，锁就会被释放</strong>，所以在使用这两条语句的时候，要加上 begin、start transaction 或者 set autocommit = 0。</p>
+<h2 id="🌟意向锁有什么作用？"><a href="#🌟意向锁有什么作用？" class="headerlink" title="🌟意向锁有什么作用？"></a>🌟意向锁有什么作用？</h2><p>如果需要用到表锁的话，如何判断表中的记录没有行锁呢，一行一行遍历肯定是不行，性能太差。我们需要用到一个叫做<strong>意向锁来快速判断是否可以对某个表使用表锁</strong>。</p>
+<p>意向锁是表级锁，共有两种：</p>
+<ul>
+<li>在使用 InnoDB 引擎的表里对某些记录加上「共享锁」之前，需要先在表级别加上一个「意向共享锁-IS 锁」；</li>
+<li>在使用 InnoDB 引擎的表里对某些纪录加上「独占锁」之前，需要先在表级别加上一个「意向独占锁-IX 锁」；</li>
+</ul>
+<p>意向锁是有数据引擎自己维护的，用户无法手动操作意向锁，在为数据行加共享/排他锁之前，InooDB 会先获取该数据行所在在数据表的对应意向锁。</p>
+<p>也就是，当执行插入、更新、删除操作，需要先对表加上「意向独占锁」，然后对该记录加独占锁。</p>
+<p>而普通的 select 是不会加行级锁的，普通的 select 语句是利用 MVCC 实现一致性读，是无锁的。不过，select 也是可以对记录加共享锁和独占锁的，具体方式如下：</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">//先在表上加上意向共享锁，然后对读取的记录加共享锁</span>
+<span class="token keyword">select</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">lock</span> <span class="token operator">in</span> <span class="token keyword">share mode</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">//先表上加上意向独占锁，然后对读取的记录加独占锁</span>
+<span class="token keyword">select</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token keyword">for</span> <span class="token keyword">update</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>意向共享锁和意向独占锁是表级锁，不会和行级的共享锁和独占锁发生冲突，而且意向锁之间也不会发生冲突，只会和共享表锁和独占表锁发生冲突。</p>
+<h2 id="🌟为什么会发生死锁，以及怎么避免死锁"><a href="#🌟为什么会发生死锁，以及怎么避免死锁" class="headerlink" title="🌟为什么会发生死锁，以及怎么避免死锁"></a>🌟为什么会发生死锁，以及怎么避免死锁</h2><p>两个事务即使生成的间隙锁的范围是一样的，也不会发生冲突，因为间隙锁目的是为了防止其他事务插入数据，因此间隙锁与间隙锁之间是相互兼容的。</p>
+<p>在执行插入语句时，如果插入的记录在其他事务持有间隙锁范围内，插入语句就会被阻塞，因为插入语句在碰到间隙锁时，会生成一个插入意向锁，然后插入意向锁和间隙锁之间是互斥的关系。</p>
+<p>如果两个事务分别向对方持有的间隙锁范围内插入一条记录，而插入操作为了获取到插入意向锁，都在等待对方事务的间隙锁释放，于是就造成了循环等待，满足了死锁的四个条件：<strong>互斥、占有且等待、不可强占用、循环等待</strong>，因此发生了死锁。</p>
+<p><strong>如何避免死锁？</strong></p>
+<p>死锁的四个必要条件：<strong>互斥、占有且等待、不可强占用、循环等待</strong>。只要系统发生死锁，这些条件必然成立，但是只要破坏任意一个条件就死锁就不会成立。</p>
+<p>在数据库层面，有两种策略通过「打破循环等待条件」来解除死锁状态：</p>
+<ul>
+<li><p><strong>设置事务等待锁的超时时间</strong>。当一个事务的等待时间超过该值后，就对这个事务进行回滚，于是锁就释放了，另一个事务就可以继续执行了。在 InnoDB 中，参数 <code>innodb_lock_wait_timeout</code> 是用来设置超时时间的，默认值时 50 秒。</p>
+<p>当发生超时后，就出现下面这个提示：</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/c296c1889f0101d335699311b4ef20a8.png"></p>
+<ul>
+<li><p><strong>开启主动死锁检测</strong>。主动死锁检测在发现死锁后，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行。将参数 <code>innodb_deadlock_detect</code> 设置为 on，表示开启这个逻辑，默认就开启。</p>
+<p>当检测到死锁后，就会出现下面这个提示：</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/f380ef357d065498d8d54ad07f145e09.png"></p>
+<p>上面这个两种策略是「当有死锁发生时」的避免方式。</p>
+<h1 id="⑤日志"><a href="#⑤日志" class="headerlink" title="⑤日志"></a>⑤日志</h1><ul>
+<li><p>二进制日志 <code>binlog</code>（归档日志）</p>
+</li>
+<li><p>事务日志 <code>redo log</code>（重做日志）</p>
+</li>
+<li><p><code>undo log</code>（回滚日志）</p>
+</li>
+</ul>
+<p>redo log</p>
+<p>redo log 什么时候刷盘？</p>
+<p>redo log 文件写满了怎么办？</p>
 <p>简述 MySQL 三种日志的使用场景</p>
+<p>简述 undo log 和 redo log 的作用</p>
+<p><a target="_blank" rel="noopener" href="https://xiaolincoding.com/mysql/log/how_update.html">MySQL 日志：undo log、redo log、binlog 有什么用？</a></p>
+<p><a target="_blank" rel="noopener" href="https://javaguide.cn/database/mysql/mysql-logs.html">MySQL三大日志(binlog、redo log和undo log)详解</a></p>
 <h1 id="⑥其它"><a href="#⑥其它" class="headerlink" title="⑥其它"></a>⑥其它</h1><h2 id="🌟MySQL-中-varchar-和-char-的区别是什么？"><a href="#🌟MySQL-中-varchar-和-char-的区别是什么？" class="headerlink" title="🌟MySQL 中 varchar 和 char 的区别是什么？"></a>🌟MySQL 中 varchar 和 char 的区别是什么？</h2><ul>
 <li>区别一，定长和变长</li>
 </ul>
@@ -1286,6 +1499,13 @@ SQL1<span class="token punctuation">,</span>SQL2<span class="token punctuation">
 <li><p>分库分表</p>
 </li>
 </ul>
+<h2 id="🌟MySQL-如何存储-IP-地址？"><a href="#🌟MySQL-如何存储-IP-地址？" class="headerlink" title="🌟MySQL 如何存储 IP 地址？"></a>🌟MySQL 如何存储 IP 地址？</h2><p>可以将 IP 地址转换成整形数据存储，性能更好，占用空间也更小。</p>
+<p>MySQL 提供了两个方法来处理 ip 地址</p>
+<ul>
+<li><code>INET_ATON()</code> ： 把 ip 转为无符号整型 (4-8 位)</li>
+<li><code>INET_NTOA()</code> :把整型的 ip 转为地址</li>
+</ul>
+<p>插入数据前，先用 <code>INET_ATON()</code> 把 ip 地址转为整型，显示数据时，使用 <code>INET_NTOA()</code> 把整型的 ip 地址转为地址显示即可。</p>
 <h2 id="🌟什么是-SQL-注入攻击？如何防止这类攻击？"><a href="#🌟什么是-SQL-注入攻击？如何防止这类攻击？" class="headerlink" title="🌟什么是 SQL 注入攻击？如何防止这类攻击？"></a>🌟什么是 SQL 注入攻击？如何防止这类攻击？</h2><p>SQL注入是通过将<code>恶意的SQL语句</code>插入到Web应用的输入参数中，<code>欺骗服务器</code>执行恶意的SQL命令的攻击。</p>
 <p><strong>主要防御：</strong></p>
 <ul>
@@ -2095,7 +2315,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">966.7k</span>&nbsp;字
+                class="white-color">975.4k</span>&nbsp;字
             
             
             
