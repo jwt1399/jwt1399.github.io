@@ -879,14 +879,14 @@ MySQL 主要由下面几部分构成：
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-03-02
+                    2023-03-14
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    12.7k
+                    12.8k
                 </div>
                 
 
@@ -1197,10 +1197,10 @@ MySQL 主要由下面几部分构成：
 
 <h2 id="🌟MySQL-的索引什么情况下会失效？"><a href="#🌟MySQL-的索引什么情况下会失效？" class="headerlink" title="🌟MySQL 的索引什么情况下会失效？"></a>🌟MySQL 的索引什么情况下会失效？</h2><ul>
 <li>当我们使用左或者左右模糊匹配的时候，也就是 <code>like %xx</code> 或者 <code>like %xx%</code>这两种方式都会造成索引失效；</li>
-<li>当我们在查询条件中对索引列使用函数，就会导致索引失效。</li>
-<li>当我们在查询条件中对索引列进行表达式计算，也是无法走索引的。</li>
+<li>当我们在查询条件中对索引列<strong>使用函数</strong>，就会导致索引失效。</li>
+<li>当我们在查询条件中对索引列进行<strong>表达式计算</strong>，也是无法走索引的。</li>
 <li>MySQL 在遇到字符串和数字比较的时候，会自动把字符串转为数字，然后再进行比较。如果字符串是索引列，而条件语句中的输入参数是数字的话，那么索引列会发生隐式类型转换，由于隐式类型转换是通过 CAST 函数实现的，等同于对索引列使用了函数，所以就会导致索引失效。</li>
-<li>联合索引要能正确使用需要遵循最左匹配原则，也就是按照最左优先的方式进行索引的匹配，否则就会导致索引失效。</li>
+<li>联合索引要能正确使用<strong>需要遵循最左匹配原则</strong>，也就是按照最左优先的方式进行索引的匹配，否则就会导致索引失效。</li>
 <li>在 WHERE 子句中，如果在 OR 前的条件列是索引列，而在 OR 后的条件列不是索引列，那么索引会失效。</li>
 </ul>
 <h2 id="🌟使用索引会有哪些优缺点？"><a href="#🌟使用索引会有哪些优缺点？" class="headerlink" title="🌟使用索引会有哪些优缺点？"></a>🌟使用索引会有哪些优缺点？</h2><p><strong>优点</strong> ：</p>
@@ -1223,7 +1223,16 @@ MySQL 主要由下面几部分构成：
 <h2 id="🌟数据库如何设计索引，如何优化查询？"><a href="#🌟数据库如何设计索引，如何优化查询？" class="headerlink" title="🌟数据库如何设计索引，如何优化查询？"></a>🌟数据库如何设计索引，如何优化查询？</h2><p>要设计一个适合 MySQL 索引的数据结构，至少满足以下要求：</p>
 <ul>
 <li>能在尽可能少的磁盘的 I/O 操作中完成查询工作；</li>
-<li>要能高效地查询某一个记录，也要能高效地执行范围查找；</li>
+<li>要能高效地查询某一个记录，也要能高效地执行范围查找；<ul>
+<li>为频繁查询的字段建立索引</li>
+<li>避免为”大字段”建立索引</li>
+<li>选择区分度大的列作为索引</li>
+<li>尽量为ORDER BY 和 GROUP BY 后面的字段建立索引</li>
+<li>不要在条件中使用函数</li>
+<li>不要建立太多的索引</li>
+<li>频繁增删改的字段不要建立索引</li>
+</ul>
+</li>
 </ul>
 <p>MySql 使用索引进行查询优化</p>
 <h2 id="🌟优化索引的方法？"><a href="#🌟优化索引的方法？" class="headerlink" title="🌟优化索引的方法？"></a>🌟优化索引的方法？</h2><ul>
@@ -2315,7 +2324,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">975.4k</span>&nbsp;字
+                class="white-color">990.1k</span>&nbsp;字
             
             
             

@@ -879,14 +879,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-02-03
+                    2023-03-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    28.3k
+                    28.5k
                 </div>
                 
 
@@ -1122,10 +1122,19 @@
 </ul>
 <p>当执行 <code>monitorenter</code> 指令时，线程试图获取锁也就是获取 <code>monitor</code>的持有权（monitor对象存在于每个Java对象的对象头中， synchronized 锁便是通过这种方式获取锁的，也是为什么Java中任意对象可以作为锁的原因）。其内部包含一个计数器，当计数器为0则可以成功获取，获取后将锁计数器设为1也就是加1。相应的在执行 <code>monitorexit</code> 指令后，将锁计数器设为0 ，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞等待，直到锁被另外一个线程释放为止</p>
 <p>synchronized 修饰的方法并没有 <code>monitorenter</code> 指令和 <code>monitorexit</code> 指令，取得代之的确实是<code>ACC_SYNCHRONIZED</code> 标识，该标识指明了该方法是一个同步方法，JVM 通过该 <code>ACC_SYNCHRONIZED</code> 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<hr>
+<p>synchronized用的锁是存在对象头里的，对象头则由Mark Word和Class MetadataAddress组成。Mark Word存储对象的hashCode、分代年龄和<strong>锁标记位</strong>，Java虚拟机是基于Monitor对象来实现重量级锁的，monitor对象存在于每个Java对象的对象头中</p>
+<p><img src="https://image.mianshi.online/img202205031510523.png" alt="monitor"></p>
+<p><strong>Java虚拟机是通过进入和退出Monitor对象来实现代码块同步和方法同步的，代码块同步使用的是monitorenter 和 monitorexit 指令实现的，而方法同步是通过Access flags后面的标识来确定该方法是否为同步方法。</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.mianshi.online/multi-thread-theory.html">synchronized关键字的底层原理 </a></p>
 <h3 id="🌟JDK1-6后synchronized做了哪些优化"><a href="#🌟JDK1-6后synchronized做了哪些优化" class="headerlink" title="🌟JDK1.6后synchronized做了哪些优化"></a>🌟JDK1.6后synchronized做了哪些优化</h3><p>JDK1.6 对锁的实现引入了大量的优化，如偏向锁、轻量级锁、自旋锁、适应性自旋锁、锁消除、锁粗化等技术来减少锁操作的开销。</p>
 <p>锁主要存在四种状态，依次是：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态，他们会随着竞争的激烈而逐渐升级。注意锁可以升级不可降级，这种策略是为了提高获得锁和释放锁的效率。</p>
 <p><a target="_blank" rel="noopener" href="https://www.mianshi.online/multi-thread-synchronized-optimize.html">36.jdk1.6为什么要对synchronized进行优化？做了哪些优化？ - 路人张的面试笔记 (mianshi.online)</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.iamshuaidi.com/1084.html">说说 JDK1.6 之后的 synchronized 关键字底层做了哪些优化，可以详细介绍一下这些优化吗？-帅地玩编程 (iamshuaidi.com)</a></p>
+<h3 id="🌟锁升级过程"><a href="#🌟锁升级过程" class="headerlink" title="🌟锁升级过程"></a>🌟锁升级过程</h3><p>synchronized锁有四种状态，无锁，偏向锁，轻量级锁，重量级锁，这几个状态会随着竞争状态逐渐升级，<strong>锁可以升级但不能降级，但是偏向锁状态可以被重置为无锁状态</strong></p>
+<p><img src="https://img.jwt1399.top/img/202212271733295.png"></p>
+<p><img src="https://img.jwt1399.top/img/202212301531550.png"></p>
+<p><a target="_blank" rel="noopener" href="https://www.mianshi.online/multi-thread-synchronized-optimize.html">锁升级</a></p>
 <h3 id="🌟偏向锁、轻量级锁、重量级锁的对比"><a href="#🌟偏向锁、轻量级锁、重量级锁的对比" class="headerlink" title="🌟偏向锁、轻量级锁、重量级锁的对比"></a>🌟偏向锁、轻量级锁、重量级锁的对比</h3><table>
 <thead>
 <tr>
@@ -2833,35 +2842,32 @@ LockSupport<span class="token punctuation">.</span><span class="token function">
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/19988.html">
+                <a href="/posts/34943.html">
                     <div class="card-image">
                         
-                        <img src="https://img.jwt1399.top/img/202212062044543.jpg" class="responsive-img" alt="Q&A：JUC">
+                        <img src="https://img.jwt1399.top/img/202207032341528.png" class="responsive-img" alt="Q&A：Redis">
                         
-                        <span class="card-title">Q&A：JUC</span>
+                        <span class="card-title">Q&A：Redis</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            ①线程❶基础🌟线程和进程的区别进程：是程序运行和资源分配的基本单位
+                            数据结构
+简单动态字符串-SDS
+String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 512M。
 
-拥有自己独立的堆和栈，既不共享堆，亦不共享栈，进程由操作系统调度。
-
-线程：是 CPU 调度和分派的基本单位，是进程的一个实体
-
-拥有自己独立的栈和共享的堆，共享堆，不
+String 底层数据结构为 SDS（Simple Dyn
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-12-27
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-03-05
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -2874,12 +2880,11 @@ LockSupport<span class="token punctuation">.</span><span class="token function">
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/JUC/">
-                        <span class="chip bg-color">JUC</span>
+                    <a href="/tags/Redis/">
+                        <span class="chip bg-color">Redis</span>
                     </a>
                     
                 </div>
@@ -3114,7 +3119,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">975.4k</span>&nbsp;字
+                class="white-color">990.1k</span>&nbsp;字
             
             
             
