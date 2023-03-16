@@ -877,14 +877,14 @@ String 底层数据结构为 SDS（Simple Dyn">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-03-15
+                    2023-03-16
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.2k
+                    6.7k
                 </div>
                 
 
@@ -1057,7 +1057,8 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li>Allkeys- lru、Allkeys-lfu、Allkeys-random</li>
 </ul>
 <h2 id="内存回收是什么时候发起"><a href="#内存回收是什么时候发起" class="headerlink" title="内存回收是什么时候发起"></a>内存回收是什么时候发起</h2><p>每次运行读写命令的时候，就会尝试去释放一定内存，策略就按我们上述配置的策略。</p>
-<h2 id="介绍下Redis-LRU回收算法"><a href="#介绍下Redis-LRU回收算法" class="headerlink" title="介绍下Redis LRU回收算法"></a>介绍下Redis LRU回收算法</h2><p>Redis采用近似LRU算法，redisObject对象种lru字段存储的就是key被访问时Redis的时钟server.lrulock，当key被访问的时候，Redis会更新这个key的redisObject的lru字段。LRU在现有数据结构的基础上采用随机采样的方式淘汰元素，具体而言就是随机采样n个key，n默认为5，然后根据时间戳淘汰掉最旧的那个key，如果淘汰后内存还是不足就继续随机采样来淘汰</p>
+<h2 id="介绍下Redis-LRU回收算法"><a href="#介绍下Redis-LRU回收算法" class="headerlink" title="介绍下Redis LRU回收算法"></a>介绍下Redis LRU回收算法</h2><p>Redis采用近似LRU算法，redisObject对象种lru字段存储的就是key被访问时Redis的时钟server.lrulock，当key被访问的时候，Redis会更新这个key的redisObject的lru字段。</p>
+<p>LRU在现有数据结构的基础上采用随机采样的方式淘汰元素，具体而言就是随机采样n个key，n默认为5，然后根据时间戳淘汰掉最旧的那个key，如果淘汰后内存还是不足就继续随机采样来淘汰</p>
 <p>Redis3.0对近似LRU进行了优化</p>
 <p>新算法维护一个大小为16的候选池，池中的数据根据访问时间进行排序，第一次随机选取的key都会放入池中，然后淘汰掉最久未访问的，比如第一次选了5个，淘汰掉1个，剩下4个就放入候选池中。</p>
 <p>随后每次随机选取的key只有活性比池中活性最小的key还小时才会放入池中，当池子装满了，如果有新的key需要放入，则将池中活性最大的key移除池子（不是淘汰）</p>
@@ -1068,6 +1069,102 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p><img src="../images/Q-A%EF%BC%9ARedis/image-20230315211617722.png"></p>
 <p>LRU本身已经能解决大部分问题，但是脱离频率，只谈最近访问，在部分场景是得不到我们希望的结果</p>
 <p>例如有的键访问频率很低，但是最近使用过；有的键访问频率很高，但是最近没使用。</p>
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="RDB和AOF本质区别是什么？"><a href="#RDB和AOF本质区别是什么？" class="headerlink" title="RDB和AOF本质区别是什么？"></a>RDB和AOF本质区别是什么？</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>RDB</th>
+<th>AOF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>持久化</td>
+<td>通过保存快照</td>
+<td>通过追加日志</td>
+</tr>
+<tr>
+<td>文件类型</td>
+<td>二进制文件，更小</td>
+<td>文本文件，更大</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>容易丢失更多数据</td>
+<td>丢失数据更少（默认everysec，最多一秒的丢失）</td>
+</tr>
+<tr>
+<td>文件恢复</td>
+<td>直接解析，恢复速度快</td>
+<td>一条条命令执行，恢复速度慢</td>
+</tr>
+<tr>
+<td>开销</td>
+<td>全量保存，开销更大</td>
+<td>追加操作，开销更小</td>
+</tr>
+</tbody></table>
+<h2 id="如果RDB和AOF只能选一种，你选哪个？"><a href="#如果RDB和AOF只能选一种，你选哪个？" class="headerlink" title="如果RDB和AOF只能选一种，你选哪个？"></a>如果RDB和AOF只能选一种，你选哪个？</h2><ul>
+<li><p>如果我们能接受分钟级别的数据丢失，可以考虑选择RDB</p>
+</li>
+<li><p>如果需要尽量保证数据安全，可以考虑混合持久化</p>
+</li>
+<li><p>如果只用AOF，那么优先选择everysec策略进行刷盘（在可靠和性能之间有一个平衡）</p>
+</li>
+</ul>
+<p>Redis不推荐单独开AOF，如果需要持久化，快照始终是一个好办法，从默认配置也能看出来RDB是默认的，AOF不是。</p>
+<h2 id="RDB触发条件是什么？触发时机又是什么？"><a href="#RDB触发条件是什么？触发时机又是什么？" class="headerlink" title="RDB触发条件是什么？触发时机又是什么？"></a>RDB触发条件是什么？触发时机又是什么？</h2><ul>
+<li>主动触发：save、bgsave；</li>
+<li>自动触发：配置文件（达到阈值时触发）</li>
+<li>正常关闭redis服务(执行shutdown)时触发</li>
+</ul>
+<p>其他触发时机：</p>
+<ul>
+<li><p>主从复制时，从库全量复制同步主库数据，此时主库会执行bgsave命令进行快照</p>
+</li>
+<li><p>客户端执行数据库清空命令FLUSHALL时候，会触发快照的生成</p>
+</li>
+</ul>
+<h2 id="AOF触发条件是什么？触发时机又是什么？"><a href="#AOF触发条件是什么？触发时机又是什么？" class="headerlink" title="AOF触发条件是什么？触发时机又是什么？"></a>AOF触发条件是什么？触发时机又是什么？</h2><ul>
+<li><p>always：每条命令执行成功后，都会刷进磁盘</p>
+</li>
+<li><p>everysec：每一秒触发一次（默认的aof策略）</p>
+</li>
+<li><p>no：由操作系统来决定刷盘时间</p>
+</li>
+</ul>
+<h2 id="RDB对主流程有什么影响？"><a href="#RDB对主流程有什么影响？" class="headerlink" title="RDB对主流程有什么影响？"></a>RDB对主流程有什么影响？</h2><ul>
+<li><p>当执行save命令的时候，由主进程进行 RDB快照保存，会阻塞主进程</p>
+</li>
+<li><p>当执行bgsave或是配置自动触发时，由fork出的子进程来进行RDB快照保存 </p>
+<ul>
+<li><p>如果数据量比较大的时候，会导致fork子进程 这个操作比较耗时，从而阻塞主进程</p>
+</li>
+<li><p> 由于采用了写时复制技术，如果在进行RDB快照保存的时候，有大量的写入操作执行，会导致主进程多拷贝一份数据给子进程，消耗大量额外的内存</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>fork创建子进程之后，通过写时复制技术，子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。只有在发生修改内存数据的情况时，物理内存才会被复制一份。</p>
+<p>如果此时主进程需要修改某块数据，那么这块数据就会被复制一份到内存，生成该数据的副本，子进程会把这个副本数据写入 RDB 文件，而在这个过程中，主线程仍然可以直接修改原来的数据，子进程所看到的数据在它被创建的一瞬间就已经固定下来了</p>
+<h2 id="AOF对主流程有什么影响？"><a href="#AOF对主流程有什么影响？" class="headerlink" title="AOF对主流程有什么影响？"></a>AOF对主流程有什么影响？</h2><ul>
+<li><p>当AOF写入日志压力过大 会 导致主进程 无法继续 处理其他请求</p>
+</li>
+<li><p>当AOF重写发生时，如果数据量比较大，会导致fork子进程 这个操作比较耗时，从而阻塞主进程</p>
+</li>
+</ul>
+<h2 id="AOF混合持久化方案是什么？"><a href="#AOF混合持久化方案是什么？" class="headerlink" title="AOF混合持久化方案是什么？"></a>AOF混合持久化方案是什么？</h2><p>如果把混合持久化打开，AOF 重写的时候就直接把 RDB 的内容写到 AOF 文件开头。这样做的好处是可以结合 RDB 和 AOF 的优点, 快速加载同时避免丢失过多的数据。当然缺点也是有的， AOF 里面的 RDB 部分是压缩格式不再是 AOF 格式，可读性较差。</p>
+<h2 id="简单描述AOF重写流程"><a href="#简单描述AOF重写流程" class="headerlink" title="简单描述AOF重写流程"></a>简单描述AOF重写流程</h2><p>当 AOF 变得太大时，Redis 能够在后台自动重写 AOF 产生一个新的 AOF 文件，新的 AOF 文件体积更小。</p>
+<p>在执行 <code>BGREWRITEAOF</code> 命令时，Redis 服务器会维护一个AOF 重写缓冲区，该缓冲区会在子进程创建新 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新 AOF 文件的工作之后，服务器会将重写缓冲区中的所有内容追加到新 AOF 文件的末尾，使得新的 AOF 文件保存的数据库状态与现有的数据库状态一致。最后，服务器用新的 AOF 文件替换旧的 AOF 文件，以此来完成 AOF 文件重写操作。</p>
+<h3 id="AOF重写你觉得有什么不足之处么？"><a href="#AOF重写你觉得有什么不足之处么？" class="headerlink" title="AOF重写你觉得有什么不足之处么？"></a>AOF重写你觉得有什么不足之处么？</h3><p>Redis 7.0 版本之前，如果在重写期间有写入命令，AOF 可能会使用大量内存，重写期间到达的所有写入命令都会写入磁盘两次（因为维护了AOF缓冲和AOF重写缓冲，重写时会将AOF 缓冲 和 AOF重写缓冲 分别 写入到旧日志和新日志中，这是额外的磁盘开销）。</p>
+<p>改进：</p>
+<ul>
+<li><p>在Redis 7.0版本，对AOF重新作出了优化，提出了多部件AOF方案，原来的AOF重写缓冲被移除，AOF日志分成了 Base AOF日志 ，Incr AOF日志</p>
+</li>
+<li><p>Base AOF日志 记录重写之前的命令；Incr AOF 日志记录 重写时新的写入命令</p>
+</li>
+<li><p>当重写发生时，主进程fork出一个子进程，对Base AOF日志进行重写·（将当前内存数据写入到新的Base AOF日志）；如果此时有新的写入命令，会由主进程写入到AOF缓冲，再将缓冲数据刷入新的Incr AOF日志。这样新的Incr AOF日志 + 新的Base AOF日志 就构成了完整的新的AOF日志</p>
+</li>
+</ul>
 <h1 id="场景题"><a href="#场景题" class="headerlink" title="场景题"></a>场景题</h1><h2 id="使用-Redis-统计网站-UV-怎么做？"><a href="#使用-Redis-统计网站-UV-怎么做？" class="headerlink" title="使用 Redis 统计网站 UV 怎么做？"></a>使用 Redis 统计网站 UV 怎么做？</h2><blockquote>
 <p>通过 HyperLogLog 来实现</p>
 </blockquote>
@@ -1978,7 +2075,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">990.1k</span>&nbsp;字
+                class="white-color">994.3k</span>&nbsp;字
             
             
             
