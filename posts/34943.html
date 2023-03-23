@@ -47,9 +47,9 @@ String 底层数据结构为 SDS（Simple Dyn">
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+</head>
 
 
 <body>
@@ -877,14 +877,14 @@ String 底层数据结构为 SDS（Simple Dyn">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-03-21
+                    2023-03-23
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    11.6k
+                    13.7k
                 </div>
                 
 
@@ -902,7 +902,7 @@ String 底层数据结构为 SDS（Simple Dyn">
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img-blog.csdnimg.cn/img_convert/9fa26a74965efbf0f56b707a03bb9b7f.png"></p>
+                <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img.jwt1399.top/img/202303231236751.png"></p>
 <h2 id="简单动态字符串-SDS"><a href="#简单动态字符串-SDS" class="headerlink" title="简单动态字符串-SDS"></a>简单动态字符串-SDS</h2><blockquote>
 <p>String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 <code>512M</code>。</p>
 </blockquote>
@@ -1011,6 +1011,11 @@ String 底层数据结构为 SDS（Simple Dyn">
 
 <h2 id="SET-a-b，这个数据的存储结构是怎样的？"><a href="#SET-a-b，这个数据的存储结构是怎样的？" class="headerlink" title="SET a b，这个数据的存储结构是怎样的？"></a>SET a b，这个数据的存储结构是怎样的？</h2><p>如果a在字典中，则value进行覆盖。如果a不存在字典中，则将key添加到字典中对应的偏移位置，并将b作为value进行存储。</p>
 <h2 id="SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？"><a href="#SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？" class="headerlink" title="SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？"></a>SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？</h2><p>如果添加了对键a添加了ttl，则会立马将其key添加到过期字典中，并存储毫秒精度的时间戳</p>
+<h2 id="过期的数据的删除策略了解么？"><a href="#过期的数据的删除策略了解么？" class="headerlink" title="过期的数据的删除策略了解么？"></a>过期的数据的删除策略了解么？</h2><ol>
+<li><strong>惰性删除</strong> ：只会在取出 key 的时候才对数据进行过期检查。这样对 CPU 最友好，但是可能会造成太多过期 key 没有被删除。</li>
+<li><strong>定期删除</strong> ： 每隔一段时间（1s10次）抽取一批 key （20个）执行删除过期 key 操作。并且，Redis 底层会通过限制删除操作执行的时长和频率来减少删除操作对 CPU 时间的影响。INFO查看频率，如果删除后过期key的占比还是大于25%，则再抽取20个检查，往复循环，为了防止卡死，定期删除循环时间不超过25ms</li>
+</ol>
+<p>定期删除对内存更加友好，惰性删除对 CPU 更加友好。两者各有千秋，所以 Redis 采用的是 <strong>定期删除+惰性删除</strong> </p>
 <h1 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h1><h2 id="Redis是单线程还是多线程的？"><a href="#Redis是单线程还是多线程的？" class="headerlink" title="Redis是单线程还是多线程的？"></a>Redis是单线程还是多线程的？</h2><p>核心处理逻辑，Redis一直是单线程的；</p>
 <p>某些异步流程从4.0开始用多线程，如UNLINK、FLUSHALL ASYNC、FLUSHDB ASYNC等非阻塞的异步删除操作</p>
 <p>网络I/O解包从6.0开始用的都是多线程</p>
@@ -1124,7 +1129,8 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><p>客户端执行数据库清空命令FLUSHALL时候，会触发快照的生成</p>
 </li>
 </ul>
-<h2 id="AOF触发条件是什么？触发时机又是什么？"><a href="#AOF触发条件是什么？触发时机又是什么？" class="headerlink" title="AOF触发条件是什么？触发时机又是什么？"></a>AOF触发条件是什么？触发时机又是什么？</h2><ul>
+<h2 id="AOF触发条件是什么？触发时机又是什么？"><a href="#AOF触发条件是什么？触发时机又是什么？" class="headerlink" title="AOF触发条件是什么？触发时机又是什么？"></a>AOF触发条件是什么？触发时机又是什么？</h2><p>AOF是通过配置项来 自动触发的</p>
+<ul>
 <li><p>always：每条命令执行成功后，都会刷进磁盘</p>
 </li>
 <li><p>everysec：每一秒触发一次（默认的aof策略）</p>
@@ -1165,7 +1171,12 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><p>当重写发生时，主进程fork出一个子进程，对Base AOF日志进行重写·（将当前内存数据写入到新的Base AOF日志）；如果此时有新的写入命令，会由主进程写入到AOF缓冲，再将缓冲数据刷入新的Incr AOF日志。这样新的Incr AOF日志 + 新的Base AOF日志 就构成了完整的新的AOF日志</p>
 </li>
 </ul>
-<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><h2 id="Cache-Aside-Pattern：旁路缓存模式"><a href="#Cache-Aside-Pattern：旁路缓存模式" class="headerlink" title="Cache-Aside Pattern：旁路缓存模式"></a>Cache-Aside Pattern：旁路缓存模式</h2><p>应用服务把缓存当作数据库的旁路，直接和缓存进行交互，<strong>适合读请求比较多的场景</strong>。</p>
+<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p>先更新数据库，再删除缓存，并配合消息队列来解决缓存一直性的问题</p>
+<p>大的方向有三：</p>
+<p>1.更新MySQL即可，不管Redis，以过期时间兜底</p>
+<p>2.更新MySQL之后，操作Redis</p>
+<p>3.异步将MySQL的更新同步到Redis</p>
+<h2 id="Cache-Aside-Pattern：旁路缓存模式"><a href="#Cache-Aside-Pattern：旁路缓存模式" class="headerlink" title="Cache-Aside Pattern：旁路缓存模式"></a>Cache-Aside Pattern：旁路缓存模式</h2><p>应用服务把缓存当作数据库的旁路，直接和缓存进行交互，<strong>适合读请求比较多的场景</strong>。</p>
 <p><strong>读：</strong>从 cache 中读取数据，读取到就直接返回，cache 中读取不到的话，就从 db 中读取数据返回，再把数据放到 cache 中。</p>
 <p><strong>写</strong> ：先更新 db，然后直接删除 cache 。</p>
 <p><strong>在写数据的过程中，可以先删除 cache ，后更新 db 么？</strong></p>
@@ -1203,7 +1214,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>很明显，这种方式对数据一致性带来了更大的挑战，比如 cache 数据可能还没异步更新 db 的话，cache 服务可能就就挂掉了。</p>
 <p>应用场景：消息队列中消息的异步写入磁盘、MySQL 的 Innodb Buffer Pool 机制都用到了这种策略。</p>
 <p>Write Behind Pattern 下 db 的写性能非常高，非常适合一些数据经常变化又对数据一致性要求没那么高的场景，比如浏览量、点赞量。</p>
-<h1 id="缓存异常"><a href="#缓存异常" class="headerlink" title="缓存异常"></a>缓存异常</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>缓存和数据库中都没有的数据</p>
+<h1 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>缓存和数据库中都没有的数据</p>
 <p>解决方案</p>
 <ul>
 <li><p>1.接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；</p>
@@ -1223,7 +1234,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><p>3.加互斥锁</p>
 </li>
 </ul>
-<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至down机</p>
+<h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><p>缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至down机</p>
 <p>解决方案</p>
 <ul>
 <li><p>1.缓存数据的过期时间设置随机，防止同一时间大量数据过期现象发生。</p>
@@ -1231,6 +1242,89 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><p>2.如果缓存数据库是分布式部署，将热点数据均匀分布在不同的缓存数据库中。</p>
 </li>
 <li><p>3.限流，避免同时处理大量请求</p>
+</li>
+</ul>
+<h2 id="大key是什么？热key是什么？"><a href="#大key是什么？热key是什么？" class="headerlink" title="大key是什么？热key是什么？"></a>大key是什么？热key是什么？</h2><p>大key是什么？在Redis中，大key指的是key对应的value值所占的内存空间比较大。</p>
+<p>热key是什么？在Redis中，我们把访问频率高的Key，称为热Key。</p>
+<h2 id="如何识别出大key，如何识别出热key？"><a href="#如何识别出大key，如何识别出热key？" class="headerlink" title="如何识别出大key，如何识别出热key？"></a>如何识别出大key，如何识别出热key？</h2><ul>
+<li>redis-cli –bigkeys、redis-cli –hotkeys</li>
+<li>MEMORY USAGE key</li>
+<li>redis-rdb-tools工具</li>
+</ul>
+<h2 id="大key的标准一般是什么？热key一般是什么？"><a href="#大key的标准一般是什么？热key一般是什么？" class="headerlink" title="大key的标准一般是什么？热key一般是什么？"></a>大key的标准一般是什么？热key一般是什么？</h2><p>大key定义参考值如下：</p>
+<ul>
+<li><p>1.string类型的key超过10KB</p>
+</li>
+<li><p>2.hash/set/zset/list等数据结构中元素个数大于5k/整体占用内存大于10MB</p>
+</li>
+</ul>
+<p>热key定义参考值如下：</p>
+<p>以被请求频率来定义是否是热key，没有固定经验值。某个key被高频访问导致系统稳定性变差，都可以定义为热key。</p>
+<ul>
+<li><p>QPS集中在特定的Key</p>
+</li>
+<li><p>带宽使用率集中在特定的Key</p>
+</li>
+<li><p>CPU使用时间占比集中在特定的Key</p>
+</li>
+</ul>
+<h2 id="大key会带来什么问题？热key会带来什么问题？为什么会带来这些问题"><a href="#大key会带来什么问题？热key会带来什么问题？为什么会带来这些问题" class="headerlink" title="大key会带来什么问题？热key会带来什么问题？为什么会带来这些问题"></a>大key会带来什么问题？热key会带来什么问题？为什么会带来这些问题</h2><ul>
+<li><p>内存使用不均匀。</p>
+<ul>
+<li>例如在redis集群模式中，某个数据分片的内存使用率远超其他数据分片，无法使数据分片的内存资源达到均衡。另外也可能造成redis内存达到maxmemory参数定义的上限导致重要的Key被逐出，甚至引发内存溢出。</li>
+</ul>
+</li>
+<li><p>响应时间上升、超时阻塞。</p>
+<ul>
+<li>由于redis是单线程架构，操作大key耗时较长，有可能造成redis阻塞。</li>
+</ul>
+</li>
+<li><p>过期时可能阻塞。</p>
+<ul>
+<li>大key设定了过期时间，当过期时这个key会被删除。假如redis版本低于4.0没有非同步删除机制，就会存在阻塞redis的可能性，并且慢查询查不到；同样，内存不足时的key驱逐或者是rename一个大key也会阻塞redis服务。长时间阻塞主库，可能会引发同步中断或主从切换。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>占用大量的CPU资源，影响其他请求并导致整体性能降低。</p>
+</li>
+<li><p>集群架构下，产生访问倾斜，即某个数据分片被大量访问，而其他数据分片处于空闲状态，可能引起该数据分片的连接数被耗尽，新的连接建立请求被拒绝等问题。</p>
+</li>
+<li><p>在抢购或秒杀场景下，可能因商品对应库存Key的请求量过大，超出Redis处理能力造成超卖。</p>
+</li>
+<li><p>热Key的请求压力数量超出Redis的承受能力易造成缓存击穿，即大量请求将被直接指向后端的存储层，导致存储访问量激增甚至宕机，从而影响其他业务。</p>
+</li>
+</ul>
+<h2 id="大Key和热Key产生的原因"><a href="#大Key和热Key产生的原因" class="headerlink" title="大Key和热Key产生的原因"></a>大Key和热Key产生的原因</h2><p>未正确使用Redis、业务规划不足、无效数据的堆积、访问量突增等都会产生大Key与热Key，如：</p>
+<p>大key</p>
+<ul>
+<li><p>在不适用的场景下使用Redis，易造成Key的value过大，如使用String类型的Key存放大体积二进制文件型数据；</p>
+</li>
+<li><p>业务上线前规划设计不足，没有对Key中的成员进行合理的拆分，造成个别Key中的成员数量过多；</p>
+</li>
+<li><p>未定期清理无效数据，造成如HASH类型Key中的成员持续不断地增加；</p>
+</li>
+<li><p>使用LIST类型Key的业务消费侧发生代码故障，造成对应Key的成员只增不减。</p>
+</li>
+</ul>
+<p>热key</p>
+<ul>
+<li>预期外的访问量陡增，如突然出现的爆款商品、访问量暴涨的热点新闻、直播间某主播搞活动带来的大量刷屏点赞、游戏中某区域发生多个工会之间的战斗涉及大量玩家等。</li>
+</ul>
+<h2 id="有什么技术方案解决大key问题？有什么技术方案解决热key问题？"><a href="#有什么技术方案解决大key问题？有什么技术方案解决热key问题？" class="headerlink" title="有什么技术方案解决大key问题？有什么技术方案解决热key问题？"></a>有什么技术方案解决大key问题？有什么技术方案解决热key问题？</h2><ul>
+<li><p>对大Key进行拆分</p>
+</li>
+<li><p>对大Key进行清理</p>
+</li>
+<li><p>监控Redis的内存水位，设置报警提醒</p>
+</li>
+</ul>
+<ul>
+<li><p>使用读写分离架构：如果热Key的产生来自于读请求，那么读写分离是一个很好的解决方案。在使用读写分离架构时可以通过不断的增加从节点来降低每个Redis实例中的读请求压力。</p>
+</li>
+<li><p>Redis集群扩容：增加分片副本，分摊客户端发过来的读请求。</p>
+</li>
+<li><p>热Key备份: 比如key，备份为key1,key2……keyN，同样的数据N个备份，N个备份分布到不同分片，访问时可随机访问N个备份中的一个,进一步分担读流量。</p>
 </li>
 </ul>
 <h1 id="场景题"><a href="#场景题" class="headerlink" title="场景题"></a>场景题</h1><h2 id="使用-Redis-统计网站-UV-怎么做？"><a href="#使用-Redis-统计网站-UV-怎么做？" class="headerlink" title="使用 Redis 统计网站 UV 怎么做？"></a>使用 Redis 统计网站 UV 怎么做？</h2><blockquote>
@@ -1316,6 +1410,33 @@ OK
 <span class="token operator">></span> BITCOUNT desk2
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 2
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="实现分布式锁"><a href="#实现分布式锁" class="headerlink" title="实现分布式锁"></a>实现分布式锁</h2><p>setnx+过期时间+owner检测(分布式锁需要满足谁申请谁释放原则，不能释放别人的锁，也就是说，分布式锁，是要有归属的)+Lua(解决owner检测原子性)+主从容灾和多级部署</p>
+<h2 id="秒杀"><a href="#秒杀" class="headerlink" title="秒杀"></a>秒杀</h2><ul>
+<li>第一点，海量请求，服务要能扛住。</li>
+</ul>
+<p>秒杀活动的主要思路是削峰、限流、异步、补偿。</p>
+<p>异步这一步可以通过消息队列来实现，将抢和购解耦，还可以很方便地限频，不至于让MySQL过度承压。</p>
+<p>我们可以先将库存名额预加载到Redis，然后在Redis中进行扣减，扣减成功的再通过消息队列，传递到MySQL做真正的订单生成。Redis可是单机支撑每秒几万的写入，并且可以做成集群，提高扩展能力的。</p>
+<p>如果请求过多就要考虑使用多个Redis来分流，通过Nginx来进行负载均衡。</p>
+<ul>
+<li>第二点，不能超卖。</li>
+</ul>
+<p>Redis + Lua 解决售卖过程中的原子性问题，避免超卖</p>
+<ul>
+<li>第三点，避免少卖。</li>
+</ul>
+<p>库存减少了，但用户订单没生成。</p>
+<p>第一种，也最简单的方式，在投递Kafka失败的情况下，增加渐进式重试；</p>
+<p>第二种，更安全一点，就是在第一种的基础上，将这条消息记录在磁盘上，慢慢重试；</p>
+<ul>
+<li>第四点，保证触达到用户而不是黄牛。</li>
+</ul>
+<p>为了性能，我们还是将限制逻辑加入到Redis中，所以我们的Lua脚本中，第一步查询库存，第二步扣减库存。</p>
+<p>优化：第一步查询库存，第二步查询用户已购买个数，第三步扣减库存，第四步记录用户购买数。</p>
+<p>黄牛大多是通过代码来抢购，点击速度比人点击快得多，这样就导致了竞争不公平。怎么解决呢？</p>
+<p>某个用户请求接口次数过于频繁，一般说明是用脚本在跑，可以只针对该用户做限制。</p>
+<p>针对IP做限制也是常见做的做法，但这样容易误杀，主要考虑到使用同一个网络的用户，可能都是一个出口IP。限制IP，会导致正常用户也受到影响。</p>
+<p>更好用的方案是加上一个验证码验证。验证码符合91原则，90%的时间，都用在验证码输入上，所以使用脚本点击的影响会降到很低。</p>
 <h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><blockquote>
 <p>单机 Redis 存在单点风险问题，也就是说，如果唯一的一个 Redis 节点宕机的话，就会导致大量的请求直接被打到数据库，严重的情况下，数据库很可能会直接被干宕机了。</p>
 </blockquote>
@@ -1346,10 +1467,10 @@ SLAVEOF <span class="token keyword">no</span> one
 </blockquote>
 <h3 id="什么是-Sentinel？-有什么用？"><a href="#什么是-Sentinel？-有什么用？" class="headerlink" title="什么是 Sentinel？ 有什么用？"></a>什么是 Sentinel？ 有什么用？</h3><p>Redis Sentinel 实现 Redis 集群高可用，只是在主从复制基础下，多了一个 Sentinel 角色来监控 Redis 节点的运行状态并自动实现故障转移。当 master 节点出现故障的时候， Sentinel 会帮助我们实现故障转移，自动根据一定的规则选出一个 slave 升级为 master，确保整个 Redis 系统的可用性。整个过程完全自动，不需要人工介入。</p>
 <ul>
-<li>监控：监控所有 redis 节点（包括 sentinel 节点自身）的状态是否正常。  </li>
-<li>故障转移：如果一个 master 出现故障，Sentinel 会帮助我们实现故障转移，自动将某一台 slave 升级为 master，确保整个 Redis 系统的可用性。  </li>
-<li>通知 ：通知 slave 新的 master 连接信息，让它们执行 replicaof 成为新的 master 的 slave。  </li>
-<li>配置提供 ：客户端连接 sentinel 请求 master 的地址，如果发生故障转移，sentinel 会通知新的 master 链接信息给客户端。</li>
+<li><strong>监控</strong>：监控所有 redis 节点（包括 sentinel 节点自身）的状态是否正常。  </li>
+<li><strong>故障转移</strong>：如果一个 master 出现故障，Sentinel 会帮助我们实现故障转移，自动将某一台 slave 升级为 master，确保整个 Redis 系统的可用性。  </li>
+<li><strong>通知</strong> ：通知 slave 新的 master 连接信息，让它们执行 replicaof 成为新的 master 的 slave。  </li>
+<li><strong>配置提供</strong> ：客户端连接 sentinel 请求 master 的地址，如果发生故障转移，sentinel 会通知新的 master 链接信息给客户端。</li>
 </ul>
 <h3 id="为什么建议部署多个-sentinel-节点（哨兵集群）？"><a href="#为什么建议部署多个-sentinel-节点（哨兵集群）？" class="headerlink" title="为什么建议部署多个 sentinel 节点（哨兵集群）？"></a>为什么建议部署多个 sentinel 节点（哨兵集群）？</h3><ul>
 <li>多个 sentinel 节点通过投票的方式来确定 节点是否真的不可用，避免误判（比如网络问题可能会导致误判）。  </li>
@@ -1421,7 +1542,7 @@ SLAVEOF <span class="token keyword">no</span> one
 <li>Node 2 ： 5501 - 11000 的 hash slots  </li>
 <li>Node 3 ： 11001 - 16383 的 hash slots  </li>
 </ul>
-<p>在任意一个 master 节点上执行 CLUSTER SLOTS命令即可返回哈希槽和节点的映射关系</p>
+<p>在任意一个 master 节点上执行 <code>CLUSTER SLOTS</code>命令即可返回哈希槽和节点的映射关系</p>
 <p>客户端连接 Redis Cluster 中任意一个 master 节点即可访问 Redis Cluster 的数据，当客户端发送命令请求的时候，需要先根据 key 通过上面的计算公示找到的对应的哈希槽，然后再查询哈希槽和节点的映射关系，即可找到目标节点。</p>
 <p>如果哈希槽确实是当前节点负责，那就直接响应客户端的请求返回结果，如果不由当前节点负责，就会返回 <code>\-MOVED</code> 重定向错误，告知客户端当前哈希槽是由哪个节点负责，客户端向目标节点发送请求并更新缓存的哈希槽分配信息。</p>
 <p>Redis Cluster 哈希槽分区机制的优点：解耦了数据和节点之间的关系，提升了集群的横向扩展性和容错性。</p>
@@ -1433,18 +1554,15 @@ SLAVEOF <span class="token keyword">no</span> one
 </ul>
 <h3 id="Redis-Cluster-如何手动重新分配哈希槽？"><a href="#Redis-Cluster-如何手动重新分配哈希槽？" class="headerlink" title="Redis Cluster 如何手动重新分配哈希槽？"></a>Redis Cluster 如何手动重新分配哈希槽？</h3><p>。。。</p>
 <h3 id="Redis-Cluster-扩容缩容期间可以提供服务吗？"><a href="#Redis-Cluster-扩容缩容期间可以提供服务吗？" class="headerlink" title="Redis Cluster 扩容缩容期间可以提供服务吗？"></a>Redis Cluster 扩容缩容期间可以提供服务吗？</h3><blockquote>
-<p>如果客户端访问的 key 所属的槽正在迁移怎么办？<br>如何确定给定 key 的应该分布到哪个哈希槽中？</p>
+<p>如果客户端访问的 key 所属的槽正在迁移怎么办？ </p>
 </blockquote>
 <p>Redis Cluster 扩容和缩容本质是进行重新分片，动态迁移哈希槽。  </p>
-<p>为了保证 Redis Cluster 在扩容和缩容期间依然能够对外正常提供服务，Redis Cluster 提供了重定向机制，两种不同的类型：  </p>
+<p>为了保证 Redis Cluster 在扩容和缩容期间依然能够对外正常提供服务，Redis Cluster 提供了重定向机制</p>
 <ul>
 <li>1、客户端发送请求命令，如果请求的 key 对应的哈希槽还在当前节点的话，就直接响应客户端的请求。  </li>
 <li>2、如果客户端请求的 key 对应的哈希槽当前正在迁移至新的节点，就会返回 -ASK 重定向错误，告知客户端要将请求发送到哈希槽被迁移到的目标节点。  </li>
 </ul>
-<h3 id="Redis-Cluster-中的节点是怎么进行通信的？"><a href="#Redis-Cluster-中的节点是怎么进行通信的？" class="headerlink" title="Redis Cluster 中的节点是怎么进行通信的？"></a>Redis Cluster 中的节点是怎么进行通信的？</h3><h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><ul>
-<li></li>
-<li></li>
-</ul>
+<h3 id="Redis-Cluster-中的节点是怎么进行通信的？"><a href="#Redis-Cluster-中的节点是怎么进行通信的？" class="headerlink" title="Redis Cluster 中的节点是怎么进行通信的？"></a>Redis Cluster 中的节点是怎么进行通信的？</h3><p>Redis Cluster 中的各个节点基于 Gossip 协议 来进行通信共享信息，每个 Redis 节点都维护了一份集群的状态信息。</p>
 <h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -2240,7 +2358,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">999.3k</span>&nbsp;字
+                class="white-color">1001.4k</span>&nbsp;字
             
             
             
