@@ -702,7 +702,7 @@
 <script src="/libs/cryptojs/crypto-js.min.js"></script>
 <script>
     (function() {
-        let pwd = '';
+        let pwd = 'de3bbd0fd7945e42581643b18cdf28dd3ed61d9c3d541b7b016081564b65a3f3';
         if (pwd && pwd.length > 0) {
             if (pwd !== CryptoJS.SHA256(prompt('猜猜密码是什么呢ヾﾉ≧∀≦)o')).toString(CryptoJS.enc.Hex)) {
                 alert('哎呦！密码好像不对哟，将返回主页！');
@@ -879,14 +879,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-03-03
+                    2023-04-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    28.5k
+                    27.8k
                 </div>
                 
 
@@ -1921,18 +1921,9 @@ ForkJoinPool-1-worker-1 开始执行: 3126-3750
 **/</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h1 id="⑤JUC锁"><a href="#⑤JUC锁" class="headerlink" title="⑤JUC锁"></a>⑤JUC锁</h1><p><img src="https://img.jwt1399.top/img/202301051556064.png"></p>
-<h2 id="❶AQS"><a href="#❶AQS" class="headerlink" title="❶AQS"></a>❶AQS</h2><h3 id="🌟AQS-是什么？"><a href="#🌟AQS-是什么？" class="headerlink" title="🌟AQS 是什么？"></a>🌟AQS 是什么？</h3><blockquote>
-<p>说下对同步器 AQS 的理解？</p>
-</blockquote>
-<p>AQS 的全称为 <code>AbstractQueuedSynchronizer</code> ，抽象队列同步器。这个类在 <code>java.util.concurrent.locks</code> 包下面。是一个用来构建锁和同步器的框架，像ReentrantLock，Semaphore，FutureTask，ReentrantReadWriteLock，SynchronousQueue都是基于AQS实现的。</p>
-<p>简单来说，AQS就是维护了一个共享资源，然后使用队列来保证线程排队获取资源的一个过程。</p>
-<h3 id="🌟AQS-的原理是什么？"><a href="#🌟AQS-的原理是什么？" class="headerlink" title="🌟AQS 的原理是什么？"></a>🌟AQS 的原理是什么？</h3><p>AQS 核心思想</p>
-<ul>
-<li><p>如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并将共享资源设置锁定状态</p>
-</li>
-<li><p>如果请求的共享资源被占用，AQS 用 <strong>CLH 队列锁</strong> 实现了线程阻塞等待以及被唤醒时锁分配的机制，将暂时获取不到锁的线程加入到队列中</p>
-</li>
-</ul>
+<h2 id="❶AQS"><a href="#❶AQS" class="headerlink" title="❶AQS"></a>❶AQS</h2><h3 id="🌟AQS-的原理是什么？"><a href="#🌟AQS-的原理是什么？" class="headerlink" title="🌟AQS 的原理是什么？"></a>🌟AQS 的原理是什么？</h3><p>AQS（AbstractQueuedSynchronizer） 抽象队列同步器。是一个用来构建锁和同步器的框架，像ReentrantLock，Semaphore，CountDownLatch，ReentrantReadWriteLock，SynchronousQueue，FutureTask都是基于AQS实现的。</p>
+<p>主要依赖于一个<strong>双向链表</strong>（FIFO等待队列）和一个<strong>volatile类型的整数state</strong>来实现同步控制。如果线程获取资源失败，则进入同步队列等待；如果获取成功就执行临界区代码，释放资源时会通知同步队列中的等待线程。</p>
+<p>子类通过继承同步器并实现它的抽象方法getState、setState 和 compareAndSetState对同步状态进行更改。</p>
 <p><img src="https://img.jwt1399.top/img/202301041734275.png" alt="AQS原理图"></p>
 <p>AQS 是维护了一个共享资源和一个 FIFO 的线程等待队列</p>
 <pre class="line-numbers language-js"><code class="language-js"><span class="token keyword">private</span> volatile int state<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//用于展示当前临界资源的获锁情况</span>
@@ -1952,8 +1943,15 @@ ForkJoinPool-1-worker-1 开始执行: 3126-3750
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="🌟AQS的资源共享方式有哪些？"><a href="#🌟AQS的资源共享方式有哪些？" class="headerlink" title="🌟AQS的资源共享方式有哪些？"></a>🌟AQS的资源共享方式有哪些？</h3><ul>
 <li>  Exclusive：独占，只有一个线程可以执行，例如ReentrantLock，又可分为公平锁和非公平锁</li>
-<li>  Share：共享，多个线程可同时执行，如：CountDownLatch、Semaphore、CountDownLatch、 CyclicBarrier、ReadWriteLock。</li>
+<li>  Share：共享，多个线程可同时执行，如：CountDownLatch、Semaphore、 CyclicBarrier、ReadWriteLock。</li>
 </ul>
+<h3 id="🌟AQS-共享锁和独占锁的区别？"><a href="#🌟AQS-共享锁和独占锁的区别？" class="headerlink" title="🌟AQS 共享锁和独占锁的区别？"></a>🌟AQS 共享锁和独占锁的区别？</h3><p>共享式与独占式的最主要<strong>区别</strong>在于：</p>
+<ul>
+<li>独占式同一时刻只能有<strong>一个线程</strong>获取同步状态</li>
+<li>共享式同一时刻可以有<strong>多个线程</strong>获取同步状态</li>
+</ul>
+<p>例如读操作可以有多个线程同时进行，而写操作同一时刻只能有一个线程进行写操作，其他操作都会被阻塞。</p>
+<p>acquire 和 acquireShared 的区别：acquireShared 在获取锁后会调用 doReleaseShared() 唤醒下一个节点；acquire 不会，只会唤醒一个<br>release 和 releaseShared 的区别：releaseShared需要确保线程安全，因为可能会有几个线程同时释放；release不需要保证线程安全，因为一定是独占的</p>
 <h3 id="🌟AQS底层使用了什么样的设计模式"><a href="#🌟AQS底层使用了什么样的设计模式" class="headerlink" title="🌟AQS底层使用了什么样的设计模式?"></a>🌟AQS底层使用了什么样的设计模式?</h3><p>模板， 共享锁和独占锁在一个接口类中。</p>
 <h3 id="🌟如何使用AQS自定义同步器？"><a href="#🌟如何使用AQS自定义同步器？" class="headerlink" title="🌟如何使用AQS自定义同步器？"></a>🌟如何使用AQS自定义同步器？</h3><blockquote>
 <p>AQS 底层使用了模板方法模式，你能说出几个需要重写的方法吗？</p>
@@ -1973,13 +1971,6 @@ ForkJoinPool-1-worker-1 开始执行: 3126-3750
 <li><p> tryReleaseShared(int) ：共享方式。尝试释放资源，成功则返回 true，失败则返回 false。</p>
 </li>
 </ol>
-<h3 id="🌟AQS-共享锁和独占锁的区别？"><a href="#🌟AQS-共享锁和独占锁的区别？" class="headerlink" title="🌟AQS 共享锁和独占锁的区别？"></a>🌟AQS 共享锁和独占锁的区别？</h3><p>共享式与独占式的最主要<strong>区别</strong>在于：</p>
-<ul>
-<li>独占式同一时刻只能有<strong>一个线程</strong>获取同步状态</li>
-<li>共享式同一时刻可以有多个线程获取同步状态</li>
-</ul>
-<p>例如读操作可以有多个线程同时进行，而写操作同一时刻只能有一个线程进行写操作，其他操作都会被阻塞。</p>
-<p>acquire 和 acquireShared 的区别：acquireShared 在获取锁后会调用 doReleaseShared() 唤醒下一个节点；acquire 不会，只会唤醒一个<br>release 和 releaseShared 的区别：releaseShared需要确保线程安全，因为可能会有几个线程同时释放；release不需要保证线程安全，因为一定是独占的</p>
 <h2 id="❷ReentrantLock"><a href="#❷ReentrantLock" class="headerlink" title="❷ReentrantLock"></a>❷ReentrantLock</h2><h3 id="🌟ReentrantLock-是如何实现可重入性的"><a href="#🌟ReentrantLock-是如何实现可重入性的" class="headerlink" title="🌟ReentrantLock 是如何实现可重入性的?"></a>🌟ReentrantLock 是如何实现可重入性的?</h3><p><code>ReentrantLock</code>内部自定义了同步器sync，在加锁的时候通过CAS算法，将线程对象放到一个双向链表中，每次获取锁的时候，检查当前维护的那个线程ID和当前请求的线程ID是否 一致，如果一致，同步状态加1，表示锁被当前线程获取了多次。</p>
 <h3 id="🌟ReentrantLock的核心是AQS，那么它怎么来实现的-继承"><a href="#🌟ReentrantLock的核心是AQS，那么它怎么来实现的-继承" class="headerlink" title="🌟ReentrantLock的核心是AQS，那么它怎么来实现的? 继承"></a>🌟ReentrantLock的核心是AQS，那么它怎么来实现的? 继承</h3><p>通过分析ReentrantLock的源码，可知对其操作都转化为对Sync对象的操作，由于Sync继承了AQS，所以基本上都可以转化为对AQS的操作。如将ReentrantLock的lock函数转化为对Sync的lock函数的调用，而具体会根据采用的策略(如公平策略或者非公平策略)的不同而调用到Sync的不同子类。</p>
 <p>所以可知，在ReentrantLock的背后，是AQS对其服务提供了支持。</p>
@@ -2008,17 +1999,22 @@ ForkJoinPool-1-worker-1 开始执行: 3126-3750
 <li><p>读锁的获取与释放是怎么实现的?  tryAcquireShared/tryReleaseShared</p>
 </li>
 </ul>
-<h2 id="❸Semaphore"><a href="#❸Semaphore" class="headerlink" title="❸Semaphore"></a>❸Semaphore</h2><h3 id="🌟Semaphore-有什么用？"><a href="#🌟Semaphore-有什么用？" class="headerlink" title="🌟Semaphore 有什么用？"></a>🌟Semaphore 有什么用？</h3><p><code>synchronized</code> 和 <code>ReentrantLock</code> 都是一次只允许一个线程访问某个资源，而<code>Semaphore</code>(信号量)可以用来控制同时访问特定资源的线程数量。</p>
-<p>执行 acquire 方法阻塞，直到有一个许可证可以获得然后拿走一个许可证；</p>
-<p>每个 release 方法增加一个许可证，这可能会释放一个阻塞的 acquire 方法。</p>
-<p>然而，其实并没有实际的许可证这个对象，Semaphore 只是维持了一个可获得许可证的数量。</p>
-<p>Semaphore 经常用于限制获取某种资源的线程数量。当然一次也可以一次拿取和释放多个许可证，不过一般没有必要这样做。除了 acquire方法（阻塞）之外，另一个比较常用的与之对应的方法是 tryAcquire 方法，该方法如果获取不到许可就立即返回 false。</p>
+<h2 id="❸Semaphore"><a href="#❸Semaphore" class="headerlink" title="❸Semaphore"></a>❸Semaphore</h2><h3 id="🌟Semaphore-有什么用？"><a href="#🌟Semaphore-有什么用？" class="headerlink" title="🌟Semaphore 有什么用？"></a>🌟Semaphore 有什么用？</h3><p><code>synchronized</code> 和 <code>ReentrantLock</code> 都是一次只允许一个线程访问某个资源，而<code>Semaphore</code>(信号量)可以用来<strong>控制同时访问特定资源的线程数量。</strong></p>
+<ul>
+<li><p>执行 acquire 方法阻塞，直到有一个许可证可以获得然后拿走一个许可证；</p>
+</li>
+<li><p>每个 release 方法增加一个许可证，这可能会释放一个阻塞的 acquire 方法。</p>
+</li>
+</ul>
 <p><code>Semaphore</code> 通常用于那些资源有明确访问数量限制的场景比如限流（仅限于单机模式，实际项目中推荐使用 Redis +Lua 来做限流）。</p>
-<h3 id="🌟Semaphore-的原理是什么？"><a href="#🌟Semaphore-的原理是什么？" class="headerlink" title="🌟Semaphore 的原理是什么？"></a>🌟Semaphore 的原理是什么？</h3><p><code>Semaphore</code> 是共享锁的一种实现，它默认构造 AQS 的 <code>state</code> 值为 <code>permits</code>，你可以将 <code>permits</code> 的值理解为许可证的数量，只有拿到许可证的线程才能执行。</p>
-<p>调用<code>semaphore.acquire()</code> ，线程尝试获取许可证，如果 <code>state&gt;=0</code> 的话，则表示可以获取成功。如果获取成功的话，使用 CAS 操作去修改 <code>state</code> 的值 <code>state=state-1</code>。如果 <code>state&lt;0</code> 的话，则表示许可证数量不足。此时会创建一个 <code>Node</code> 节点加入阻塞队列，挂起当前线程。</p>
-<p>调用<code>semaphore.release()</code> ，线程尝试释放许可证，并使用 CAS 操作去修改 <code>state</code> 的值 <code>state=state+1</code>。释放许可证成功之后，同时会唤醒同步队列中的一个线程。被唤醒的线程会重新尝试去修改 <code>state</code> 的值 <code>state=state-1</code> ，如果 <code>state&gt;=0</code> 则获取令牌成功，否则重新进入阻塞队列，挂起线程。</p>
-<h4 id="🌟Semaphore常用方法有哪些-如何实现线程同步和互斥的"><a href="#🌟Semaphore常用方法有哪些-如何实现线程同步和互斥的" class="headerlink" title="🌟Semaphore常用方法有哪些? 如何实现线程同步和互斥的?"></a>🌟Semaphore常用方法有哪些? 如何实现线程同步和互斥的?</h4><p>acquire函数</p>
-<p>release函数</p>
+<h3 id="🌟Semaphore-的原理是什么？"><a href="#🌟Semaphore-的原理是什么？" class="headerlink" title="🌟Semaphore 的原理是什么？"></a>🌟Semaphore 的原理是什么？</h3><p><code>Semaphore</code>即信号量， 是共享锁的一种实现，它默认构造 AQS 的 <code>state</code> 值为 <code>permits</code>，你可以将 <code>permits</code> 的值理解为许可证的数量，只有拿到许可证的线程才能执行。使用 <code>acquire</code> 方法获得一个许可证，计数器减一，使用 <code>release</code> 方法释放许可，计数器加一。如果此时计数器值为0，线程进入休眠。</p>
+<hr>
+<ul>
+<li><p>调用<code>semaphore.acquire()</code> ，线程尝试获取许可证，如果 <code>state&gt;=0</code> 的话，则表示可以获取成功。如果获取成功的话，使用 CAS 操作去修改 <code>state</code> 的值 <code>state=state-1</code>。如果 <code>state&lt;0</code> 的话，则表示许可证数量不足。此时会创建一个 <code>Node</code> 节点加入阻塞队列，挂起当前线程。</p>
+</li>
+<li><p>调用<code>semaphore.release()</code> ，线程尝试释放许可证，并使用 CAS 操作去修改 <code>state</code> 的值 <code>state=state+1</code>。释放许可证成功之后，同时会唤醒同步队列中的一个线程。被唤醒的线程会重新尝试去修改 <code>state</code> 的值 <code>state=state-1</code> ，如果 <code>state&gt;=0</code> 则获取令牌成功，否则重新进入阻塞队列，挂起线程。</p>
+</li>
+</ul>
 <h3 id="🌟Semaphore场景问题"><a href="#🌟Semaphore场景问题" class="headerlink" title="🌟Semaphore场景问题"></a>🌟Semaphore场景问题</h3><ul>
 <li>Semaphore初始化有10个令牌，11个线程同时各调用1次acquire方法，会发生什么?</li>
 </ul>
@@ -2026,7 +2022,7 @@ ForkJoinPool-1-worker-1 开始执行: 3126-3750
 <ul>
 <li>Semaphore初始化有10个令牌，一个线程重复调用11次acquire方法，会发生什么?</li>
 </ul>
-<p>线程阻塞，不会继续往下运行。可能你会考虑类似于锁的重入的问题，很好，但是，令牌没有重入的概念。你只要调用一次acquire方法，就需要有一个令牌才能继续运行。</p>
+<p>线程阻塞，不会继续往下运行。可能你会考虑类似于锁的重入的问题，但是，令牌没有重入的概念。你只要调用一次acquire方法，就需要有一个令牌才能继续运行。</p>
 <ul>
 <li>Semaphore初始化有1个令牌，1个线程调用一次acquire方法，然后调用两次release方法，之后另外一个线程调用acquire(2)方法，此线程能够获取到足够的令牌并继续运行吗?</li>
 </ul>
@@ -2122,16 +2118,14 @@ LockSupport<span class="token punctuation">.</span><span class="token function">
 <h1 id="⑥JUC工具类"><a href="#⑥JUC工具类" class="headerlink" title="⑥JUC工具类"></a>⑥JUC工具类</h1><h2 id="❶CountDownLatch"><a href="#❶CountDownLatch" class="headerlink" title="❶CountDownLatch"></a>❶CountDownLatch</h2><h3 id="🌟什么是CountDownLatch"><a href="#🌟什么是CountDownLatch" class="headerlink" title="🌟什么是CountDownLatch?"></a>🌟什么是CountDownLatch?</h3><blockquote>
 <p>CountDownLatch 有什么用？</p>
 </blockquote>
-<p>CountDownLatch，计数器，底层也是由AQS，用来进行线程同步协作，等待所有线程完成</p>
-<p>CountDownLatch 允许 <code>count</code> 个线程阻塞在一个地方，直至所有线程的任务都执行完毕。</p>
-<p><code>CountDownLatch</code> 是一次性的，计数器的值只能在构造方法中初始化一次，之后没有任何机制再次对其设置值，当 <code>CountDownLatch</code> 使用完毕后，它不能再次被使用。</p>
+<p>CountDownLatch，计数器，底层也是由AQS，用来进行线程同步协作，等待所有线程完成。</p>
+<p>CountDownLatch 允许 <code>count</code> 个线程阻塞在一个地方，直至所有线程的任务都执行完毕。通过一个计数器来实现的，计数器的初始值 <code>count</code> 是线程的数量。每当一个线程执行完毕后，调用countDown方法，计数器的值就减1，当计数器的值为0时，表示所有线程都执行完毕，然后在等待的线程就可以恢复工作了。 只能一次性使用，不能reset。（<code>CountDownLatch</code> 是一次性的，计数器的值只能在构造方法中初始化一次，之后没有任何机制再次对其设置值，当 <code>CountDownLatch</code> 使用完毕后，它不能再次被使用）</p>
 <p>CountDownLatch一次可以唤醒几个任务? 多个</p>
-<h3 id="🌟CountDownLatch底层实现原理"><a href="#🌟CountDownLatch底层实现原理" class="headerlink" title="🌟CountDownLatch底层实现原理?"></a>🌟CountDownLatch底层实现原理?</h3><p>其底层是由AQS提供支持，所以其数据结构可以参考AQS的数据结构，而AQS的数据结构核心就是两个虚拟队列: 同步队列sync queue 和条件队列condition queue，不同的条件会有不同的条件队列。CountDownLatch典型的用法是将一个程序分为n个互相独立的可解决任务，并创建值为n的CountDownLatch。当每一个任务完成时，都会在这个锁存器上调用countDown，等待问题被解决的任务调用这个锁存器的await，将他们自己拦住，直至锁存器计数结束。</p>
-<p><code>CountDownLatch</code> 是共享锁的一种实现，它默认构造 AQS 的 <code>state</code> 值为 <code>count</code>。当线程使用 <code>countDown()</code> 方法时，其实使用了<code>tryReleaseShared</code>方法以 CAS 的操作来减少 <code>state</code>，直至 <code>state</code> 为 0 。当调用 <code>await()</code> 方法的时候，如果 <code>state</code> 不为 0，那就证明任务还没有执行完毕，<code>await()</code> 方法就会一直阻塞，也就是说 <code>await()</code> 方法之后的语句不会被执行。然后，<code>CountDownLatch</code> 会自旋 CAS 判断 <code>state == 0</code>，如果 <code>state == 0</code> 的话，就会释放所有等待的线程，<code>await()</code> 方法之后的语句得到执行。</p>
+<h3 id="🌟CountDownLatch底层实现原理"><a href="#🌟CountDownLatch底层实现原理" class="headerlink" title="🌟CountDownLatch底层实现原理?"></a>🌟CountDownLatch底层实现原理?</h3><p><code>CountDownLatch</code> 是共享锁的一种实现，它默认构造 AQS 的 <code>state</code> 值为 <code>count</code>。当线程使用 <code>countDown()</code> 方法时，其实使用了<code>tryReleaseShared</code>方法以 CAS 的操作来减少 <code>state</code>，直至 <code>state</code> 为 0 。当调用 <code>await()</code> 方法的时候，如果 <code>state</code> 不为 0，那就证明任务还没有执行完毕，<code>await()</code> 方法就会一直阻塞，也就是说 <code>await()</code> 方法之后的语句不会被执行。然后，<code>CountDownLatch</code> 会自旋 CAS 判断 <code>state == 0</code>，如果 <code>state == 0</code> 的话，就会释放所有等待的线程，<code>await()</code> 方法之后的语句得到执行。</p>
 <h3 id="🌟CountDownLatch有哪些主要方法"><a href="#🌟CountDownLatch有哪些主要方法" class="headerlink" title="🌟CountDownLatch有哪些主要方法?"></a>🌟CountDownLatch有哪些主要方法?</h3><p><code>CountDownLatch(int count)</code>：构造方法，初始化唤醒需要 down 几步</p>
 <p><code>await()</code>：此函数将会使当前线程在计数器倒计至零之前一直等待，除非线程被中断。</p>
 <p><code>countDown()</code>：此函将计数器进行减 1，如果计数到达零，则释放所有等待的线程</p>
-<h3 id="🌟用过-CountDownLatch-么？什么场景下用的？"><a href="#🌟用过-CountDownLatch-么？什么场景下用的？" class="headerlink" title="🌟用过 CountDownLatch 么？什么场景下用的？"></a>🌟用过 CountDownLatch 么？什么场景下用的？</h3><p><code>CountDownLatch</code> 的作用就是 允许 count 个线程阻塞在一个地方，直至所有线程的任务都执行完毕。之前在项目中，有一个使用多线程读取多个文件处理的场景，我用到了 <code>CountDownLatch</code> 。具体场景是下面这样的：</p>
+<h3 id="🌟用过-CountDownLatch-么？什么场景下用的？"><a href="#🌟用过-CountDownLatch-么？什么场景下用的？" class="headerlink" title="🌟用过 CountDownLatch 么？什么场景下用的？"></a>🌟用过 CountDownLatch 么？什么场景下用的？</h3><p><code>CountDownLatch</code> 的作用就是 允许 <code>count</code> 个线程阻塞在一个地方，直至所有线程的任务都执行完毕。之前在项目中，有一个使用多线程读取多个文件处理的场景，我用到了 <code>CountDownLatch</code> 。具体场景是下面这样的：</p>
 <p>我们要读取处理 6 个文件，这 6 个任务都是没有执行顺序依赖的任务，但是我们需要返回给用户的时候将这几个文件的处理的结果进行统计整理。</p>
 <p>为此我们定义了一个线程池和 count 为 6 的<code>CountDownLatch</code>对象 。使用线程池处理读取任务，每一个线程处理完之后就将 count-1，调用<code>CountDownLatch</code>对象的 <code>await()</code>方法，直到所有文件读取完之后，才会接着执行后面的逻辑。</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CountDownLatchExample1</span> <span class="token punctuation">{</span>
@@ -2229,25 +2223,23 @@ LockSupport<span class="token punctuation">.</span><span class="token function">
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="❷CyclicBarrier"><a href="#❷CyclicBarrier" class="headerlink" title="❷CyclicBarrier"></a>❷CyclicBarrier</h2><h3 id="🌟CyclicBarrier-有什么用？"><a href="#🌟CyclicBarrier-有什么用？" class="headerlink" title="🌟CyclicBarrier 有什么用？"></a>🌟CyclicBarrier 有什么用？</h3><blockquote>
-<p><code>CountDownLatch</code> 的实现是基于 AQS 的，而 <code>CycliBarrier</code> 是基于 <code>ReentrantLock</code>(<code>ReentrantLock</code> 也属于 AQS 同步器)和 <code>Condition</code> 的。</p>
+<p><code>CountDownLatch</code> 的实现是基于 AQS 的，而 <code>CycliBarrier</code> 是基于 <code>ReentrantLock</code>和 <code>Condition</code> 的。</p>
 </blockquote>
-<p><code>CyclicBarrier</code>：循环屏障，用来进行线程协作，等待线程满足某个计数，才能触发自己执行</p>
-<ul>
-<li>对于<code>CountDownLatch</code>，其他线程为游戏玩家，比如英雄联盟，主线程为控制游戏开始的线程。在所有的玩家都准备好之前，主线程是处于等待状态的，也就是游戏不能开始。当所有的玩家准备好之后，下一步的动作实施者为主线程，即开始游戏。</li>
-<li>对于<code>CyclicBarrier</code>，假设有一家公司要全体员工进行团建活动，活动内容为翻越三个障碍物，每一个人翻越障碍物所用的时间是不一样的。但是公司要求所有人在翻越当前障碍物之后再开始翻越下一个障碍物，也就是所有人翻越第一个障碍物之后，才开始翻越第二个，以此类推。类比地，每一个员工都是一个“其他线程”。当所有人都翻越的所有的障碍物之后，程序才结束。而主线程可能早就结束了，这里我们不用管主线程。</li>
-</ul>
+<p><code>CyclicBarrier</code>循环屏障，主要功能和<code>countDownLatch</code>类似，也是通过一个计数器，使一个线程等待其他线程各自执行完毕后再执行。但是其可以重复使用（reset）。</p>
 <h3 id="🌟CyclicBarrier-的原理是什么？"><a href="#🌟CyclicBarrier-的原理是什么？" class="headerlink" title="🌟CyclicBarrier 的原理是什么？"></a>🌟CyclicBarrier 的原理是什么？</h3><p><code>CyclicBarrier</code> 内部通过一个 <code>count</code> 变量作为计数器，<code>count</code> 的初始值为 <code>parties</code> 属性的初始化值，每当一个线程到了栅栏这里了，那么就将计数器减 1。如果 count 值为 0 了，表示这是这一代最后一个线程到达栅栏，就尝试执行我们构造方法中输入的任务。</p>
 <h3 id="🌟CountDownLatch-和-CyclicBarrier-有什么区别？"><a href="#🌟CountDownLatch-和-CyclicBarrier-有什么区别？" class="headerlink" title="🌟CountDownLatch 和 CyclicBarrier 有什么区别？"></a>🌟CountDownLatch 和 CyclicBarrier 有什么区别？</h3><p>CountDownLatch 是计数器，只能使用一次，而 CyclicBarrier 的计数器提供 reset 功能，可以多次使用。</p>
-<p>对于 CountDownLatch 来说，重点是“一个线程（多个线程）等待”，而其他的 N 个线程在完成“某件事情”之后，可以终止，也可以等待。而对于 CyclicBarrier，重点是多个线程，在任意一个线程没有完成，所有的线程都必须等待。</p>
 <p>CountDownLatch 是计数器，线程完成一个记录一个，只不过计数不是递增而是递减，而 CyclicBarrier 更像是一个阀门，需要所有线程都到达，阀门才能打开，然后继续执行。</p>
 <p><strong>CountDownLatch 应用场景：</strong></p>
-<p>1、某一线程在开始运行前等待 n 个线程执行完毕：启动一个服务时，主线程需要等待多个组件加载完毕，之后再继续执行。</p>
+<p>1、某一线程在开始运行前等待 n 个线程执行完毕。启动一个服务时，主线程需要等待多个组件加载完毕，之后再继续执行。</p>
 <p>2、实现多个线程开始执行任务的最大并行性。注意是并行性，不是并发，强调的是多个线程在某一时刻同时开始执行。类似于赛跑，将多个线程放到起点，等待发令枪响，然后同时开跑。</p>
-<p>3、死锁检测：一个非常方便的使用场景是，你可以使用 n 个线程访问共享资源，在每次测试阶段的线程数目是不同的，并尝试产生死锁。</p>
+<p>3、死锁检测。使用 n 个线程访问共享资源，在每次测试阶段的线程数目是不同的，并尝试产生死锁。</p>
 <p><strong>CyclicBarrier 应用场景：</strong></p>
-<p>CyclicBarrier 可以用于多线程计算数据，最后合并计算结果的应用场景。比如：我们用一个 Excel 保存了用户所有银行流水，每个 Sheet 保存一个帐户近一年的每笔银行流水，现在需要统计用户的日均银行流水，先用多线程处理每个 sheet 里的银行流水，都执行完之后，得到每个 sheet 的日均银行流水，最后，再用 barrierAction 用这些线程的计算结果，计算出整个 Excel 的日均银行流水。</p>
-<h2 id="❸Exchanger"><a href="#❸Exchanger" class="headerlink" title="❸Exchanger"></a>❸Exchanger</h2><h3 id="🌟Exchanger主要解决什么问题"><a href="#🌟Exchanger主要解决什么问题" class="headerlink" title="🌟Exchanger主要解决什么问题?"></a>🌟Exchanger主要解决什么问题?</h3><p>Exchanger用于进行两个线程之间的数据交换。它提供一个同步点，在这个同步点，两个线程可以交换彼此的数据。这两个线程通过exchange()方法交换数据，当一个线程先执行exchange()方法后，它会一直等待第二个线程也执行exchange()方法，当这两个线程到达同步点时，这两个线程就可以交换数据了。</p>
-<h3 id="🌟对比SynchronousQueue，为什么说Exchanger可被视为-SynchronousQueue-的双向形式"><a href="#🌟对比SynchronousQueue，为什么说Exchanger可被视为-SynchronousQueue-的双向形式" class="headerlink" title="🌟对比SynchronousQueue，为什么说Exchanger可被视为 SynchronousQueue 的双向形式?"></a>🌟对比SynchronousQueue，为什么说Exchanger可被视为 SynchronousQueue 的双向形式?</h3><p>Exchanger是一种线程间安全交换数据的机制。可以和之前分析过的SynchronousQueue对比一下：线程A通过SynchronousQueue将数据a交给线程B；线程A通过Exchanger和线程B交换数据，线程A把数据a交给线程B，同时线程B把数据b交给线程A。可见，SynchronousQueue是交给一个数据，Exchanger是交换两个数据。</p>
+<p>CyclicBarrier 可以用于多线程计算数据，最后合并计算结果的应用场景。</p>
+<h2 id="❸Exchanger"><a href="#❸Exchanger" class="headerlink" title="❸Exchanger"></a>❸Exchanger</h2><h3 id="🌟Exchanger主要解决什么问题"><a href="#🌟Exchanger主要解决什么问题" class="headerlink" title="🌟Exchanger主要解决什么问题?"></a>🌟Exchanger主要解决什么问题?</h3><p><code>Exchanger</code>用于<strong>进行两个线程之间的数据交换</strong>。它提供一个同步点，在这个同步点，两个线程可以交换彼此的数据。这两个线程通过<code>exchange()</code>方法交换数据，当一个线程先执行<code>exchange()</code>方法后会阻塞，它会一直等待第二个线程也执行<code>exchange()</code>方法，当这两个线程到达同步点时，这两个线程就可以交换数据了。</p>
+<h3 id="🌟对比SynchronousQueue，为什么说Exchanger可被视为-SynchronousQueue-的双向形式"><a href="#🌟对比SynchronousQueue，为什么说Exchanger可被视为-SynchronousQueue-的双向形式" class="headerlink" title="🌟对比SynchronousQueue，为什么说Exchanger可被视为 SynchronousQueue 的双向形式?"></a>🌟对比SynchronousQueue，为什么说Exchanger可被视为 SynchronousQueue 的双向形式?</h3><p>Exchanger是一种线程间安全交换数据的机制。</p>
+<p>线程A通过<code>SynchronousQueue</code>将数据a交给线程B；</p>
+<p>线程A通过<code>Exchanger</code>和线程B交换数据，线程A把数据a交给线程B，同时线程B把数据b交给线程A。</p>
+<p>可见，<code>SynchronousQueue</code>是交换一个数据，<code>Exchanger</code>是交换两个数据。</p>
 <h3 id="🌟Exchanger在不同的JDK版本中实现有什么差别"><a href="#🌟Exchanger在不同的JDK版本中实现有什么差别" class="headerlink" title="🌟Exchanger在不同的JDK版本中实现有什么差别?"></a>🌟Exchanger在不同的JDK版本中实现有什么差别?</h3><ul>
 <li>在JDK5中Exchanger被设计成一个容量为1的容器，存放一个等待线程，直到有另外线程到来就会发生数据交换，然后清空容器，等到下一个到来的线程。</li>
 <li>从JDK6开始，Exchanger用了类似ConcurrentMap的分段思想，提供了多个slot，增加了并发执行时的吞吐量。</li>
@@ -2264,15 +2256,14 @@ LockSupport<span class="token punctuation">.</span><span class="token function">
 <p>在并发场景下如果要保证一种可行的方式是使用 <code>Collections.synchronizedMap()</code> 方法来包装我们的 <code>HashMap</code>。但这是通过使用一个全局的锁来同步不同线程间的并发访问，因此会带来不可忽视的性能问题。</p>
 </blockquote>
 <p><code>CocurrentHashMap</code>可以看作<strong>线程安全且高效</strong>的<code>HashMap</code>，相比于<code>HashMap</code>具有线程安全的优势，相比于<code>HashTable</code>具有效率高的优势。</p>
-<p>在 <code>ConcurrentHashMap</code> 中，无论是读操作还是写操作都能保证很高的性能：在进行读操作时(几乎)不需要加锁，而在写操作时通过锁分段技术只对所操作的段加锁而不影响客户端对其它段的访问。</p>
 <h3 id="🌟ConcurrentHashMap是如何实现的？"><a href="#🌟ConcurrentHashMap是如何实现的？" class="headerlink" title="🌟ConcurrentHashMap是如何实现的？"></a>🌟ConcurrentHashMap是如何实现的？</h3><p><strong>JDK1.7</strong></p>
 <p>在JDK1.7版本中，<code>ConcurrentHashMap</code>的数据结构是由一个<code>Segment</code>数组和多个<code>HashEntry</code>数组组成，<code>Segment</code>存储的是链表数组的形式。</p>
 <p><img src="https://img.jwt1399.top/img/202301071551771.png" alt="concurrentHashMap-jdk1.7"></p>
-<p>从上图可以看出，<code>ConcurrentHashMap</code>定位一个元素的过程需要两次Hash的过程，第一次Hash的目的是定位到Segment，第二次Hash的目的是定位到链表的头部。两次Hash所使用的时间比一次Hash的时间要长，但这样做可以在写操作时，只对元素所在的segment枷锁，不会影响到其他segment，这样可以大大提高并发能力。</p>
+<p>从上图可以看出，<code>ConcurrentHashMap</code>定位一个元素的过程需要两次Hash的过程，第一次Hash的目的是定位到Segment，第二次Hash的目的是定位到链表的头部。两次Hash所使用的时间比一次Hash的时间要长，但这样做可以在写操作时，只对元素所在的 segment 加锁，不会影响到其他segment，这样可以大大提高并发能力。</p>
 <p><strong>JDK1.8</strong></p>
 <p>JDK1.8不在采用segment的结构，而是使用Node数组+链表/红黑树的数据结构来实现的（和<code>HashMap</code>一样，链表节点个数大于8，链表会转换为红黑树）</p>
 <p><img src="https://img.jwt1399.top/img/202301071551735.png" alt=" concurrentHashMap-jdk1.8"></p>
-<p>从上图可以看出，对于<code>ConcurrentHashMap</code>的实现，JDK1.8的实现方式可以降低锁的粒度，因为JDLK1.7所实现的<code>ConcurrentHashMap</code>的锁的粒度是基于Segment，而一个Segment包含多个HashEntry。</p>
+<p>从上图可以看出，对于<code>ConcurrentHashMap</code>的实现，JDK1.8的实现方式可以降低锁的粒度，因为JDLK1.7所实现的<code>ConcurrentHashMap</code>的<strong>锁的粒度是基于Segment</strong>，而一个Segment包含多个HashEntry。JDLK1.8<strong>锁定当前链表或红黑二叉树的首节点</strong>。</p>
 <h3 id="🌟ConcurrentHashMap结构中变量使用volatile和final修饰有什么作用？"><a href="#🌟ConcurrentHashMap结构中变量使用volatile和final修饰有什么作用？" class="headerlink" title="🌟ConcurrentHashMap结构中变量使用volatile和final修饰有什么作用？"></a>🌟ConcurrentHashMap结构中变量使用volatile和final修饰有什么作用？</h3><p><code>final</code>修饰变量可以保证变量不需要同步就可以被访问和共享，<code>volatile</code>可以保证内存的可见性，配合CAS操作可以在不加锁的前提支持并发。</p>
 <h3 id="🌟ConcurrentHashMap有什么缺点？"><a href="#🌟ConcurrentHashMap有什么缺点？" class="headerlink" title="🌟ConcurrentHashMap有什么缺点？"></a>🌟ConcurrentHashMap有什么缺点？</h3><p>因为<code>ConcurrentHashMap</code>在更新数据时只会锁住部分数据，并不会将整个表锁住，读取的时候也并不能保证读取到最近的更新，只能保证读取到已经顺利插入的数据。</p>
 <h3 id="🌟ConcurrentHashMap默认初始容量是多少？每次扩容为原来的几倍？"><a href="#🌟ConcurrentHashMap默认初始容量是多少？每次扩容为原来的几倍？" class="headerlink" title="🌟ConcurrentHashMap默认初始容量是多少？每次扩容为原来的几倍？"></a>🌟ConcurrentHashMap默认初始容量是多少？每次扩容为原来的几倍？</h3><p>ConcurrentHashMap默认的初始容量为16，每次扩容为之前的两倍。</p>
@@ -3119,7 +3110,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1001.4k</span>&nbsp;字
+                class="white-color">1035.2k</span>&nbsp;字
             
             
             

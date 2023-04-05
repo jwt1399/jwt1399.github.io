@@ -700,7 +700,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <script src="/libs/cryptojs/crypto-js.min.js"></script>
 <script>
     (function() {
-        let pwd = '';
+        let pwd = 'de3bbd0fd7945e42581643b18cdf28dd3ed61d9c3d541b7b016081564b65a3f3';
         if (pwd && pwd.length > 0) {
             if (pwd !== CryptoJS.SHA256(prompt('猜猜密码是什么呢ヾﾉ≧∀≦)o')).toString(CryptoJS.enc.Hex)) {
                 alert('哎呦！密码好像不对哟，将返回主页！');
@@ -877,14 +877,14 @@ String 底层数据结构为 SDS（Simple Dyn">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-03-23
+                    2023-04-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    13.7k
+                    16.8k
                 </div>
                 
 
@@ -973,6 +973,17 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><p><strong>从算法实现难度上来比较，skiplist比平衡树要简单得多。</strong></p>
 </li>
 </ul>
+<h1 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h1><h2 id="管道技术"><a href="#管道技术" class="headerlink" title="管道技术"></a>管道技术</h2><p>传统交互模式下，客户端发送请求，服务端接收请求并处理，最后返回回包。即我们需要一条命令结束了，再执行下一个命令。即单客户端是同步的。大量发包造成性能瓶颈</p>
+<p>所以，有没有一种技术，能够让客户端可以将多条命令一起传递给服务端？</p>
+<p>管道技术：将请求在客户端打包在一起，一次传递给服务端，服务端处理完之后，将结果存起来，等管道中的所有命令执行完成，再一起回包。节约网络交互的时间</p>
+<h2 id="管道技术的代价"><a href="#管道技术的代价" class="headerlink" title="管道技术的代价"></a>管道技术的代价</h2><p>1.当使用Pipeline，服务端不得不为回包排队，同一时间会占用更多内存，我们一直有说，Redis内存是寸土寸金，所以除非特定场景，不然也没必要强行使用Pipeline。</p>
+<p>2.单个命令的时间会变长，原因是需要等待Pipeline中其它命令的完成。</p>
+<h2 id="Pipeline注意事项"><a href="#Pipeline注意事项" class="headerlink" title="Pipeline注意事项"></a>Pipeline注意事项</h2><p>1.Pipeline的命令不是原子的，因为实际上Redis还是一条一条去执行；</p>
+<p>2.Pipeline包含的命令也不宜过多，Redis内存寸土寸金；</p>
+<p>3.Pipeline只会在一个Redis节点上执行，这个很好了解，因为其实客户端是发送了一次请求，并不会分发到多个节点上。</p>
+<h2 id="Pipeline适用场景"><a href="#Pipeline适用场景" class="headerlink" title="Pipeline适用场景"></a>Pipeline适用场景</h2><p>适用于一个流程中多次操作Redis的场景，比如一个线程需要更新100个学生的分数，这时候可以用Pipeline打包执行。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Redis支持Pipeline模式来批量发送数据给服务端，这样的好处是节省了网络时间，缺点是服务端会耗费更多内存，以及单个命令的时间会被整体拖慢。</p>
+<p>生产中，不建议过度使用Pipeline，只有在真正需要的时候，比如在一个线程需要更新多个数据的时候，就比较合适。</p>
 <h1 id="Redis运行原理"><a href="#Redis运行原理" class="headerlink" title="Redis运行原理"></a>Redis运行原理</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>redisDb代表Redis数据库结构</p>
 <pre class="line-numbers language-c"><code class="language-c"><span class="token comment" spellcheck="true">// from Redis 5.0.5</span>
 
@@ -1152,6 +1163,21 @@ String 底层数据结构为 SDS（Simple Dyn">
 </ul>
 <p>fork创建子进程之后，通过写时复制技术，子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。只有在发生修改内存数据的情况时，物理内存才会被复制一份。</p>
 <p>如果此时主进程需要修改某块数据，那么这块数据就会被复制一份到内存，生成该数据的副本，子进程会把这个副本数据写入 RDB 文件，而在这个过程中，主线程仍然可以直接修改原来的数据，子进程所看到的数据在它被创建的一瞬间就已经固定下来了</p>
+<p>写时复制技术：如果有多个调用者同时请求相同资源（如内存或磁盘上的数据存储），他们会共同获取相同的指针指向相同的资源，直到某个调用者试图修改资源的内容时，系统才会真正复制一份专用副本给该调用者，而其他调用者所见到的最初的资源仍然保持不变。。此作法主要的优点是如果调用者没有修改该资源，就不会有副本被创建，因此多个调用者只是读取操作时可以共享同一份资源。</p>
+<img src="https://img.jwt1399.top/img/202303252059896.png" style="zoom:50%;" />
+
+<h2 id="执行快照时，数据能被修改吗？"><a href="#执行快照时，数据能被修改吗？" class="headerlink" title="执行快照时，数据能被修改吗？"></a>执行快照时，数据能被修改吗？</h2><p>结论：执行 bgsave 过程中，Redis 依然可以修改数据，通过写时复制技术实现，执行 bgsave 命令的时候，会通过 <code>fork()</code> 创建子进程，此时子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。如果主线程（父进程）要<strong>修改共享数据里的某一块数据</strong>（比如键值对 <code>A</code>）时，就会发生写时复制，于是这块数据的<strong>物理内存就会被复制一份（键值对 <code>A&#39;</code>）</strong>，然后<strong>主线程在这个数据副本（键值对 <code>A&#39;</code>）进行修改操作</strong>。与此同时，<strong>bgsave 子进程可以继续把原来的数据（键值对 <code>A</code>）写入到 RDB 文件</strong>。但是bgsave 快照过程中，如果主线程修改了共享数据，<strong>发生了写时复制后，RDB 快照保存的是原本的内存数据</strong>，而主线程刚修改的数据，是没办法在这一时间写入 RDB 文件的，只能交由下一次的 bgsave 快照。</p>
+<p>详细分析：</p>
+<p>执行 bgsave 过程中，子进程来构建 RDB 文件，主线程还是可以继续工作的，此时主线程可以修改数据吗？</p>
+<p>执行 bgsave 过程中，Redis 依然<strong>可以继续处理操作命令</strong>的，也就是数据是能被修改的。</p>
+<p>那具体如何做到到呢？关键的技术就在于<strong>写时复制技术（Copy-On-Write, COW）。</strong></p>
+<p>执行 bgsave 命令的时候，会通过 <code>fork()</code> 创建子进程，此时子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。</p>
+<p>这样的目的是为了减少创建子进程时的性能损耗，从而加快创建子进程的速度，毕竟创建子进程的过程中，是会阻塞主线程的。</p>
+<p>所以，创建 bgsave 子进程后，由于共享父进程的所有内存数据，于是就可以直接读取主线程（父进程）里的内存数据，并将数据写入到 RDB 文件。</p>
+<p>当主线程（父进程）对这些共享的内存数据也都是只读操作，那么，主线程（父进程）和 bgsave 子进程相互不影响。</p>
+<p>但是，如果主线程（父进程）要<strong>修改共享数据里的某一块数据</strong>（比如键值对 <code>A</code>）时，就会发生写时复制，于是这块数据的<strong>物理内存就会被复制一份（键值对 <code>A&#39;</code>）</strong>，然后<strong>主线程在这个数据副本（键值对 <code>A&#39;</code>）进行修改操作</strong>。与此同时，<strong>bgsave 子进程可以继续把原来的数据（键值对 <code>A</code>）写入到 RDB 文件</strong>。</p>
+<p>就是这样，Redis 使用 bgsave 对当前内存中的所有数据做快照，这个操作是由 bgsave 子进程在后台完成的，执行时不会阻塞主线程，这就使得主线程同时可以修改数据。</p>
+<p>细心的同学，肯定发现了，bgsave 快照过程中，如果主线程修改了共享数据，<strong>发生了写时复制后，RDB 快照保存的是原本的内存数据</strong>，而主线程刚修改的数据，是没办法在这一时间写入 RDB 文件的，只能交由下一次的 bgsave 快照。</p>
 <h2 id="AOF对主流程有什么影响？"><a href="#AOF对主流程有什么影响？" class="headerlink" title="AOF对主流程有什么影响？"></a>AOF对主流程有什么影响？</h2><ul>
 <li><p>当AOF写入日志压力过大 会 导致主进程 无法继续 处理其他请求</p>
 </li>
@@ -1161,7 +1187,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <h2 id="AOF混合持久化方案是什么？"><a href="#AOF混合持久化方案是什么？" class="headerlink" title="AOF混合持久化方案是什么？"></a>AOF混合持久化方案是什么？</h2><p>如果把混合持久化打开，AOF 重写的时候就直接把 RDB 的内容写到 AOF 文件开头。这样做的好处是可以结合 RDB 和 AOF 的优点, 快速加载同时避免丢失过多的数据。当然缺点也是有的， AOF 里面的 RDB 部分是压缩格式不再是 AOF 格式，可读性较差。</p>
 <h2 id="简单描述AOF重写流程"><a href="#简单描述AOF重写流程" class="headerlink" title="简单描述AOF重写流程"></a>简单描述AOF重写流程</h2><p>当 AOF 变得太大时，Redis 能够在后台自动重写 AOF 产生一个新的 AOF 文件，新的 AOF 文件体积更小。</p>
 <p>在执行 <code>BGREWRITEAOF</code> 命令时，Redis 服务器会维护一个AOF 重写缓冲区，该缓冲区会在子进程创建新 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新 AOF 文件的工作之后，服务器会将重写缓冲区中的所有内容追加到新 AOF 文件的末尾，使得新的 AOF 文件保存的数据库状态与现有的数据库状态一致。最后，服务器用新的 AOF 文件替换旧的 AOF 文件，以此来完成 AOF 文件重写操作。</p>
-<h3 id="AOF重写你觉得有什么不足之处么？"><a href="#AOF重写你觉得有什么不足之处么？" class="headerlink" title="AOF重写你觉得有什么不足之处么？"></a>AOF重写你觉得有什么不足之处么？</h3><p>Redis 7.0 版本之前，如果在重写期间有写入命令，AOF 可能会使用大量内存，重写期间到达的所有写入命令都会写入磁盘两次（因为维护了AOF缓冲和AOF重写缓冲，重写时会将AOF 缓冲 和 AOF重写缓冲 分别 写入到旧日志和新日志中，这是额外的磁盘开销）。</p>
+<h2 id="AOF重写你觉得有什么不足之处么？"><a href="#AOF重写你觉得有什么不足之处么？" class="headerlink" title="AOF重写你觉得有什么不足之处么？"></a>AOF重写你觉得有什么不足之处么？</h2><p>Redis 7.0 版本之前，如果在重写期间有写入命令，AOF 可能会使用大量内存，重写期间到达的所有写入命令都会写入磁盘两次（因为维护了AOF缓冲和AOF重写缓冲，重写时会将AOF 缓冲 和 AOF重写缓冲 分别 写入到旧日志和新日志中，这是额外的磁盘开销）。</p>
 <p>改进：</p>
 <ul>
 <li><p>在Redis 7.0版本，对AOF重新作出了优化，提出了多部件AOF方案，原来的AOF重写缓冲被移除，AOF日志分成了 Base AOF日志 ，Incr AOF日志</p>
@@ -1171,7 +1197,53 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><p>当重写发生时，主进程fork出一个子进程，对Base AOF日志进行重写·（将当前内存数据写入到新的Base AOF日志）；如果此时有新的写入命令，会由主进程写入到AOF缓冲，再将缓冲数据刷入新的Incr AOF日志。这样新的Incr AOF日志 + 新的Base AOF日志 就构成了完整的新的AOF日志</p>
 </li>
 </ul>
-<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p>先更新数据库，再删除缓存，并配合消息队列来解决缓存一直性的问题</p>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><h2 id="什么是事务的-ACID"><a href="#什么是事务的-ACID" class="headerlink" title="什么是事务的 ACID"></a><strong>什么是事务的 ACID</strong></h2><p>事务（Transaction）是并发控制单位，一个操作序列组合而成，这些操作要么都执行，要么都不执行。</p>
+<p>事务在执行时，会提供专门的属性保证：</p>
+<ul>
+<li>原子性（Atomicity）：一个事务的多个操作必须完成，或者都不完成</li>
+<li>一致性（Consistency）：事务执行结束后，数据库的完整性约束没有被破坏，事务执行的前后顺序都是合法数据状态。 </li>
+<li>隔离性（Isolation）：事务内部的操作与其他事务是隔离的，并发执行的各个事务之间不能互相干扰。 </li>
+<li>持久性（Durability）：事务一旦提交，所有的修改将永久的保存到数据库中，即使系统崩溃重启后数据也不会丢失。</li>
+</ul>
+<h2 id="Redis-如何实现事务"><a href="#Redis-如何实现事务" class="headerlink" title="Redis 如何实现事务"></a>Redis 如何实现事务</h2><p>MULTI、EXEC、DISCARD 和 WATCH 命令是 Redis 实现事务的的基础。</p>
+<p>Redis 事务的执行过程包含三个步骤：</p>
+<ol>
+<li>开启事务；</li>
+<li>命令入队；</li>
+<li>执行事务或丢弃；</li>
+</ol>
+<h2 id="Redis-事务满足-ACID？"><a href="#Redis-事务满足-ACID？" class="headerlink" title="Redis 事务满足 ACID？"></a><strong>Redis 事务满足 ACID？</strong></h2><p><strong>Redis 的事务机制可以保证一致性和隔离性，但是无法保证持久性和原子性。</strong></p>
+<ul>
+<li>原子性</li>
+</ul>
+<p>Redis 事务在运行错误的情况下，除了执行过程中出现错误的命令外，其他命令都能正常执行。并且，Redis 事务是不支持回滚（roll back）操作的。因此，Redis 事务其实是不满足原子性的（而且不满足持久性）。</p>
+<p>Redis 官网也解释了自己为啥不支持回滚。简单来说就是 Redis 开发者们觉得<strong>没必要支持回滚</strong>，这样<strong>更简单便捷并且性能更好</strong>。Redis 开发者觉得即使命令执行错误也应该在开发过程中就被发现而不是生产过程中。</p>
+<ul>
+<li>持久性</li>
+</ul>
+<p>因为 Redis 是内存数据库，所以，数据是否持久化保存完全取决于 Redis 的持久化配置。</p>
+<p>如果 Redis 没有使用 RDB 或 AOF，那么事务的持久化属性肯定得不到保证。如果 Redis 使用了 RDB 模式，那么，在一个事务执行后，下一次的 RDB 快照还未执行前，发生了实例宕机，这种情况下，事务修改的数据也是不能保证持久化的。如果 Redis 采用了 AOF 模式，因为 AOF 模式的三种配置选项 no、everysec 和 always 都会存在数据丢失的情况，所以，事务的持久性属性也还是得不到保证。</p>
+<p>所以，不管 Redis 采用什么持久化模式，事务的持久性属性是得不到保证的。</p>
+<ul>
+<li>隔离性</li>
+</ul>
+<p>并发操作在 <code>EXEC</code> 命令前执行，隔离性需要通过 <code>WATCH</code> 机制保证；</p>
+<p>WATCH 机制的作用是，在事务执行前，监控一个或多个键的值变化情况。当事务调用 EXEC 命令执行时，WATCH 机制会先检查监控的键是否被其它客户端修改了。如果修改了，就放弃事务执行，避免事务的隔离性被破坏。然后，客户端可以再次执行事务，此时，如果没有并发修改事务数据的操作了，事务就能正常执行，隔离性也得到了保证。</p>
+<p>并发操作在 <code>EXEC</code> 命令之后，隔离性可以保证。</p>
+<p>因为 Redis 是用单线程执行命令，而且<code>EXEC</code> 命令执行后，Redis 会保证先把命令队列中的所有命令执行完。所以，在这种情况下，并发操作不会破坏事务的隔离性。</p>
+<ul>
+<li>一致性</li>
+</ul>
+<p>EXEC 执行前报错，事务本身就会被放弃执行，所以可以保证数据库的一致性。</p>
+<p>EXEC 执行后报错，由于报错的命令并没有去执行，只是执行了正确的命令。这种情况下，也是可以保证数据库的一致性的。</p>
+<p>EXEC 执行时，Redis 发生故障，由于 Redis 实例故障，所以会有重启，这就和数据恢复的方式有关了。</p>
+<p>下面，我们根据 Redis 实例是否开启 RDB 或 AOF 来分情况讨论下。</p>
+<p>首先，我们没有开启 RDB 或 AOF，实例重启之后，数据就没有了，此时数据库是一致的。</p>
+<p>如果我们用了 RDB快照，由于在事务执行的时候，是不会进行 RDB 快照的，所以，如果Redis实例故障，事务操作的命令是不会记录到 RDB 快照的，所以和上面一样，实例重启之后，数据库是一致的。</p>
+<p>如果我们使用了 AOF 日志，当事务操作还没有被记录到 AOF 日志时，实例就发生了故障，那么，使用 AOF 日志恢复的数据库数据是一致的。如果只有部分操作被记录到了 AOF 日志，我们可以使用 redis-check-aof 清除事务中已经完成的操作，数据库恢复后也是一致的。</p>
+<p>所以，综上，Redis 事务机制对一致性属性是有保证的。</p>
+<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&mid=2247483815&idx=1&sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&scene=178&cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
+<p>先更新数据库，再删除缓存，并配合消息队列来解决缓存一直性的问题</p>
 <p>大的方向有三：</p>
 <p>1.更新MySQL即可，不管Redis，以过期时间兜底</p>
 <p>2.更新MySQL之后，操作Redis</p>
@@ -1411,6 +1483,7 @@ OK
 <span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 2
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现分布式锁"><a href="#实现分布式锁" class="headerlink" title="实现分布式锁"></a>实现分布式锁</h2><p>setnx+过期时间+owner检测(分布式锁需要满足谁申请谁释放原则，不能释放别人的锁，也就是说，分布式锁，是要有归属的)+Lua(解决owner检测原子性)+主从容灾和多级部署</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/y8kAflIenRpa4zIwCP_8iA?notreplace=true">支付宝一面：如何基于Redis实现分布式锁？ (qq.com)</a></p>
 <h2 id="秒杀"><a href="#秒杀" class="headerlink" title="秒杀"></a>秒杀</h2><ul>
 <li>第一点，海量请求，服务要能扛住。</li>
 </ul>
@@ -1437,6 +1510,7 @@ OK
 <p>某个用户请求接口次数过于频繁，一般说明是用脚本在跑，可以只针对该用户做限制。</p>
 <p>针对IP做限制也是常见做的做法，但这样容易误杀，主要考虑到使用同一个网络的用户，可能都是一个出口IP。限制IP，会导致正常用户也受到影响。</p>
 <p>更好用的方案是加上一个验证码验证。验证码符合91原则，90%的时间，都用在验证码输入上，所以使用脚本点击的影响会降到很低。</p>
+<p><a target="_blank" rel="noopener" href="https://osjobs.net/system/posts/spike-system/">海外兔是如何设计秒杀系统的 | 系统设计课程 (osjobs.net)</a></p>
 <h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><blockquote>
 <p>单机 Redis 存在单点风险问题，也就是说，如果唯一的一个 Redis 节点宕机的话，就会导致大量的请求直接被打到数据库，严重的情况下，数据库很可能会直接被干宕机了。</p>
 </blockquote>
@@ -1546,6 +1620,10 @@ SLAVEOF <span class="token keyword">no</span> one
 <p>客户端连接 Redis Cluster 中任意一个 master 节点即可访问 Redis Cluster 的数据，当客户端发送命令请求的时候，需要先根据 key 通过上面的计算公示找到的对应的哈希槽，然后再查询哈希槽和节点的映射关系，即可找到目标节点。</p>
 <p>如果哈希槽确实是当前节点负责，那就直接响应客户端的请求返回结果，如果不由当前节点负责，就会返回 <code>\-MOVED</code> 重定向错误，告知客户端当前哈希槽是由哪个节点负责，客户端向目标节点发送请求并更新缓存的哈希槽分配信息。</p>
 <p>Redis Cluster 哈希槽分区机制的优点：解耦了数据和节点之间的关系，提升了集群的横向扩展性和容错性。</p>
+<h3 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h3><h3 id="简述一致性哈希算法的实现方式及原理"><a href="#简述一致性哈希算法的实现方式及原理" class="headerlink" title="简述一致性哈希算法的实现方式及原理"></a>简述一致性哈希算法的实现方式及原理</h3><p>对于分布式存储，不同机器上存储不同对象的数据，我们使用哈希函数建立从数据到服务器之间的映射关系</p>
+<p>一致性哈希算法是分布式系统中常用的算法，比如有N台缓存服务器，你需要将数据缓存到这N台服务器上。一致性哈希算法可以将数据尽可能平均的存储到N台缓存服务器上，提高系统的负载均衡，并且当有缓存服务器加入或退出集群时，尽可能少的影响现有缓存服务器的命中率，减少数据对后台服务的大量冲击。</p>
+<p>目前主要应用于分布式缓存当中，一致性哈希可以有效地解决分布式存储结构下动态增加和删除节点</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/166126098">聊聊一致性哈希算法，什么是一致性哈希算法，图解面试热点问题，还看不懂你来打我 - 知乎 (zhihu.com)</a></p>
 <h3 id="为什么-Redis-Cluster-的哈希槽是-16384-个"><a href="#为什么-Redis-Cluster-的哈希槽是-16384-个" class="headerlink" title="为什么 Redis Cluster 的哈希槽是 16384 个?"></a>为什么 Redis Cluster 的哈希槽是 16384 个?</h3><p>CRC16 算法产生的校验码有 16 位，理论上可以产生 65536（2^16，0 ~ 65535）个值。为什么 Redis Cluster 的哈希槽偏偏选择的是 16384（2^14）个呢？</p>
 <ul>
 <li>哈希槽太大会导致心跳包太大，消耗太多带宽；  </li>
@@ -1560,7 +1638,7 @@ SLAVEOF <span class="token keyword">no</span> one
 <p>为了保证 Redis Cluster 在扩容和缩容期间依然能够对外正常提供服务，Redis Cluster 提供了重定向机制</p>
 <ul>
 <li>1、客户端发送请求命令，如果请求的 key 对应的哈希槽还在当前节点的话，就直接响应客户端的请求。  </li>
-<li>2、如果客户端请求的 key 对应的哈希槽当前正在迁移至新的节点，就会返回 -ASK 重定向错误，告知客户端要将请求发送到哈希槽被迁移到的目标节点。  </li>
+<li>2、如果客户端请求的 key 对应的哈希槽当前正在迁移至新的节点，就会返回 ASK 重定向错误，告知客户端要将请求发送到哈希槽被迁移到的目标节点。  </li>
 </ul>
 <h3 id="Redis-Cluster-中的节点是怎么进行通信的？"><a href="#Redis-Cluster-中的节点是怎么进行通信的？" class="headerlink" title="Redis Cluster 中的节点是怎么进行通信的？"></a>Redis Cluster 中的节点是怎么进行通信的？</h3><p>Redis Cluster 中的各个节点基于 Gossip 协议 来进行通信共享信息，每个 Redis 节点都维护了一份集群的状态信息。</p>
 <h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
@@ -2073,33 +2151,62 @@ SLAVEOF <span class="token keyword">no</span> one
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/34943.html">
+                <a href="/posts/31193.html">
                     <div class="card-image">
                         
-                        <img src="https://img.jwt1399.top/img/202207032341528.png" class="responsive-img" alt="Q&A：Redis">
+                        <img src="https://img.jwt1399.top/img/crop,w_300,h_400,g_nw.jpeg" class="responsive-img" alt="Q&A：Java">
                         
-                        <span class="card-title">Q&A：Redis</span>
+                        <span class="card-title">Q&A：Java</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            数据结构
-简单动态字符串-SDS
-String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 512M。
+                            基础🌟Integer 和int区别
+基本类型和包装类型的区别？
 
-String 底层数据结构为 SDS（Simple Dyn
+
+
+
+区别
+Integer
+int
+
+
+
+初始值
+null
+0
+
+
+存储位置
+堆
+栈
+
+
+用于泛型
+可用于
+可以
+
+
+占用空间
+较大
+较小
+
+
+方法
+封装了方法，更灵活
+无
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-03-05
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-03-30
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -2112,12 +2219,11 @@ String 底层数据结构为 SDS（Simple Dyn
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Redis/">
-                        <span class="chip bg-color">Redis</span>
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
                     </a>
                     
                 </div>
@@ -2358,7 +2464,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1001.4k</span>&nbsp;字
+                class="white-color">1035.2k</span>&nbsp;字
             
             
             
