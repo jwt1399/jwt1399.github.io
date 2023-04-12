@@ -877,14 +877,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-04-06
+                    2023-04-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    14.1k
+                    14.2k
                 </div>
                 
 
@@ -1655,7 +1655,7 @@
 <td>创建、销毁开销大</td>
 </tr>
 </tbody></table>
-<h3 id="❷进程间的通信方式"><a href="#❷进程间的通信方式" class="headerlink" title="❷进程间的通信方式"></a>❷进程间的通信方式</h3><ol>
+<h3 id="🌟进程间的通信方式"><a href="#🌟进程间的通信方式" class="headerlink" title="🌟进程间的通信方式"></a>🌟进程间的通信方式</h3><ol>
 <li><strong>管道/匿名管道(Pipes)</strong> ：用于具有亲缘关系的父子进程间或者兄弟进程之间的通信。</li>
 <li><strong>有名管道(Named Pipes)</strong> : 匿名管道由于没有名字，只能用于亲缘关系的进程间通信。为了克服这个缺点，提出了有名管道。有名管道严格遵循**先进先出(first in first out)**。有名管道以磁盘文件的方式存在，可以实现本机任意两个进程通信。</li>
 <li><strong>信号(Signal)</strong> ：信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生；</li>
@@ -1664,6 +1664,18 @@
 <li><strong>共享内存(Shared memory)</strong> ：使得多个进程可以访问同一块内存空间，不同进程可以及时看到对方进程中对共享内存中数据的更新。这种方式需要依靠某种同步操作，如互斥锁和信号量等。可以说这是最有用的进程间通信方式。</li>
 <li><strong>套接字(Sockets)</strong> : 此方法主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单的说就是通信的两方的一种约定，用套接字中的相关函数来完成通信过程。</li>
 </ol>
+<h3 id="🌟线程间通信方式"><a href="#🌟线程间通信方式" class="headerlink" title="🌟线程间通信方式"></a>🌟线程间通信方式</h3><p>同一进程的线程共享地址空间，通信通过共享内存，一般来说只需要做好同步/互斥，保护共享的全局变量。</p>
+<ul>
+<li><strong>锁机制</strong>：包括互斥锁，读写锁，自旋锁，条件变量。synchronized 关键词和各种 Lock 都是这种机制。<ul>
+<li>互斥锁提供排他方式防止数据结构被修改的方法，</li>
+<li>读写锁允许多个线程同时读共享变量，对写操作互斥，</li>
+<li>自旋锁循环检测是否释放锁，</li>
+<li>条件变量以原子方式阻塞进程，直到条件为真，与互斥锁一起使用。</li>
+</ul>
+</li>
+<li><strong>信号量机制</strong>：它允许同一时刻多个线程访问同一资源，但是需要控制同一时刻访问此资源的最大线程数量。</li>
+<li><strong>信号机制</strong>：通过通知操作的方式来保持多线程同步，方便的实现多线程优先级的比较操作。Wait/Notify</li>
+</ul>
 <h3 id="❸进程有哪几种状态"><a href="#❸进程有哪几种状态" class="headerlink" title="❸进程有哪几种状态"></a>❸进程有哪几种状态</h3><ul>
 <li><p><strong>创建状态(new)</strong> ：进程正在被创建，尚未到就绪状态。</p>
 </li>
@@ -1718,11 +1730,6 @@
 <p><img src="https://img.jwt1399.top/img/202211261112909.png"></p>
 <h3 id="❻并发-amp-并行"><a href="#❻并发-amp-并行" class="headerlink" title="❻并发&amp;并行"></a>❻并发&amp;并行</h3><p><strong>并发</strong>：同一个时刻，多个任务<strong>交替执行</strong>。单核 cpu 实现的多任务就是并发。例如：Tom 边开车边接电话</p>
 <p><strong>并行</strong>：同一个时刻，多个任务<strong>同时执行</strong>。多核 cpu 可以实现并行。例如：Tom 开车 ，Jack 接电话</p>
-<h3 id="❼线程间的同步的方式"><a href="#❼线程间的同步的方式" class="headerlink" title="❼线程间的同步的方式"></a>❼线程间的同步的方式</h3><ol>
-<li>**互斥量(Mutex)**：采用互斥对象机制，只有拥有互斥对象的线程才有访问公共资源的权限。比如 Java 中的 synchronized 关键词和各种 Lock 都是这种机制。</li>
-<li><strong>信号量(Semaphore)</strong> ：它允许同一时刻多个线程访问同一资源，但是需要控制同一时刻访问此资源的最大线程数量。</li>
-<li><strong>事件(Event)</strong> :Wait/Notify：通过通知操作的方式来保持多线程同步，方便的实现多线程优先级的比较操作。</li>
-</ol>
 <h3 id="❽死锁"><a href="#❽死锁" class="headerlink" title="❽死锁"></a>❽死锁</h3><blockquote>
 <p>死锁是指两个或两个以上的线程在执行过程中，因争夺资源而造成的一种互相等待的现象。若无外力作用，它们都将无法推进下去。</p>
 </blockquote>
@@ -2258,34 +2265,34 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/posts/61907.html">
+                <a href="/posts/50191.html">
                     <div class="card-image">
                         
-                        <img src="https://img.jwt1399.top//img/20200824183541.jpg" class="responsive-img" alt="Web服务器配置与管理">
+                        <img src="https://img.jwt1399.top/img/v2-fab80e0b2798b32f0a06191c8f6e7f30_1440w.jpg" class="responsive-img" alt="Q&A：MySQL">
                         
-                        <span class="card-title">Web服务器配置与管理</span>
+                        <span class="card-title">Q&A：MySQL</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            一、实验环境
-   操作系统：Windows系统、阿里云Windows Server 2016
-   实验设备：PC机
+                            ①基础🌟关系型数据库和非关系型数据库的区别
+关系型数据库采用了关系模型（二维表格类型）组织数据，一般遵守事务的ACID特性 
 
-二、 实验内容任务 1：Web服务器的安装任务 2：创建Web站点并实现外网访问任务 3：配置客户端访问Web站点任务
+优点：支持通用SQL语句、支持事务、数据存储在磁盘，安全可靠
+缺点：高并发读写能力差（磁盘I/O有限）、海量数
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-12
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-02-27
                         </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/categories/Course/" class="post-category">
-                                    Course
+                            <a href="/categories/Q-A/" class="post-category">
+                                    Q&A
                                 </a>
                             
                             
@@ -2295,12 +2302,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Windows%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E4%B8%8E%E7%AE%A1%E7%90%86/">
-                        <span class="chip bg-color">Windows服务器配置与管理</span>
-                    </a>
-                    
-                    <a href="/tags/Web%E6%9C%8D%E5%8A%A1%E5%99%A8/">
-                        <span class="chip bg-color">Web服务器</span>
+                    <a href="/tags/MySQL/">
+                        <span class="chip bg-color">MySQL</span>
                     </a>
                     
                 </div>
@@ -2539,7 +2542,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">930.7k</span>&nbsp;字
+                class="white-color">1043.6k</span>&nbsp;字
             
             
             
