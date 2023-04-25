@@ -877,14 +877,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-04-14
+                    2023-04-24
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    27.3k
+                    27.4k
                 </div>
                 
 
@@ -916,7 +916,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="🌟MySQL-基础架构"><a href="#🌟MySQL-基础架构" class="headerlink" title="🌟MySQL 基础架构"></a>🌟MySQL 基础架构</h2><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/javaguide/13526879-3037b144ed09eb88.png" style="zoom:50%;" />
+<h2 id="🌟MySQL-基础架构"><a href="#🌟MySQL-基础架构" class="headerlink" title="🌟MySQL 基础架构"></a>🌟MySQL 基础架构</h2><img src="https://img.jwt1399.top/img/202304242032343.jpg" style="zoom: 25%;" />
 
 <p>MySQL 主要由下面几部分构成：</p>
 <ul>
@@ -1019,6 +1019,34 @@
 </ul>
 </li>
 </ul>
+<h2 id="🌟SQL语句执行顺序"><a href="#🌟SQL语句执行顺序" class="headerlink" title="🌟SQL语句执行顺序"></a>🌟SQL语句执行顺序</h2><p><img src="https://img.jwt1399.top/img/202304242134762.png" alt="SQL 查询语句的执行顺序解析"></p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">)</span> <span class="token keyword">SELECT</span> 
+<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> DISTICNCT <span class="token keyword">column</span><span class="token punctuation">,</span>
+<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span> AGG_FUNC<span class="token punctuation">(</span><span class="token keyword">column</span> <span class="token operator">or</span> expiression<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token keyword">FROM</span> left_table
+    <span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span> <span class="token keyword">JOIN</span> right_table
+    <span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token keyword">ON</span> tablename<span class="token punctuation">.</span><span class="token keyword">column</span> <span class="token operator">=</span> other_tablename<span class="token punctuation">.</span><span class="token keyword">column</span>
+<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span> <span class="token keyword">WHERE</span> constraint_expiression
+<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span> <span class="token keyword">GROUP</span> <span class="token keyword">BY</span> <span class="token keyword">column</span>
+<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword">WITH</span> CUBE<span class="token operator">|</span>ROLLUP
+<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token keyword">HAVING</span> constraint_expiression
+<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span><span class="token keyword">ORDER</span> <span class="token keyword">BY</span> <span class="token keyword">column</span> <span class="token keyword">ASC</span><span class="token operator">|</span><span class="token keyword">DESC</span>
+<span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span><span class="token keyword">LIMIT</span> count <span class="token keyword">OFFSET</span> count<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">FROM</span> <span class="token operator">></span> <span class="token keyword">WHERE</span> <span class="token operator">></span> <span class="token keyword">GROUP</span> <span class="token keyword">BY</span> <span class="token operator">></span> <span class="token keyword">HAVING</span> <span class="token operator">></span> <span class="token keyword">SELECT</span> <span class="token operator">></span> <span class="token keyword">DISTINCT</span> <span class="token operator">></span> <span class="token keyword">ORDER</span> <span class="token keyword">BY</span> <span class="token operator">></span> <span class="token keyword">LIMIT</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>1、from 子句组装来自不同数据源的数据；</p>
+<p>2、on 过滤器</p>
+<p>3、join 添加外部行</p>
+<p>4、where 子句基于指定的条件对记录行进行筛选； </p>
+<p>5、group by 子句将数据划分为多个分组；</p>
+<p>6、AGG_FUNC 使用聚集函数进行计算；  </p>
+<p>7、WITH CUBE|ROLLUP</p>
+<p>8、having 子句筛选分组； </p>
+<p>9、select 的字段；</p>
+<p>10、distinct 行去重</p>
+<p>11、order by 对结果集进行排序。</p>
+<p>12、limit 指定返回行</p>
 <h2 id="🌟select的执行过程"><a href="#🌟select的执行过程" class="headerlink" title="🌟select的执行过程"></a>🌟select的执行过程</h2><p>查询语句的执行流程如下：连接器权限校验—&gt;查询缓存—&gt;解析器—&gt;优化器—-&gt;执行器—&gt;引擎</p>
 <ul>
 <li><p><strong>连接器</strong>：建立连接，管理连接、校验用户身份；</p>
@@ -2077,13 +2105,12 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1669736">MySQL 案例：Limit 分页查询优化 - 腾讯云开发者社区-腾讯云 (tencent.com)</a></p>
 <h2 id="🌟如何优化UNION查询"><a href="#🌟如何优化UNION查询" class="headerlink" title="🌟如何优化UNION查询?"></a><strong>🌟如何优化UNION查询?</strong></h2><p>如果不需要对结果集进行去重或者排序建议使用UNION ALL，会好一些。</p>
 <h2 id="🌟如何优化WHERE子句"><a href="#🌟如何优化WHERE子句" class="headerlink" title="🌟如何优化WHERE子句"></a>🌟如何优化WHERE子句</h2><ul>
-<li>  不要在where子句中使用!=和&lt;&gt;进行不等于判断，这样会导致放弃索引进行全表扫描。</li>
-<li>  不要在where子句中使用null或空值判断，尽量设置字段为not null。</li>
+<li>  不要在where子句中使用<code>!=</code>和<code>&lt;&gt;</code>进行不等于判断，这样会导致放弃索引进行全表扫描。</li>
+<li>  不要在where子句中使用<code>null</code>或空值判断，尽量设置字段为not null。</li>
+<li>  不要在where子句中使用<code>表达式</code>、<code>参数</code>、<code>函数</code>，会导致存储引擎放弃索引进而全表扫描</li>
 <li>  尽量使用union all代替or</li>
 <li>  在where和order by涉及的列建立索引</li>
 <li>  尽量减少使用in或者not in，会进行全表扫描</li>
-<li>  在where子句中使用参数会导致全表扫描</li>
-<li>  避免在where子句中对字段及进行表达式或者函数操作会导致存储引擎放弃索引进而全表扫描</li>
 </ul>
 <h1 id="⑦高性能"><a href="#⑦高性能" class="headerlink" title="⑦高性能"></a>⑦高性能</h1><h2 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h2><h3 id="🌟MySQL-有什么调优的方式"><a href="#🌟MySQL-有什么调优的方式" class="headerlink" title="🌟MySQL 有什么调优的方式"></a>🌟MySQL 有什么调优的方式</h3><ul>
 <li><p>读写分离</p>
@@ -3027,7 +3054,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1046.5k</span>&nbsp;字
+                class="white-color">1056.7k</span>&nbsp;字
             
             
             

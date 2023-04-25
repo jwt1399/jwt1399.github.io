@@ -873,14 +873,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-04-14
+                    2023-04-17
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    18.2k
+                    18.1k
                 </div>
                 
 
@@ -934,9 +934,12 @@
 <li>其中64位长度的long和double类型的数据会占用两个变量槽，其余的数据类型只占用一个</li>
 </ul>
 </li>
-<li><p>操作数栈：用于存储操作数和操作符，操作栈是动态扩展的，可以根据需要动态地增加或减少操作数。</p>
+<li><p>操作数栈：用于存储操作数和操作符，存放方法执行过程中产生的中间计算结果。计算过程中产生的临时变量也会放在操作数栈中。</p>
 </li>
-<li><p>动态连接：用于解决方法调用时的符号引用问题，动态连接的信息包括方法名、方法描述符、类名等。</p>
+<li><p>动态连接：用于将符号引用转换为调用方法的直接引用，动态连接的信息包括方法名、方法描述符、类名等。</p>
+<ul>
+<li>当一个方法要调用其他方法，需要将常量池中指向方法的符号引用转化为其在内存地址中的直接引用。</li>
+</ul>
 </li>
 <li><p>方法出口：存储当前方法执行完后应当跳转到的位置。</p>
 </li>
@@ -956,11 +959,6 @@
 <li>静态变量：静态变量是有 static 修饰的变量，JDK8 时从方法区迁移至堆中</li>
 <li>线程分配缓冲区 TLAB：线程私有但不影响堆的共性，可以提升对象分配的效率</li>
 </ul>
-<ol start="5">
-<li>方法区</li>
-</ol>
-<p>是各个线程共享的内存区域，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码缓存等数据。Java 8 之前方法区叫永久代，Java 8之后方法区叫做元空间。</p>
-<h3 id="🌟堆空间的基本结构"><a href="#🌟堆空间的基本结构" class="headerlink" title="🌟堆空间的基本结构"></a>🌟堆空间的基本结构</h3><p>Java 自动内存管理最核心的功能是 <strong>堆</strong> 内存中<strong>对象的分配与回收</strong>。</p>
 <p>由于现在垃圾收集器基本都采用分代垃圾收集算法，所以 Java 堆被划分为了几个不同的区域，就可以根据各个区域的特点选择合适的垃圾收集算法。</p>
 <p>在 JDK 7 及其之前，堆内存被通常分为下面三部分：</p>
 <ol>
@@ -969,6 +967,10 @@
 <li>永久代(Permanent Generation)</li>
 </ol>
 <p><strong>JDK 8 之后 PermGen(永久代) 已被 Metaspace(元空间) 取代，元空间使用的是直接内存</strong> </p>
+<ol start="5">
+<li>方法区</li>
+</ol>
+<p>是各个线程共享的内存区域，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码缓存等数据。Java 8 之前方法区叫永久代，Java 8之后方法区叫做元空间。</p>
 <h3 id="🌟JVM线程共享区域"><a href="#🌟JVM线程共享区域" class="headerlink" title="🌟JVM线程共享区域"></a>🌟<strong>JVM线程共享区域</strong></h3><p><strong>线程私有：</strong></p>
 <ul>
 <li>程序计数器（为了<strong>线程切换后能恢复到正确的执行位置</strong>）</li>
@@ -985,24 +987,16 @@
 </tr>
 </thead>
 <tbody><tr>
-<td align="center">人为申请开辟</td>
-<td align="center">由系统自动分配</td>
-</tr>
-<tr>
-<td align="center">性能较慢，运行时的单位</td>
-<td align="center">性能相对较快，存储的单位</td>
-</tr>
-<tr>
-<td align="center">物理地址分配是不连续</td>
-<td align="center">物理地址分配是连续的</td>
-</tr>
-<tr>
 <td align="center">存放的是<strong>对象的实例</strong></td>
 <td align="center">存放的是<strong>基本数据类型和对象的引用</strong>等</td>
 </tr>
 <tr>
 <td align="center">线程共享</td>
 <td align="center">线程私有</td>
+</tr>
+<tr>
+<td align="center">性能较慢，运行时的单位</td>
+<td align="center">性能相对较快，存储的单位</td>
 </tr>
 </tbody></table>
 <h3 id="🌟什么情况下会发生栈溢出"><a href="#🌟什么情况下会发生栈溢出" class="headerlink" title="🌟什么情况下会发生栈溢出"></a>🌟<strong>什么情况下会发生栈溢出</strong></h3><ul>
@@ -1147,7 +1141,7 @@
 <li>2.本地方法栈中引用的对象(Native 方法)</li>
 <li>3.方法区中类静态属性引用的对象</li>
 <li>4.方法区中常量引用的对象</li>
-<li>5.所有被同步锁持有的对象</li>
+<li>5.所有被同步锁持有的对象  </li>
 </ul>
 <h3 id="🌟如何判断对象是否死亡"><a href="#🌟如何判断对象是否死亡" class="headerlink" title="🌟如何判断对象是否死亡"></a>🌟如何判断对象是否死亡</h3><blockquote>
 <p>GC的两种判定方法？</p>
@@ -1192,7 +1186,7 @@
 </ol>
 <h3 id="🌟使用软引用能带来的好处"><a href="#🌟使用软引用能带来的好处" class="headerlink" title="🌟使用软引用能带来的好处"></a>🌟使用软引用能带来的好处</h3><p>特别注意，在程序设计中一般很少使用弱引用与虚引用，使用软引用的情况较多，这是因为<strong>软引用可以加速 JVM 对垃圾内存的回收速度，可以维护系统的运行安全，防止内存溢出（OutOfMemory）等问题的产生</strong>。</p>
 <p><img src="https://img.jwt1399.top/img/202301191116789.png"></p>
-<h2 id="❷垃圾回收策略"><a href="#❷垃圾回收策略" class="headerlink" title="❷垃圾回收策略"></a>❷垃圾回收策略</h2><h3 id="🌟说下对垃圾回收策略的理解-触发条件？"><a href="#🌟说下对垃圾回收策略的理解-触发条件？" class="headerlink" title="🌟说下对垃圾回收策略的理解/触发条件？"></a>🌟说下对垃圾回收策略的理解/触发条件？</h3><blockquote>
+<h2 id="❷垃圾回收策略"><a href="#❷垃圾回收策略" class="headerlink" title="❷垃圾回收策略"></a>❷垃圾回收策略</h2><h3 id="🌟垃圾回收策略的理解-触发条件？"><a href="#🌟垃圾回收策略的理解-触发条件？" class="headerlink" title="🌟垃圾回收策略的理解/触发条件？"></a>🌟垃圾回收策略的理解/触发条件？</h3><blockquote>
 <p>Minor GC 和 Full GC 有什么不同呢？</p>
 <p>什么情况下触发垃圾回收？ </p>
 <p>Full GC触发机制</p>
@@ -1206,7 +1200,7 @@
 </li>
 <li><p>老年代空间不足，创建的大对象的内存大于老年代空间，导致老年代空间不足，则会发生Full GC</p>
 </li>
-<li><p>JDK1.7及以前的永久代空间满了，在JDK1.7以前，HotSpot虚拟机的方法区是永久代实现都得，在永久代中会存放一些Class的信息、常量、静态变量等数据，在永久代满了，并且没有配置CMS GC的情况下就会触发Full GC，在JDK1.8开始移除永久代也是为了减少Full GC的频率</p>
+<li><p>JDK1.7及以前的永久代空间满了，在JDK1.7以前，HotSpot虚拟机的方法区是永久代实现，在永久代中会存放一些Class的信息、常量、静态变量等数据，在永久代满了，并且没有配置CMS GC的情况下就会触发Full GC，在JDK1.8开始移除永久代也是为了减少Full GC的频率</p>
 </li>
 <li><p>空间分配担保失败：通过Minor GC后进入老年代的平均大小大于老年代的可用空间，会触发Full GC</p>
 </li>
@@ -1248,16 +1242,10 @@
 <p>老年代垃圾回收。随着新生代对象的不断晋升，老年代的对象变得越来越多，达到容量阈值后老年代也会发生垃圾回收，我们称之为Major GC</p>
 <h3 id="🌟空间分配担保机制是什么？"><a href="#🌟空间分配担保机制是什么？" class="headerlink" title="🌟空间分配担保机制是什么？"></a>🌟空间分配担保机制是什么？</h3><p>在发生Minor GC之前，虚拟机会先检查老年代最大可用的连续空间是否大于新生代所有对象空间，如果大于，直接进行Minor GC；如果不大于，则会查看是否允许担保失败，如果允许，会继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小，如果大于，则尝试进行一次Minor GC；如果小于，则进行一次Full GC。</p>
 <h3 id="🌟对象从加载到JVM再到被GC经历了什么"><a href="#🌟对象从加载到JVM再到被GC经历了什么" class="headerlink" title="🌟对象从加载到JVM再到被GC经历了什么"></a><strong>🌟对象从加载到JVM再到被GC经历了什么</strong></h3><ol>
-<li><p>⽤户创建⼀个对象，JVM⾸先需要到⽅法区去找对象的类型信息。然后再创建对象。</p>
-</li>
-<li><p>JVM要实例化⼀个对象，⾸先要在堆当中先创建⼀个对象。</p>
-</li>
-<li><p>对象⾸先会分配在堆内存中新⽣代的Eden。然后经过⼀次Minor GC，对象如果存活，就会进⼊S区。在后续的每次GC中，如果对象⼀直存活，就会在S区来回拷⻉，每移动⼀次，年龄加1。超过⼀定年龄后，对象转⼊⽼年代。</p>
-</li>
-<li><p>当⽅法执⾏结束后，栈中的指针会先移除掉。</p>
-</li>
-<li><p>堆中的对象，经过Full GC，就会被标记为垃圾，然后被GC线程清理掉。</p>
-</li>
+<li>⾸先需要到⽅法区去找对象的类型信息，然后再创建对象放到堆中。</li>
+<li>对象⾸先会分配在堆内存中新⽣代的Eden，然后经过⼀次Minor GC，对象如果存活，就会进⼊幸存区。在后续的每次GC中，如果对象⼀直存活，就会在幸存区来回拷⻉，每移动⼀次，年龄加1。超过⼀定年龄后，对象转⼊⽼年代。</li>
+<li>当⽅法执⾏结束后，栈中的指针会先移除掉。</li>
+<li>堆中的对象，经过Full GC，就会被标记为垃圾，然后被GC线程清理掉。</li>
 </ol>
 <h2 id="❸垃圾回收算法"><a href="#❸垃圾回收算法" class="headerlink" title="❸垃圾回收算法"></a>❸垃圾回收算法</h2><h3 id="🌟对象垃圾回收算法有哪些，优缺点"><a href="#🌟对象垃圾回收算法有哪些，优缺点" class="headerlink" title="🌟对象垃圾回收算法有哪些，优缺点"></a>🌟对象垃圾回收算法有哪些，优缺点</h3><blockquote>
 <p>垃圾回收算法有四种，分别是<strong>标记清除法、标记整理法、标记复制算法、分代收集算法</strong>。</p>
@@ -1268,7 +1256,7 @@
 <ul>
 <li><p>实现简单</p>
 </li>
-<li><p>不移动对象，与保守式GC算法兼容。</p>
+<li><p>不移动对象</p>
 </li>
 </ul>
 <p>缺点：</p>
@@ -1329,11 +1317,11 @@
 </tbody></table>
 <h2 id="❹垃圾回收器"><a href="#❹垃圾回收器" class="headerlink" title="❹垃圾回收器"></a>❹垃圾回收器</h2><p>目前在 Hotspot VM 中主要有分代收集和分区收集两大类，未来会逐渐向分区收集发展</p>
 <p><img src="https://img.jwt1399.top/img/202301191331234.jpg"></p>
-<h3 id="🌟GC是什么？为什么要有GC？"><a href="#🌟GC是什么？为什么要有GC？" class="headerlink" title="🌟GC是什么？为什么要有GC？"></a>🌟GC是什么？为什么要有GC？</h3><p>GC是垃圾收集的意思，Java语言没有提供释放已分配内存的显示操作方法，Java提供的GC功能可以自动监测对象是否超过作用域从而达到自动回收内存的目的。Java程序员不用担心内存管理，因为垃圾收集器会自动进行管理。</p>
+<h3 id="🌟GC是什么？为什么要有GC？"><a href="#🌟GC是什么？为什么要有GC？" class="headerlink" title="🌟GC是什么？为什么要有GC？"></a>🌟GC是什么？为什么要有GC？</h3><p>Java语言没有提供释放已分配内存的显示操作方法，GC功能可以自动监测对象是否超过作用域从而达到自动回收内存的目的。Java程序员不用担心内存管理，因为垃圾收集器会自动进行管理。</p>
 <p>垃圾回收可以有效的防止内存泄露，内存溢出</p>
 <h3 id="🌟评判-GC-的两个核心指标"><a href="#🌟评判-GC-的两个核心指标" class="headerlink" title="🌟评判 GC 的两个核心指标"></a>🌟评判 GC 的两个核心指标</h3><ul>
 <li><strong>延迟（Latency）：</strong> 也可以理解为最大停顿时间，即垃圾收集过程中一次 STW 的最长时间，越短越好，一定程度上可以接受频次的增大，GC 技术的主要发展方向。</li>
-<li><strong>吞吐量（Throughput）：</strong> 应用系统的生命周期内，由于 GC 线程会占用当前可用的 CPU 时钟周期，吞吐量即为程序有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。</li>
+<li><strong>吞吐量（Throughput）：</strong> 程序有效花费的时间占系统总运行时间的百分比，例如系统运行了 100 min，GC 耗时 1 min，则系统吞吐量为 99%，吞吐量优先的收集器可以接受较长的停顿。</li>
 </ul>
 <h3 id="🌟为什么要STW"><a href="#🌟为什么要STW" class="headerlink" title="🌟为什么要STW"></a>🌟为什么要STW</h3><ul>
 <li><p>如果不暂停用户线程，就意味着不断有垃圾的产生，永远也清理不干净；</p>
@@ -1342,10 +1330,10 @@
 <ul>
 <li>漏标：原来不是垃圾，但是在GC的过程中，用户线程将其引用关系修改，变成了null引用，成为了垃圾，这种情况还好，无非就是产生了一些浮动垃圾，下次GC再清理就好了；</li>
 </ul>
-</li>
-</ul>
 <ul>
 <li>错标：一个对象，开始没有引用，但是GC的同时，用户线程又重新引用了它，但是这个时候，我们把它当作垃圾清理掉了，这将会导致程序运行错误。</li>
+</ul>
+</li>
 </ul>
 <h3 id="🌟常见的垃圾回收器有哪些？"><a href="#🌟常见的垃圾回收器有哪些？" class="headerlink" title="🌟常见的垃圾回收器有哪些？"></a>🌟常见的垃圾回收器有哪些？</h3><blockquote>
 <p>你知道哪几种垃圾回收器，各自的优缺点</p>
@@ -1564,7 +1552,7 @@
 <li>替换成元空间以后，简化了Full GC。可以在不暂停的情况下并发地释放类数据，同时也提升了GC的性能</li>
 <li>Oracle要合并Hotspot和JRockit的代码，而JRockit没有永久代。</li>
 </ul>
-<h3 id="🌟为什么要有新生代和老年代-为什么分代"><a href="#🌟为什么要有新生代和老年代-为什么分代" class="headerlink" title="🌟为什么要有新生代和老年代/为什么分代"></a>🌟为什么要有新生代和老年代/为什么分代</h3><p>主要是因为对象大小不一样，对象生命周期不一样。分代为了使 JVM 能够更好的管理堆中的对象，包括内存的分配以及回收。从而提高垃圾回收效率。</p>
+<h3 id="🌟为什么有新生代和老年代-为什么分代"><a href="#🌟为什么有新生代和老年代-为什么分代" class="headerlink" title="🌟为什么有新生代和老年代/为什么分代"></a>🌟为什么有新生代和老年代/为什么分代</h3><p>主要是因为对象大小不一样，对象生命周期不一样。分代为了使 JVM 能够更好的管理堆中的对象，包括内存的分配以及回收。从而提高垃圾回收效率。</p>
 <ul>
 <li><p>新生代(Young Gen)：新生代主要存放新创建的对象，内存会相对比较小，垃圾回收会比较频繁。</p>
 </li>
@@ -1664,7 +1652,7 @@
 <li>当前类普通代码块</li>
 <li>当前类的构造函数</li>
 </ol>
-<h2 id="❷类加载器"><a href="#❷类加载器" class="headerlink" title="❷类加载器"></a>❷类加载器</h2><h3 id="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"><a href="#🌟什么是类加载器、类加载器有哪些？都加载哪些文件" class="headerlink" title="🌟什么是类加载器、类加载器有哪些？都加载哪些文件"></a>🌟什么是类加载器、类加载器有哪些？都加载哪些文件</h3><p>实现通过类的全限定名获取该类的二进制字节流的代码块叫做<strong>类加载器</strong>。</p>
+<h2 id="❷类加载器"><a href="#❷类加载器" class="headerlink" title="❷类加载器"></a>❷类加载器</h2><h3 id="🌟类加载器有哪些？都加载哪些文件"><a href="#🌟类加载器有哪些？都加载哪些文件" class="headerlink" title="🌟类加载器有哪些？都加载哪些文件"></a>🌟类加载器有哪些？都加载哪些文件</h3><p>实现通过类的全限定名获取该类的二进制字节流的代码块叫做<strong>类加载器</strong>。</p>
 <p>主要有以下四种 ClassLoader，除启动类加载器外其他类加载器均由 Java 实现且全部继承自<code>java.lang.ClassLoader</code>：</p>
 <ul>
 <li><strong>启动类加载器</strong>：用来加载 Java 核心类库，由 C++实现，无法被 Java 程序直接引用。<ul>
@@ -1696,8 +1684,8 @@
 </li>
 <li><p>显式加载：使用 loadClass()、forName() 等方法显式的加载需要的类，对于显式加载这种类加载方式来讲，当我们获取到了 Class 对象后，需要调用 Class 对象的 newInstance() 方法来生成对象的实例。</p>
 <ul>
-<li>ClassLoader.loadClass(className)：只加载和链接，<strong>不会进行初始化</strong></li>
-<li>Class.forName(String name, boolean initialize, ClassLoader loader)：使用 loader 进行加载和链接，根据参数 initialize 决定是否初始化</li>
+<li><code>ClassLoader.loadClass(className)</code>：只加载和链接，<strong>不会进行初始化</strong></li>
+<li><code>Class.forName(String name, boolean initialize, ClassLoader loader)</code>：使用 loader 进行加载和链接，根据参数 initialize 决定是否初始化</li>
 </ul>
 </li>
 </ul>
@@ -1714,9 +1702,9 @@ ClassLoader<span class="token punctuation">.</span><span class="token function">
 <li>隐式加载能够使用有参的构造函数，而使用 Class 对象的 newInstance() 不支持传入参数，如果想使用有参的构造函数，必须通过反射的方式，来获取到该类的有参构造方法。</li>
 </ul>
 <h3 id="🌟ClassLoader-loadClass-String-name-和Class-forName-String-name-区别"><a href="#🌟ClassLoader-loadClass-String-name-和Class-forName-String-name-区别" class="headerlink" title="🌟ClassLoader.loadClass(String name)和Class.forName(String name)区别"></a>🌟ClassLoader.loadClass(String name)和Class.forName(String name)区别</h3><ul>
-<li><p>Class.forName得到的class是已经初始化完成的</p>
+<li><p><code>Class.forName</code>得到的class是已经初始化完成的</p>
 </li>
-<li><p>ClassLoder.loaderClass得到的class是没有初始化的</p>
+<li><p><code>ClassLoder.loaderClass</code>得到的class是没有初始化的</p>
 </li>
 </ul>
 <p>有些情况是只需要知道这个类的存在而不需要初始化的情况使用Classloder.loaderClass，而有些时候又必须执行初始化就选择Class.forName</p>
@@ -2631,7 +2619,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1046.5k</span>&nbsp;字
+                class="white-color">1056.7k</span>&nbsp;字
             
             
             
