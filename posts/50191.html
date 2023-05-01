@@ -877,14 +877,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-04-24
+                    2023-04-30
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    27.4k
+                    29.8k
                 </div>
                 
 
@@ -1979,12 +1979,79 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li><strong>commit 阶段</strong>：把 内部 XA 事务的 ID 写入到 binlog，然后将 binlog 持久化到磁盘，接着调用引擎的提交事务接口，将 redo log 状态设置为 commit，此时该状态并不需要持久化到磁盘，只需要 write 到文件系统的 page cache 成功，只要 binlog 写磁盘成功，redo log 的状态还是 prepare 也没有关系，一样会被认为事务已经执行成功。</li>
 </ul>
 <p><img src="https://cdn.xiaolincoding.com/gh/xiaolincoder/mysql/how_update/%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4.drawio.png?image_process=watermark,text_5YWs5LyX5Y-377ya5bCP5p6XY29kaW5n,type_ZnpsdHpoaw,x_10,y_10,g_se,size_20,color_0000CD,t_70,fill_0" alt="两阶段提交"></p>
-<h1 id="⑥性能优化"><a href="#⑥性能优化" class="headerlink" title="⑥性能优化"></a>⑥性能优化</h1><h2 id="🌟MySQL-问题排查都有哪些手段？"><a href="#🌟MySQL-问题排查都有哪些手段？" class="headerlink" title="🌟MySQL 问题排查都有哪些手段？"></a>🌟MySQL 问题排查都有哪些手段？</h2><ol>
+<h1 id="⑥性能优化"><a href="#⑥性能优化" class="headerlink" title="⑥性能优化"></a>⑥性能优化</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/rODTq69p0NjIG-tWmJfIBg">SQL优化13连问</a></p>
+<h2 id="🌟日常工作中，你是怎么优化SQL的？"><a href="#🌟日常工作中，你是怎么优化SQL的？" class="headerlink" title="🌟日常工作中，你是怎么优化SQL的？"></a>🌟日常工作中，你是怎么优化SQL的？</h2><ul>
+<li>分析慢查询日志</li>
+<li>使用explain查看执行计划</li>
+<li>索引优化</li>
+<li>深分页优化t</li>
+<li>避免全表扫描</li>
+<li>避免返回不必要的数据（如<code>select</code>具体字段而不是<code>select*</code>）</li>
+<li>使用合适的数据类型（如可以使用<code>int</code>类型的话，就不要设计为<code>varchar</code>）</li>
+<li>优化sql结构（如<code>join</code>优化等等）</li>
+<li>适当分批量进行 (如批量更新、删除)</li>
+<li>定期清理无用的数据</li>
+<li>适当分库分表</li>
+<li>读写分离</li>
+</ul>
+<h2 id="🌟聊聊explain执行计划"><a href="#🌟聊聊explain执行计划" class="headerlink" title="🌟聊聊explain执行计划"></a>🌟聊聊explain执行计划</h2><p>当<code>explain</code>与<code>SQL</code>一起使用时，MySQL将显示来自优化器的有关语句执行计划的信息。即<code>MySQL</code>解释了它将如何处理该语句，包括有关如何连接表以及以何种顺序连接表等信息。</p>
+<p>一般来说，我们需要重点关注<code>type、rows、filtered、extra、key</code>。</p>
+<p><strong>type</strong></p>
+<p>type表示<strong>连接类型</strong>，查看索引执行情况的一个重要指标。以下性能从好到坏依次：<code>system &gt; const &gt; eq_ref &gt; ref &gt; ref_or_null &gt; index_merge &gt; unique_subquery &gt; index_subquery &gt; range &gt; index &gt; ALL</code></p>
+<ul>
+<li>system：这种类型要求数据库表中只有一条数据，是<code>const</code>类型的一个特例，一般情况下是不会出现的。</li>
+<li>const：通过一次索引就能找到数据，一般用于主键或唯一索引作为条件，这类扫描效率极高，，速度非常快。</li>
+<li>eq_ref：常用于主键或唯一索引扫描，一般指使用主键的关联查询</li>
+<li>ref : 常用于非主键和唯一索引扫描。</li>
+<li>ref_or_null：这种连接类型类似于<code>ref</code>，区别在于<code>MySQL</code>会额外搜索包含<code>NULL</code>值的行</li>
+<li>index_merge：使用了索引合并优化方法，查询使用了两个以上的索引。</li>
+<li>unique_subquery：类似于<code>eq_ref</code>，条件用了<code>in</code>子查询</li>
+<li>index_subquery：区别于<code>unique_subquery</code>，用于非唯一索引，可以返回重复值。</li>
+<li>range：常用于范围查询，比如：between … and 或 In 等操作</li>
+<li>index：全索引扫描</li>
+<li>ALL：全表扫描</li>
+</ul>
+<p><strong>rows</strong></p>
+<p>该列表示MySQL估算要找到我们所需的记录，需要读取的行数。对于InnoDB表，此数字是估计值，并非一定是个准确值。</p>
+<p><strong>filtered</strong></p>
+<p>该列是一个百分比的值，表里符合条件的记录数的百分比。简单点说，这个字段表示存储引擎返回的数据在经过过滤后，剩下满足条件的记录数量的比例。</p>
+<p><strong>extra</strong></p>
+<p>该字段包含有关MySQL如何解析查询的其他信息，它一般会出现这几个值：</p>
+<ul>
+<li>Using filesort：表示按文件排序，一般是在指定的排序和索引排序不一致的情况才会出现。一般见于order by语句</li>
+<li>Using index ：表示是否用了覆盖索引。</li>
+<li>Using temporary: 表示是否使用了临时表，性能特别差，需要重点优化。一般多见于group by语句，或者union语句。</li>
+<li>Using where : 表示使用了where条件过滤.</li>
+<li>Using index condition：MySQL5.6之后新增的索引下推。在存储引擎层进行数据过滤，而不是在服务层过滤，利用索引现有的数据减少回表的数据。</li>
+</ul>
+<p><strong>key</strong></p>
+<p>该列表示实际用到的索引。一般配合<code>possible_keys</code>列一起看。</p>
+<p><strong>注意</strong>:有时候，<code>explain</code>配合<code>show WARNINGS; </code>（可以查看优化后,最终执行的sql），效果更佳哦。</p>
+<h2 id="🌟如何使用索引优化SQL查询？"><a href="#🌟如何使用索引优化SQL查询？" class="headerlink" title="🌟如何使用索引优化SQL查询？"></a>🌟如何使用索引优化SQL查询？</h2><ul>
+<li>添加合适索引（在<code>where、group by、order by</code>等后面的字段添加合适索引）</li>
+<li>选择合适的索引类型 (<code>B-tree</code>索引适合范围查询、哈希索引适合等值查询)</li>
+<li>注意不适合加索引的场景（数据量少的表，更新频繁的字段，区分度低的字段）</li>
+<li>加索引的时候，需要考虑覆盖索引，减少回表，<strong>考虑联合索引的最左前缀原则</strong></li>
+<li><code>explain</code>查看<code>SQL</code>的执行计划，确认是否会命中索引。</li>
+<li>注意索引并不是越多越好，<strong>通常建议在单个表中不要超过5个索引</strong>。因为索引会占用磁盘空间，索引更新代价高。</li>
+</ul>
+<h2 id="🌟MySQL-问题排查都有哪些手段？"><a href="#🌟MySQL-问题排查都有哪些手段？" class="headerlink" title="🌟MySQL 问题排查都有哪些手段？"></a>🌟MySQL 问题排查都有哪些手段？</h2><ol>
 <li>使用 show processlist 命令查看当前所有连接信息；</li>
 <li>使用 Explain 命令查询 SQL 语句执行计划；</li>
 <li> 开启慢查询日志，查看慢查询的 SQL。</li>
 </ol>
-<h2 id="🌟sql查询很慢怎么排查"><a href="#🌟sql查询很慢怎么排查" class="headerlink" title="🌟sql查询很慢怎么排查"></a>🌟sql查询很慢怎么排查</h2><p>先检查sql语句，看看是否命中索引，是否符合最左前缀原则，用explain查看sql的执行情况</p>
+<h2 id="🌟sql查询很慢怎么排查"><a href="#🌟sql查询很慢怎么排查" class="headerlink" title="🌟sql查询很慢怎么排查"></a>🌟sql查询很慢怎么排查</h2><blockquote>
+<p>聊聊慢SQL的优化思路</p>
+<p>先检查sql语句，看看是否命中索引，是否符合最左前缀原则，用explain查看sql的执行情况</p>
+</blockquote>
+<ol>
+<li>查看慢查询日志记录，分析慢SQL，看看是否命中索引，是否符合最左前缀原则</li>
+<li>explain分析SQL的执行计划</li>
+<li>profile 分析执行耗时</li>
+<li>Optimizer Trace分析详情</li>
+<li>确定问题并采用相应的措施</li>
+</ol>
+<hr>
 <p>慢查询分析三步曲</p>
 <ul>
 <li><p>一步曲：EXPLAIN（<code>explain 查询命令</code>）</p>
@@ -1999,7 +2066,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>PROFILE 默认是关闭的，所以需要在 client 端先打开，操作如下：<code>set session profiling = 1;</code></li>
 </ul>
 </li>
-<li><p>三步曲：OPTIMIZER_TRACE（）</p>
+<li><p>三步曲：OPTIMIZER_TRACE</p>
 <ul>
 <li><p>可以看到内部查询计划的 TRACE 信息，从而可以知道 <strong>MySQL 是如何在众多索引中选中最“棒”的那个</strong>。</p>
 </li>
@@ -2019,6 +2086,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li><strong>数据库统计信息不准确</strong>：如果数据库统计信息不准确，MySQL可能会选择不合适的查询计划，从而导致查询变慢。可以通过更新数据库统计信息来解决问题。</li>
 <li><strong>MySQL版本过低</strong>：较老版本的MySQL可能性能较差，升级到较新版本的MySQL可能会提高查询性能。</li>
 </ul>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&mid=2247499624&idx=1&sn=561b9cb7fe831ca7cb2d9fd65691e85e&chksm=cf222041f855a957ac50c0a53baaec6d26be32427259b2974450620f33a8c834419fe535e83d&token=767319274&lang=zh_CN&scene=21#wechat_redirect">盘点MySQL慢查询的12个原因</a></p>
 <h2 id="🌟了解慢日志查询吗？对慢查询如何优化？"><a href="#🌟了解慢日志查询吗？对慢查询如何优化？" class="headerlink" title="🌟了解慢日志查询吗？对慢查询如何优化？"></a>🌟了解慢日志查询吗？对慢查询如何优化？</h2><p>慢查询日志一般用于记录执行时间超过某个临界值的SQL语句的日志。</p>
 <p>慢查询日志记录了执行时间超过阈值 long_query_time（默认是 10s，通常设置为1s）的所有查询语句，在解决 SQL 慢查询（SQL 执行时间过长）问题的时候经常会用到。</p>
 <p>在MySQL中有一个变量专门记录当前慢查询语句的个数，可以通过 <code>show global status like &#39;%Slow_queries%&#39;;</code> 命令查看。</p>
@@ -2041,15 +2109,33 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>  如果SQL语句一直都很慢，可能是字段上没有索引或者字段有索引但是没用上索引。</li>
 </ul>
 <h2 id="🌟大表数据查询如何进行优化？"><a href="#🌟大表数据查询如何进行优化？" class="headerlink" title="🌟大表数据查询如何进行优化？"></a>🌟大表数据查询如何进行优化？</h2><ul>
-<li>  索引优化</li>
-<li>  SQL语句优化</li>
-<li>  水平拆分</li>
-<li>  垂直拆分</li>
-<li>  建立中间表</li>
-<li>  使用缓存技术</li>
-<li>  固定长度的表访问起来更快</li>
-<li>  越小的列访问越快</li>
+<li><strong>数据库设计优化</strong></li>
 </ul>
+<p>合理的数据库设计可以极大地提高查询效率。我们在设计大表时，可以考虑<strong>拆分表、使用分区表、添加索引等方式</strong>来优化表结构。同时也要<strong>避免使用大量冗余字段、避免频繁使用join查询</strong>等操作。</p>
+<ul>
+<li><strong>索引优化</strong></li>
+</ul>
+<p>对于大表的查询操作，索引优化是非常重要的一环。可以考虑<strong>增加或者修改索引、使用覆盖索引、使用联合索引等方式来提高查询效率</strong>。同时也要注意<strong>定期清理冗余的索引以及对于经常使用的查询语句建立索引</strong>。</p>
+<ul>
+<li><strong>分区优化</strong></li>
+</ul>
+<p>将大表按照某个列分成多个分区表，每个分区表的数据量较小，可以提高查询和更新的性能。分区表还可以帮助在维护表结构的同时，减少锁表时间，提高并发处理能力。</p>
+<ul>
+<li><strong>数据清理归档</strong></li>
+</ul>
+<p>对于一些历史数据或者无用数据，<strong>可以进行定期归档，避免数据过多造成SQL查询效率降低</strong>。同时也要注意对于大表进行定期的数据备份以及紧急数据恢复的准备工作。</p>
+<ul>
+<li><strong>缓存优化</strong></li>
+</ul>
+<p>对于一些经常被查询的数据，可以使用缓存优化。使用<code>Redis</code>等缓存中间件来缓存常用的数据，以减少查询数据库的次数，提高查询效率。</p>
+<ul>
+<li><strong>SQL语句优化</strong></li>
+</ul>
+<p>在编写SQL查询语句时，要尽可能地简单明了，避免复杂的查询语句，同时也要避免一些不必要的查询操作。对于复杂的查询语句，可以使用<code>Explain</code>执行计划来进行优化。同时也要注意避免使用<code>OR</code>等耗费性能的操作符。</p>
+<ul>
+<li><strong>分库分表</strong></li>
+</ul>
+<p>如果数据量千万级别，需要考虑分库分表哈。<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&mid=2247498625&idx=1&sn=0d7bd9d1b46eeff4c715a6761355e9b0&chksm=cf2224a8f855adbea8931c8e011711f6c70cffeef8ddf8b87729c710eacef11b46eef80fda36&token=1627163936&lang=zh_CN&scene=21#wechat_redirect">我们为什么要分库分表？</a></p>
 <h2 id="🌟如何优化查询过程中的数据访问？"><a href="#🌟如何优化查询过程中的数据访问？" class="headerlink" title="🌟如何优化查询过程中的数据访问？"></a>🌟如何优化查询过程中的数据访问？</h2><p>从减少数据访问方面考虑：</p>
 <ul>
 <li>  正确使用索引，尽量做到索引覆盖</li>
@@ -2083,17 +2169,33 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>  将一个大的查询分解为多个小的查询</li>
 <li>  分解关联查询，使缓存的效率更高</li>
 </ul>
-<h2 id="🌟如何优化LIMIT分页？"><a href="#🌟如何优化LIMIT分页？" class="headerlink" title="🌟如何优化LIMIT分页？"></a><strong>🌟如何优化LIMIT分页？</strong></h2><pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token keyword">table</span> <span class="token keyword">LIMIT</span> <span class="token number">5</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//检索记录行6-15</span>
+<h2 id="🌟如何优化LIMIT分页？"><a href="#🌟如何优化LIMIT分页？" class="headerlink" title="🌟如何优化LIMIT分页？"></a>🌟如何优化LIMIT分页？</h2><blockquote>
+<p>是否遇到过深分页问题，如何解决</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token operator">*</span> <span class="token keyword">FROM</span> <span class="token keyword">table</span> <span class="token keyword">LIMIT</span> <span class="token number">5</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//检索记录行6-15</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>在LIMIT偏移量较大的时候（offset 越大，扫描页越多，所以导致变慢），查询效率会变低</p>
+</blockquote>
+<p>我们可以通过减少回表次数来优化。一般有<strong>标签记录法</strong>和<strong>延迟关联法</strong>。</p>
 <ul>
-<li><p>可以记录每次取出的最大ID，下次查询时可以利用ID进行查询</p>
-</li>
-<li><p>  limit 配合 order by 使用是一个好习惯，确保结果数据是稳定的</p>
-</li>
-<li><p>利用表的 <strong>覆盖索引</strong> 来加速分页查询，利用了索引查询的语句中如果只包含了那个索引列（覆盖索引），那么这种情况会查询很快。因为利用索引查找有优化算法，且数据块就在查询索引上面，不用再去找相关的数据块，这样节省了很多时间，也就是说，查询的数据就在索引上，不用再经过 <strong>回表</strong> 的操作。</p>
-</li>
+<li><strong>标签记录法：</strong>可以记录每次取出的最大ID，下次查询时可以利用ID进行查询</li>
+<li><strong>延迟关联法：</strong>利用表的 <strong>覆盖索引</strong> 来加速分页查询，利用了索引查询的语句中如果只包含了那个索引列（覆盖索引），那么这种情况会查询很快。因为利用索引查找有优化算法，且数据块就在查询索引上面，不用再去找相关的数据块，这样节省了很多时间，也就是说，查询的数据就在索引上，不用再经过 <strong>回表</strong> 的操作。</li>
 </ul>
+<p><strong>标签记录法</strong></p>
+<p>就是标记一下上次查询到哪一条了，下次再来查的时候，从该条开始往下扫描。就好像看书一样，上次看到哪里了，你就折叠一下或者夹个书签，下次来看的时候，直接就翻到啦。</p>
+<p>假设上一次记录到100000，则SQL可以修改为：</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span>  id<span class="token punctuation">,</span>name<span class="token punctuation">,</span>balance <span class="token keyword">FROM</span> account <span class="token keyword">where</span> id <span class="token operator">></span> <span class="token number">100000</span> <span class="token keyword">limit</span> <span class="token number">10</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>这样的话，后面无论翻多少页，性能都会不错的，因为命中了<code>id</code>索引。但是这种方式有局限性：需要一种类似连续自增的字段。</p>
+<p><strong>延迟关联法</strong></p>
+<p>延迟关联法，就是把条件转移到主键索引树，然后减少回表。假设原生SQL是这样的的，其中<code>id</code>是主键，<code>create_time</code>是普通索引</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> id<span class="token punctuation">,</span>name<span class="token punctuation">,</span>balance <span class="token keyword">from</span> account <span class="token keyword">where</span> create_time<span class="token operator">></span> <span class="token string">'2020-09-19'</span> <span class="token keyword">limit</span> <span class="token number">100000</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>使用延迟关联法优化，如下：</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span>  acct1<span class="token punctuation">.</span>id<span class="token punctuation">,</span>acct1<span class="token punctuation">.</span>name<span class="token punctuation">,</span>acct1<span class="token punctuation">.</span>balance <span class="token keyword">FROM</span> account acct1 <span class="token keyword">INNER</span> <span class="token keyword">JOIN</span> 
+<span class="token punctuation">(</span><span class="token keyword">SELECT</span> <span class="token number">a</span><span class="token punctuation">.</span>id <span class="token keyword">FROM</span> account <span class="token number">a</span> <span class="token keyword">WHERE</span> <span class="token number">a</span><span class="token punctuation">.</span>create_time <span class="token operator">></span> <span class="token string">'2020-09-19'</span> <span class="token keyword">limit</span> <span class="token number">100000</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span> 
+<span class="token keyword">AS</span> acct2 <span class="token keyword">on</span> acct1<span class="token punctuation">.</span>id<span class="token operator">=</span> acct2<span class="token punctuation">.</span>id<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>优化思路就是，先通过<code>idx_create_time</code>二级索引树查询到满足条件的<code>主键ID</code>，再与原表通过<code>主键ID</code>内连接，这样后面直接走了主键索引了，同时也减少了回表。</p>
 <hr>
 <p><img src="https://img.jwt1399.top/img/202304042215503.png"></p>
 <p>两个语句的内容都非常简单，差别只在 limit 的部分，第一个语句跳过的行数很少，第二个语句跳过的行数很多，结果是两个语句的执行时间差了至少 200 倍。</p>
@@ -2112,6 +2214,29 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>  在where和order by涉及的列建立索引</li>
 <li>  尽量减少使用in或者not in，会进行全表扫描</li>
 </ul>
+<h2 id="🌟如何优化-group-by"><a href="#🌟如何优化-group-by" class="headerlink" title="🌟如何优化 group by"></a>🌟如何优化 group by</h2><p><code>group by</code>一般用于分组统计，它表达的逻辑就是根据一定的规则，进行分组。日常开发中，我们使用得比较频繁。如果不注意，很容易产生慢<code>SQL</code>。</p>
+<p><code>group by</code>可能会慢在哪里？<strong>因为它既用到临时表，又默认用到排序。有时候还可能用到磁盘临时表。</strong></p>
+<ul>
+<li>如果执行过程中，会发现内存临时表大小到达了上限（控制这个上限的参数就是<code>tmp_table_size</code>），会把内存临时表转成磁盘临时表。</li>
+<li>如果数据量很大，很可能这个查询需要的磁盘临时表，就会占用大量的磁盘空间。</li>
+</ul>
+<p>如何优化group by呢?</p>
+<ul>
+<li>group by 后面的字段加索引</li>
+<li>order by null 不用排序</li>
+<li>尽量只使用内存临时表</li>
+<li>使用SQL_BIG_RESULT</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&mid=2247497527&idx=1&sn=1f30251d88b0e935bfffc3e8eaf53f28&chksm=cf22281ef855a1084fe84a7b257db5734c7b982c6ddaf9ef497d4e31e60faebd5f329e3c55a6&token=370993980&lang=zh_CN&scene=21#wechat_redirect">看一遍就理解：group by详解</a></p>
+<h2 id="🌟如何优化order-by"><a href="#🌟如何优化order-by" class="headerlink" title="🌟如何优化order by"></a>🌟如何优化order by</h2><p>大家是否还记得<code>order by</code>查询为什么会慢嘛?</p>
+<p><code>order by</code>排序，分为全字段排序和<code>rowid</code>排序。它是拿<code>max_length_for_sort_data</code>和结果行数据长度对比，如果结果行数据长度超过<code>max_length_for_sort_data</code>这个值，就会走<code>rowid</code>排序，相反，则走全字段排序。</p>
+<p><code>rowid</code>排序，一般需要回表去找满足条件的数据，所以效率会慢一点.如果是<code>order by</code>排序,可能会借助磁盘文件排序的话，效率就更慢一点.</p>
+<p>如何优化<code>order by</code>的文件排序?</p>
+<ul>
+<li>因为数据是无序的，所以就需要排序。如果数据本身是有序的，那就不会再用到文件排序啦。而索引数据本身是有序的，我们通过建立索引来优化<code>order by</code>语句。</li>
+<li>我们还可以通过调整<code>max_length_for_sort_data、sort_buffer_size</code>等参数优化；</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&mid=2247490571&idx=1&sn=e8638573ec8d720fd25da5b2b0d90ed2&scene=21#wechat_redirect">看一遍就理解：order by详解</a></p>
 <h1 id="⑦高性能"><a href="#⑦高性能" class="headerlink" title="⑦高性能"></a>⑦高性能</h1><h2 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h2><h3 id="🌟MySQL-有什么调优的方式"><a href="#🌟MySQL-有什么调优的方式" class="headerlink" title="🌟MySQL 有什么调优的方式"></a>🌟MySQL 有什么调优的方式</h3><ul>
 <li><p>读写分离</p>
 </li>
@@ -2159,7 +2284,8 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>  数据备份</li>
 <li>  升级测试</li>
 </ul>
-<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><h3 id="🌟什么是分库分表"><a href="#🌟什么是分库分表" class="headerlink" title="🌟什么是分库分表"></a>🌟什么是分库分表</h3><p><strong>分库</strong> ：就是将数据库中的数据分散到不同的数据库上，可以垂直分库，也可以水平分库。</p>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&mid=2247498625&idx=1&sn=0d7bd9d1b46eeff4c715a6761355e9b0&chksm=cf2224a8f855adbea8931c8e011711f6c70cffeef8ddf8b87729c710eacef11b46eef80fda36&token=1627163936&lang=zh_CN&scene=21#wechat_redirect">我们为什么要分库分表？</a></p>
+<h3 id="🌟什么是分库分表"><a href="#🌟什么是分库分表" class="headerlink" title="🌟什么是分库分表"></a>🌟什么是分库分表</h3><p><strong>分库</strong> ：就是将数据库中的数据分散到不同的数据库上，可以垂直分库，也可以水平分库。</p>
 <ul>
 <li><strong>垂直分库</strong> 就是把单一数据库按照业务进行划分，不同的业务使用不同的数据库，进而将一个数据库的压力分担到多个数据库。<ul>
 <li>例子：将数据库中的用户表、订单表和商品表分别单独拆分为用户数据库、订单数据库和商品数据库。</li>
@@ -3054,7 +3180,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1056.7k</span>&nbsp;字
+                class="white-color">1062.2k</span>&nbsp;字
             
             
             
