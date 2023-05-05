@@ -876,14 +876,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-10-07
+                    2023-05-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.6k
+                    4k
                 </div>
                 
 
@@ -1202,10 +1202,121 @@ public class StringRedisTemplateTest {
 <li>jedis连接Redis服务器是直连模式，当多线程模式下使用jedis会存在线程安全问题，解决方案可以通过配置连接池使每个连接专用，这样整体性能就大受影响</li>
 <li>lettcus基于Netty框架进行与Redis服务器连接，底层设计中采用StatefulRedisConnection。 StatefulRedisConnection自身是线程安全的，可以保障并发访问安全问题，所以一个连接可以被多线程复用。当然lettcus也支持多连接实例一起工作</li>
 </ul>
-<h3 id="②MongoDB"><a href="#②MongoDB" class="headerlink" title="②MongoDB"></a>②MongoDB</h3><h3 id="③ES"><a href="#③ES" class="headerlink" title="③ES"></a>③ES</h3><h2 id="3-整合缓存"><a href="#3-整合缓存" class="headerlink" title="3.整合缓存"></a>3.整合缓存</h2><h3 id="①Ehcache"><a href="#①Ehcache" class="headerlink" title="①Ehcache"></a>①Ehcache</h3><h3 id="②Redis"><a href="#②Redis" class="headerlink" title="②Redis"></a>②Redis</h3><h3 id="③Memcached"><a href="#③Memcached" class="headerlink" title="③Memcached"></a>③Memcached</h3><h2 id="4-整合消息队列"><a href="#4-整合消息队列" class="headerlink" title="4.整合消息队列"></a>4.整合消息队列</h2><h3 id="①ActiveMQ"><a href="#①ActiveMQ" class="headerlink" title="①ActiveMQ"></a>①ActiveMQ</h3><h3 id="②RabbitMQ"><a href="#②RabbitMQ" class="headerlink" title="②RabbitMQ"></a>②RabbitMQ</h3><h4 id="❶安装RabbitMQ"><a href="#❶安装RabbitMQ" class="headerlink" title="❶安装RabbitMQ"></a>❶安装RabbitMQ</h4><ul>
+<h3 id="②MongoDB"><a href="#②MongoDB" class="headerlink" title="②MongoDB"></a>②MongoDB</h3><h3 id="③ES"><a href="#③ES" class="headerlink" title="③ES"></a>③ES</h3><h2 id="3-整合缓存"><a href="#3-整合缓存" class="headerlink" title="3.整合缓存"></a>3.整合缓存</h2><h3 id="①Ehcache"><a href="#①Ehcache" class="headerlink" title="①Ehcache"></a>①Ehcache</h3><h3 id="②Redis"><a href="#②Redis" class="headerlink" title="②Redis"></a>②Redis</h3><h3 id="③Memcached"><a href="#③Memcached" class="headerlink" title="③Memcached"></a>③Memcached</h3><h2 id="4-整合消息队列"><a href="#4-整合消息队列" class="headerlink" title="4.整合消息队列"></a>4.整合消息队列</h2><h3 id="①kafka"><a href="#①kafka" class="headerlink" title="①kafka"></a>①kafka</h3><img src="https://img.jwt1399.top/img/202305051517810.png" style="zoom: 25%;" />
+
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Broker</td>
+<td>节点，一个Broker代表是一个Kafka实例节点，多个Broker可以组成Kafka集群</td>
+</tr>
+<tr>
+<td>Topic</td>
+<td>主题，等同于消息系统中的队列(queue)，一个Topic中存在多个Partition</td>
+</tr>
+<tr>
+<td>Partition</td>
+<td>分区，构成Kafka存储结构的最小单位</td>
+</tr>
+<tr>
+<td>Partition offset</td>
+<td>offset为消息偏移量，以Partition为单位，即使在同一个Topic中，不同Partition的offset也是重新开始计算(也就是会重复)</td>
+</tr>
+<tr>
+<td>Group</td>
+<td>消费者组，一个Group里面包含多个消费者</td>
+</tr>
+<tr>
+<td>Message</td>
+<td>消息，是队列中消息的承载体，也就是通信的基本单位，Producer可以向Topic中发送Message</td>
+</tr>
+</tbody></table>
+<h4 id="❶下载并启动"><a href="#❶下载并启动" class="headerlink" title="❶下载并启动"></a>❶下载并启动</h4><ul>
+<li>下载 kafka</li>
+</ul>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://kafka.apache.org/downloads">https://kafka.apache.org/downloads</a></p>
+<ul>
+<li>启动 Kafka 环境</li>
+</ul>
+<p>运行以下命令以正确的顺序启动所有服务：</p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># Start the ZooKeeper service</span>
+$ bin/zookeeper-server-start.sh config/zookeeper.properties
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>打开另一个终端会话并运行：</p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># Start the Kafka broker service</span>
+$ bin/kafka-server-start.sh config/server.properties
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>成功启动所有服务后，您将拥有一个基本的 Kafka 环境运行并可供使用。</p>
+<h4 id="❷引入依赖并配置"><a href="#❷引入依赖并配置" class="headerlink" title="❷引入依赖并配置"></a>❷引入依赖并配置</h4><ul>
+<li>引入依赖</li>
+</ul>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!-- https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.kafka<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-kafka<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>3.0.6<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>配置</li>
+</ul>
+<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">sping</span><span class="token punctuation">:</span>
+  <span class="token key atrule">kafka</span><span class="token punctuation">:</span>
+    <span class="token key atrule">bootstrap-servers</span><span class="token punctuation">:</span> localhost<span class="token punctuation">:</span><span class="token number">9092</span>
+    <span class="token key atrule">consumer</span><span class="token punctuation">:</span>
+      <span class="token key atrule">group-id</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>group <span class="token comment" spellcheck="true"># 默认的消费组ID</span>
+      <span class="token key atrule">auto-offset-reset</span><span class="token punctuation">:</span> earliest
+    <span class="token key atrule">producer</span><span class="token punctuation">:</span>
+      <span class="token key atrule">value-serializer</span><span class="token punctuation">:</span> org.apache.kafka.common.serialization.StringSerializer
+      <span class="token key atrule">key-serializer</span><span class="token punctuation">:</span> org.apache.kafka.common.serialization.StringSerializer
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="❸生产者发送消息"><a href="#❸生产者发送消息" class="headerlink" title="❸生产者发送消息"></a>❸生产者发送消息</h4><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">class</span> <span class="token class-name">KafkaProducer</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> KafkaTemplate kafkaTemplate<span class="token punctuation">;</span>
+  
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">sendMessage</span><span class="token punctuation">(</span>String topic<span class="token punctuation">,</span> String content<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        kafkaTemplate<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>topic<span class="token punctuation">,</span> content<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="❹消费者接收消息"><a href="#❹消费者接收消息" class="headerlink" title="❹消费者接收消息"></a>❹消费者接收消息</h4><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
+<span class="token keyword">class</span> <span class="token class-name">KafkaConsumer</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@KafkaListener</span><span class="token punctuation">(</span>topics <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"test"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">handleMessage</span><span class="token punctuation">(</span>ConsumerRecord record<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>record<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="❺测试"><a href="#❺测试" class="headerlink" title="❺测试"></a>❺测试</h4><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@SpringBootTest</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">KafkaTests</span> <span class="token punctuation">{</span>
+
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> KafkaProducer kafkaProducer<span class="token punctuation">;</span>
+
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testKafka</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        kafkaProducer<span class="token punctuation">.</span><span class="token function">sendMessage</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"你好"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        kafkaProducer<span class="token punctuation">.</span><span class="token function">sendMessage</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"在吗"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">try</span> <span class="token punctuation">{</span>
+            Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">1000</span> <span class="token operator">*</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="②RabbitMQ"><a href="#②RabbitMQ" class="headerlink" title="②RabbitMQ"></a>②RabbitMQ</h3><h4 id="❶安装RabbitMQ"><a href="#❶安装RabbitMQ" class="headerlink" title="❶安装RabbitMQ"></a>❶安装RabbitMQ</h4><ul>
 <li>拉取镜像</li>
 </ul>
-<pre class="line-numbers language-bash"><code class="language-bash">docker pull rabbitmq:3-management
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">docker</span> <span class="token attr-value">pull rabbitmq:3-management</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <ul>
 <li>运行镜像</li>
@@ -1220,7 +1331,7 @@ public class StringRedisTemplateTest {
  -d rabbitmq:3-management
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>访问 <code>http://127.0.0.1:15672</code> 即可</p>
-<h4 id="❷引入依赖并配置"><a href="#❷引入依赖并配置" class="headerlink" title="❷引入依赖并配置"></a>❷引入依赖并配置</h4><p>导入springboot整合amqp的starter，amqp协议默认实现为rabbitmq方案</p>
+<h4 id="❷引入依赖并配置-1"><a href="#❷引入依赖并配置-1" class="headerlink" title="❷引入依赖并配置"></a>❷引入依赖并配置</h4><p>导入springboot整合amqp的starter，amqp协议默认实现为rabbitmq方案</p>
 <pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-starter-amqp<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
@@ -1278,7 +1389,7 @@ public class StringRedisTemplateTest {
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="③RocketMQ"><a href="#③RocketMQ" class="headerlink" title="③RocketMQ"></a>③RocketMQ</h3><h3 id="④kafka"><a href="#④kafka" class="headerlink" title="④kafka"></a>④kafka</h3><h2 id="5-整合定时任务"><a href="#5-整合定时任务" class="headerlink" title="5.整合定时任务"></a>5.整合定时任务</h2><h3 id="①Quartz"><a href="#①Quartz" class="headerlink" title="①Quartz"></a>①Quartz</h3><blockquote>
+<h3 id="③RocketMQ"><a href="#③RocketMQ" class="headerlink" title="③RocketMQ"></a>③RocketMQ</h3><h2 id="5-整合定时任务"><a href="#5-整合定时任务" class="headerlink" title="5.整合定时任务"></a>5.整合定时任务</h2><h3 id="①Quartz"><a href="#①Quartz" class="headerlink" title="①Quartz"></a>①Quartz</h3><blockquote>
 <p>Quartz技术是一个比较成熟的定时任务框架。springboot对其进行整合后，简化了一系列的配置，将很多配置采用默认设置，这样开发阶段就简化了很多。</p>
 <p>Quartz相关概念</p>
 <ul>
@@ -2176,7 +2287,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1062.2k</span>&nbsp;字
+                class="white-color">1067.4k</span>&nbsp;字
             
             
             
