@@ -883,7 +883,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    10.7k
+                    10.4k
                 </div>
                 
 
@@ -906,17 +906,15 @@
 </blockquote>
 <p>小简从 0 开始学 Java 知识之 <a href="https://jwt1399.top/posts/29829.html">Java-学习路线</a> 中的《SpringBoot-原理篇》，不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;</p>
 <ul>
-<li><p><input checked="" disabled="" type="checkbox">  🚩时间安排：预计5天更新完</p>
-</li>
-<li><p><input checked="" disabled="" type="checkbox">  🎯开始时间：09-15</p>
-</li>
-<li><p><input checked="" disabled="" type="checkbox">  🎉结束时间：09-17</p>
-</li>
-<li><p><input checked="" disabled="" type="checkbox">  🍀总结：了解了个大概，后续再深入研究</p>
+<li>[x] 🚩时间安排：预计5天更新完</li>
+<li>[x] 🎯开始时间：09-15</li>
+<li>[x] 🎉结束时间：09-17</li>
+<li><p>[x] 🍀总结：了解了个大概，后续再深入研究</p>
 </li>
 <li><p>学习目标</p>
 </li>
 </ul>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -924,14 +922,18 @@
 <th>学习目标</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><font color="#990000"><b>原理篇</b></font></td>
 <td>掌握SpringBoot内部工作流程<br/>理解SpringBoot整合第三方技术的原理<br/>实现自定义开发整合第三方技术的组件</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <ul>
 <li>前置知识</li>
 </ul>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -940,33 +942,36 @@
 <th>要求</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><font color="#990000"><b>原理篇</b></font></td>
 <td>Spring</td>
 <td>了解Spring加载bean的各种方式<br/>知道Spring容器底层工作原理，能够阅读简单的Spring底层源码</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h1 id="1-自动配置工作流程"><a href="#1-自动配置工作流程" class="headerlink" title="1.自动配置工作流程"></a>1.自动配置工作流程</h1><h2 id="①bean的加载方式"><a href="#①bean的加载方式" class="headerlink" title="①bean的加载方式"></a>①bean的加载方式</h2><h3 id="❶配置文件-lt-bean-gt-标签"><a href="#❶配置文件-lt-bean-gt-标签" class="headerlink" title="❶配置文件+&lt;bean/&gt;标签"></a>❶配置文件+<code>&lt;bean/&gt;</code>标签</h3><p>最初级的bean的加载方式其实可以直击spring管控bean的核心思想，就是提供类名，然后spring就可以管理了。所以第一种方式就是给出bean的类名，内部通过反射机制加载类名后创建对象，对象就是spring管控的bean。</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>beans</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token comment" spellcheck="true">&lt;!--xml方式声明自己开发的bean--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>cat<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Cat<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Dog<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!--xml方式声明自己开发的bean-->
+    <bean id="cat" class="Cat"/>
+    <bean class="Dog"/>
 
-    <span class="token comment" spellcheck="true">&lt;!--xml方式声明第三方开发的bean--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.alibaba.druid.pool.DruidDataSource<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.alibaba.druid.pool.DruidDataSource<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.alibaba.druid.pool.DruidDataSource<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>beans</span><span class="token punctuation">></span></span>
+    <!--xml方式声明第三方开发的bean-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"/>
+    <bean class="com.alibaba.druid.pool.DruidDataSource"/>
+    <bean class="com.alibaba.druid.pool.DruidDataSource"/>
+</beans>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❷配置文件扫描-注解"><a href="#❷配置文件扫描-注解" class="headerlink" title="❷配置文件扫描+注解"></a>❷配置文件扫描+注解</h3><p>由于❶中需要将spring管控的bean全部写在xml文件中，非常不友好。现在哪一个类要受到spring管控加载成bean，就在这个类的上面加一个注解，还可以顺带起一个bean的名字（id）。这里可以使用的注解有<code>@Component</code>以及三个衍生注解<code>@Service</code>、<code>@Controller</code>、<code>@Repository</code></p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span><span class="token punctuation">(</span><span class="token string">"tom"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Cat</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Component("tom")
+public class Cat {}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>由于我们无法在第三方提供的技术源代码中去添加上述4个注解，因此当你需要加载第三方开发的bean的时候可以使用下列方式定义注解式的bean。定义一个方法添加<code>@Bean</code>，当前方法的返回值就可以交给spring管控，记得这个方法所在的类添加<code>@Component</code>或者<code>@Configuration</code></p>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">@Component
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">@Component
 public class DbConfig {
     @Bean
     public DruidDataSource dataSource(){
@@ -976,175 +981,175 @@ public class DbConfig {
 }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>上面提供的仅仅是bean的声明，spring并没有感知到这些东西，像极了上课积极回答问题的你，手举的非常高，可惜老师都没有往你的方向看上一眼。可以通过下列xml配置设置spring去检查哪些包，发现定了对应注解，就将对应的类纳入spring管控范围，声明成bean。</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>beans</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>context</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/context<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
-    <span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token comment" spellcheck="true">&lt;!--指定扫描加载bean的位置--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">context:</span>component-scan</span> <span class="token attr-name">base-package</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.jianjian.bean,com.jianjian.config<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>beans</span><span class="token punctuation">></span></span>
+    ">
+    <!--指定扫描加载bean的位置-->
+    <context:component-scan base-package="com.jianjian.bean,com.jianjian.config"/>
+</beans>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❸纯注解"><a href="#❸纯注解" class="headerlink" title="❸纯注解"></a>❸纯注解</h3><p>定义一个配置类并使用<code>@ComponentScan</code>替代❷中的包扫描这个动作。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
-<span class="token annotation punctuation">@ComponentScan</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"com.itheima.bean"</span><span class="token punctuation">,</span><span class="token string">"com.itheima.config"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SpringConfig</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> DruidDataSource <span class="token function">dataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        DruidDataSource ds <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DruidDataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> ds<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Configuration
+@ComponentScan({"com.itheima.bean","com.itheima.config"})
+public class SpringConfig {
+    @Bean
+    public DruidDataSource dataSource(){
+        DruidDataSource ds = new DruidDataSource();
+        return ds;
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❹-Import注解"><a href="#❹-Import注解" class="headerlink" title="❹@Import注解"></a>❹@Import注解</h3><p>由于使用<code>@ComponentScan</code>扫描的时候范围太大了，使用@Import注解它可以只加载你需要的bean即可。只需要在注解的参数中写上加载的类对应的.class，而且加载的bean可以不用@Component修饰</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Import</span><span class="token punctuation">(</span><span class="token punctuation">{</span>Dog<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span>DbConfig<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SpringConfig</span> <span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Import({Dog.class,DbConfig.class})
+public class SpringConfig {
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h3 id="❺编程形式"><a href="#❺编程形式" class="headerlink" title="❺编程形式"></a>❺编程形式</h3><p>前面介绍的加载bean的方式都是在容器启动阶段完成bean的加载，下面这种方式就比较特殊了，可以在容器初始化完成后手动加载bean。通过这种方式可以实现编程式控制bean的加载。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">App</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        AnnotationConfigApplicationContext ctx <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AnnotationConfigApplicationContext</span><span class="token punctuation">(</span>SpringConfig<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//上下文容器对象已经初始化完毕后，手工加载bean</span>
-        ctx<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span>Cat<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class App {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
+        //上下文容器对象已经初始化完毕后，手工加载bean
+        ctx.register(Cat.class);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❻ImportSelector接口"><a href="#❻ImportSelector接口" class="headerlink" title="❻ImportSelector接口"></a>❻ImportSelector接口</h3><p>是否可以在容器初始化过程中进行控制呢？答案是必须的。实现ImportSelector接口的类可以设置加载的bean的全路径类名，记得一点，只要能编程就能判定，能判定意味着可以控制程序的运行走向，进而控制一切。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyImportSelector</span> <span class="token keyword">implements</span> <span class="token class-name">ImportSelector</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> String<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">selectImports</span><span class="token punctuation">(</span>AnnotationMetadata metadata<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//各种条件的判定，判定完毕后，决定是否装载指定的bean</span>
-        <span class="token keyword">boolean</span> flag <span class="token operator">=</span> metadata<span class="token punctuation">.</span><span class="token function">hasAnnotation</span><span class="token punctuation">(</span><span class="token string">"org.springframework.context.annotation.Configuration"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>flag<span class="token punctuation">)</span><span class="token punctuation">{</span>
-            <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token string">"com.itheima.bean.Dog"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token string">"com.itheima.bean.Cat"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class MyImportSelector implements ImportSelector {
+    @Override
+    public String[] selectImports(AnnotationMetadata metadata) {
+        //各种条件的判定，判定完毕后，决定是否装载指定的bean
+        boolean flag = metadata.hasAnnotation("org.springframework.context.annotation.Configuration");
+        if(flag){
+            return new String[]{"com.itheima.bean.Dog"};
+        }
+        return new String[]{"com.itheima.bean.Cat"};
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❼ImportBeanDefinitionRegistrar接口"><a href="#❼ImportBeanDefinitionRegistrar接口" class="headerlink" title="❼ImportBeanDefinitionRegistrar接口"></a>❼ImportBeanDefinitionRegistrar接口</h3><p>❻中提供了给定类全路径类名控制bean加载的形式，其实bean的加载不是一个简简单单的对象，spring中定义了一个叫做BeanDefinition的东西，它才是控制bean初始化加载的核心。BeanDefinition接口中给出了若干种方法，可以控制bean的相关属性。说个最简单的，创建的对象是单例还是非单例，在BeanDefinition中定义了scope属性就可以控制这个。如果你感觉❻中没有给你开放出足够的对bean的控制操作，那么可以通过定义一个类实现ImportBeanDefinitionRegistrar接口的方式定义bean，并且还可以让你对bean的初始化进行更加细粒度的控制</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyRegistrar</span> <span class="token keyword">implements</span> <span class="token class-name">ImportBeanDefinitionRegistrar</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">registerBeanDefinitions</span><span class="token punctuation">(</span>AnnotationMetadata metadata<span class="token punctuation">,</span> BeanDefinitionRegistry registry<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        BeanDefinition beanDefinition <span class="token operator">=</span>     
-            BeanDefinitionBuilder<span class="token punctuation">.</span><span class="token function">rootBeanDefinition</span><span class="token punctuation">(</span>BookServiceImpl2<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBeanDefinition</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        registry<span class="token punctuation">.</span><span class="token function">registerBeanDefinition</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span>beanDefinition<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class MyRegistrar implements ImportBeanDefinitionRegistrar {
+    @Override
+    public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+        BeanDefinition beanDefinition =     
+            BeanDefinitionBuilder.rootBeanDefinition(BookServiceImpl2.class).getBeanDefinition();
+        registry.registerBeanDefinition("bookService",beanDefinition);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❽BeanDefinitionRegistryPostProcessor接口"><a href="#❽BeanDefinitionRegistryPostProcessor接口" class="headerlink" title="❽BeanDefinitionRegistryPostProcessor接口"></a>❽BeanDefinitionRegistryPostProcessor接口</h3><p>当某种类型的bean被接二连三的使用各种方式加载后，在你对所有加载方式的加载顺序没有完全理解清晰之前，你不知道最后谁说了算。BeanDefinitionRegistryPostProcessor，全称bean定义后处理器，它在所有bean注册都折腾完后，把最后一道关，它是最后一个运行的。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyPostProcessor</span> <span class="token keyword">implements</span> <span class="token class-name">BeanDefinitionRegistryPostProcessor</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">postProcessBeanDefinitionRegistry</span><span class="token punctuation">(</span>BeanDefinitionRegistry registry<span class="token punctuation">)</span> <span class="token keyword">throws</span> BeansException <span class="token punctuation">{</span>
-        BeanDefinition beanDefinition <span class="token operator">=</span> 
-            BeanDefinitionBuilder<span class="token punctuation">.</span><span class="token function">rootBeanDefinition</span><span class="token punctuation">(</span>BookServiceImpl4<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBeanDefinition</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        registry<span class="token punctuation">.</span><span class="token function">registerBeanDefinition</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span>beanDefinition<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class MyPostProcessor implements BeanDefinitionRegistryPostProcessor {
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        BeanDefinition beanDefinition = 
+            BeanDefinitionBuilder.rootBeanDefinition(BookServiceImpl4.class).getBeanDefinition();
+        registry.registerBeanDefinition("bookService",beanDefinition);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="②bean的加载控制"><a href="#②bean的加载控制" class="headerlink" title="②bean的加载控制"></a>②bean的加载控制</h2><p>企业级开发中不可能在spring容器中进行bean的饱和式加载的。合理的加载方式是用什么加载什么。所以在spring容器中，通过判断一个类的全路径名是否能够成功加载来控制bean的加载是一种常见操作。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyImportSelector</span> <span class="token keyword">implements</span> <span class="token class-name">ImportSelector</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> String<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">selectImports</span><span class="token punctuation">(</span>AnnotationMetadata importingClassMetadata<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">try</span> <span class="token punctuation">{</span>
-            Class<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span> clazz <span class="token operator">=</span> Class<span class="token punctuation">.</span><span class="token function">forName</span><span class="token punctuation">(</span><span class="token string">"com.jianjian.bean.Mouse"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">if</span><span class="token punctuation">(</span>clazz <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span><span class="token string">"com.jianjian.bean.Cat"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-            <span class="token punctuation">}</span>
-        <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">ClassNotFoundException</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                        <span class="token comment" spellcheck="true">//e.printStackTrace();</span>
-            <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> null<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class MyImportSelector implements ImportSelector {
+    @Override
+    public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+        try {
+            Class<?> clazz = Class.forName("com.jianjian.bean.Mouse");
+            if(clazz != null) {
+                return new String[]{"com.jianjian.bean.Cat"};
+            }
+        } catch (ClassNotFoundException e) {
+                        //e.printStackTrace();
+            return new String[0];
+        }
+        return null;
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>通过上述的分析，可以看到此类操作将成为企业级开发中的常见操作，于是springboot将把这些常用操作给我们做了一次封装。通过注解实现上面的操作。</p>
 <ul>
 <li><code>@ConditionalOnClass</code>注解实现了当虚拟机中加载了指定类时才加载对应的bean。</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@ConditionalOnClass</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"com.jianjian.bean.Wolf"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> Cat <span class="token function">tom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Bean
+@ConditionalOnClass(name = "com.jianjian.bean.Wolf")
+public Cat tom(){
+    return new Cat();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li><code>@ConditionalOnMissingClass</code>注解实现了虚拟机中没有加载指定的类才加载对应的bean。</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@ConditionalOnMissingClass</span><span class="token punctuation">(</span><span class="token string">"com.jianjian.bean.Dog"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> Cat <span class="token function">tom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Bean
+@ConditionalOnMissingClass("com.jianjian.bean.Dog")
+public Cat tom(){
+    return new Cat();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这种条件还可以做并且的逻辑关系，写2个就是2个条件都成立，写多个就是多个条件都成立。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@ConditionalOnClass</span><span class="token punctuation">(</span>name <span class="token operator">=</span> <span class="token string">"com.jianjian.bean.Wolf"</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@ConditionalOnMissingClass</span><span class="token punctuation">(</span><span class="token string">"com.jianjian.bean.Mouse"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> Cat <span class="token function">tom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Bean
+@ConditionalOnClass(name = "com.jianjian.bean.Wolf")
+@ConditionalOnMissingClass("com.jianjian.bean.Mouse")
+public Cat tom(){
+    return new Cat();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li><code>@ConditionalOnWebApplication</code>判定当前容器环境是否是web环境。</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@ConditionalOnWebApplication</span>
-<span class="token keyword">public</span> Cat <span class="token function">tom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Bean
+@ConditionalOnWebApplication
+public Cat tom(){
+    return new Cat();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li><code>@ConditionalOnNotWebApplication</code>判定容器环境是否是非web环境。</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@ConditionalOnNotWebApplication</span>
-<span class="token keyword">public</span> Cat <span class="token function">tom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Bean
+@ConditionalOnNotWebApplication
+public Cat tom(){
+    return new Cat();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li><code>@ConditionalOnBean</code>判定是否加载了指定名称的bean</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Bean</span>
-<span class="token annotation punctuation">@ConditionalOnBean</span><span class="token punctuation">(</span>name<span class="token operator">=</span><span class="token string">"jerry"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> Cat <span class="token function">tom</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Cat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Bean
+@ConditionalOnBean(name="jerry")
+public Cat tom(){
+    return new Cat();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>总结</strong></p>
 <p>springboot定义了若干种控制bean加载的条件设置注解，由spring固定加载bean变成了可以根据情况选择性的加载bean</p>
 <h2 id="③bean的依赖属性"><a href="#③bean的依赖属性" class="headerlink" title="③bean的依赖属性"></a>③bean的依赖属性</h2><p>bean的加载及加载控制已经搞完了，下面研究一下bean内部的事情。bean在运行的时候，实现对应的业务逻辑时有可能需要开发者提供一些设置值，有就是属性了。如果使用构造方法将参数固定，灵活性不足，这个时候就可以使用bean的属性配置进行灵活的配置了。</p>
 <p><strong>步骤①：</strong>先通过yml配置文件，设置bean运行需要使用的配置信息。</p>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">cartoon</span><span class="token punctuation">:</span>
-  <span class="token key atrule">cat</span><span class="token punctuation">:</span>
-    <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"图多盖洛"</span>
-    <span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">5</span>
-  <span class="token key atrule">mouse</span><span class="token punctuation">:</span>
-    <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"泰菲"</span>
-    <span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">1</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">cartoon:
+  cat:
+    name: "图多盖洛"
+    age: 5
+  mouse:
+    name: "泰菲"
+    age: 1
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤②：</strong>然后定义一个封装属性的专用类，加载配置属性，读取对应前缀相关的属性值。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"cartoon"</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@Data</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CartoonProperties</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> Cat cat<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> Mouse mouse<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@ConfigurationProperties(prefix = "cartoon")
+@Data
+public class CartoonProperties {
+    private Cat cat;
+    private Mouse mouse;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤③：</strong>最后在使用的位置注入对应的配置即可。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@EnableConfigurationProperties</span><span class="token punctuation">(</span>CartoonProperties<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CartoonCatAndMouse</span><span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> CartoonProperties cartoonProperties<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@EnableConfigurationProperties(CartoonProperties.class)
+public class CartoonCatAndMouse{
+    @Autowired
+    private CartoonProperties cartoonProperties;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>建议在业务类上使用@EnableConfigurationProperties声明bean，这样在不使用这个类的时候，也不会无故加载专用的属性配置类CartoonProperties，减少spring管控的资源数量。</p>
 <h2 id="④自动装配原理"><a href="#④自动装配原理" class="headerlink" title="④自动装配原理"></a>④自动装配原理</h2><p>啥叫自动配置呢？简单说就是springboot根据我们开发者的行为猜测你要做什么事情，然后把你要用的bean都给你准备好。springboot咋做到的呢？就是看你导入了什么类，就知道你想干什么了。然后把你有可能要用的bean都给你加载好，你直接使用就行了，springboot把所需要的一切工作都做完了。整体过程分为2个阶段：</p>
@@ -1156,7 +1161,7 @@ public class DbConfig {
 </li>
 </ol>
 <p><strong>阶段二：加载阶段</strong></p>
-<ol start="3">
+<ol>
 <li>springboot初始化Spring容器基础环境，读取用户的配置信息，加载用户自定义的bean和导入的坐标，形成<strong>初始化环境</strong></li>
 <li>springboot将<strong>技术集A</strong>包含的所有技术在SpringBoot启动时默认全部加载，这时肯定加载的东西有一些是无效的，没有用的</li>
 <li>springboot会对<strong>技术集A</strong>中每一个技术约定启动这个技术对应的条件，并设置成按条件加载，由于开发者导入了一些bean和坐标，也就是与<strong>初始化环境</strong>，这个时候就可以根据这个<strong>初始化环境</strong>与springboot的<strong>技术集A</strong>进行比对了，哪个匹配上加载哪个</li>
@@ -1167,24 +1172,24 @@ public class DbConfig {
 <ul>
 <li>首先指定一个技术X，我们打算让技术X具备自动配置的功能，这个技术X可以是任意功能，这个技术隶属于上面描述的<strong>技术集A</strong></li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CartoonCatAndMouse</span><span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class CartoonCatAndMouse{
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ul>
 <li>然后找出技术X使用过程中的常用配置Y，这个配置隶属于上面表述的<strong>设置集B</strong></li>
 </ul>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">cartoon</span><span class="token punctuation">:</span>
-  <span class="token key atrule">cat</span><span class="token punctuation">:</span>
-    <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"图多盖洛"</span>
-    <span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">5</span>
-  <span class="token key atrule">mouse</span><span class="token punctuation">:</span>
-    <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"泰菲"</span>
-    <span class="token key atrule">age</span><span class="token punctuation">:</span> <span class="token number">1</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">cartoon:
+  cat:
+    name: "图多盖洛"
+    age: 5
+  mouse:
+    name: "泰菲"
+    age: 1
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>然后定义一个属性类封装对应的配置属性，这个过程其实就是上一节咱们做的bean的依赖属性管理，一模一样</li>
 </ul>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">@ConfigurationProperties(prefix = "cartoon")
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">@ConfigurationProperties(prefix = "cartoon")
 @Data
 public class CartoonProperties {
     private Cat cat;
@@ -1194,7 +1199,7 @@ public class CartoonProperties {
 <ul>
 <li>最后做一个配置类，当这个类加载的时候就可以初始化对应的功能bean，并且可以加载到对应的配置</li>
 </ul>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">@EnableConfigurationProperties(CartoonProperties.class)
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">@EnableConfigurationProperties(CartoonProperties.class)
 public class CartoonCatAndMouse implements ApplicationContextAware {
     private CartoonProperties cartoonProperties;
 }
@@ -1202,16 +1207,16 @@ public class CartoonCatAndMouse implements ApplicationContextAware {
 <ul>
 <li>当然，你也可以为当前自动配置类设置上激活条件，例如使用@CondtionOn为其设置加载条件</li>
 </ul>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">@ConditionalOnClass(name="org.springframework.data.redis.core.RedisOperations")
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">@ConditionalOnClass(name="org.springframework.data.redis.core.RedisOperations")
 @EnableConfigurationProperties(CartoonProperties.class)
 public class CartoonCatAndMouse implements ApplicationContextAware {
     private CartoonProperties cartoonProperties;
 }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>做到这里都已经做完了，但是遇到了一个全新的问题，如何让springboot启动的时候去加载这个类呢？如果不加载的话，我们做的条件判定，做的属性加载这些全部都失效了。springboot为我们开放了一个配置入口，在类路径(resources/)下创建<code>META-INF</code>目录，并创建<code>spring.factories</code>文件，在其中添加设置，说明哪些类要启动自动配置就可以了。</p>
-<pre class="line-numbers language-properties"><code class="language-properties"><span class="token comment" spellcheck="true"># Auto Configure</span>
-<span class="token attr-name">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span><span class="token punctuation">=</span><span class="token attr-value">\
-com.jianjian.bean.CartoonCatAndMouse</span>
+<pre class="line-numbers language-lang-properties"><code class="language-lang-properties"># Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.jianjian.bean.CartoonCatAndMouse
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>其实这个文件就做了一件事，通过这种配置的方式加载了指定的类。那自动配置的核心究竟是什么呢？自动配置其实是一个小的生态，可以按照如下思想理解：</p>
 <ol>
@@ -1230,17 +1235,17 @@ com.jianjian.bean.CartoonCatAndMouse</span>
 </ol>
 <h2 id="⑤变更自动配置"><a href="#⑤变更自动配置" class="headerlink" title="⑤变更自动配置"></a>⑤变更自动配置</h2><p>springboot的自动配置并不是必然运行的，可以通过配置的形式干预是否启用对应的自动配置功能。系统默认会加载100多种自动配置的技术，我们可以先手工干预此工程，禁用一些自动配置</p>
 <p><strong>方式一：通过yaml配置设置排除指定的自动配置类</strong></p>
-<pre class="line-numbers language-YAML"><code class="language-YAML">spring:
+<pre class="line-numbers language-lang-YAML"><code class="language-lang-YAML">spring:
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>方式二：通过注解参数排除自动配置类</strong></p>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">@EnableAutoConfiguration(excludeName = "",exclude = {})
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">@EnableAutoConfiguration(excludeName = "",exclude = {})
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><strong>方式三：排除坐标（应用面较窄）</strong></p>
 <p>例如web程序启动时会自动启动tomcat服务器，可以通过排除坐标的方式，让加载tomcat服务器的条件失效。不过需要提醒一点，你把tomcat排除掉，记得再加一种可以运行的服务器。</p>
-<pre class="line-numbers language-XML"><code class="language-XML"><dependencies>
+<pre class="line-numbers language-lang-XML"><code class="language-lang-XML"><dependencies>
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
@@ -1263,10 +1268,10 @@ com.jianjian.bean.CartoonCatAndMouse</span>
 <h2 id="⓪案例：网站访问次数"><a href="#⓪案例：网站访问次数" class="headerlink" title="⓪案例：网站访问次数"></a>⓪案例：网站访问次数</h2><blockquote>
 <p>本案例的功能是统计网站独立IP访问次数的功能，并将访问信息在后台持续输出。整体功能是在后台每10秒输出一次监控信息（格式：IP+访问次数） ，当用户访问网站时，对用户的访问行为进行统计。</p>
 <p>例如：张三访问网站功能15次，IP地址：192.168.0.135，李四访问网站功能20次，IP地址：61.129.65.248。那么在网站后台就输出如下监控信息，此信息每10秒刷新一次。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">   IP访问监控
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">   IP访问监控
 +-----ip-address-----+--num--+
-<span class="token operator">|</span>     192.168.0.135  <span class="token operator">|</span>   15  <span class="token operator">|</span>
-<span class="token operator">|</span>     61.129.65.248  <span class="token operator">|</span>   20  <span class="token operator">|</span>
+|     192.168.0.135  |   15  |
+|     61.129.65.248  |   20  |
 +--------------------+-------+
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>本功能最终要实现的效果是在现有的项目中导入一个starter，对应的功能就添加上了，删除掉对应的starter，功能就消失了，要求功能要与原始项目完全解耦。因此需要开发一个独立的模块，制作对应功能。</p>
@@ -1276,11 +1281,11 @@ com.jianjian.bean.CartoonCatAndMouse</span>
 <li>数据记录在什么位置</li>
 </ol>
 <p>最终记录的数据是一个字符串（IP地址）对应一个数字（访问次数），此处可以选择的数据存储模型可以使用java提供的map模型，也就是key-value的键值对模型，或者具有key-value键值对模型的存储技术，例如redis技术。本案例使用map作为实现方案。</p>
-<ol start="2">
+<ol>
 <li>统计功能运行位置</li>
 </ol>
 <p>因为每次web请求都需要进行统计，因此使用拦截器会是比较好的方案，本案例使用拦截器来实现。不过在制作初期，先使用调用的形式进行测试，等功能完成了，再改成拦截器的实现方案。</p>
-<ol start="3">
+<ol>
 <li>为了提升统计数据展示的灵活度，为统计功能添加配置项。</li>
 </ol>
 <ul>
@@ -1294,7 +1299,7 @@ com.jianjian.bean.CartoonCatAndMouse</span>
 <p>在开发中我们分成若干个步骤实现。先完成最基本的统计功能的制作，然后开发出统计报表，接下来把所有的配置都设置好，最后将拦截器功能实现，整体功能就做完了。</p>
 <p>最终实现代码：<a target="_blank" rel="noopener" href="https://jwt1399.lanzouv.com/iG0LW0buql7g">https://jwt1399.lanzouv.com/iG0LW0buql7g</a></p>
 <p><strong>项目文件结构</strong></p>
-<pre class="line-numbers language-bash"><code class="language-bash">ipcount-spring-boot-starter
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">ipcount-spring-boot-starter
 ├── pom.xml
 └── src
     └── main
@@ -1309,7 +1314,7 @@ com.jianjian.bean.CartoonCatAndMouse</span>
         │           │   └── SpringMvcConfig.java
         │           ├── properties
         │           │   └── IpProperties.java
-        │           └── <span class="token function">service</span>
+        │           └── service
         │               └── IpCountService.java
         └── resources
             ├── META-INF
@@ -1319,111 +1324,112 @@ com.jianjian.bean.CartoonCatAndMouse</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="①IP计数业务功能开发"><a href="#①IP计数业务功能开发" class="headerlink" title="①IP计数业务功能开发"></a>①IP计数业务功能开发</h2><p><strong>步骤一：创建全新的模块，定义业务功能类</strong></p>
 <p>创建web模块<code>ipcount-spring-boot-starter</code>，定义一个业务类，声明一个Map对象，用于记录ip访问次数，key是ip地址，value是访问次数</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpCountService</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span> ipCountMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class IpCountService {
+    private Map<String,Integer> ipCountMap = new HashMap<String,Integer>();
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>有些小伙伴可能会有疑问，不设置成静态的，如何在每次请求时进行数据共享呢？记得，当前类加载成bean以后是一个单例对象，对象都是单例的，哪里存在多个对象共享变量的问题。</p>
 <p><strong>步骤二：制作统计功能</strong></p>
 <p>制作统计操作对应的方法，每次访问后对应ip的记录次数+1。需要分情况处理，如果当前没有对应ip的数据，新增一条数据，否则就修改对应key的值+1即可</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpCountService</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span> ipCountMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//每次调用当前操作，就记录当前访问的IP，然后累加访问次数</span>
-        <span class="token comment" spellcheck="true">//1.获取当前操作的IP地址</span>
-        String ip <span class="token operator">=</span> null<span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//2.根据IP地址从Map取值，并递增</span>
-        Integer count <span class="token operator">=</span> ipCountMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>count <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
-            ipCountMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
-            ipCountMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span>count <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class IpCountService {
+    private Map<String,Integer> ipCountMap = new HashMap<String,Integer>();
+    public void count(){
+        //每次调用当前操作，就记录当前访问的IP，然后累加访问次数
+        //1.获取当前操作的IP地址
+        String ip = null;
+        //2.根据IP地址从Map取值，并递增
+        Integer count = ipCountMap.get(ip);
+        if(count == null){
+            ipCountMap.put(ip,1);
+        }else{
+            ipCountMap.put(ip,count + 1);
+        }
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>因为当前功能最终导入到其他项目中进行，而导入当前功能的项目是一个web项目，因此可以从容器中直接获取请求对象，获取IP地址的操作可以通过自动装配得到请求对象，然后获取对应的访问IP</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpCountService</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span> ipCountMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token comment" spellcheck="true">//当前的request对象的注入工作由使用当前web-starter的工程提供自动装配</span>
-    <span class="token keyword">private</span> HttpServletRequest httpServletRequest<span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//每次调用当前操作，就记录当前访问的IP，然后累加访问次数</span>
-        <span class="token comment" spellcheck="true">//1.获取当前操作的IP地址</span>
-        String ip <span class="token operator">=</span> httpServletRequest<span class="token punctuation">.</span><span class="token function">getRemoteAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//2.根据IP地址从Map取值，并递增</span>
-        Integer count <span class="token operator">=</span> ipCountMap<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>ip<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>count <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
-            ipCountMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span><span class="token keyword">else</span><span class="token punctuation">{</span>
-            ipCountMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span>count <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token comment" spellcheck="true">//打印出信息</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>ipCountMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class IpCountService {
+    private Map<String,Integer> ipCountMap = new HashMap<String,Integer>();
+    @Autowired
+    //当前的request对象的注入工作由使用当前web-starter的工程提供自动装配
+    private HttpServletRequest httpServletRequest;
+    public void count(){
+        //每次调用当前操作，就记录当前访问的IP，然后累加访问次数
+        //1.获取当前操作的IP地址
+        String ip = httpServletRequest.getRemoteAddr();
+        //2.根据IP地址从Map取值，并递增
+        Integer count = ipCountMap.get(ip);
+        if(count == null){
+            ipCountMap.put(ip,1);
+        }else{
+            ipCountMap.put(ip,count + 1);
+        }
+        //打印出信息
+        System.out.println(ipCountMap);
+    }
+}
 
-<span class="token comment" spellcheck="true">//优化后代码</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpCountService</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> ipCountMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token comment" spellcheck="true">//当前的request对象的注入工作由使用当前starter的工程提供自动装配</span>
-    <span class="token keyword">private</span> HttpServletRequest httpServletRequest<span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        String ip <span class="token operator">=</span> httpServletRequest<span class="token punctuation">.</span><span class="token function">getRemoteAddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        ipCountMap<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span>ipCountMap<span class="token punctuation">.</span><span class="token function">getOrDefault</span><span class="token punctuation">(</span>ip<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>ipCountMap<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+//优化后代码
+public class IpCountService {
+    private Map<String, Integer> ipCountMap = new HashMap<>();
+    @Autowired
+    //当前的request对象的注入工作由使用当前starter的工程提供自动装配
+    private HttpServletRequest httpServletRequest;
+    public void count(){
+        String ip = httpServletRequest.getRemoteAddr();
+        ipCountMap.put(ip,ipCountMap.getOrDefault(ip,0) + 1);
+        System.out.println(ipCountMap);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤三：定义自动配置类</strong></p>
 <p>我们需要做到的效果是导入当前模块即开启此功能，因此使用自动配置实现功能的自动装载，需要开发自动配置类在启动项目时加载当前功能。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpAutoConfiguration</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> IpCountService <span class="token function">ipCountService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">IpCountService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Configuration
+public class IpAutoConfiguration {
+    @Bean
+    public IpCountService ipCountService(){
+        return new IpCountService();
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>自动配置类需要在spring.factories文件中做配置方可自动运行。</p>
-<pre class="line-numbers language-properties"><code class="language-properties"><span class="token comment" spellcheck="true"># Auto Configure</span>
-<span class="token attr-name">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span><span class="token punctuation">=</span><span class="token attr-value">\
-  com.jianjian.autoconfigure.IpAutoConfiguration</span>
+<pre class="line-numbers language-lang-properties"><code class="language-lang-properties"># Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.jianjian.autoconfigure.IpAutoConfiguration
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤四：在其它项目中模拟调用，测试功能</strong></p>
 <p>在其它项目调用本项目，导入当前开发的starter，切记使用之前先clean后install安装到maven仓库，确保资源更新</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.jianjian<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>ipcount-spring-boot-starter<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>0.0.1-SNAPSHOT<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><dependency>
+    <groupId>com.jianjian</groupId>
+    <artifactId>ipcount-spring-boot-starter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐选择调用方便的功能做测试，推荐使用分页操作，当然也可以换其他功能位置进行测试。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
-<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/books"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookController</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> IpCountService ipCountService<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//引入对象</span>
-    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"{currentPage}/{pageSize}"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> R <span class="token function">getPage</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> <span class="token keyword">int</span> currentPage<span class="token punctuation">,</span><span class="token annotation punctuation">@PathVariable</span> <span class="token keyword">int</span> pageSize<span class="token punctuation">,</span>Book book<span class="token punctuation">)</span><span class="token punctuation">{</span>
-        ipCountService<span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//测试功能</span>
-        IPage<span class="token operator">&lt;</span>Book<span class="token operator">></span> page <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span>currentPage<span class="token punctuation">,</span> pageSize<span class="token punctuation">,</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span> currentPage <span class="token operator">></span> page<span class="token punctuation">.</span><span class="token function">getPages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-            page <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>page<span class="token punctuation">.</span><span class="token function">getPages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pageSize<span class="token punctuation">,</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">R</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> page<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@RestController
+@RequestMapping("/books")
+public class BookController {
+    @Autowired
+    private IpCountService ipCountService; //引入对象
+    @GetMapping("{currentPage}/{pageSize}")
+    public R getPage(@PathVariable int currentPage,@PathVariable int pageSize,Book book){
+        ipCountService.count(); //测试功能
+        IPage<Book> page = bookService.getPage(currentPage, pageSize,book);
+        if( currentPage > page.getPages()){
+            page = bookService.getPage((int)page.getPages(), pageSize,book);
+        }
+        return new R(true, page);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>当前效果</strong>：每次调用分页操作后，可以在控制台输出当前访问的IP地址</p>
-<p><font color="#f0f"><b>温馨提示</b></font></p>
+<font color="#f0f"><b>温馨提示</b></font>
+
 <p>由于当前制作的功能需要在对应的调用位置进行坐标导入，因此必须保障仓库中具有当前开发的功能，所以每次原始代码修改后，需要重新编译并安装到仓库中。为防止问题出现，建议每次安装之前先<code>clean</code>然后<code>install</code>，保障资源进行了更新。切记切记！！</p>
 <h2 id="②定时任务报表开发"><a href="#②定时任务报表开发" class="headerlink" title="②定时任务报表开发"></a>②定时任务报表开发</h2><p>当前已经实现了在业务功能类中记录访问数据，但是还没有定时输出监控的信息到控制台。由于监控信息需要每10秒输出1次，因此需要使用定时器功能。此处选用Spring内置的task作为实现方案。</p>
 <p><strong>步骤一：开启定时任务功能</strong></p>
 <p>定时任务功能开启需要在当前功能的总配置中设置，结合现有业务设定，比较合理的位置是设置在自动配置类上。加载自动配置类即启用定时任务功能。</p>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">@EnableScheduling
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">@EnableScheduling
 public class IpAutoConfiguration {
     @Bean
     public IpCountService ipCountService(){
@@ -1433,8 +1439,8 @@ public class IpAutoConfiguration {
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤二：制作显示统计数据功能</strong></p>
 <p>定义显示统计功能的操作print()，并设置定时任务，当前设置每5秒运行一次统计数据。</p>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">public class IpCountService {
-  
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">public class IpCountService {
+
     private Map<String,Integer> ipCountMap = new HashMap<String,Integer>();
 
     @Scheduled(cron = "0/5 * * * * ?")
@@ -1451,177 +1457,177 @@ public class IpAutoConfiguration {
 }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>显示样式</p>
-<pre class="line-numbers language-bash"><code class="language-bash">
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">
          IP访问监控
 +-----ip-address-----+--num--+
-<span class="token operator">|</span>         127.0.0.1  <span class="token operator">|</span>    1  <span class="token operator">|</span>
+|         127.0.0.1  |    1  |
 +--------------------+-------+
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>当前效果</strong>：每次调用分页操作后，可以在控制台看到统计数据，到此基础功能已经开发完毕。</p>
 <h2 id="③使用属性设置功能参数"><a href="#③使用属性设置功能参数" class="headerlink" title="③使用属性设置功能参数"></a>③使用属性设置功能参数</h2><p>由于当前报表显示的信息格式固定，为提高报表信息显示的灵活性，需要通过yml文件设置参数，控制报表的显示格式。</p>
 <p><strong>步骤一：定义参数格式</strong></p>
 <p>设置3个属性，分别用来控制显示周期（cycle），阶段数据是否清空（cycleReset），数据显示格式（model）</p>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">tools</span><span class="token punctuation">:</span>
-  <span class="token key atrule">ip</span><span class="token punctuation">:</span>
-    <span class="token key atrule">cycle</span><span class="token punctuation">:</span> <span class="token number">10</span>
-    <span class="token key atrule">cycleReset</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
-    <span class="token key atrule">model</span><span class="token punctuation">:</span> <span class="token string">"detail"</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">tools:
+  ip:
+    cycle: 10
+    cycleReset: false
+    model: "detail"
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤二：定义封装参数的属性类，读取配置参数</strong></p>
 <p>为防止项目组定义的参数种类过多，产生冲突，通常设置属性前缀会至少使用两级属性作为前缀进行区分。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Data</span>
-<span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"tools.ip"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpProperties</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">/**
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Data
+@ConfigurationProperties(prefix = "tools.ip")
+public class IpProperties {
+    /**
      * 日志显示周期
-     */</span>
-    <span class="token keyword">private</span> Long cycle <span class="token operator">=</span> 5L<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//默认值</span>
-    <span class="token comment" spellcheck="true">/**
+     */
+    private Long cycle = 5L; //默认值
+    /**
      * 是否周期内重置数据
-     */</span>
-    <span class="token keyword">private</span> Boolean cycleReset <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">/**
+     */
+    private Boolean cycleReset = false;
+    /**
      * 日志输出模式  detail：详细模式  simple：极简模式
-     */</span>
-    <span class="token keyword">private</span> String model <span class="token operator">=</span> LogModel<span class="token punctuation">.</span>DETAIL<span class="token punctuation">.</span>value<span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token keyword">enum</span> LogModel<span class="token punctuation">{</span>
-        <span class="token function">DETAIL</span><span class="token punctuation">(</span><span class="token string">"detail"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-        <span class="token function">SIMPLE</span><span class="token punctuation">(</span><span class="token string">"simple"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">private</span> String value<span class="token punctuation">;</span>
-        <span class="token function">LogModel</span><span class="token punctuation">(</span>String value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">public</span> String <span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token keyword">return</span> value<span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+     */
+    private String model = LogModel.DETAIL.value;
+    public enum LogModel{
+        DETAIL("detail"),
+        SIMPLE("simple");
+        private String value;
+        LogModel(String value) {
+            this.value = value;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>日志输出模式是在若干个类别选项中选择某一项，对于此种分类性数据建议制作枚举定义分类数据，当然使用字符串也可以。</p>
 <p><strong>步骤三：加载属性类</strong></p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@EnableScheduling</span>
-<span class="token annotation punctuation">@EnableConfigurationProperties</span><span class="token punctuation">(</span>IpProperties<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpAutoConfiguration</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> IpCountService <span class="token function">ipCountService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">IpCountService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@EnableScheduling
+@EnableConfigurationProperties(IpProperties.class)
+public class IpAutoConfiguration {
+    @Bean
+    public IpCountService ipCountService(){
+        return new IpCountService();
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤四：应用配置属性</strong></p>
 <p>在应用配置属性的功能类中，使用自动装配加载对应的配置bean，然后使用配置信息做分支处理。</p>
 <p>注意：清除数据的功能一定要在输出后运行，否则每次查阅的数据均为空白数据。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpCountService</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> Map<span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span> ipCountMap <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashMap</span><span class="token operator">&lt;</span>String<span class="token punctuation">,</span>Integer<span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> IpProperties ipProperties<span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Scheduled</span><span class="token punctuation">(</span>cron <span class="token operator">=</span> <span class="token string">"0/5 * * * * ?"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token keyword">if</span><span class="token punctuation">(</span>ipProperties<span class="token punctuation">.</span><span class="token function">getModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>IpProperties<span class="token punctuation">.</span>LogModel<span class="token punctuation">.</span>DETAIL<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"         IP访问监控"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"+-----ip-address-----+--num--+"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span> <span class="token punctuation">(</span>Map<span class="token punctuation">.</span>Entry<span class="token operator">&lt;</span>String<span class="token punctuation">,</span> Integer<span class="token operator">></span> entry <span class="token operator">:</span> ipCountMap<span class="token punctuation">.</span><span class="token function">entrySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                String key <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                Integer value <span class="token operator">=</span> entry<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>String<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">"|%18s  |%5d  |"</span><span class="token punctuation">,</span>key<span class="token punctuation">,</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">}</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"+--------------------+-------+"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span><span class="token keyword">else</span> <span class="token keyword">if</span><span class="token punctuation">(</span>ipProperties<span class="token punctuation">.</span><span class="token function">getModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>IpProperties<span class="token punctuation">.</span>LogModel<span class="token punctuation">.</span>SIMPLE<span class="token punctuation">.</span><span class="token function">getValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"     IP访问监控"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"+-----ip-address-----+"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token keyword">for</span> <span class="token punctuation">(</span>String key<span class="token operator">:</span> ipCountMap<span class="token punctuation">.</span><span class="token function">keySet</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-                System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>String<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">"|%18s  |"</span><span class="token punctuation">,</span>key<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token punctuation">}</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"+--------------------+"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token comment" spellcheck="true">//阶段内统计数据归零</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>ipProperties<span class="token punctuation">.</span><span class="token function">getCycleReset</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-            ipCountMap<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class IpCountService {
+    private Map<String,Integer> ipCountMap = new HashMap<String,Integer>();
+    @Autowired
+    private IpProperties ipProperties;
+    @Scheduled(cron = "0/5 * * * * ?")
+    public void print(){
+if(ipProperties.getModel().equals(IpProperties.LogModel.DETAIL.getValue())){
+            System.out.println("         IP访问监控");
+            System.out.println("+-----ip-address-----+--num--+");
+            for (Map.Entry<String, Integer> entry : ipCountMap.entrySet()) {
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+                System.out.println(String.format("|%18s  |%5d  |",key,value));
+            }
+            System.out.println("+--------------------+-------+");
+        }else if(ipProperties.getModel().equals(IpProperties.LogModel.SIMPLE.getValue())){
+            System.out.println("     IP访问监控");
+            System.out.println("+-----ip-address-----+");
+            for (String key: ipCountMap.keySet()) {
+                System.out.println(String.format("|%18s  |",key));
+            }
+            System.out.println("+--------------------+");
+        }
+        //阶段内统计数据归零
+        if(ipProperties.getCycleReset()){
+            ipCountMap.clear();
+        }
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>当前效果</strong>：在web程序端可以通过控制yml文件中的配置参数对统计信息进行格式控制。但是数据显示周期还未进行控制。</p>
 <h2 id="④使用属性设置定时器参数"><a href="#④使用属性设置定时器参数" class="headerlink" title="④使用属性设置定时器参数"></a>④使用属性设置定时器参数</h2><p>在使用属性配置中的显示周期数据时，遇到了一些问题。由于无法在@Scheduled注解上直接使用配置数据，改用曲线救国的方针，放弃使用@EnableConfigurationProperties注解对应的功能，改成最原始的bean定义格式。</p>
 <p><strong>步骤一：属性类定义bean并指定bean的访问名称</strong></p>
 <p>如果此处不设置bean的访问名称，spring会使用自己的命名生成器生成bean的长名称，无法实现属性的读取</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span><span class="token punctuation">(</span><span class="token string">"ipProperties"</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@ConfigurationProperties</span><span class="token punctuation">(</span>prefix <span class="token operator">=</span> <span class="token string">"tools.ip"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpProperties</span> <span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Component("ipProperties")
+@ConfigurationProperties(prefix = "tools.ip")
+public class IpProperties {
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤二：@Scheduled注解使用<code>#&#123;&#125;</code>读取bean属性值</strong></p>
 <p>此处读取bean名称为ipProperties的bean的cycle属性值</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Scheduled</span><span class="token punctuation">(</span>cron <span class="token operator">=</span> <span class="token string">"0/#{ipProperties.cycle} * * * * ?"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Scheduled(cron = "0/#{ipProperties.cycle} * * * * ?")
+public void print(){
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤三：弃用@EnableConfigurationProperties注解对应的功能，改为导入bean的形式加载配置属性类</strong></p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@EnableScheduling</span>
-<span class="token comment" spellcheck="true">//@EnableConfigurationProperties(IpProperties.class)</span>
-<span class="token annotation punctuation">@Import</span><span class="token punctuation">(</span>IpProperties<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpAutoConfiguration</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> IpCountService <span class="token function">ipCountService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">IpCountService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@EnableScheduling
+//@EnableConfigurationProperties(IpProperties.class)
+@Import(IpProperties.class)
+public class IpAutoConfiguration {
+    @Bean
+    public IpCountService ipCountService(){
+        return new IpCountService();
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>当前效果</strong>：在web程序端可以通过控制yml文件中的配置参数对统计信息的显示周期进行控制</p>
 <h2 id="⑤使用拦截器开发"><a href="#⑤使用拦截器开发" class="headerlink" title="⑤使用拦截器开发"></a>⑤使用拦截器开发</h2><p>目前基础功能基本上已经完成了制作，下面进行拦截器的开发。使用拦截器后使用时不需要再引入对象调用方法了，导入 starter 即可实现功能。</p>
 <p><strong>步骤一：开发拦截器</strong></p>
 <p>使用自动装配加载统计功能的业务类，并在拦截器中调用对应功能</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">IpCountInterceptor</span> <span class="token keyword">implements</span> <span class="token class-name">HandlerInterceptor</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Autowired</span>
-    <span class="token keyword">private</span> IpCountService ipCountService<span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">preHandle</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> 
-                             HttpServletResponse response<span class="token punctuation">,</span> Object handler<span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
-        ipCountService<span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class IpCountInterceptor implements HandlerInterceptor {
+    @Autowired
+    private IpCountService ipCountService;
+    @Override
+    public boolean preHandle(HttpServletRequest request, 
+                             HttpServletResponse response, Object handler) throws Exception {
+        ipCountService.count();
+        return true;
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤二：配置拦截器</strong></p>
 <p>配置mvc拦截器，设置拦截对应的请求路径。此处拦截所有请求，用户可以根据使用需要设置要拦截的请求。甚至可以在此处加载IpCountProperties中的属性，通过配置设置拦截器拦截的请求。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SpringMvcConfig</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addInterceptors</span><span class="token punctuation">(</span>InterceptorRegistry registry<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        registry<span class="token punctuation">.</span><span class="token function">addInterceptor</span><span class="token punctuation">(</span><span class="token function">ipCountInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">addPathPatterns</span><span class="token punctuation">(</span><span class="token string">"/**"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token annotation punctuation">@Bean</span>
-    <span class="token keyword">public</span> IpCountInterceptor <span class="token function">ipCountInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">IpCountInterceptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Configuration
+public class SpringMvcConfig implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(ipCountInterceptor()).addPathPatterns("/**");
+    }
+    @Bean
+    public IpCountInterceptor ipCountInterceptor(){
+        return new IpCountInterceptor();
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>步骤三：去除之前的方法</strong></p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@RestController</span>
-<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/books"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookController</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">//@Autowired 去掉</span>
-    <span class="token comment" spellcheck="true">//private IpCountService ipCountService; 去掉</span>
-    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"{currentPage}/{pageSize}"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> R <span class="token function">getPage</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> <span class="token keyword">int</span> currentPage<span class="token punctuation">,</span><span class="token annotation punctuation">@PathVariable</span> <span class="token keyword">int</span> pageSize<span class="token punctuation">,</span>Book book<span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//ipCountService.count();  去掉</span>
-        IPage<span class="token operator">&lt;</span>Book<span class="token operator">></span> page <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span>currentPage<span class="token punctuation">,</span> pageSize<span class="token punctuation">,</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span> currentPage <span class="token operator">></span> page<span class="token punctuation">.</span><span class="token function">getPages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-            page <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>page<span class="token punctuation">.</span><span class="token function">getPages</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pageSize<span class="token punctuation">,</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">R</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> page<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@RestController
+@RequestMapping("/books")
+public class BookController {
+    //@Autowired 去掉
+    //private IpCountService ipCountService; 去掉
+    @GetMapping("{currentPage}/{pageSize}")
+    public R getPage(@PathVariable int currentPage,@PathVariable int pageSize,Book book){
+        //ipCountService.count();  去掉
+        IPage<Book> page = bookService.getPage(currentPage, pageSize,book);
+        if( currentPage > page.getPages()){
+            page = bookService.getPage((int)page.getPages(), pageSize,book);
+        }
+        return new R(true, page);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>当前效果</strong>：在web程序端导入对应的starter后功能开启，去掉坐标后功能消失，实现自定义starter的效果。</p>
 <h2 id="⑥开启yml提示功能"><a href="#⑥开启yml提示功能" class="headerlink" title="⑥开启yml提示功能"></a>⑥开启yml提示功能</h2><p>我们在使用springboot的配置属性时，都可以看到提示，导入了对应的starter后，也会有对应的提示信息出现。但是现在我们的starter没有对应的提示功能，这种设定就非常的不友好，本节解决自定义starter功能如何开启配置提示的问题。springboot提供有专用的工具实现此功能，仅需导入下列坐标。</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.springframework.boot<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>spring-boot-configuration-processor<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-configuration-processor</artifactId>
+</dependency>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>程序编译后，在target/META-INF目录中会生成对应的<code>json</code>提示文件，然后拷贝<code>json</code>文件到自己开发的META-INF目录中，并对其进行自定义编辑。生成的信息来自于属性类的注释信息。打开生成的<code>json</code>文件，可以看到如下信息。</p>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">{
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">{
   "groups": [
     {
       "name": "tools.ip",
@@ -1673,8 +1679,7 @@ public class IpAutoConfiguration {
 </li>
 <li><p><code>properties属性</code>描述了当前配置中每一个属性的具体设置，包含名称、类型、描述、默认值等信息。</p>
 </li>
-<li><p><code>hints属性</code>默认是空白的，没有进行设置。<code>hints属性</code>可以参考springboot源码中的制作，设置当前属性封装类专用的提示信息，上面为日志输出模式属性model设置了两种可选提示信息。</p>
-</li>
+<li><code>hints属性</code>默认是空白的，没有进行设置。<code>hints属性</code>可以参考springboot源码中的制作，设置当前属性封装类专用的提示信息，上面为日志输出模式属性model设置了两种可选提示信息。</li>
 </ul>
 <p><strong>总结</strong></p>
 <ol>
@@ -1684,8 +1689,9 @@ public class IpAutoConfiguration {
 <li>对于配置属性务必开启提示功能，否则使用者无法感知配置应该如何书写</li>
 </ol>
 <p>到此当前案例全部完成，自定义stater的开发其实在第一轮开发中就已经完成了，就是创建独立模块导出独立功能，需要使用的位置导入对应的starter即可。如果是在企业中开发，记得不仅需要将开发完成的starter模块install到自己的本地仓库中，开发完毕后还要deploy到私服上，否则别人无法使用。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h1 id="3-SpringBoot程序启动"><a href="#3-SpringBoot程序启动" class="headerlink" title="3.SpringBoot程序启动"></a>3.SpringBoot程序启动</h1><h2 id="①启动过程分析"><a href="#①启动过程分析" class="headerlink" title="①启动过程分析"></a>①启动过程分析</h2><blockquote>
 <p>不管是springboot程序还是spring程序，启动过程本质上都是在做容器的初始化，并将对应的bean初始化出来放入容器。在spring环境中，每个bean的初始化都要开发者自己添加设置，但是切换成springboot程序后，自动配置功能的添加帮助开发者提前预设了很多bean的初始化过程，加上各种各样的参数设置，使得整体初始化过程显得更简单，但是核心本质还是在做一件事，初始化容器。</p>
 </blockquote>
@@ -1696,83 +1702,83 @@ public class IpAutoConfiguration {
 <li>参数（Arguments、application.properties）</li>
 </ul>
 <p>以下通过代码流向介绍了springboot程序启动时每一环节做的具体事情。</p>
-<pre class="line-numbers language-java"><code class="language-java">Springboot30StartupApplication【<span class="token number">10</span>】<span class="token operator">-</span><span class="token operator">></span>SpringApplication<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Springboot30StartupApplication<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    SpringApplication【<span class="token number">1332</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">return</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Class</span><span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">{</span> primarySource <span class="token punctuation">}</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        SpringApplication【<span class="token number">1343</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">SpringApplication</span><span class="token punctuation">(</span>primarySources<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-            SpringApplication【<span class="token number">1343</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">SpringApplication</span><span class="token punctuation">(</span>primarySources<span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">Springboot30StartupApplication【10】->SpringApplication.run(Springboot30StartupApplication.class, args);
+    SpringApplication【1332】->return run(new Class<?>[] { primarySource }, args);
+        SpringApplication【1343】->return new SpringApplication(primarySources).run(args);
+            SpringApplication【1343】->SpringApplication(primarySources)
             # 加载各种配置信息，初始化各种配置对象
-                SpringApplication【<span class="token number">266</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">this</span><span class="token punctuation">(</span>null<span class="token punctuation">,</span> primarySources<span class="token punctuation">)</span><span class="token punctuation">;</span>
-                    SpringApplication【<span class="token number">280</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">public</span> <span class="token function">SpringApplication</span><span class="token punctuation">(</span>ResourceLoader resourceLoader<span class="token punctuation">,</span> Class<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> primarySources<span class="token punctuation">)</span>
-                        SpringApplication【<span class="token number">281</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">this</span><span class="token punctuation">.</span>resourceLoader <span class="token operator">=</span> resourceLoader<span class="token punctuation">;</span>
+                SpringApplication【266】->this(null, primarySources);
+                    SpringApplication【280】->public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources)
+                        SpringApplication【281】->this.resourceLoader = resourceLoader;
                         # 初始化资源加载器
-                        SpringApplication【<span class="token number">283</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">this</span><span class="token punctuation">.</span>primarySources <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedHashSet</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>primarySources<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        SpringApplication【283】->this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
                         # 初始化配置类的类名信息（格式转换）
-                        SpringApplication【<span class="token number">284</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">this</span><span class="token punctuation">.</span>webApplicationType <span class="token operator">=</span> WebApplicationType<span class="token punctuation">.</span><span class="token function">deduceFromClasspath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        SpringApplication【284】->this.webApplicationType = WebApplicationType.deduceFromClasspath();
                         # 确认当前容器加载的类型
-                        SpringApplication【<span class="token number">285</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">this</span><span class="token punctuation">.</span>bootstrapRegistryInitializers <span class="token operator">=</span> <span class="token function">getBootstrapRegistryInitializersFromSpringFactories</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        SpringApplication【285】->this.bootstrapRegistryInitializers = getBootstrapRegistryInitializersFromSpringFactories();
                         # 获取系统配置引导信息
-                        SpringApplication【<span class="token number">286</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">setInitializers</span><span class="token punctuation">(</span><span class="token punctuation">(</span>Collection<span class="token punctuation">)</span> <span class="token function">getSpringFactoriesInstances</span><span class="token punctuation">(</span>ApplicationContextInitializer<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                        # 获取ApplicationContextInitializer<span class="token punctuation">.</span><span class="token keyword">class</span>对应的实例
-                        SpringApplication【<span class="token number">287</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">setListeners</span><span class="token punctuation">(</span><span class="token punctuation">(</span>Collection<span class="token punctuation">)</span> <span class="token function">getSpringFactoriesInstances</span><span class="token punctuation">(</span>ApplicationListener<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        SpringApplication【286】->setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+                        # 获取ApplicationContextInitializer.class对应的实例
+                        SpringApplication【287】->setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
                         # 初始化监听器，对初始化过程及运行过程进行干预
-                        SpringApplication【<span class="token number">288</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">this</span><span class="token punctuation">.</span>mainApplicationClass <span class="token operator">=</span> <span class="token function">deduceMainApplicationClass</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                        SpringApplication【288】->this.mainApplicationClass = deduceMainApplicationClass();
                         # 初始化了引导类类名信息，备用
-            SpringApplication【<span class="token number">1343</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">new</span> <span class="token class-name">SpringApplication</span><span class="token punctuation">(</span>primarySources<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
+            SpringApplication【1343】->new SpringApplication(primarySources).run(args)
             # 初始化容器，得到ApplicationContext对象
-                SpringApplication【<span class="token number">323</span>】<span class="token operator">-</span><span class="token operator">></span>StopWatch stopWatch <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StopWatch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【323】->StopWatch stopWatch = new StopWatch();
                 # 设置计时器
-                SpringApplication【<span class="token number">324</span>】<span class="token operator">-</span><span class="token operator">></span>stopWatch<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【324】->stopWatch.start();
                 # 计时开始
-                SpringApplication【<span class="token number">325</span>】<span class="token operator">-</span><span class="token operator">></span>DefaultBootstrapContext bootstrapContext <span class="token operator">=</span> <span class="token function">createBootstrapContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【325】->DefaultBootstrapContext bootstrapContext = createBootstrapContext();
                 # 系统引导信息对应的上下文对象
-                SpringApplication【<span class="token number">327</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">configureHeadlessProperty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-                # 模拟输入输出信号，避免出现因缺少外设导致的信号传输失败，进而引发错误（模拟显示器，键盘，鼠标<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>）
-                    java<span class="token punctuation">.</span>awt<span class="token punctuation">.</span>headless<span class="token operator">=</span><span class="token boolean">true</span>
-                SpringApplication【<span class="token number">328</span>】<span class="token operator">-</span><span class="token operator">></span>SpringApplicationRunListeners listeners <span class="token operator">=</span> <span class="token function">getRunListeners</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【327】->configureHeadlessProperty();
+                # 模拟输入输出信号，避免出现因缺少外设导致的信号传输失败，进而引发错误（模拟显示器，键盘，鼠标...）
+                    java.awt.headless=true
+                SpringApplication【328】->SpringApplicationRunListeners listeners = getRunListeners(args);
                 # 获取当前注册的所有监听器
-                SpringApplication【<span class="token number">329</span>】<span class="token operator">-</span><span class="token operator">></span>listeners<span class="token punctuation">.</span><span class="token function">starting</span><span class="token punctuation">(</span>bootstrapContext<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>mainApplicationClass<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【329】->listeners.starting(bootstrapContext, this.mainApplicationClass);
                 # 监听器执行了对应的操作步骤
-                SpringApplication【<span class="token number">331</span>】<span class="token operator">-</span><span class="token operator">></span>ApplicationArguments applicationArguments <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultApplicationArguments</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【331】->ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
                 # 获取参数
-                SpringApplication【<span class="token number">333</span>】<span class="token operator">-</span><span class="token operator">></span>ConfigurableEnvironment environment <span class="token operator">=</span> <span class="token function">prepareEnvironment</span><span class="token punctuation">(</span>listeners<span class="token punctuation">,</span> bootstrapContext<span class="token punctuation">,</span> applicationArguments<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【333】->ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
                 # 将前期读取的数据加载成了一个环境对象，用来描述信息
-                SpringApplication【<span class="token number">333</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">configureIgnoreBeanInfo</span><span class="token punctuation">(</span>environment<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【333】->configureIgnoreBeanInfo(environment);
                 # 做了一个配置，备用
-                SpringApplication【<span class="token number">334</span>】<span class="token operator">-</span><span class="token operator">></span>Banner printedBanner <span class="token operator">=</span> <span class="token function">printBanner</span><span class="token punctuation">(</span>environment<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【334】->Banner printedBanner = printBanner(environment);
                 # 初始化logo
-                SpringApplication【<span class="token number">335</span>】<span class="token operator">-</span><span class="token operator">></span>context <span class="token operator">=</span> <span class="token function">createApplicationContext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【335】->context = createApplicationContext();
                 # 创建容器对象，根据前期配置的容器类型进行判定并创建
-                SpringApplication【<span class="token number">363</span>】<span class="token operator">-</span><span class="token operator">></span>context<span class="token punctuation">.</span><span class="token function">setApplicationStartup</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>applicationStartup<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【363】->context.setApplicationStartup(this.applicationStartup);
                 # 设置启动模式
-                SpringApplication【<span class="token number">337</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">prepareContext</span><span class="token punctuation">(</span>bootstrapContext<span class="token punctuation">,</span> context<span class="token punctuation">,</span> environment<span class="token punctuation">,</span> listeners<span class="token punctuation">,</span> applicationArguments<span class="token punctuation">,</span> printedBanner<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【337】->prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
                 # 对容器进行设置，参数来源于前期的设定
-                SpringApplication【<span class="token number">338</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">refreshContext</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【338】->refreshContext(context);
                 # 刷新容器环境
-                SpringApplication【<span class="token number">339</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">afterRefresh</span><span class="token punctuation">(</span>context<span class="token punctuation">,</span> applicationArguments<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【339】->afterRefresh(context, applicationArguments);
                 # 刷新完毕后做后处理
-                SpringApplication【<span class="token number">340</span>】<span class="token operator">-</span><span class="token operator">></span>stopWatch<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【340】->stopWatch.stop();
                 # 计时结束
-                SpringApplication【<span class="token number">341</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>logStartupInfo<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                SpringApplication【341】->if (this.logStartupInfo) {
                 # 判定是否记录启动时间的日志
-                SpringApplication【<span class="token number">342</span>】<span class="token operator">-</span><span class="token operator">></span>    <span class="token keyword">new</span> <span class="token class-name">StartupInfoLogger</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>mainApplicationClass<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">logStarted</span><span class="token punctuation">(</span><span class="token function">getApplicationLog</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> stopWatch<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【342】->    new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
                 # 创建日志对应的对象，输出日志信息，包含启动时间
-                SpringApplication【<span class="token number">344</span>】<span class="token operator">-</span><span class="token operator">></span>listeners<span class="token punctuation">.</span><span class="token function">started</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【344】->listeners.started(context);
                 # 监听器执行了对应的操作步骤
-                SpringApplication【<span class="token number">345</span>】<span class="token operator">-</span><span class="token operator">></span><span class="token function">callRunners</span><span class="token punctuation">(</span>context<span class="token punctuation">,</span> applicationArguments<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【345】->callRunners(context, applicationArguments);
                 # 调用运行器
-                SpringApplication【<span class="token number">353</span>】<span class="token operator">-</span><span class="token operator">></span>listeners<span class="token punctuation">.</span><span class="token function">running</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                SpringApplication【353】->listeners.running(context);
                 # 监听器执行了对应的操作步骤
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>上述过程描述了springboot程序启动过程中做的所有的事情。</p>
 <h2 id="②干预启动过程"><a href="#②干预启动过程" class="headerlink" title="②干预启动过程"></a>②干预启动过程</h2><p>如果想干预springboot的启动过程，比如自定义一个数据库环境检测的程序，该如何将这个过程加入springboot的启动流程呢？遇到这样的问题，大部分技术是这样设计的，设计若干个标准接口，对应程序中的所有标准过程。当你想干预某个过程时，实现接口就行了。例如spring技术中bean的生命周期管理就是采用标准接口进行的。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Abc</span> <span class="token keyword">implements</span> <span class="token class-name">InitializingBean</span><span class="token punctuation">,</span> DisposableBean <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">destroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//销毁操作</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">afterPropertiesSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> Exception <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//初始化操作</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class Abc implements InitializingBean, DisposableBean {
+    public void destroy() throws Exception {
+        //销毁操作
+    }
+    public void afterPropertiesSet() throws Exception {
+        //初始化操作
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>springboot启动过程由于存在着大量的过程阶段，如果设计接口就要设计十余个标准接口，这样对开发者不友好，同时整体过程管理分散，十余个过程各自为政，管理难度大，过程过于松散。那springboot如何解决这个问题呢？它采用了一种最原始的设计模式来解决这个问题，这就是<code>监听器模式</code>，使用监听器来解决这个问题。</p>
 <p>springboot将自身的启动过程比喻成一个大的事件，该事件是由若干个小的事件组成的。例如：</p>
@@ -1808,7 +1814,7 @@ public class IpAutoConfiguration {
 <li>org.springframework.context.event.ContextClosedEvent（上下文关闭事件，对应容器关闭）</li>
 </ul>
 <p>上述列出的仅仅是部分事件，当应用启动后走到某一个过程点时，监听器监听到某个事件触发，就会执行对应的事件。除了系统内置的事件处理，用户就可以根据需要自定义开发当前事件触发时要做的动作。</p>
-<pre class="line-numbers language-JAVA"><code class="language-JAVA">//设定监听器，在应用启动开始事件时进行功能追加
+<pre class="line-numbers language-lang-JAVA"><code class="language-lang-JAVA">//设定监听器，在应用启动开始事件时进行功能追加
 public class MyListener implements ApplicationListener<ApplicationStartingEvent> {
     public void onApplicationEvent(ApplicationStartingEvent event) {
         //自定义事件处理逻辑
@@ -1826,42 +1832,36 @@ public class MyListener implements ApplicationListener<ApplicationStartingEvent>
 </li>
 <li><p>静态资源（包括webjars）</p>
 </li>
-<li><p>自动注册 <code>Converter，GenericConverter，Formatter </code></p>
-</li>
-<li><p>支持 <code>HttpMessageConverters</code> </p>
-</li>
-<li><p>自动注册 <code>MessageCodesResolver</code> （国际化）</p>
-</li>
-<li><p>静态index.html 页支持</p>
-</li>
-<li><p>自定义 <code>Favicon</code></p>
-</li>
-<li><p>自动使用 <code>ConfigurableWebBindingInitializer</code> （DataBinder负责将请求数据绑定到JavaBean上）</p>
-</li>
+<li>自动注册 <code>Converter，GenericConverter，Formatter</code></li>
+<li>支持 <code>HttpMessageConverters</code> </li>
+<li>自动注册 <code>MessageCodesResolver</code> （国际化）</li>
+<li>静态index.html 页支持</li>
+<li>自定义 <code>Favicon</code></li>
+<li>自动使用 <code>ConfigurableWebBindingInitializer</code> （DataBinder负责将请求数据绑定到JavaBean上）</li>
 </ul>
 <h2 id="2-静态资源访问"><a href="#2-静态资源访问" class="headerlink" title="2.静态资源访问"></a>2.静态资源访问</h2><h3 id="a-静态资源目录"><a href="#a-静态资源目录" class="headerlink" title="a.静态资源目录"></a>a.静态资源目录</h3><p><strong>默认静态资源路径</strong>：  <code>/static</code> or <code>/public</code> or <code>/resources</code> or <code>/META-INF/resources</code></p>
 <p><strong>访问 ：</strong> <code>当前项目根路径/静态资源名</code>   例如：127.0.0.1/jianjian.png</p>
 <p><strong>原理：</strong>当请求进来时，先去找 Controller 看能不能处理。不能处理的所有请求又都交给静态资源处理器。静态资源也找不到则响应404页面。</p>
 <p><strong>修改默认的静态资源路径</strong>，/static，/public，resources，/META-INF/resources 将失效</p>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-    <span class="token key atrule">web</span><span class="token punctuation">:</span>
-        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
-          <span class="token key atrule">static-locations</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>classpath<span class="token punctuation">:</span>/jianjian/<span class="token punctuation">]</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">spring:
+    web:
+        resources:
+          static-locations: [classpath:/jianjian/]
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>静态资源访问前缀</strong></p>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-  <span class="token key atrule">mvc</span><span class="token punctuation">:</span>
-    <span class="token key atrule">static-path-pattern</span><span class="token punctuation">:</span> /res/**
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">spring:
+  mvc:
+    static-path-pattern: /res/**
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>访问 ：<code>当前项目根路径 + static-path-pattern + 静态资源名</code></p>
 <p>例如：127.0.0.1/res/jianjian.png</p>
 <p><strong>webjar</strong></p>
-<p>可用jar方式添加css，js等资源文件，webjar 查找：<a target="_blank" rel="noopener" href="https://www.webjars.org/%EF%BC%8C%E4%BE%8B%E5%A6%82%EF%BC%8C%E6%B7%BB%E5%8A%A0jquery">https://www.webjars.org/，例如，添加jquery</a></p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>org.webjars<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>jquery<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>3.5.1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<p>可用jar方式添加css，js等资源文件，webjar 查找：<a target="_blank" rel="noopener" href="https://www.webjars.org/，例如，添加jquery">https://www.webjars.org/，例如，添加jquery</a></p>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><dependency>
+    <groupId>org.webjars</groupId>
+    <artifactId>jquery</artifactId>
+    <version>3.5.1</version>
+</dependency>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>访问：<code>localhost:8080/webjars/jquery/3.5.1/jquery.js</code> ，后面地址要按照依赖里面的包路径。</p>
 <h3 id="b-欢迎页支持"><a href="#b-欢迎页支持" class="headerlink" title="b.欢迎页支持"></a>b.欢迎页支持</h3><ul>
@@ -1871,25 +1871,25 @@ public class MyListener implements ApplicationListener<ApplicationStartingEvent>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-<span class="token comment" spellcheck="true">#  mvc:</span>
-<span class="token comment" spellcheck="true">#    static-path-pattern: /res/**   这个会导致欢迎页功能失效</span>
-    <span class="token key atrule">web</span><span class="token punctuation">:</span>
-        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
-            <span class="token key atrule">static-locations</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>classpath<span class="token punctuation">:</span>/haha/<span class="token punctuation">]</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">spring:
+#  mvc:
+#    static-path-pattern: /res/**   这个会导致欢迎页功能失效
+    web:
+        resources:
+            static-locations: [classpath:/haha/]
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>controller处理index</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> String <span class="token function">home</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token string">"index"</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@RequestMapping("/")
+public String home(){
+  return "index";
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="c-自定义Favicon"><a href="#c-自定义Favicon" class="headerlink" title="c.自定义Favicon"></a>c.自定义Favicon</h3><p>将 favicon.ico 放在静态资源目录下即可，但是配置<strong>静态资源访问前缀</strong>会导致 Favicon 功能失效</p>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-<span class="token comment" spellcheck="true">#  mvc:</span>
-<span class="token comment" spellcheck="true">#    static-path-pattern: /res/**   这个会导致 Favicon 功能失效</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">spring:
+#  mvc:
+#    static-path-pattern: /res/**   这个会导致 Favicon 功能失效
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h3 id="d-静态资源配置原理"><a href="#d-静态资源配置原理" class="headerlink" title="d.静态资源配置原理"></a>d.静态资源配置原理</h3><p>。。。</p>
 <h2 id="3-请求参数处理"><a href="#3-请求参数处理" class="headerlink" title="3.请求参数处理"></a>3.请求参数处理</h2><h3 id="a-rest使用与原理"><a href="#a-rest使用与原理" class="headerlink" title="a.rest使用与原理"></a>a.rest使用与原理</h3><ul>
@@ -1913,10 +1913,10 @@ public class MyListener implements ApplicationListener<ApplicationStartingEvent>
 </li>
 <li><p>现在： <code>/user</code>   </p>
 <ul>
-<li> GET-获取用户    </li>
-<li> DELETE-删除用户    </li>
-<li> PUT-修改用户   </li>
-<li> POST-保存用户</li>
+<li>GET-获取用户    </li>
+<li>DELETE-删除用户    </li>
+<li>PUT-修改用户   </li>
+<li>POST-保存用户</li>
 </ul>
 </li>
 </ul>
@@ -1928,56 +1928,56 @@ public class MyListener implements ApplicationListener<ApplicationStartingEvent>
 <ul>
 <li>1.开启页面表单的Rest功能</li>
 </ul>
-<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">spring</span><span class="token punctuation">:</span>
-  <span class="token key atrule">mvc</span><span class="token punctuation">:</span>
-    <span class="token key atrule">hiddenmethod</span><span class="token punctuation">:</span>
-      <span class="token key atrule">filter</span><span class="token punctuation">:</span>
-        <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true   </span><span class="token comment" spellcheck="true">#开启页面表单的Rest功能</span>
+<pre class="line-numbers language-lang-yaml"><code class="language-lang-yaml">spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true   #开启页面表单的Rest功能
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>2.页面 form的属性method=post，隐藏域 _method=put、delete等（如果直接get或post，无需隐藏域）</li>
 </ul>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/user<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>get<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>REST-GET提交<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>submit<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><form action="/user" method="get">
+    <input value="REST-GET提交" type="submit" />
+</form>
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/user<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>REST-POST提交<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>submit<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span>
+<form action="/user" method="post">
+    <input value="REST-POST提交" type="submit" />
+</form>
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/user<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>_method<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>hidden<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>DELETE<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>REST-DELETE 提交<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>submit<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span>
+<form action="/user" method="post">
+    <input name="_method" type="hidden" value="DELETE"/>
+    <input value="REST-DELETE 提交" type="submit"/>
+</form>
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/user<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>_method<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>hidden<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>PUT<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
-    &lt;input value="REST-PUT提交"type="submit" />
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span><span class="token punctuation">></span></span>
+<form action="/user" method="post">
+    <input name="_method" type="hidden" value="PUT" />
+    <input value="REST-PUT提交"type="submit" />
+<form>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>3.编写请求映射</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java">    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/user"</span><span class="token punctuation">,</span>method <span class="token operator">=</span> RequestMethod<span class="token punctuation">.</span>GET<span class="token punctuation">)</span>
-    <span class="token keyword">public</span> String <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token string">"GET-张三"</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">    @RequestMapping(value = "/user",method = RequestMethod.GET)
+    public String getUser(){
+        return "GET-张三";
+    }
 
-    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/user"</span><span class="token punctuation">,</span>method <span class="token operator">=</span> RequestMethod<span class="token punctuation">.</span>POST<span class="token punctuation">)</span>
-    <span class="token keyword">public</span> String <span class="token function">saveUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token string">"POST-张三"</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    @RequestMapping(value = "/user",method = RequestMethod.POST)
+    public String saveUser(){
+        return "POST-张三";
+    }
 
 
-    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/user"</span><span class="token punctuation">,</span>method <span class="token operator">=</span> RequestMethod<span class="token punctuation">.</span>PUT<span class="token punctuation">)</span>
-    <span class="token keyword">public</span> String <span class="token function">putUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token string">"PUT-张三"</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    @RequestMapping(value = "/user",method = RequestMethod.PUT)
+    public String putUser(){
+        return "PUT-张三";
+    }
 
-    <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/user"</span><span class="token punctuation">,</span>method <span class="token operator">=</span> RequestMethod<span class="token punctuation">.</span>DELETE<span class="token punctuation">)</span>
-    <span class="token keyword">public</span> String <span class="token function">deleteUser</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token string">"DELETE-张三"</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    @RequestMapping(value = "/user",method = RequestMethod.DELETE)
+    public String deleteUser(){
+        return "DELETE-张三";
+    }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Rest原理（表单提交要使用REST的时候）</p>
 <ul>
@@ -2785,7 +2785,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -3016,6 +3016,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

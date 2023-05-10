@@ -7,7 +7,7 @@
     <meta name="keywords" content="Spring-AOP, 简简,简简博客,网络安全,计算机,Java开发">
     <meta name="description" content="前言今天开始学习我自己总结的 Java-学习路线 中的《Spring-AOP》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&amp;lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&amp;gt;
 
- 🚩时间安排：">
+[x] 🚩时间">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
@@ -882,7 +882,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.6k
+                    2.3k
                 </div>
                 
 
@@ -902,10 +902,10 @@
             <div id="articleContent">
                 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天开始学习我自己总结的 <a href="https://jwt1399.top/posts/29829.html">Java-学习路线</a> 中的《Spring-AOP》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;</p>
 <ul>
-<li><input checked="" disabled="" type="checkbox"> 🚩时间安排：预计2天更新完</li>
-<li><input checked="" disabled="" type="checkbox"> 🎯开始时间：04-13</li>
-<li><input checked="" disabled="" type="checkbox"> 🎉结束时间：04-13</li>
-<li><input checked="" disabled="" type="checkbox"> 🍀总结：使用很简单，一天搞定，源码部分后面再看</li>
+<li>[x] 🚩时间安排：预计2天更新完</li>
+<li>[x] 🎯开始时间：04-13</li>
+<li>[x] 🎉结束时间：04-13</li>
+<li>[x] 🍀总结：使用很简单，一天搞定，源码部分后面再看</li>
 </ul>
 <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>AOP：面向切面编程，利用 AOP 可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。</p>
 <p>通俗描述：不通过修改源代码方式，在主干功能里面添加新功能</p>
@@ -923,9 +923,9 @@
 </li>
 </ul>
 <h2 id="JDK动态代理"><a href="#JDK动态代理" class="headerlink" title="JDK动态代理"></a>JDK动态代理</h2><p>JDK 动态代理，使用 Proxy 类里面的方法创建代理对象，调用 newProxyInstance 方法</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">static</span> Object <span class="token function">newProxyInstance</span><span class="token punctuation">(</span>ClassLoader loader<span class="token punctuation">,</span>
-                                      Class<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span> interfaces<span class="token punctuation">,</span>
-                                      InvocationHandler h<span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public static Object newProxyInstance(ClassLoader loader,
+                                      Class<?>[] interfaces,
+                                      InvocationHandler h)
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>第一参数，类加载器</li>
@@ -935,67 +935,67 @@
 <p><strong>模拟 JDK 动态代理代码</strong> </p>
 <p>场景：现有 add 和 update 两方法，在不改变源码的情况下，增强这两方法</p>
 <p>Step1：创建接口，定义方法</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserDao</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">,</span> <span class="token keyword">int</span> b<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">public</span> String <span class="token function">update</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public interface UserDao {
+    public int add(int a, int b);
+    public String update(String id);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step2：创建接口实现类，实现方法</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserDaoImpl</span> <span class="token keyword">implements</span> <span class="token class-name">UserDao</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">,</span> <span class="token keyword">int</span> b<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"add方法执行了 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> String <span class="token function">update</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"update方法执行了 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> id<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class UserDaoImpl implements UserDao {
+    @Override
+    public int add(int a, int b) {
+        System.out.println("add方法执行了 ...");
+        return a + b;
+    }
+    @Override
+    public String update(String id) {
+        System.out.println("update方法执行了 ...");
+        return id;
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step3: 使用 Proxy 类创建接口代理对象</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">JDKProxy</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">// 创建接口实现类代理对象</span>
-        Class<span class="token punctuation">[</span><span class="token punctuation">]</span> interfaces <span class="token operator">=</span> <span class="token punctuation">{</span>UserDao<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// 注入接口实现类</span>
-        UserDaoImpl userDao <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">UserDaoImpl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        UserDao dao <span class="token operator">=</span> <span class="token punctuation">(</span>UserDao<span class="token punctuation">)</span> Proxy<span class="token punctuation">.</span><span class="token function">newProxyInstance</span><span class="token punctuation">(</span>JDKProxy<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> interfaces<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">UserDaoProxy</span><span class="token punctuation">(</span>userDao<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">int</span> add <span class="token operator">=</span> dao<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"add结果："</span><span class="token operator">+</span> add<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        String update <span class="token operator">=</span> dao<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"update结果："</span><span class="token operator">+</span> update<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">// 创建代理对象代码</span>
-<span class="token keyword">class</span> <span class="token class-name">UserDaoProxy</span> <span class="token keyword">implements</span> <span class="token class-name">InvocationHandler</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// 把创建的代理对象传递过来</span>
-    <span class="token comment" spellcheck="true">// 通过有参构造传递</span>
-    <span class="token keyword">private</span> Object obj<span class="token punctuation">;</span>
-    <span class="token keyword">public</span> <span class="token function">UserDaoProxy</span><span class="token punctuation">(</span>Object obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>obj <span class="token operator">=</span> obj<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 当该对象被调用就执行invoke方法</span>
-    <span class="token comment" spellcheck="true">// 增强逻辑编写在invoke方法中</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> Object <span class="token function">invoke</span><span class="token punctuation">(</span>Object proxy<span class="token punctuation">,</span> Method method<span class="token punctuation">,</span> Object<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> Throwable <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">// 方法之前处理</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"方法之前执行...\n"</span> <span class="token operator">+</span> method<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"传递的参数："</span> <span class="token operator">+</span> Arrays<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// 被增强的方法执行</span>
-        Object res <span class="token operator">=</span> method<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// 对不同方法进行不同增强</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>method<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">"add"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"增强add方法 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>method<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">"update"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"增强update方法 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-        <span class="token comment" spellcheck="true">// 方法之后处理</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"方法之后执行..."</span> <span class="token operator">+</span> obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> res<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/**
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class JDKProxy {
+    public static void main(String[] args) {
+        // 创建接口实现类代理对象
+        Class[] interfaces = {UserDao.class};
+        // 注入接口实现类
+        UserDaoImpl userDao = new UserDaoImpl();
+        UserDao dao = (UserDao) Proxy.newProxyInstance(JDKProxy.class.getClassLoader(), interfaces, new UserDaoProxy(userDao));
+        int add = dao.add(1, 2);
+        System.out.println("add结果："+ add);
+        String update = dao.update("1");
+        System.out.println("update结果："+ update);
+    }
+}
+// 创建代理对象代码
+class UserDaoProxy implements InvocationHandler {
+    // 把创建的代理对象传递过来
+    // 通过有参构造传递
+    private Object obj;
+    public UserDaoProxy(Object obj) {
+        this.obj = obj;
+    }
+    // 当该对象被调用就执行invoke方法
+    // 增强逻辑编写在invoke方法中
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        // 方法之前处理
+        System.out.println("方法之前执行...\n" + method.getName() + "传递的参数：" + Arrays.toString(args));
+        // 被增强的方法执行
+        Object res = method.invoke(obj, args);
+        // 对不同方法进行不同增强
+        if (method.getName() == "add") {
+            System.out.println("增强add方法 ...");
+        } else if (method.getName() == "update") {
+            System.out.println("增强update方法 ...");
+        }
+        // 方法之后处理
+        System.out.println("方法之后执行..." + obj);
+        return res;
+    }
+}
+/**
 方法之前执行...
 add传递的参数：[1, 2]
 add方法执行了 ...
@@ -1008,7 +1008,7 @@ update方法执行了 ...
 增强update方法 ...
 方法之后执行...com.jwt.aop.UserDaoImpl@63947c6b
 update结果：1
-**/</span>
+**/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="操作术语"><a href="#操作术语" class="headerlink" title="操作术语"></a>操作术语</h2><p><strong>连接点：</strong>类里面哪些方法可以被增强，哪些方法就被称为连接点</p>
 <p><strong>切入点：</strong>实际上被增强的方法，称为切入点</p>
@@ -1033,18 +1033,18 @@ update结果：1
 <ul>
 <li>需要导入如下5个依赖包</li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java">spring<span class="token operator">-</span>aop<span class="token operator">-</span><span class="token number">5.3</span><span class="token punctuation">.</span><span class="token number">18</span><span class="token punctuation">.</span>jar <span class="token comment" spellcheck="true">//（Spring自带）</span>
-spring<span class="token operator">-</span>aspects<span class="token operator">-</span><span class="token number">5.3</span><span class="token punctuation">.</span><span class="token number">18</span><span class="token punctuation">.</span>jar <span class="token comment" spellcheck="true">//（Spring自带）</span>
-aspectjweaver<span class="token punctuation">.</span>jar
-aopalliance<span class="token punctuation">.</span>jar
-cglib<span class="token operator">-</span><span class="token number">3.3</span><span class="token punctuation">.</span><span class="token number">0</span><span class="token punctuation">.</span>jar  
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">spring-aop-5.3.18.jar //（Spring自带）
+spring-aspects-5.3.18.jar //（Spring自带）
+aspectjweaver.jar
+aopalliance.jar
+cglib-3.3.0.jar
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
-<li><p> AspectJ下载：<a target="_blank" rel="noopener" href="https://www.eclipse.org/aspectj/downloads.php">AspectJ Downloads</a></p>
-</li>
-<li><p>下载后运行 aspectj-1.9.6.jar 在 lib 目录下可以找到 aspectjweaver.jar</p>
-</li>
-<li><p>或者直接在这下载<a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/org.aspectj/aspectjweaver/1.8.13">aspectjweaver</a></p>
+<li><p>AspectJ下载：<a target="_blank" rel="noopener" href="https://www.eclipse.org/aspectj/downloads.php">AspectJ Downloads</a></p>
+<ul>
+<li>下载后运行 aspectj-1.9.6.jar 在 lib 目录下可以找到 aspectjweaver.jar</li>
+<li>或者直接在这下载<a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/org.aspectj/aspectjweaver/1.8.13">aspectjweaver</a></li>
+</ul>
 </li>
 <li><p>aopalliance下载：<a target="_blank" rel="noopener" href="https://sourceforge.net/projects/aopalliance/files/aopalliance/1.0/aopalliance.zip/download">aopalliance.jar</a>，需要等待一下才会弹出下载框。</p>
 </li>
@@ -1068,60 +1068,60 @@ cglib<span class="token operator">-</span><span class="token number">3.3</span><
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//例 1：对 com..dao.BookDao 类里面的 add 进行增强</span>
-<span class="token function">execution</span><span class="token punctuation">(</span><span class="token operator">*</span> com<span class="token punctuation">.</span>atguigu<span class="token punctuation">.</span>dao<span class="token punctuation">.</span>BookDao<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">//例 1：对 com..dao.BookDao 类里面的 add 进行增强
+execution(* com.atguigu.dao.BookDao.add(..))
 
-<span class="token comment" spellcheck="true">//例 2：对 com.dao.BookDao 类里面的所有的方法进行增强</span>
-<span class="token function">execution</span><span class="token punctuation">(</span><span class="token operator">*</span> com<span class="token punctuation">.</span>atguigu<span class="token punctuation">.</span>dao<span class="token punctuation">.</span>BookDao<span class="token punctuation">.</span>*<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+//例 2：对 com.dao.BookDao 类里面的所有的方法进行增强
+execution(* com.atguigu.dao.BookDao.*(..))
 
-<span class="token comment" spellcheck="true">//例 3：对 com.dao 包里面所有类，类里面所有方法进行增强</span>
-<span class="token function">execution</span><span class="token punctuation">(</span><span class="token operator">*</span> com<span class="token punctuation">.</span>atguigu<span class="token punctuation">.</span>dao<span class="token punctuation">.</span>*<span class="token punctuation">.</span>*<span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+//例 3：对 com.dao 包里面所有类，类里面所有方法进行增强
+execution(* com.atguigu.dao.*.*(..))
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="基于注解方式实现"><a href="#基于注解方式实现" class="headerlink" title="基于注解方式实现"></a>基于注解方式实现</h2><p>Step1：创建类，在类里面定义方法</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 被增强的类</span>
-<span class="token annotation punctuation">@Component</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//int i = 10 / 0;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"add ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">// 被增强的类
+@Component
+public class User {
+    public void add() {
+        //int i = 10 / 0;
+        System.out.println("add ...");
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step2：创建增强类(编写增强逻辑)</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 增强类</span>
-<span class="token annotation punctuation">@Component</span>
-<span class="token comment" spellcheck="true">// 生成代理对象</span>
-<span class="token annotation punctuation">@Aspect</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserProxy</span> <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">// 前置通知 @Before:表示前置通知 value增强User的add方法</span>
-    <span class="token annotation punctuation">@Before</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"execution(* com.jwt.aop.User.add(..))"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">before</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"before前置通知 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 最终通知</span>
-    <span class="token annotation punctuation">@After</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"execution(* com.jwt.aop.User.add(..))"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">after</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"after最终通知 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 后置通知（返回通知）</span>
-    <span class="token annotation punctuation">@AfterReturning</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"execution(* com.jwt.aop.User.add(..))"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">afterReturning</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"afterReturning后置通知（返回通知） ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 异常通知</span>
-    <span class="token annotation punctuation">@AfterThrowing</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"execution(* com.jwt.aop.User.add(..))"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">afterThrowing</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"afterThrowing异常通知 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">// 环绕通知</span>
-    <span class="token annotation punctuation">@Around</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"execution(* com.jwt.aop.User.add(..))"</span><span class="token punctuation">)</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">around</span><span class="token punctuation">(</span>ProceedingJoinPoint proceedingJoinPoint<span class="token punctuation">)</span> <span class="token keyword">throws</span> Throwable <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"环绕通知around环绕之前 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// 执行被增强的方法</span>
-        proceedingJoinPoint<span class="token punctuation">.</span><span class="token function">proceed</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"环绕通知around环绕之后 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">// 增强类
+@Component
+// 生成代理对象
+@Aspect
+public class UserProxy {
+    // 前置通知 @Before:表示前置通知 value增强User的add方法
+    @Before(value = "execution(* com.jwt.aop.User.add(..))")
+    public void before() {
+        System.out.println("before前置通知 ...");
+    }
+    // 最终通知
+    @After(value = "execution(* com.jwt.aop.User.add(..))")
+    public void after() {
+        System.out.println("after最终通知 ...");
+    }
+    // 后置通知（返回通知）
+    @AfterReturning(value = "execution(* com.jwt.aop.User.add(..))")
+    public void afterReturning() {
+        System.out.println("afterReturning后置通知（返回通知） ...");
+    }
+    // 异常通知
+    @AfterThrowing(value = "execution(* com.jwt.aop.User.add(..))")
+    public void afterThrowing() {
+        System.out.println("afterThrowing异常通知 ...");
+    }
+    // 环绕通知
+    @Around(value = "execution(* com.jwt.aop.User.add(..))")
+    public void around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        System.out.println("环绕通知around环绕之前 ...");
+        // 执行被增强的方法
+        proceedingJoinPoint.proceed();
+        System.out.println("环绕通知around环绕之后 ...");
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step3：在 spring 配置文件中，进行通知的配置 </p>
 <ul>
@@ -1129,36 +1129,36 @@ cglib<span class="token operator">-</span><span class="token number">3.3</span><
 <li>2、开启注解包扫描</li>
 <li>3、开启AspectJ生成代理对象</li>
 </ul>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!-- 开启context和aop命名空间--></span>
-<span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>beans</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>context</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/context<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>aop</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/aop<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!-- 开启context和aop命名空间-->
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <span class="token comment" spellcheck="true">&lt;!-- 开启注解扫描 --></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">context:</span>component-scan</span> <span class="token attr-name">base-package</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.jwt.aop<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">context:</span>component-scan</span><span class="token punctuation">></span></span>
-    <span class="token comment" spellcheck="true">&lt;!-- 开启Aspect生成代理对象--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>aspectj-autoproxy</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">aop:</span>aspectj-autoproxy</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>beans</span><span class="token punctuation">></span></span>
+    <!-- 开启注解扫描 -->
+    <context:component-scan base-package="com.jwt.aop"></context:component-scan>
+    <!-- 开启Aspect生成代理对象-->
+    <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+</beans>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step4：测试</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestBean</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Test</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//1 加载 spring 配置文件</span>
-        ApplicationContext context <span class="token operator">=</span>
-                <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"bean2.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//2 获取配置创建的对象</span>
-        User user <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">,</span> User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        user<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/**
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class TestBean {
+    @Test
+    public void test() {
+        //1 加载 spring 配置文件
+        ApplicationContext context =
+                new ClassPathXmlApplicationContext("bean2.xml");
+        //2 获取配置创建的对象
+        User user = context.getBean("user", User.class);
+        System.out.println(user);
+        user.add();
+    }
+}
+/**
 com.jwt.aop.User@3cebbb30
 环绕通知around环绕之前 ...
 before前置通知 ...
@@ -1166,57 +1166,57 @@ add ...
 afterReturning后置通知（返回通知） ...
 after最终通知 ...
 环绕通知around环绕之后 ...
-**/</span>
+**/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="抽取公共切入点"><a href="#抽取公共切入点" class="headerlink" title="抽取公共切入点"></a>抽取公共切入点</h3><p><strong>定义公共切入点</strong></p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Pointcut</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"execution(* com.jwt.aop.User.add(..))"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">pointDemo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Pointcut(value = "execution(* com.jwt.aop.User.add(..))")
+public void pointDemo() {}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p><strong>引用公共切入点</strong></p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">// 前置通知</span>
-<span class="token annotation punctuation">@Before</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"pointDemo()"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">before</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"before前置通知 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">// 前置通知
+@Before(value = "pointDemo()")
+public void before() {
+    System.out.println("before前置通知 ...");
+}
 
-<span class="token comment" spellcheck="true">// 最终通知</span>
-<span class="token annotation punctuation">@After</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"pointDemo()"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">after</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"after最终通知 ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+// 最终通知
+@After(value = "pointDemo()")
+public void after() {
+      System.out.println("after最终通知 ...");
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="对同一切入点设置优先级"><a href="#对同一切入点设置优先级" class="headerlink" title="对同一切入点设置优先级"></a>对同一切入点设置优先级</h3><p>场景：有多个增强类对同一个方法进行增强，设置增强类优先级</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
-<span class="token annotation punctuation">@Aspect</span>
-<span class="token annotation punctuation">@Order</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 对同一切入点增强的优先级 值越小优先级别越高</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">PersonProxy</span> <span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Component
+@Aspect
+@Order(0) // 对同一切入点增强的优先级 值越小优先级别越高
+public class PersonProxy {
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Component</span>
-<span class="token annotation punctuation">@Aspect</span>
-<span class="token annotation punctuation">@Order</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 对同一切入点增强的优先级 值越小优先级别越高</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserProxy</span> <span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Component
+@Aspect
+@Order(1) // 对同一切入点增强的优先级 值越小优先级别越高
+public class UserProxy {
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>PersonProxy 比 UserProxy 先对方法进行增强</p>
 <h2 id="完全使用注解开发"><a href="#完全使用注解开发" class="headerlink" title="完全使用注解开发"></a>完全使用注解开发</h2><p>创建配置类</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span><span class="token comment" spellcheck="true">// @Configuration作为配置类 替代xml配置文件</span>
-<span class="token annotation punctuation">@ComponentScan</span><span class="token punctuation">(</span>basePackages <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"com.jwt.aop"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
-<span class="token annotation punctuation">@EnableAspectJAutoProxy</span><span class="token punctuation">(</span>proxyTargetClass <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SpringConfig2</span> <span class="token punctuation">{</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Configuration// @Configuration作为配置类 替代xml配置文件
+@ComponentScan(basePackages = {"com.jwt.aop"})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+public class SpringConfig2 {
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">test2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  AnnotationConfigApplicationContext context <span class="token operator">=</span> 
-    <span class="token keyword">new</span> <span class="token class-name">AnnotationConfigApplicationContext</span><span class="token punctuation">(</span>SpringConfig2<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  User user <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"user"</span><span class="token punctuation">,</span> User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  user<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
+public void test2() {
+  AnnotationConfigApplicationContext context = 
+    new AnnotationConfigApplicationContext(SpringConfig2.class);
+  User user = context.getBean("user", User.class);
+  System.out.println(user);
+  user.add();
+}
 
-<span class="token comment" spellcheck="true">/**
+/**
 com.jwt.aop.User@f736069
 环绕通知around环绕之前 ...
 before前置通知 ...
@@ -1224,67 +1224,67 @@ add ...
 afterReturning后置通知（返回通知） ...
 after最终通知 ...
 环绕通知around环绕之后 ...
-**/</span>
+**/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="基于-xml-配置实现"><a href="#基于-xml-配置实现" class="headerlink" title="基于 xml 配置实现"></a>基于 xml 配置实现</h2><p>Step1：创建两个类,增强类和被增强类</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Book</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">buy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"buy ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class Book {
+    public void buy() {
+        System.out.println("buy ...");
+    }
+}
 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookProxy</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">before</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"before ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">after</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"after ..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+public class BookProxy {
+    public void before() {
+        System.out.println("before ...");
+    }
+    public void after() {
+        System.out.println("after ...");
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step2：开启aop命名空间</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8"?></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>beans</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xmlns:</span>aop</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/aop<span class="token punctuation">"</span></span>
-       <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-   
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>beans</span><span class="token punctuation">></span></span>   
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+</beans>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step3：在spring配置文件中创建两个类的实例对象</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--创建对象--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>book<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.jwt.aop.Book<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>bookProxy<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.jwt.aop.BookProxy<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!--创建对象-->
+<bean id="book" class="com.jwt.aop.Book"/>
+<bean id="bookProxy" class="com.jwt.aop.BookProxy"/>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>Step4：在spring配置文件中配置切入点</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--配置aop增强--></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>config</span><span class="token punctuation">></span></span>
-  <span class="token comment" spellcheck="true">&lt;!--配置切入点--></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>pointcut</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>p<span class="token punctuation">"</span></span> <span class="token attr-name">expression</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>execution(* com.jwt.aop.Book.buy(..))<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-  <span class="token comment" spellcheck="true">&lt;!--配置切面--></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>aspect</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>bookProxy<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token comment" spellcheck="true">&lt;!--把before方法作用在公共切入点指定的切入点上面--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>before</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>before<span class="token punctuation">"</span></span> <span class="token attr-name">pointcut-ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>p<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!--配置aop增强-->
+<aop:config>
+  <!--配置切入点-->
+  <aop:pointcut id="p" expression="execution(* com.jwt.aop.Book.buy(..))"/>
+  <!--配置切面-->
+  <aop:aspect ref="bookProxy">
+    <!--把before方法作用在公共切入点指定的切入点上面-->
+    <aop:before method="before" pointcut-ref="p"/>
 
-    <span class="token comment" spellcheck="true">&lt;!--不适用公共切入点--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>after</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>after<span class="token punctuation">"</span></span> <span class="token attr-name">pointcut</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>execution(* com.jwt.aop.Book.buy(..))<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">aop:</span>aspect</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">aop:</span>config</span><span class="token punctuation">></span></span>
+    <!--不适用公共切入点-->
+    <aop:after method="after" pointcut="execution(* com.jwt.aop.Book.buy(..))"/>
+  </aop:aspect>
+</aop:config>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Step5：测试</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testAopXml</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  ClassPathXmlApplicationContext context <span class="token operator">=</span> 
-    <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"bean3.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  Book book <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"book"</span><span class="token punctuation">,</span> Book<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  book<span class="token punctuation">.</span><span class="token function">buy</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/**
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
+public void testAopXml() {
+  ClassPathXmlApplicationContext context = 
+    new ClassPathXmlApplicationContext("bean3.xml");
+  Book book = context.getBean("book", Book.class);
+  book.buy();
+}
+/**
 before ...
 buy ...
 after ...
-**/</span>
+**/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45496190/article/details/107082732?spm=1001.2014.3001.5502">Spring-AOP概念及使用教程</a></li>
@@ -1866,7 +1866,7 @@ after ...
                         
                             前言今天开始学习我自己总结的 Java-学习路线 中的《Spring-IOC》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;
 
- 🚩时间安排：
+[x] 🚩时间
                         
                     </div>
                     <div class="publish-info">
@@ -2076,7 +2076,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2307,6 +2307,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

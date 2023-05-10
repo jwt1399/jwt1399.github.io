@@ -880,7 +880,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.3k
+                    2.2k
                 </div>
                 
 
@@ -903,88 +903,89 @@
 <ul>
 <li>1、与服务器进行数据交换。可以使用 Ajax 和服务器进行通信</li>
 </ul>
-<p><img src="https://img.jwt1399.top/img/image-20220427141958390.png"></p>
+<p><img src="https://img.jwt1399.top/img/image-20220427141958390.png" alt=""></p>
 <ul>
 <li>2、异步交互。可以在不重新加载整个页面的情况下，可以与服务器交换数据并更新部分网页内容。</li>
 </ul>
 <h3 id="同步和异步"><a href="#同步和异步" class="headerlink" title="同步和异步"></a>同步和异步</h3><p><strong>同步发送请求过程</strong></p>
-<p><img src="https://img.jwt1399.top/img/image-20220427142230880.png"></p>
+<p><img src="https://img.jwt1399.top/img/image-20220427142230880.png" alt=""></p>
 <p>浏览器页面在发送请求给服务器，在服务器处理请求的过程中，浏览器页面不能做其他的操作。只能等到服务器响应结束后，浏览器页面才能继续做其他的操作。</p>
 <p><strong>异步发送请求过程</strong></p>
-<p><img src="https://img.jwt1399.top/img/image-20220427142237621.png"></p>
+<p><img src="https://img.jwt1399.top/img/image-20220427142237621.png" alt=""></p>
 <p>浏览器页面发送请求给服务器，在服务器处理请求的过程中，浏览器页面还可以做其他的操作。</p>
-<h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><h4 id="服务端实现"><a href="#服务端实现" class="headerlink" title="服务端实现"></a>服务端实现</h4><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebServlet</span><span class="token punctuation">(</span><span class="token string">"/ajaxServlet"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AjaxServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//响应数据</span>
-        response<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">"hello Ajax~"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doPost</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">doGet</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><h4 id="服务端实现"><a href="#服务端实现" class="headerlink" title="服务端实现"></a>服务端实现</h4><pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebServlet("/ajaxServlet")
+public class AjaxServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //响应数据
+        response.getWriter().write("hello Ajax~");
+    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doGet(request, response);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="客户端实现"><a href="#客户端实现" class="headerlink" title="客户端实现"></a>客户端实现</h4><p>在 webapp 下创建名为 ajax.html 的页面，在该页面书写 Ajax 代码</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Title<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script language-javascript">
-    <span class="token comment" spellcheck="true">//1. 创建核心对象,不同的浏览器创建的对象是不同的</span>
-    <span class="token keyword">var</span> xhttp<span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>window<span class="token punctuation">.</span>XMLHttpRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        xhttp <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">// code for IE6, IE5</span>
-        xhttp <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ActiveXObject</span><span class="token punctuation">(</span><span class="token string">"Microsoft.XMLHTTP"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">//2. 发送请求</span>
-    xhttp<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"GET"</span><span class="token punctuation">,</span> <span class="token string">"http://localhost:8080/ajax-demo/ajaxServlet"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//建立连接</span>
-    xhttp<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//发送请求</span>
-    <span class="token comment" spellcheck="true">//3. 获取响应</span>
-    xhttp<span class="token punctuation">.</span>onreadystatechange <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>readyState <span class="token operator">==</span> <span class="token number">4</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>status <span class="token operator">==</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-            <span class="token comment" spellcheck="true">//处理响应结果</span>
-            <span class="token function">alert</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>responseText<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//弹出服务端响应的数据</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //1. 创建核心对象,不同的浏览器创建的对象是不同的
+    var xhttp;
+    if (window.XMLHttpRequest) {
+        xhttp = new XMLHttpRequest();
+    } else {
+        // code for IE6, IE5
+        xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    //2. 发送请求
+    xhttp.open("GET", "http://localhost:8080/ajax-demo/ajaxServlet");//建立连接
+    xhttp.send();//发送请求
+    //3. 获取响应
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            //处理响应结果
+            alert(this.responseText);//弹出服务端响应的数据
+        }
+    };
+</script>
+</body>
+</html>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>运行后，在浏览器地址栏输入 <code>http://localhost:8080/ajax-demo/ajax.html</code> ，在 <code>ajax.html</code> 加载的时候就会发送 Ajax 请求，获取服务端响应的数据，“hello Ajax~”</p>
 <h2 id="Axios"><a href="#Axios" class="headerlink" title="Axios"></a>Axios</h2><p>Axios 是一个基于 promise 的网络请求库。本质上是对原生的 Ajax 进行封装，简化代码</p>
 <h3 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h3><p>1、引入 axios 的 js 文件</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script src<span class="token operator">=</span><span class="token string">"js/axios.js"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript"><script src="js/axios.js"></script>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>2、使用 axios 发送请求，并获取响应结果</p>
 <ul>
 <li>发送 get 请求</li>
 </ul>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token function">axios</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  method<span class="token punctuation">:</span><span class="token string">"get"</span><span class="token punctuation">,</span>
-  url<span class="token punctuation">:</span><span class="token string">"请求的URL地址?请求体"</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>resp<span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token comment" spellcheck="true">//用来指定请求成功之后的回调函数</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//resp 是请求成功之后的结果</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">axios({
+  method:"get",
+  url:"请求的URL地址?请求体"
+  }).then(function (resp){//用来指定请求成功之后的回调函数
+  alert(resp.data);//resp 是请求成功之后的结果
+})
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>发送 post 请求</li>
 </ul>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token function">axios</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  method<span class="token punctuation">:</span><span class="token string">"post"</span><span class="token punctuation">,</span>
-  url<span class="token punctuation">:</span><span class="token string">"请求的URL地址"</span><span class="token punctuation">,</span>
-  data<span class="token punctuation">:</span><span class="token string">"请求体"</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>resp<span class="token punctuation">)</span><span class="token punctuation">{</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">axios({
+  method:"post",
+  url:"请求的URL地址",
+  data:"请求体"
+  }).then(function (resp){
+  alert(resp.data);
+});
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>axios() 是用来发送异步请求的，小括号中使用 js 对象传递请求相关的参数：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -992,7 +993,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>method</td>
 <td>请求类型</td>
 </tr>
@@ -1008,61 +1010,62 @@
 <td>then(函数)</td>
 <td>请求成功之后的回调函数</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h3 id="快速入门-1"><a href="#快速入门-1" class="headerlink" title="快速入门"></a>快速入门</h3><h4 id="后端实现"><a href="#后端实现" class="headerlink" title="后端实现"></a>后端实现</h4><p>定义一个用于接收请求的servlet</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebServlet</span><span class="token punctuation">(</span><span class="token string">"/axiosServlet"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AxiosServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"get..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//1. 接收请求参数</span>
-        String username <span class="token operator">=</span> request<span class="token punctuation">.</span><span class="token function">getParameter</span><span class="token punctuation">(</span><span class="token string">"username"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//2. 响应数据</span>
-        response<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">write</span><span class="token punctuation">(</span><span class="token string">"hello Axios~"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doPost</span><span class="token punctuation">(</span>HttpServletRequest request<span class="token punctuation">,</span> HttpServletResponse response<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"post..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">doGet</span><span class="token punctuation">(</span>request<span class="token punctuation">,</span> response<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebServlet("/axiosServlet")
+public class AxiosServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("get...");
+        //1. 接收请求参数
+        String username = request.getParameter("username");
+        System.out.println(username);
+        //2. 响应数据
+        response.getWriter().write("hello Axios~");
+    }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("post...");
+        this.doGet(request, response);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="前端实现"><a href="#前端实现" class="headerlink" title="前端实现"></a>前端实现</h4><p>新建 axios.html 并引入 axios.js</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Title<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>js/axios.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script language-javascript"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script language-javascript">
-  <span class="token comment" spellcheck="true">//1. get</span>
-  <span class="token function">axios</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  method<span class="token punctuation">:</span><span class="token string">"get"</span><span class="token punctuation">,</span>
-  url<span class="token punctuation">:</span><span class="token string">"http://localhost:8080/axois-demo/axiosServlet?username=Tom"</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>resp<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-  
-  <span class="token comment" spellcheck="true">//2. post</span>
-  <span class="token comment" spellcheck="true">/*axios({
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script src="js/axios.js"></script>
+<script>
+  //1. get
+  axios({
+  method:"get",
+  url:"http://localhost:8080/axois-demo/axiosServlet?username=Tom"
+  }).then(function (resp) {
+  alert(resp.data);
+  })
+
+  //2. post
+  /*axios({
     method:"post",
     url:"http://localhost:8080/axois-demo/axiosServlet",
     data:"username=Tom"
   }).then(function (resp) {
     alert(resp.data);
-  })*/</span>
-</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
+  })*/
+</script>
+</body>
+</html>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>运行后，在浏览器地址栏输入 <code>http://localhost:8080/axois-demo/axios.html</code> ，在 <code>axios.html</code> 加载的时候就会发送 Axios 请求，获取服务端响应的数据，弹出“hello Axios~”</p>
 <h3 id="请求方法别名"><a href="#请求方法别名" class="headerlink" title="请求方法别名"></a>请求方法别名</h3><p>为了方便更加简化代码， Axios 为所有支持的请求方法提供了别名。</p>
 <ul>
-<li><p>get 请求 ： axios.get(url[,config])</p>
-</li>
+<li>get 请求 ： axios.get(url[,config])</li>
 <li><p>post 请求： axios.post(url[,data[,config])</p>
 </li>
 <li><p>delete 请求 ： axios.delete(url[,config])</p>
@@ -1077,69 +1080,69 @@
 </li>
 </ul>
 <p><strong>get请求可改为：</strong></p>
-<pre class="line-numbers language-javascript"><code class="language-javascript">axios<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">"/axios-demo/axiosServlet?username=Tom"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>resp<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">axios.get("/axios-demo/axiosServlet?username=Tom").then(function(resp) {
+    alert(resp.data);
+});
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>post请求可改为：</strong></p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"> axios<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span><span class="token string">"/axios-demo/axiosServlet"</span><span class="token punctuation">,</span><span class="token string">"username=Tom"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>resp<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript"> axios.post("/axios-demo/axiosServlet","username=Tom").then(function(resp) {
+    alert(resp.data);
+  })
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h3 id="Vue3使用Axios"><a href="#Vue3使用Axios" class="headerlink" title="Vue3使用Axios"></a>Vue3使用Axios</h3><p>step1. 使用npm安装axios</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> axios --save
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">npm install axios --save
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>step2. 我们将要使用的axios实例单独编写成一个js文件，文件夹可以建立在**src/utils/**（自己选择建立在什么地方）。命名为： <code>axios.js</code></p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">import</span> axios <span class="token keyword">from</span> <span class="token string">'axios'</span>
+<p>step2. 我们将要使用的axios实例单独编写成一个js文件，文件夹可以建立在<strong>src/utils/</strong>（自己选择建立在什么地方）。命名为： <code>axios.js</code></p>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">import axios from 'axios'
 
-<span class="token comment" spellcheck="true">//使用axios下面的create([config])方法创建axios实例，其中config参数为axios最基本的配置信息。</span>
-<span class="token keyword">const</span> API <span class="token operator">=</span> axios<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-    baseUrl<span class="token punctuation">:</span><span class="token string">'http://localhost:8080'</span> <span class="token punctuation">,</span><span class="token comment" spellcheck="true">//请求后端数据的基本地址，自定义</span>
-    headers<span class="token punctuation">:</span> <span class="token punctuation">{</span>
-        <span class="token string">'Content-Type'</span><span class="token punctuation">:</span> <span class="token string">'application/x-www-form-urlencoded'</span><span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    timeout<span class="token punctuation">:</span> <span class="token number">2000</span>                   <span class="token comment" spellcheck="true">//请求超时设置，单位ms</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+//使用axios下面的create([config])方法创建axios实例，其中config参数为axios最基本的配置信息。
+const API = axios.create({
+    baseUrl:'http://localhost:8080' ,//请求后端数据的基本地址，自定义
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    timeout: 2000                   //请求超时设置，单位ms
+})
 
-<span class="token comment" spellcheck="true">//导出我们建立的axios实例模块，ES6 export用法</span>
-<span class="token keyword">export</span> <span class="token keyword">default</span> API
+//导出我们建立的axios实例模块，ES6 export用法
+export default API
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>step3. 然后在<strong>main.js</strong>中导入我们编写<strong>axios.js</strong>文件，全局配置一下axios的引用。</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//main.js</span>
-<span class="token keyword">import</span> <span class="token punctuation">{</span> createApp <span class="token punctuation">}</span> from <span class="token string">'vue'</span>
-<span class="token keyword">import</span> App from <span class="token string">'./App.vue'</span>
-<span class="token keyword">import</span> axios from <span class="token string">'@/utils/axios.js'</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">//main.js
+import { createApp } from 'vue'
+import App from './App.vue'
+import axios from '@/utils/axios.js'
 
-<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token function">createApp</span><span class="token punctuation">(</span>APP<span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//建立一个vue3app</span>
-app<span class="token punctuation">.</span><span class="token function">mount</span><span class="token punctuation">(</span><span class="token string">'#app'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>            <span class="token comment" spellcheck="true">//将这个vue3app全局挂载到#app元素上</span>
-app<span class="token punctuation">.</span>config<span class="token punctuation">.</span>globalProperties<span class="token punctuation">.</span>$axios<span class="token operator">=</span>axios<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//配置axios的全局引用</span>
+const app = createApp(APP);   //建立一个vue3app
+app.mount('#app');            //将这个vue3app全局挂载到#app元素上
+app.config.globalProperties.$axios=axios;  //配置axios的全局引用
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="Json"><a href="#Json" class="headerlink" title="Json"></a>Json</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>JSON（JavaScript Object Notation ）：JavaScript 对象表示法</p>
 <p>作用：由于其语法格式简单，层次结构鲜明，现多用于作为数据载体，在网络中进行数据传输。</p>
 <p>JavaScript 对象格式：</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token punctuation">{</span>
-  name<span class="token punctuation">:</span><span class="token string">"zhangsan"</span><span class="token punctuation">,</span>
-  age<span class="token punctuation">:</span><span class="token number">23</span><span class="token punctuation">,</span>
-  city<span class="token punctuation">:</span><span class="token string">"北京"</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">{
+  name:"zhangsan",
+  age:23,
+  city:"北京"
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>XML 格式：</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>student</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>name</span><span class="token punctuation">></span></span>张三<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>name</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>age</span><span class="token punctuation">></span></span>23<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>age</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>city</span><span class="token punctuation">></span></span>北京<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>city</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>student</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><student>
+  <name>张三</name>
+  <age>23</age>
+  <city>北京</city>
+</student>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>JSON 格式：</p>
-<pre class="line-numbers language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"name"</span><span class="token operator">:</span><span class="token string">"zhangsan"</span><span class="token punctuation">,</span>
-  <span class="token property">"age"</span><span class="token operator">:</span><span class="token number">23</span><span class="token punctuation">,</span>
-  <span class="token property">"city"</span><span class="token operator">:</span><span class="token string">"北京"</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-json"><code class="language-lang-json">{
+  "name":"zhangsan",
+  "age":23,
+  "city":"北京"
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>对比后就会发现 JSON 格式更简单，JSON 格式和 JS 对象格式特别像。JSON 格式中的键要求必须使用双引号括起来。</p>
 <h3 id="基础语法-1"><a href="#基础语法-1" class="headerlink" title="基础语法"></a>基础语法</h3><p>JSON 本质就是一个字符串，但是该字符串内容是有一定的格式要求的。 定义格式如下：</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">var</span> 变量名 <span class="token operator">=</span> <span class="token string">'{"key":value,"1 key":value,...}'</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">var 变量名 = '{"key":value,"1 key":value,...}';
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>JSON 的键要求必须使用双引号括起来，而值根据要表示的类型确定。</p>
 <p>value 的数据类型分为如下</p>
@@ -1155,10 +1158,11 @@ app<span class="token punctuation">.</span>config<span class="token punctuation"
 <li><p>对象（在花括号中）</p>
 </li>
 </ul>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">var</span> jsonStr <span class="token operator">=</span> <span class="token string">'{"name":"Tom","age":23,"addr":["北京","上海","西安"],"user":{"id":1,"username":"Tom"},"flag":true}'</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">var jsonStr = '{"name":"Tom","age":23,"addr":["北京","上海","西安"],"user":{"id":1,"username":"Tom"},"flag":true}'
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h3 id="Json和JS对象相互转换"><a href="#Json和JS对象相互转换" class="headerlink" title="Json和JS对象相互转换"></a>Json和JS对象相互转换</h3><p>如果是一个 JS 对象，我们就可以通过 <code>JS对象.属性名</code> 的方式来获取数据。</p>
 <p>JS 提供了一个对象 JSON ，该对象有如下两个方法</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1167,7 +1171,8 @@ app<span class="token punctuation">.</span>config<span class="token punctuation"
 <th>使用方法</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>parse(str)</td>
 <td>将 JSON 转换为 JS 对象</td>
 <td>var jsObject = JSON.parse(jsonStr);</td>
@@ -1177,118 +1182,120 @@ app<span class="token punctuation">.</span>config<span class="token punctuation"
 <td>将 JS 对象转换为 JSON</td>
 <td>var jsonStr = JSON.stringify(jsObject)</td>
 </tr>
-</tbody></table>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>
-  <span class="token comment" spellcheck="true">//1. 定义JSON字符串</span>
-  <span class="token keyword">var</span> jsonStr <span class="token operator">=</span> <span class="token string">'{"name":"Tom","age":23,"addr":["北京","上海","西安"]}'</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>jsonStr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token comment" spellcheck="true">//2. 将 JSON 字符串转为 JS 对象</span>
-  <span class="token keyword">let</span> jsObject <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>jsonStr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>jsObject<span class="token punctuation">)</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>jsObject<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
-  <span class="token comment" spellcheck="true">//3. 将 JS 对象转换为 JSON 字符串</span>
-  <span class="token keyword">let</span> jsonStr2 <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsObject<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">alert</span><span class="token punctuation">(</span>jsonStr2<span class="token punctuation">)</span>
-<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span>
+</tbody>
+</table>
+</div>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript"><script>
+  //1. 定义JSON字符串
+  var jsonStr = '{"name":"Tom","age":23,"addr":["北京","上海","西安"]}'
+  alert(jsonStr);
+  //2. 将 JSON 字符串转为 JS 对象
+  let jsObject = JSON.parse(jsonStr);
+  alert(jsObject)
+  alert(jsObject.name)
+  //3. 将 JS 对象转换为 JSON 字符串
+  let jsonStr2 = JSON.stringify(jsObject);
+    alert(jsonStr2)
+</script>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="Axios发送Json数据"><a href="#Axios发送Json数据" class="headerlink" title="Axios发送Json数据"></a>Axios发送Json数据</h3><p>提前定义一个 js 对象，用来封装需要提交的参数，然后使用 JSON.stringify(js对象) 转换为 JSON ，再将该 JSON 作为 axios 的 data 属性值进行请求参数的提交。</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">var</span> jsObject <span class="token operator">=</span> <span class="token punctuation">{</span>name<span class="token punctuation">:</span><span class="token string">"张三"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token function">axios</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-  method<span class="token punctuation">:</span><span class="token string">"post"</span><span class="token punctuation">,</span>
-  url<span class="token punctuation">:</span><span class="token string">"http://localhost:8080/ajax-demo/axiosServlet"</span><span class="token punctuation">,</span>
-  data<span class="token punctuation">:</span> JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>jsObject<span class="token punctuation">)</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>resp<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">var jsObject = {name:"张三"};
+axios({
+  method:"post",
+  url:"http://localhost:8080/ajax-demo/axiosServlet",
+  data: JSON.stringify(jsObject)
+  }).then(function (resp) {
+  alert(resp.data);
+})
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>而 axios 是一个很强大的工具。只需要将需要提交的参数封装成 JS 对象，并将该 JS 对象作为 axios 的 data 属性值，它会自动将 JS 对象转换为 JSON 进行提交。</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">var</span> jsObject <span class="token operator">=</span> <span class="token punctuation">{</span>name<span class="token punctuation">:</span><span class="token string">"张三"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token function">axios</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-    method<span class="token punctuation">:</span><span class="token string">"post"</span><span class="token punctuation">,</span>
-    url<span class="token punctuation">:</span><span class="token string">"http://localhost:8080/ajax-demo/axiosServlet"</span><span class="token punctuation">,</span>
-    data<span class="token punctuation">:</span>jsObject <span class="token comment" spellcheck="true">//这里 axios 会将该js对象转换为 json </span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>resp<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token function">alert</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">var jsObject = {name:"张三"};
+axios({
+    method:"post",
+    url:"http://localhost:8080/ajax-demo/axiosServlet",
+    data:jsObject //这里 axios 会将该js对象转换为 json 
+    }).then(function (resp) {
+    alert(resp.data);
+})
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="Json和Java对象相互转换"><a href="#Json和Java对象相互转换" class="headerlink" title="Json和Java对象相互转换"></a>Json和Java对象相互转换</h3><h4 id="Fastjson介绍"><a href="#Fastjson介绍" class="headerlink" title="Fastjson介绍"></a>Fastjson介绍</h4><p>Fastjson 是阿里巴巴提供的一个 Java 语言编写的高性能功能完善的 JSON 库，是目前 Java 语言中最快的 JSON 库，可以实现 Java 对象和 JSON 字符串的相互转换。</p>
 <h4 id="Fastjson使用"><a href="#Fastjson使用" class="headerlink" title="Fastjson使用"></a>Fastjson使用</h4><p>1、导入依赖</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>dependency</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>groupId</span><span class="token punctuation">></span></span>com.alibaba<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>groupId</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>artifactId</span><span class="token punctuation">></span></span>fastjson<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>artifactId</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>version</span><span class="token punctuation">></span></span>1.2.62<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>version</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>dependency</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><dependency>
+  <groupId>com.alibaba</groupId>
+  <artifactId>fastjson</artifactId>
+  <version>1.2.62</version>
+</dependency>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>2、Java对象转JSON</p>
 <p>将 Java 对象转换为 JSON ，只需要使用 Fastjson 提供的 JSON 类中的 toJSONString() 静态方法即可。</p>
-<pre class="line-numbers language-java"><code class="language-java">String jsonStr <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">String jsonStr = JSON.toJSONString(obj);
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>3、JSON字符串转Java对象</p>
 <p>将 JSON 转换为 Java 对象，只需要使用 Fastjson 提供的 JSON 类中的 parseObject() 静态方法即可。</p>
-<pre class="line-numbers language-java"><code class="language-java">User user <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">parseObject</span><span class="token punctuation">(</span>jsonStr<span class="token punctuation">,</span> User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">User user = JSON.parseObject(jsonStr, User.class);
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>4、测试</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
-    <span class="token keyword">private</span> <span class="token keyword">int</span> id<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> String username<span class="token punctuation">;</span>
-    <span class="token keyword">private</span> String Password<span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class User {
+    private int id;
+    private String username;
+    private String Password;
 
-    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> id<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    public int getId() {
+        return id;
+    }
 
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setId</span><span class="token punctuation">(</span><span class="token keyword">int</span> id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>id <span class="token operator">=</span> id<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setUsername</span><span class="token punctuation">(</span>String username<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">this</span><span class="token punctuation">.</span>username <span class="token operator">=</span> username<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setPassword</span><span class="token punctuation">(</span>String password<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        Password <span class="token operator">=</span> password<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    public void setId(int id) {
+        this.id = id;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public void setPassword(String password) {
+        Password = password;
+    }
 
-    <span class="token keyword">public</span> String <span class="token function">getUsername</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> username<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    public String getUsername() {
+        return username;
+    }
 
-    <span class="token keyword">public</span> String <span class="token function">getPassword</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> Password<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+    public String getPassword() {
+        return Password;
+    }
 
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> String <span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token string">"User{"</span> <span class="token operator">+</span>
-                <span class="token string">"id="</span> <span class="token operator">+</span> id <span class="token operator">+</span>
-                <span class="token string">", username='"</span> <span class="token operator">+</span> username <span class="token operator">+</span> <span class="token string">'\''</span> <span class="token operator">+</span>
-                <span class="token string">", Password='"</span> <span class="token operator">+</span> Password <span class="token operator">+</span> <span class="token string">'\''</span> <span class="token operator">+</span>
-                <span class="token string">'}'</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", Password='" + Password + '\'' +
+                '}';
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">FastJsonDemo</span> <span class="token punctuation">{</span>
-    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        
-        User user <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">User</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        user<span class="token punctuation">.</span><span class="token function">setId</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        user<span class="token punctuation">.</span><span class="token function">setUsername</span><span class="token punctuation">(</span><span class="token string">"Tom"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        user<span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span><span class="token string">"123"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"初始user对象："</span><span class="token operator">+</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
-      
-        <span class="token comment" spellcheck="true">//1. 将Java对象转为JSON字符串</span>
-        String jsonString <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">toJSONString</span><span class="token punctuation">(</span>user<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"转换成json："</span><span class="token operator">+</span>jsonString<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class FastJsonDemo {
+    public static void main(String[] args) {
 
-        <span class="token comment" spellcheck="true">//2. 将JSON字符串转为Java对象</span>
-        User u <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">parseObject</span><span class="token punctuation">(</span>jsonString<span class="token punctuation">,</span> User<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"再转换成user对象："</span><span class="token operator">+</span>u<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+        User user = new User();
+        user.setId(1);
+        user.setUsername("Tom");
+        user.setPassword("123");
+        System.out.println("初始user对象："+user);
 
-<span class="token comment" spellcheck="true">/**
+        //1. 将Java对象转为JSON字符串
+        String jsonString = JSON.toJSONString(user);
+        System.out.println("转换成json："+jsonString);
+
+        //2. 将JSON字符串转为Java对象
+        User u = JSON.parseObject(jsonString, User.class);
+        System.out.println("再转换成user对象："+u);
+    }
+}
+
+/**
 初始user对象：User{id=1, username='Tom', Password='123'}
 转换成json：{"id":1,"password":"123","username":"Tom"}
 再转换成user对象：User{id=1, username='Tom', Password='123'}
-**/</span>
+**/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h2><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
@@ -2074,7 +2081,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2305,6 +2312,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

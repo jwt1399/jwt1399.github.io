@@ -924,11 +924,11 @@
 <ol>
 <li>n 个 待插入的 key</li>
 <li>m bits 的空间 v，全部初始化为0</li>
-<li>k 个无关的 hash 函数：<code>h1, h2, ..., hk</code>，hash 结果为<code> &#123;0, 1, ..., m-1&#125;</code></li>
+<li>k 个无关的 hash 函数：<code>h1, h2, ..., hk</code>，hash 结果为<code>&#123;0, 1, ..., m-1&#125;</code></li>
 </ol>
 <p>具体的，对于 <code>key=a</code>，经过 k 个 hash 函数后结果为 <code>h1(a), h2(a), ..., hk(a)</code></p>
 <p>那么就将 v 对应的 bit 置为 1，假定 k 为 4，对应的 bloom filter 为：</p>
-<p><img src="https://img.jwt1399.top/img/bloom_filter_with_4_hash_functions.gif"></p>
+<p><img src="https://img.jwt1399.top/img/bloom_filter_with_4_hash_functions.gif" alt=""></p>
 <h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>布隆过滤器上面说了，就是一个二进制数据的集合。当一个数据加入这个集合时，经历如下洗礼：<a href="file:///Users/jianjian/Desktop/bloom-learn/zh_CN/index.html">【动态演示】</a></p>
 <ul>
 <li>通过 K 个哈希函数计算该数据，返回 K 个计算出的 hash 值</li>
@@ -936,7 +936,7 @@
 <li>将 K 个下标对应的二进制数据改成 1 。</li>
 </ul>
 <p>例如，将“你好”存入布隆过滤器，第一个哈希函数返回 3，第二个第三个哈希函数返回 5 与 7 ，那么布隆过滤器对应的下标3，5，7的位置改成1。</p>
-<p><img src="https://img.jwt1399.top/img/640-20220125184517663"></p>
+<p><img src="https://img.jwt1399.top/img/640-20220125184517663" alt=""></p>
 <h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><p>布隆过滤器主要作用就是查询一个数据，在不在这个二进制的集合中，查询过程如下：</p>
 <ul>
 <li>通过 K 个哈希函数计算该数据，对应计算出的 K 个 hash 值</li>
@@ -944,11 +944,11 @@
 <li>判断：如果存在一处位置的二进制数据是 0，那么该数据不存在。如果都是1，该数据存在集合中。</li>
 </ul>
 <p>我们假设 BF 是一个 12bit 的二进制向量，{h1,h2}是两个哈希函数，{x,y,z}是一个集合。 用户想查询关键字 w,查询结果显示 w 在集合中不存在。</p>
-<p><img src="https://img.jwt1399.top/img/image-20220126235419137.png"></p>
+<p><img src="https://img.jwt1399.top/img/image-20220126235419137.png" alt=""></p>
 <h3 id="假阳性"><a href="#假阳性" class="headerlink" title="假阳性"></a>假阳性</h3><blockquote>
 <p>宁可错杀三千，绝不放过一个</p>
 </blockquote>
-<p>当 key 越来越多，v 里置为 1 的 bits 越来越多，前面被置 1 的位置可能就会被覆盖，此时就有概率发生误判，更专业的术语称为 **false positive(假阳性)**，也就是说当我们在 bloom filter 查找 key 时，有返回两种情况：</p>
+<p>当 key 越来越多，v 里置为 1 的 bits 越来越多，前面被置 1 的位置可能就会被覆盖，此时就有概率发生误判，更专业的术语称为 <strong>false positive(假阳性)</strong>，也就是说当我们在 bloom filter 查找 key 时，有返回两种情况：</p>
 <ol>
 <li>key 不存在，那么 key <strong>一定不存在</strong>。</li>
 <li>key 存在，那么 key <strong>可能存在</strong>。</li>
@@ -978,20 +978,24 @@
 <li>k：每插入一个元素进行的哈希轮数</li>
 </ul>
 <p>1、根据 ρ 和  n 可以计算出  m 和  k</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
-<th align="center">布隆过滤器位数</th>
-<th align="center">最优哈希函数个数</th>
+<th style="text-align:center">布隆过滤器位数</th>
+<th style="text-align:center">最优哈希函数个数</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center"><img src="https://img.jwt1399.top/img/AF7D2AC5-2634-478A-9592-5FBC5106BA39.png"></td>
-<td align="center"><img src="https://img.jwt1399.top/img/AC392E3A-F8F1-4CDC-903E-4066AB085A47.png"></td>
+<tbody>
+<tr>
+<td style="text-align:center"><img src="https://img.jwt1399.top/img/AF7D2AC5-2634-478A-9592-5FBC5106BA39.png" alt=""></td>
+<td style="text-align:center"><img src="https://img.jwt1399.top/img/AC392E3A-F8F1-4CDC-903E-4066AB085A47.png" alt=""></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>2、根据 m、 n、k 可以计算出 ρ</p>
-<p><img src="https://img.jwt1399.top/img/1*4QvZrOV7d9XgQXqVaIOGPg.png"></p>
+<p><img src="https://img.jwt1399.top/img/1*4QvZrOV7d9XgQXqVaIOGPg.png" alt=""></p>
 <h3 id="哈希选取"><a href="#哈希选取" class="headerlink" title="哈希选取"></a>哈希选取</h3><p>2008年5月哈佛大学的一篇论文指出<strong>可以使用 2 个哈希函数来模拟多个哈希函数</strong></p>
 <p><strong>论文名称：《Less hashing, same performance: Building a better Bloom filter》(更少的散列，相同的性能：构建更好的布隆过滤器)</strong></p>
 <ul>
@@ -1002,7 +1006,7 @@
 <li>主要内容：散列文献中的一种标准技术是使用两个哈希函数 h<sub>1</sub>(x) 和 h<sub>2</sub>(x) 来模拟 g<sub>i</sub>(x) = h<sub>1</sub>(x) + ih<sub>2</sub>(x) 的附加哈希函数。我们证明了这种技术可以有效地应用于 Bloom 过滤器和相关的数据结构。具体地说，<strong>只需两个哈希函数就可以有效地实现一个Bloom过滤器</strong>，而不会在渐近假阳性概率上有任何损失。这将导致更少的计算，并且在实践中可能更不需要随机性。</li>
 </ul>
 <p>这篇论文涉及大量的数学推导，一共 32 页，🥹🥶😭，我当然是没有看完的，感兴趣的大佬可以仔细阅读，可以把我上面主要思想中的叙述作为一个结论在工程实践中使用。</p>
-<p>另一个重点：由于使用布隆过滤器的唯一目的是为了更快地搜索，我们不能使用慢散列函数，Sha-1、MD5 等加密哈希函数对于布隆过滤器来说不是很好的选择，因为它们有点慢。因此，更快的散列函数实现的更好，最好选择 <a target="_blank" rel="noopener" href="https://sites.google.com/site/murmurhash/">murmur</a>、<a target="_blank" rel="noopener" href="http://isthe.com/chongo/tech/comp/fnv/">fnv</a>系列散列、Jenkins 散列和<a target="_blank" rel="noopener" href="https://www.google.com/codesearch/url?ct=ext&url=http://www.concentric.net/~Ttwang/tech/inthash.htm&usg=AFQjCNEBOwEAd_jb5vYSckmG7OxrkeQhLA">HashMix</a>散列</p>
+<p>另一个重点：由于使用布隆过滤器的唯一目的是为了更快地搜索，我们不能使用慢散列函数，Sha-1、MD5 等加密哈希函数对于布隆过滤器来说不是很好的选择，因为它们有点慢。因此，更快的散列函数实现的更好，最好选择 <a target="_blank" rel="noopener" href="https://sites.google.com/site/murmurhash/">murmur</a>、<a target="_blank" rel="noopener" href="http://isthe.com/chongo/tech/comp/fnv/">fnv</a>系列散列、Jenkins 散列和<a target="_blank" rel="noopener" href="https://www.google.com/codesearch/url?ct=ext&amp;url=http://www.concentric.net/~Ttwang/tech/inthash.htm&amp;usg=AFQjCNEBOwEAd_jb5vYSckmG7OxrkeQhLA">HashMix</a>散列</p>
 <h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点：</strong></p>
 <ol>
 <li>集合元素可以增加</li>
@@ -1038,7 +1042,7 @@
 </li>
 <li><p>LevelDB增加查询效率</p>
 <ul>
-<li> LevelDB利用布隆过滤器判断指定的key是否存在于sstable中，若过滤器表示不存在，则该key一定不存在。</li>
+<li>LevelDB利用布隆过滤器判断指定的key是否存在于sstable中，若过滤器表示不存在，则该key一定不存在。</li>
 </ul>
 </li>
 <li><p>视频网站，使用布隆过滤器来检查推荐的视频内容是否已经被推荐过。</p>
@@ -1051,16 +1055,16 @@
 </blockquote>
 <p>这个需求是不是听上去很简单，实现上我们有以下的几种方案：</p>
 <ul>
-<li><p><strong>方案一</strong>：每次注册验证的时候直接去数据库执行SQL, 检查是否存在相同用户名。</p>
-<ul>
+<li><strong>方案一</strong>：每次注册验证的时候直接去数据库执行SQL, 检查是否存在相同用户名。<ul>
 <li>最简单，除了原数据库存储外，不需要外部的数据存储服务，但是每次查询进行全表扫描，特别是涉及到注册用户较多，分库分表设的情况下，资源开销可不是一般的大，查询效率肯定也不会太好。</li>
 </ul>
 </li>
-<li><p> <strong>方案二</strong>：导出一份用户名列表到缓存（定期或者使用消息队列），每次单独的查询缓存完成检查</p>
+<li><p><strong>方案二</strong>：导出一份用户名列表到缓存（定期或者使用消息队列），每次单独的查询缓存完成检查</p>
+<ul>
+<li>内存数据查询效率比第一种要好一些，但是需要额外维护一套缓存服务，运维成本也不小，另外数据存储服务在数据量较大的情况下占用的内存开销也会较大。</li>
+</ul>
 </li>
-<li><p>内存数据查询效率比第一种要好一些，但是需要额外维护一套缓存服务，运维成本也不小，另外数据存储服务在数据量较大的情况下占用的内存开销也会较大。</p>
-</li>
-<li><p> <strong>方案二</strong>：通过一个布隆过滤器来完成校验，这种方式具有维护简单，占用资源少，查询效率高的优势</p>
+<li><p><strong>方案二</strong>：通过一个布隆过滤器来完成校验，这种方式具有维护简单，占用资源少，查询效率高的优势</p>
 </li>
 </ul>
 <h4 id="具体场景2"><a href="#具体场景2" class="headerlink" title="具体场景2"></a>具体场景2</h4><blockquote>
@@ -1083,11 +1087,11 @@
 <li>原先一个 int 类型只能表示一个整数，现在一个 int 能表示 32 个整数，相当于是节省了 32 倍的内存</li>
 <li>标记完之后，即可快速判定某个元素是否在 10 亿个正整数当中，时间复杂度为 O(1)</li>
 </ul>
-<p><img src="/Users/jianjian/jwt1399.github.io/source/images/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8VS%E5%B8%83%E8%B0%B7%E9%B8%9F~/image-20220401105325154.png"></p>
+<p><img src="/Users/jianjian/jwt1399.github.io/source/images/布隆过滤器VS布谷鸟~/image-20220401105325154.png" alt=""></p>
 <h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html">Bloom Filters - the math (wisc.edu)</a></li>
 <li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41125219/article/details/119982158">布隆(Bloom Filter)过滤器—redis集成布隆过滤器—Java使用布隆过滤器</a></li>
-<li>论文：[papers of bloom filter - Ying’s Blog (izualzhy.cn)](<a target="_blank" rel="noopener" href="https://izualzhy.cn/bloom-filter-paper#:~:text=Space%2FTime">https://izualzhy.cn/bloom-filter-paper#:~:text=Space%2FTime</a> Trade-offs in Hash Coding with Allowable Errors,在1970年发表的文章，布隆过滤器的开山之作。 给定一个 set，查找某个 key 是否存在于该 set，通常考虑两点： time%3A 查找时间)</li>
+<li>论文：<a target="_blank" rel="noopener" href="https://izualzhy.cn/bloom-filter-paper#:~:text=Space%2FTime Trade-offs in Hash Coding with Allowable Errors,在1970年发表的文章，布隆过滤器的开山之作。 给定一个 set，查找某个 key 是否存在于该 set，通常考虑两点： time%3A 查找时间">papers of bloom filter - Ying’s Blog (izualzhy.cn)</a></li>
 <li><a target="_blank" rel="noopener" href="https://izualzhy.cn/leveldb-bloom-filter">leveldb笔记之9:bloom filter - Ying’s Blog (izualzhy.cn)</a></li>
 <li>误报率：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/407540513">布隆过滤器在一个测试场景中的应用</a></li>
 <li>误报率：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/397034269">布隆过滤器假阳率公式推导</a></li>
@@ -1106,9 +1110,10 @@
 <li>动态交互：<a target="_blank" rel="noopener" href="https://www.jasondavies.com/bloomfilter/">Bloom Filters (jasondavies.com)</a></li>
 <li>误报率计算器：<a target="_blank" rel="noopener" href="https://krisives.github.io/bloom-calculator/">Bloom Filter Calculator (krisives.github.io)</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8d074e8d02aa">海量数据下的去重和查重（一）：BitMap位图法 </a></li>
-<li><a target="_blank" rel="noopener" href="https://3g.163.com/dy/article/FO0HMBAG0536882Y.html?referFrom=baidu&spss=adap_dy">为什么抖音从来没有重复内容？</a></li>
+<li><a target="_blank" rel="noopener" href="https://3g.163.com/dy/article/FO0HMBAG0536882Y.html?referFrom=baidu&amp;spss=adap_dy">为什么抖音从来没有重复内容？</a></li>
 </ul>
 <h2 id="布隆过滤器变体"><a href="#布隆过滤器变体" class="headerlink" title="布隆过滤器变体"></a>布隆过滤器变体</h2><p>布隆过滤器的变体十分多，主要是为了解决布隆过滤器算法中的一些缺陷或者劣势。常见的变体如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1120,7 +1125,8 @@
 <th>等级(CCF)</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>1</td>
 <td>Counting Bloom Filter</td>
 <td>CBF</td>
@@ -1208,7 +1214,9 @@
 <td><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/6005420">IEEE Transactions on Parallel and Distributed Systems</a></td>
 <td>A</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h3 id="Counting-Bloom-Filter-CBF"><a href="#Counting-Bloom-Filter-CBF" class="headerlink" title="Counting Bloom Filter(CBF)"></a>Counting Bloom Filter(CBF)</h3><p><strong>论文名称：《Summary cache: a scalable wide-area Web cache sharing protocol》(摘要缓存：可扩展的广域 Web 缓存共享协议)</strong>  </p>
 <ul>
 <li>作者：Li Fan; Pei Cao; J. Almeida; A.Z. Broder</li>
@@ -1217,7 +1225,7 @@
 <li>时间：2000年06月</li>
 </ul>
 <hr>
-<h4 id="引出"><a href="#引出" class="headerlink" title="引出"></a>引出</h4><p><img src="/Users/jianjian/jwt1399.github.io/source/images/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8VS%E5%B8%83%E8%B0%B7%E9%B8%9F~/v2-865983a6709550d9ffa3887c54514a0b_b.jpg"></p>
+<h4 id="引出"><a href="#引出" class="headerlink" title="引出"></a>引出</h4><p><img src="/Users/jianjian/jwt1399.github.io/source/images/布隆过滤器VS布谷鸟~/v2-865983a6709550d9ffa3887c54514a0b_b.jpg" alt=""></p>
 <p>假如有这么一个情景</p>
 <ul>
 <li>放入数据包 1 时，将 bitmap 的 1，3，6 位设置为了 1</li>
@@ -1234,7 +1242,7 @@
 </li>
 </ul>
 <h4 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h4><p>为了解决上面布隆过滤器的问题，出现了一个增强版的布隆过滤器(Counting Bloom Filter)，这个过滤器的思路是将布隆过滤器的 bitmap 更换成数组，数组的每一位扩展为一个小的计数器(Counter)，当数组某位置被映射一次时就 +1，当删除时就 -1，这样就避免了普通布隆过滤器删除数据后需要重新计算其余数据包 Hash 的问题，但是依旧没法避免误判。</p>
-<p><img src="/Users/jianjian/jwt1399.github.io/source/images/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8VS%E5%B8%83%E8%B0%B7%E9%B8%9F~/v2-6cd14beef39ff330a630ca08158814ea_b.jpg"></p>
+<p><img src="/Users/jianjian/jwt1399.github.io/source/images/布隆过滤器VS布谷鸟~/v2-6cd14beef39ff330a630ca08158814ea_b.jpg" alt=""></p>
 <p>Counting Bloom Filter 通过多占用几倍的存储空间的代价，给 Bloom Filter 增加了删除操作。下一个问题自然就是，到底要多占用几倍呢？</p>
 <p>直接给结论吧：每个 Counter 分配 4 位，对于大多数应用程序来说就足够了。详细证明过程可以去看论文</p>
 <h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><ul>
@@ -1281,13 +1289,13 @@
 <li>p1 = hash1(x) % L</li>
 <li>p2 = hash2(x) % L</li>
 </ul>
-<p><img src="https://img.jwt1399.top/img/ifWcXxkJCNYbuph.png"></p>
+<p><img src="https://img.jwt1399.top/img/ifWcXxkJCNYbuph.png" alt=""></p>
 <h3 id="变种"><a href="#变种" class="headerlink" title="变种"></a>变种</h3><p>布谷鸟哈希可以有很多变种，比如：</p>
 <ol>
 <li>使用<strong>两个</strong>哈希函数和<strong>一个</strong>哈希桶。</li>
 <li>使用<strong>两个</strong>哈希函数和<strong>四路</strong>哈希桶。</li>
 </ol>
-<p><img src="https://img.jwt1399.top/img/1617168-20210727195625561-1153589445.jpg"></p>
+<p><img src="https://img.jwt1399.top/img/1617168-20210727195625561-1153589445.jpg" alt=""></p>
 <p>可以证明，后者的桶的利用率会更高，后面讲布谷鸟过滤器会细说原因</p>
 <h2 id="布谷鸟过滤器"><a href="#布谷鸟过滤器" class="headerlink" title="布谷鸟过滤器"></a>布谷鸟过滤器</h2><p><strong>论文名称：《Cuckoo Filter: Practically Better Than Bloom》(布谷鸟过滤器：实际上比布隆过滤器更好)</strong> ——<code>该篇论文是布谷鸟隆过滤器的开山之作</code></p>
 <ul>
@@ -1317,11 +1325,11 @@
 <h3 id="原理-3"><a href="#原理-3" class="headerlink" title="原理"></a>原理</h3><p>布谷鸟过滤器的布谷鸟哈希表的基本单位称为<strong>条目（entry）</strong>，每个条目存储一个<strong>指纹（fingerprint）</strong></p>
 <p><strong>指纹：</strong>对插入的 key 使用一个哈希函数生成的 n 位比特位，n 的具体大小由所能接受的误判率来设置，论文中的例子使用的是 8 bits 的指纹大小。牺牲了一定精度，但是换取了空间。</p>
 <p>与布谷鸟哈希不同，布谷鸟过滤器采取了两个<strong>并不独立的哈希函数</strong>，具体的布谷鸟过滤器位置计算公式：</p>
-<pre class="line-numbers language-python"><code class="language-python">f <span class="token operator">=</span> fingerprint<span class="token punctuation">(</span>x<span class="token punctuation">)</span>
-i1 <span class="token operator">=</span> hash<span class="token punctuation">(</span>x<span class="token punctuation">)</span>
-i2 <span class="token operator">=</span> i1 ⊕ hash<span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+<pre class="line-numbers language-lang-python"><code class="language-lang-python">f = fingerprint(x)
+i1 = hash(x)
+i2 = i1 ⊕ hash(f)
 
-<span class="token comment" spellcheck="true"># i1 和 i2 即为计算出来两个桶的索引</span>
+# i1 和 i2 即为计算出来两个桶的索引
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>为什么采用并不独立的哈希函数？又为什么需要用到异或呢？</strong></p>
 <p>布谷鸟过滤器插入元素时会有频繁的踢出操作，当某个值 x 被踢出时，需要找到另外一个位置。 Cuckoo Hash 是通过额外哈希函数作用于 x 计算而出：<code>i2</code>。</p>
@@ -1338,15 +1346,14 @@ i2 <span class="token operator">=</span> i1 ⊕ hash<span class="token punctuati
 </li>
 <li><p>这样就不需要知道当前的位置是 i1 还是 i2，只需要将当前的位置和该位置里面存储的“指纹”信息的Hash值进行异或计算就可以得到另一个位置。</p>
 </li>
-<li><p>而且只需要确保 hash(f) != 0 就可以确保 i1 != i2，如此就不会出现自己踢自己导致死循环的问题。</p>
-</li>
+<li>而且只需要确保 hash(f) != 0 就可以确保 i1 != i2，如此就不会出现自己踢自己导致死循环的问题。</li>
 </ul>
 <p><strong>为什么 i1 不直接和指纹 f 进行异或 来计算 i2 ？</strong></p>
 <ul>
 <li>如果直接进行异或处理(i2 = i1 ⊕ f)，那么很可能 i1 和 i2 的位置相隔很近</li>
 <li>因为指纹 f 一般位数比较少，比如 8 bit。如果按照这种方法，即是在原位置 ±2^8 = 256 的范围内找到另一个位置，异或只会改变低 8 bit 的值。这个范围太小了，不利于均衡散列。尤其是在比较小的 hash 表中，这样无形之中增加了碰撞的概率。</li>
 </ul>
-<h3 id="插入-1"><a href="#插入-1" class="headerlink" title="插入"></a>插入</h3><p><img src="https://img.jwt1399.top/img/image-20220330223308276.png"></p>
+<h3 id="插入-1"><a href="#插入-1" class="headerlink" title="插入"></a>插入</h3><p><img src="https://img.jwt1399.top/img/image-20220330223308276.png" alt=""></p>
 <p>假设布谷鸟过滤器里面有两个 hash 表 T1、T2，两个 hash 表，对应一个 hash 函数 H1</p>
 <p>具体的插入步骤如下：<a href="file:///Users/jianjian/Desktop/cuckoo/index.html">布谷鸟过滤器动态演示</a></p>
 <ol>
@@ -1367,15 +1374,15 @@ i2 <span class="token operator">=</span> i1 ⊕ hash<span class="token punctuati
 <p>上面的实现方案中，hash 表中每个槽位只能存放一个元素，空间利用率只有 50%</p>
 <p>布谷鸟过滤器中每个槽位可以存放多个元素，从一维变成了二维。当每个槽位可以存放 2，4，8 个元素的时候，空间利用率就会飙升到 84%，95%，98%</p>
 <p>如下图，表示的是一个二维数组，每个槽位可以存放 4 个元素，和上面的实现有所不同的是，没有采用两个数组来存放，而是只用了一个</p>
-<p><img src="https://img.jwt1399.top/img/20210228113226.png"></p>
-<h3 id="查找-1"><a href="#查找-1" class="headerlink" title="查找"></a>查找</h3><p><img src="https://img.jwt1399.top/img/image-20220330223231679.png"></p>
+<p><img src="https://img.jwt1399.top/img/20210228113226.png" alt=""></p>
+<h3 id="查找-1"><a href="#查找-1" class="headerlink" title="查找"></a>查找</h3><p><img src="https://img.jwt1399.top/img/image-20220330223231679.png" alt=""></p>
 <p>布谷鸟过滤器的查找过程很简单</p>
 <ul>
 <li>给定一个项 x，算法首先根据插入公式，计算 x 的指纹和两个候选桶 i1 和 i2</li>
 <li>然后读取这两个桶：如果任意桶与现有指纹匹配，则布谷鸟过滤器返回 true，否则过滤器返回 false。</li>
 <li>只要不发生桶溢出，就可以确保没有假阴性。</li>
 </ul>
-<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p><img src="https://img.jwt1399.top/img/image-20220330223212233.png"></p>
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p><img src="https://img.jwt1399.top/img/image-20220330223212233.png" alt=""></p>
 <ul>
 <li>标准布隆过滤器不能删除，因此删除单个项需要重建整个过滤器</li>
 <li>而计数布隆过滤器需要更多的空间</li>
@@ -1404,7 +1411,7 @@ i2 <span class="token operator">=</span> i1 ⊕ hash<span class="token punctuati
 <li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000039156246">布隆，牛逼！布谷鸟，牛逼！</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.qtmuniao.com/2021/12/07/cuckoo-hash-and-cuckoo-filter">布谷鸟哈希和布谷鸟过滤器 | 木鸟杂记</a></li>
 </ul>
-<h2 id="两种过滤器比较"><a href="#两种过滤器比较" class="headerlink" title="两种过滤器比较"></a>两种过滤器比较</h2><p><img src="https://img.jwt1399.top/img/1617168-20210727195622317-1553292086.png"></p>
+<h2 id="两种过滤器比较"><a href="#两种过滤器比较" class="headerlink" title="两种过滤器比较"></a>两种过滤器比较</h2><p><img src="https://img.jwt1399.top/img/1617168-20210727195622317-1553292086.png" alt=""></p>
 <p>上图是布谷鸟过滤器其他过滤器比较，假阳性率与每个元素的空间成本。</p>
 <p>对于低假阳性率（低于3%），布谷鸟过滤器比空间优化的布隆过滤器每个元素需要更少的存储空间。</p>
 <h2 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h2><p>您的支持是我不断前进的动力，如果您恰巧财力雄厚，又感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
@@ -2190,7 +2197,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2421,6 +2428,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

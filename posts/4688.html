@@ -882,7 +882,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5k
+                    4.3k
                 </div>
                 
 
@@ -906,16 +906,11 @@
 </li>
 <li><p>Maven：<a href="https://jwt1399.top/posts/38008.html">Maven | 简简(jwt1399.top)</a></p>
 </li>
-<li><p>Tomcat：<a href="https://jwt1399.top/posts/4688.html#toc-heading-3">Tomcat-汇总 | 简简</a></p>
-</li>
-<li><p>Servlet：<a href="https://jwt1399.top/posts/55715.html">Servlet | 简简 (jwt1399.top)</a></p>
-</li>
-<li><p>Cookie &amp; Session：<a href="https://jwt1399.top/posts/37985.html">Cookie &amp; Session | 简简</a></p>
-</li>
-<li><p>Filter &amp; Listener：<a href="https://jwt1399.top/posts/4688.html#toc-heading-6">Filter &amp; Listener-汇总 | 简简</a></p>
-</li>
-<li><p>JSP：<a href="https://jwt1399.top/posts/59789.html">JSP学习笔记 | 简简 (jwt1399.top)</a></p>
-</li>
+<li>Tomcat：<a href="https://jwt1399.top/posts/4688.html#toc-heading-3">Tomcat-汇总 | 简简</a></li>
+<li>Servlet：<a href="https://jwt1399.top/posts/55715.html">Servlet | 简简 (jwt1399.top)</a></li>
+<li>Cookie &amp; Session：<a href="https://jwt1399.top/posts/37985.html">Cookie &amp; Session | 简简</a></li>
+<li>Filter &amp; Listener：<a href="https://jwt1399.top/posts/4688.html#toc-heading-6">Filter &amp; Listener-汇总 | 简简</a></li>
+<li>JSP：<a href="https://jwt1399.top/posts/59789.html">JSP学习笔记 | 简简 (jwt1399.top)</a></li>
 <li><p>Thymeleaf：<a href="https://jwt1399.top/posts/4688.html#toc-heading-12">Thymeleaf | 简简</a></p>
 </li>
 <li><p>Ajax &amp; Axios <a target="_blank" rel="noopener" href="https://jwt1399/posts/16553.html">Ajax &amp; Axios &amp; Json | 简简</a></p>
@@ -930,8 +925,9 @@
 <li>而且每个应用程序都有自己的依赖，如果两个应用程序使用了同一个版本的同一个依赖，那么还有必要去重新加载吗？</li>
 </ul>
 <p>为了解决上述问题，Tomcat 服务器编写了一套自己的类加载机制。</p>
-<p><img src="https://img.jwt1399.top/img/202205202322938.png"></p>
+<p><img src="https://img.jwt1399.top/img/202205202322938.png" alt=""></p>
 <p>首先我们要知道，Tomcat 本身也是一个 Java 程序，它要做的是去动态加载我们编写的 Web 应用程序中的类，而要解决以上提到的一些问题，就出现了几个新的类加载器，我们来看看各个加载器的不同之处：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -939,7 +935,8 @@
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>Common ClassLoader</td>
 <td>Tomcat最基本的类加载器。加载路径中的class可以被Tomcat容器本身以及各个Web应用程序访问。</td>
 </tr>
@@ -959,325 +956,331 @@
 <td>JasperLoader</td>
 <td>JSP类加载器。每个JSP文件都有一个自己的类加载器，也就是说，此加载器可能会存在多个实例。</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>通过这样进行划分，就很好地解决了我们上面所提到的问题，但是我们发现，这样的类加载机制，破坏了JDK 的<code>双亲委派机制</code>，比如 Webapp ClassLoader，它只加载自己的 class 文件，它没有将类交给父类加载器进行加载，也就是说，我们可以随意创建和 JDK 同包同名的类，岂不是就出问题了？难道Tomcat的开发团队没有考虑到这个问题吗？</p>
-<p><img src="https://img.jwt1399.top/img/202205202322444.jpg"></p>
+<p><img src="https://img.jwt1399.top/img/202205202322444.jpg" alt=""></p>
 <p>实际上，WebApp ClassLoader 的加载机制是这样的：WebApp ClassLoader 加载类的时候，绕开了 App ClassLoader，直接先使用 Ext ClassLoader 来加载类。这样的话，如果定义了同包同名的类，就不会被加载，而如果是自己定义的类，由于该类并不是 JDK 内部或是扩展类，所有不会被加载，而是再次回到 WebApp ClassLoader 进行加载，如果还失败，再使用 AppClassloader 进行加载。</p>
 <h2 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h2><h3 id="Filter简介"><a href="#Filter简介" class="headerlink" title="Filter简介"></a>Filter简介</h3><p>有了 Session 之后，就可以很好地控制用户的登陆验证了，只有授权的用户，才可以访问一些页面，但是我们需要一个一个去进行配置，还是太过复杂，能否一次性地过滤掉没有登录验证的用户呢？</p>
 <p>Filter过滤器相当于在所有访问前加了一堵墙，来自浏览器的所有访问请求都会首先经过Filter过滤器，只有过滤器允许通过的请求，才可以顺利地到达对应的Servlet，而过滤器不允许的通过的请求，我们可以自由地进行控制是否进行重定向或是请求转发。并且过滤器可以添加很多个。</p>
-<p><img src="https://img.jwt1399.top/img/image-20220427133711464.png"></p>
+<p><img src="https://img.jwt1399.top/img/image-20220427133711464.png" alt=""></p>
 <h3 id="创建过滤器"><a href="#创建过滤器" class="headerlink" title="创建过滤器"></a>创建过滤器</h3><p>定义类，实现 Filter 接口，并重写其方法，并添加<code>@WebFilter</code>注解</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebFilter</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">//配置Filter拦截资源的路径，/* 表示拦截所有的资源</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestFilter1</span> <span class="token keyword">implements</span> <span class="token class-name">Filter</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span>ServletRequest servletRequest<span class="token punctuation">,</span> ServletResponse servletResponse<span class="token punctuation">,</span> FilterChain filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> IOException<span class="token punctuation">,</span> ServletException <span class="token punctuation">{</span>
-        
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebFilter("/*")   //配置Filter拦截资源的路径，/* 表示拦截所有的资源
+public class TestFilter1 implements Filter {
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>现在我们发起的所有请求，一律需要经过此过滤器，并且所有的请求都没有任何的响应内容。</p>
 <p>那么如何让请求可以顺利地到达对应的 Servlet，只需要添加一句放行语句</p>
-<pre class="line-numbers language-java"><code class="language-java">filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span> servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//放行，，也就是让其访问本该访问的资源。</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">filterChain.doFilter(servletRequest, servletResponse);//放行，，也就是让其访问本该访问的资源。
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>由于我们整个应用程序可能存在多个过滤器，那么这行代码的意思实际上是将此请求继续传递给下一个过滤器，当没有下一个过滤器时，才会到达对应的Servlet进行处理，我们可以再来创建一个过滤器看看效果</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebFilter</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestFilter2</span> <span class="token keyword">implements</span> <span class="token class-name">Filter</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span>ServletRequest servletRequest<span class="token punctuation">,</span> ServletResponse servletResponse<span class="token punctuation">,</span> FilterChain filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> IOException<span class="token punctuation">,</span> ServletException <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我是2号过滤器"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span> servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebFilter("/*")
+public class TestFilter2 implements Filter {
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println("我是2号过滤器");
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="过滤器链"><a href="#过滤器链" class="headerlink" title="过滤器链"></a>过滤器链</h3><p>过滤器链是指在一个Web应用，可以配置多个过滤器，过滤器的过滤顺序是按照类名的自然排序进行的，在经过第一个过滤器之后，会继续前往第二个过滤器，只有两个过滤器全部经过之后，才会到达我们的Servlet中。</p>
-<p><img src="https://img.jwt1399.top/img/image-20220427133421324.png"></p>
+<p><img src="https://img.jwt1399.top/img/image-20220427133421324.png" alt=""></p>
 <p>实际上，当<code>doFilter</code>方法调用时，就会一直向下直到Servlet，在Servlet处理完成之后，又依次返回到最前面的Filter，类似于递归的结构，我们添加几个输出语句来判断一下：</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebFilter</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span> 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestFilter1</span> <span class="token keyword">implements</span> <span class="token class-name">Filter</span> <span class="token punctuation">{</span>
-  <span class="token annotation punctuation">@Override</span>
-  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span>ServletRequest servletRequest<span class="token punctuation">,</span> ServletResponse servletResponse<span class="token punctuation">,</span> FilterChain filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> IOException<span class="token punctuation">,</span> ServletException     <span class="token punctuation">{</span>
-    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我是1号过滤器放行前逻辑代码"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span> servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我是1号过滤器放行后逻辑代码"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebFilter("/*") 
+public class TestFilter1 implements Filter {
+  @Override
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException     {
+    System.out.println("我是1号过滤器放行前逻辑代码");
+    filterChain.doFilter(servletRequest, servletResponse);
+    System.out.println("我是1号过滤器放行后逻辑代码");
+  }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebFilter</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span> 
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestFilter2</span> <span class="token keyword">implements</span> <span class="token class-name">Filter</span> <span class="token punctuation">{</span>
-<span class="token annotation punctuation">@Override</span>
-  <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span>ServletRequest servletRequest<span class="token punctuation">,</span> ServletResponse servletResponse<span class="token punctuation">,</span> FilterChain filterChain<span class="token punctuation">)</span> <span class="token keyword">throws</span> IOException<span class="token punctuation">,</span> ServletException <span class="token punctuation">{</span>
-    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我是2号过滤器放行前逻辑代码"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    filterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>servletRequest<span class="token punctuation">,</span> servletResponse<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"我是2号过滤器放行后逻辑代码"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebFilter("/*") 
+public class TestFilter2 implements Filter {
+@Override
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    System.out.println("我是2号过滤器放行前逻辑代码");
+    filterChain.doFilter(servletRequest, servletResponse);
+    System.out.println("我是2号过滤器放行后逻辑代码");
+  }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//输出</span>
-我是<span class="token number">1</span>号过滤器放行前逻辑代码
-我是<span class="token number">2</span>号过滤器放行前逻辑代码
-我是<span class="token number">1</span>号过滤器放行后逻辑代码
-我是<span class="token number">2</span>号过滤器放行后逻辑代码
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">//输出
+我是1号过滤器放行前逻辑代码
+我是2号过滤器放行前逻辑代码
+我是1号过滤器放行后逻辑代码
+我是2号过滤器放行后逻辑代码
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="HttpFilter"><a href="#HttpFilter" class="headerlink" title="HttpFilter"></a>HttpFilter</h3><p>同 Servlet 一样，Filter 也有对应的 HttpFilter 专用类，它针对 HTTP 请求进行了专门处理，因此我们可以直接继承 HttpFilter 来编写</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebFilter</span><span class="token punctuation">(</span><span class="token string">"/*"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MainFilter</span> <span class="token keyword">extends</span> <span class="token class-name">HttpFilter</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doFilter</span><span class="token punctuation">(</span>HttpServletRequest req<span class="token punctuation">,</span> HttpServletResponse res<span class="token punctuation">,</span> FilterChain chain<span class="token punctuation">)</span> <span class="token keyword">throws</span> IOException<span class="token punctuation">,</span> ServletException <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">//...</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebFilter("/*")
+public class MainFilter extends HttpFilter {
+    @Override
+    protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+        //...
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h2><p>如果我们希望，在应用程序加载的时候，或是 Session 创建的时候，亦或是在 Request 对象创建的时候进行一些操作，那么这个时候，我们就可以使用监听器来实现。</p>
-<p><img src="https://img.jwt1399.top/img/202205202323156.png"></p>
+<p><img src="https://img.jwt1399.top/img/202205202323156.png" alt=""></p>
 <p>默认为我们提供了很多类型的监听器，我们这里就演示一下监听Session的创建即可：</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebListener</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TestListener</span> <span class="token keyword">implements</span> <span class="token class-name">HttpSessionListener</span> <span class="token punctuation">{</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">sessionCreated</span><span class="token punctuation">(</span>HttpSessionEvent se<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"有一个Session被创建了"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebListener
+public class TestListener implements HttpSessionListener {
+    @Override
+    public void sessionCreated(HttpSessionEvent se) {
+        System.out.println("有一个Session被创建了");
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>有关监听器相关内容，了解即可。</p>
 <h2 id="Thymeleaf"><a href="#Thymeleaf" class="headerlink" title="Thymeleaf"></a>Thymeleaf</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>Thymeleaf</strong> 是一个适用于 Web 和独立环境的现代化服务器端 <strong>Java 模板引擎</strong></p>
 <p><strong>模板引擎</strong>是为了使用户界面与业务数据分离而产生的，它可以生成特定格式的文档，用于网站的模板引擎就会生成一个标准的 html 文档。</p>
 <h3 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h3><p>1、首先还是新建一个 Web 项目，在创建时勾选 Thymeleaf 依赖</p>
 <p>2、编写一个前端页面，名称为<code>test.html</code>，放在 resource 目录下，在 html 标签内部添加<code>xmlns:th=&quot;http://www.thymeleaf.org&quot;</code>引入 Thymeleaf 定义的标签属性</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">xmlns:</span>th</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.thymeleaf.org<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Title<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${title}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:text="${title}"></div>
+</body>
+</html>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>3、编写模板引擎，设置默认页面</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@WebServlet</span><span class="token punctuation">(</span><span class="token string">"/index"</span><span class="token punctuation">)</span>
-<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">HelloServlet</span> <span class="token keyword">extends</span> <span class="token class-name">HttpServlet</span> <span class="token punctuation">{</span>
-    TemplateEngine engine<span class="token punctuation">;</span>
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException <span class="token punctuation">{</span>
-        engine <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TemplateEngine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        ClassLoaderTemplateResolver r <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassLoaderTemplateResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        engine<span class="token punctuation">.</span><span class="token function">setTemplateResolver</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@WebServlet("/index")
+public class HelloServlet extends HttpServlet {
+    TemplateEngine engine;
+    @Override
+    public void init() throws ServletException {
+        engine = new TemplateEngine();
+        ClassLoaderTemplateResolver r = new ClassLoaderTemplateResolver();
+        engine.setTemplateResolver(r);
+    }
 
-    <span class="token annotation punctuation">@Override</span>
-    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest req<span class="token punctuation">,</span> HttpServletResponse resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-        Context context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        context<span class="token punctuation">.</span><span class="token function">setVariable</span><span class="token punctuation">(</span><span class="token string">"title"</span><span class="token punctuation">,</span> <span class="token string">"我是标题"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        engine<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">,</span> context<span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Context context = new Context();
+        context.setVariable("title", "我是标题");
+        engine.process("test.html", context, resp.getWriter());
+    }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>我们发现，浏览器得到的页面，就是已经经过模板引擎解析好的页面，而我们的代码依然是后端处理数据，前端展示数据，因此使用 Thymeleaf 就能够使得当前Web应用程序的前后端划分更加清晰。</p>
 <h3 id="语法基础"><a href="#语法基础" class="headerlink" title="语法基础"></a>语法基础</h3><h4 id="TemplateEngine"><a href="#TemplateEngine" class="headerlink" title="TemplateEngine"></a>TemplateEngine</h4><p>首先我们看看后端部分，我们需要通过<code>TemplateEngine</code>对象来将模板文件渲染为最终的HTML页面：</p>
-<pre class="line-numbers language-java"><code class="language-java">TemplateEngine engine<span class="token punctuation">;</span>
-<span class="token annotation punctuation">@Override</span>
-<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException <span class="token punctuation">{</span>
-    engine <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">TemplateEngine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token comment" spellcheck="true">//设定模板解析器决定了从哪里获取模板文件，这里直接使用ClassLoaderTemplateResolver表示加载内部资源文件</span>
-    ClassLoaderTemplateResolver r <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassLoaderTemplateResolver</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    engine<span class="token punctuation">.</span><span class="token function">setTemplateResolver</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">TemplateEngine engine;
+@Override
+public void init() throws ServletException {
+    engine = new TemplateEngine();
+      //设定模板解析器决定了从哪里获取模板文件，这里直接使用ClassLoaderTemplateResolver表示加载内部资源文件
+    ClassLoaderTemplateResolver r = new ClassLoaderTemplateResolver();
+    engine.setTemplateResolver(r);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>此对象只需要创建一次，之后就可以一直使用了。接着我们来看如何使用模板引擎进行解析：</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
-<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest req<span class="token punctuation">,</span> HttpServletResponse resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">//创建上下文，上下文中包含了所有需要替换到模板中的内容</span>
-    Context context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    context<span class="token punctuation">.</span><span class="token function">setVariable</span><span class="token punctuation">(</span><span class="token string">"title"</span><span class="token punctuation">,</span> <span class="token string">"&lt;h1>我是标题&lt;/h1>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">//通过此方法就可以直接解析模板并返回响应</span>
-    engine<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">,</span> context<span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    //创建上下文，上下文中包含了所有需要替换到模板中的内容
+    Context context = new Context();
+    context.setVariable("title", "<h1>我是标题</h1>");
+    //通过此方法就可以直接解析模板并返回响应
+    engine.process("test.html", context, resp.getWriter());
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>接下来就可以在前端页面中通过上下文提供的内容，来将Java代码中的数据解析到前端页面。</p>
-<h4 id="常用标签"><a href="#常用标签" class="headerlink" title="常用标签"></a>常用标签</h4><table>
+<h4 id="常用标签"><a href="#常用标签" class="headerlink" title="常用标签"></a>常用标签</h4><div class="table-container">
+<table>
 <thead>
 <tr>
-<th align="left">标签</th>
-<th align="left">作用</th>
-<th align="left">示例</th>
+<th style="text-align:left">标签</th>
+<th style="text-align:left">作用</th>
+<th style="text-align:left">示例</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="left">th:id</td>
-<td align="left">替换id</td>
-<td align="left"><code>&lt;input th:id=&quot;$&#123;user.id&#125;&quot;/&gt;</code></td>
+<tbody>
+<tr>
+<td style="text-align:left">th:id</td>
+<td style="text-align:left">替换id</td>
+<td style="text-align:left"><code>&lt;input th:id=&quot;$&#123;user.id&#125;&quot;/&gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:text</td>
-<td align="left">文本替换</td>
-<td align="left"><code>&lt;p text:=&quot;$&#123;user.name&#125;&quot;&gt;测试&lt;/p&gt;</code></td>
+<td style="text-align:left">th:text</td>
+<td style="text-align:left">文本替换</td>
+<td style="text-align:left"><code>&lt;p text:=&quot;$&#123;user.name&#125;&quot;&gt;测试&lt;/p&gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:utext</td>
-<td align="left">支持html的文本替换</td>
-<td align="left"><code>&lt;p utext:=&quot;$&#123;htmlcontent&#125;&quot;&gt;content&lt;/p&gt;</code></td>
+<td style="text-align:left">th:utext</td>
+<td style="text-align:left">支持html的文本替换</td>
+<td style="text-align:left"><code>&lt;p utext:=&quot;$&#123;htmlcontent&#125;&quot;&gt;content&lt;/p&gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:object</td>
-<td align="left">替换对象</td>
-<td align="left"><code>&lt;div th:object=&quot;$&#123;user&#125;&quot;&gt;&lt;/div&gt;</code></td>
+<td style="text-align:left">th:object</td>
+<td style="text-align:left">替换对象</td>
+<td style="text-align:left"><code>&lt;div th:object=&quot;$&#123;user&#125;&quot;&gt;&lt;/div&gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:value</td>
-<td align="left">替换值</td>
-<td align="left"><code>&lt;input th:value=&quot;$&#123;user.name&#125;&quot; &gt;</code></td>
+<td style="text-align:left">th:value</td>
+<td style="text-align:left">替换值</td>
+<td style="text-align:left"><code>&lt;input th:value=&quot;$&#123;user.name&#125;&quot; &gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:each</td>
-<td align="left">迭代</td>
-<td align="left"><code>&lt;tr th:each=&quot;student:$&#123;user&#125;&quot; &gt;</code></td>
+<td style="text-align:left">th:each</td>
+<td style="text-align:left">迭代</td>
+<td style="text-align:left"><code>&lt;tr th:each=&quot;student:$&#123;user&#125;&quot; &gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:href</td>
-<td align="left">替换超链接</td>
-<td align="left"><code>&lt;a th:href=&quot;@&#123;index.html&#125;&quot;&gt;超链接&lt;/a&gt;</code></td>
+<td style="text-align:left">th:href</td>
+<td style="text-align:left">替换超链接</td>
+<td style="text-align:left"><code>&lt;a th:href=&quot;@&#123;index.html&#125;&quot;&gt;超链接&lt;/a&gt;</code></td>
 </tr>
 <tr>
-<td align="left">th:src</td>
-<td align="left">替换资源</td>
-<td align="left"><code>&lt;script type=&quot;text/javascript&quot; th:src=&quot;@&#123;index.js&#125;&quot;&gt;&lt;/script&gt;</code></td>
+<td style="text-align:left">th:src</td>
+<td style="text-align:left">替换资源</td>
+<td style="text-align:left"><code>&lt;script type=&quot;text/javascript&quot; th:src=&quot;@&#123;index.js&#125;&quot;&gt;&lt;/script&gt;</code></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>比如示例中编写的：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${title}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:text="${title}"></div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>使用了<code>th:text</code>来为当前标签指定内部文本，注意任何内容都会变成普通文本，即使传入了一个HTML代码</p>
 <p>如果我希望向内部添加一个HTML文本呢？我们可以使用<code>th:utext</code>属性：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>utext</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${title}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:utext="${title}"></div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>传入的title属性，不仅仅只是一个字符串的值，而且是一个字符串的引用，我们可以直接通过此引用调用相关的方法：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${title.toLowerCase()}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:text="${title.toLowerCase()}"></div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>这样看来，Thymeleaf既能保持JSP为我们带来的便捷，也能兼顾前后端代码的界限划分。</p>
 <p>除了替换文本，它还支持替换一个元素的任意属性，我们发现，<code>th:</code>能够拼接几乎所有的属性，一旦使用<code>th:属性名称</code>，那么属性的值就可以通过后端提供了，比如我们现在想替换一个图片的链接：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">xmlns:</span>th</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.thymeleaf.org<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Title<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">width</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>700<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${url}<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${alt}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <img width="700" th:src="${url}" th:alt="${alt}">
+</body>
+</html>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
-<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest req<span class="token punctuation">,</span> HttpServletResponse resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-    Context context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    context<span class="token punctuation">.</span><span class="token function">setVariable</span><span class="token punctuation">(</span><span class="token string">"url"</span><span class="token punctuation">,</span> <span class="token string">"https://jwt1399.top/favicon.jpg"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-      context<span class="token punctuation">.</span><span class="token function">setVariable</span><span class="token punctuation">(</span><span class="token string">"alt"</span><span class="token punctuation">,</span> <span class="token string">"图片加载不出来"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    engine<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">,</span> context<span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    Context context = new Context();
+    context.setVariable("url", "https://jwt1399.top/favicon.jpg");
+      context.setVariable("alt", "图片加载不出来");
+    engine.process("test.html", context, resp.getWriter());
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Thymeleaf还可以进行一些算术运算，几乎Java中的运算它都可以支持：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${value % 2}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:text="${value % 2}"></div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>同样的，它还支持三元运算：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${value % 2 <span class="token punctuation">=</span><span class="token punctuation">=</span> 0 ? <span class="token punctuation">'</span>yyds<span class="token punctuation">'</span> : <span class="token punctuation">'</span>lbwnb<span class="token punctuation">'</span>}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:text="${value % 2 == 0 ? 'yyds' : 'lbwnb'}"></div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>多个属性也可以通过<code>+</code>进行拼接，就像Java中的字符串拼接一样，这里要注意一下，字符串不能直接写，要添加单引号：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${name}+<span class="token punctuation">'</span> 我是文本 <span class="token punctuation">'</span>+${value}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:text="${name}+' 我是文本 '+${value}"></div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h4 id="表达式"><a href="#表达式" class="headerlink" title="表达式"></a>表达式</h4><h5 id="链接表达式-…"><a href="#链接表达式-…" class="headerlink" title="链接表达式: @{…}"></a>链接表达式: @{…}</h5><p>如果想引入链接比如link，href，src，使用<code>@&#123;资源地址&#125;</code>引入资源</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>link</span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>stylesheet<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>@{index.css}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><link rel="stylesheet" th:href="@{index.css}">
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text/javascript<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>@{index.js}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script language-javascript"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<script type="text/javascript" th:src="@{index.js}"></script>
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name"><span class="token namespace">th:</span>href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>@{index.html}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>超链接<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span>
+<a th:href="@{index.html}">超链接</a>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h5 id="变量表达式-…"><a href="#变量表达式-…" class="headerlink" title="变量表达式: ${…}"></a>变量表达式: ${…}</h5><p>通过<code>$&#123;…&#125;</code>进行取值</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">></span></span>取普通字符串<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span> <span class="token attr-name">border</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>0<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span><span class="token punctuation">'</span>我的名字是：<span class="token punctuation">'</span>+${name}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><h2>取普通字符串</h2>
+<table border="0">
+    <tr>
+        <td th:text="'我的名字是：'+${name}"></td>
+    </tr>
+</table>
 
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">></span></span>取JavaBean对象<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span> <span class="token attr-name">bgcolor</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#ffe4c4<span class="token punctuation">"</span></span> <span class="token attr-name">border</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>介绍<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${user.name}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>年龄<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${user[<span class="token punctuation">'</span>age<span class="token punctuation">'</span>]}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span>
+<h2>取JavaBean对象</h2>
+<table bgcolor="#ffe4c4" border="1">
+    <tr>
+        <td>介绍</td>
+        <td th:text="${user.name}"></td>
+    </tr>
+    <tr>
+        <td>年龄</td>
+        <td th:text="${user['age']}"></td>
+    </tr>
+</table>
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">></span></span>取List取值<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span> <span class="token attr-name">bgcolor</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#ffe4c4<span class="token punctuation">"</span></span> <span class="token attr-name">border</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span> <span class="token attr-name"><span class="token namespace">th:</span>each</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>item:${userlist}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${item}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span>
+<h2>取List取值</h2>
+<table bgcolor="#ffe4c4" border="1">
+    <tr th:each="item:${userlist}">
+        <td th:text="${item}"></td>
+    </tr>
+</table>
 
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">></span></span>取Map取值<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span> <span class="token attr-name">bgcolor</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#8fbc8f<span class="token punctuation">"</span></span> <span class="token attr-name">border</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>place:<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${map.get(<span class="token punctuation">'</span>place<span class="token punctuation">'</span>)}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>feeling:<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${map[<span class="token punctuation">'</span>feeling<span class="token punctuation">'</span>]}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span>
+<h2>取Map取值</h2>
+<table bgcolor="#8fbc8f" border="1">
+    <tr>
+        <td>place:</td>
+        <td th:text="${map.get('place')}"></td>
+    </tr>
+    <tr>
+        <td>feeling:</td>
+        <td th:text="${map['feeling']}"></td>
+    </tr>
+</table>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h5 id="选择变量表达式-…"><a href="#选择变量表达式-…" class="headerlink" title="选择变量表达式: *{…}"></a>选择变量表达式: *{…}</h5><p>变量表达式不仅可以写成${…}，而且还可以写成*{…}。</p>
 <p>但是，有一个重要的区别：星号语法针对选定对象而不是整个上下文评估表达式。也就是说，只要没有选定的对象，美元(<code>$&#123;…&#125;</code>)和星号(<code>*&#123;...&#125;</code>)的语法就完全一样。</p>
 <p>什么是选定对象？使用<code>th:object</code>属性的表达式的结果。就可以选定对象，具体实例如下：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>object</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${user}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>Name: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>*{name}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>小明<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>Age: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>*{age}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>18<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>Detail: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>*{detail}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>好好学习<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span>.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:object="${user}">
+    <p>Name: <span th:text="*{name}">小明</span></p>
+    <p>Age: <span th:text="*{age}">18</span></p>
+    <p>Detail: <span th:text="*{detail}">好好学习</span>.</p>
+</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>当然<code>*&#123;…&#125;</code>也可和<code>$&#123;…&#125;</code>混用。上面的代码如果不使用选定对象，完全等价于：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>Name: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>*{user.name}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>小明<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span>.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>Age: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${user.age}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>18<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span>.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">></span></span>Detail: <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>span</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${user.detail}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>好好学习<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>span</span><span class="token punctuation">></span></span>.<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div>
+    <p>Name: <span th:text="*{user.name}">小明</span>.</p>
+    <p>Age: <span th:text="${user.age}">18</span>.</p>
+    <p>Detail: <span th:text="${user.detail}">好好学习</span>.</p>
+</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h5 id="消息表达-…"><a href="#消息表达-…" class="headerlink" title="消息表达: #{…}"></a>消息表达: #{…}</h5><p><code>#&#123;…&#125;</code>是用来<strong>读取配置文件中数据</strong>的。</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">></span></span>消息表达<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span> <span class="token attr-name">bgcolor</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#ffe4c4<span class="token punctuation">"</span></span> <span class="token attr-name">border</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>name<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#{jwt.name}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>年龄<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#{jwt.age}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">></span></span>province<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>#{province}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><h2>消息表达</h2>
+<table bgcolor="#ffe4c4" border="1">
+    <tr>
+    <td>name</td>
+    <td th:text="#{jwt.name}"></td>
+    </tr>
+    <tr>
+    <td>年龄</td>
+    <td th:text="#{jwt.age}"></td>
+    </tr>
+    <tr>
+    <td>province</td>
+    <td th:text="#{province}"></td>
+    </tr>
+</table>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>test.properties</p>
-<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">jwt.nane</span><span class="token punctuation">=</span><span class="token attr-value">jianjian</span>
-<span class="token attr-name">jwt.age</span><span class="token punctuation">=</span><span class="token attr-value">20</span>
+<pre class="line-numbers language-lang-properties"><code class="language-lang-properties">jwt.nane=jianjian
+jwt.age=20
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="流程控制语法"><a href="#流程控制语法" class="headerlink" title="流程控制语法"></a>流程控制语法</h3><p>除了一些基本的操作，我们还可以使用Thymeleaf来处理流程控制语句，当然，不是直接编写Java代码的形式，而是添加一个属性即可。</p>
 <h4 id="th-if"><a href="#th-if" class="headerlink" title="th:if"></a>th:if</h4><p>如果 if 条件满足，则此标签留下；若 if 条件不满足，则此标签自动被移除</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
-<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest req<span class="token punctuation">,</span> HttpServletResponse resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-    Context context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    context<span class="token punctuation">.</span><span class="token function">setVariable</span><span class="token punctuation">(</span><span class="token string">"eval"</span><span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    engine<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">,</span> context<span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    Context context = new Context();
+    context.setVariable("eval", true);
+    engine.process("test.html", context, resp.getWriter());
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>if</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${eval}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>我是判断条件标签<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:if="${eval}">我是判断条件标签</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><code>th:if</code>会根据其中传入的值或是条件表达式的结果进行判断，只有满足的情况下，才会显示此标签，具体的判断规则如下：</p>
 <ul>
@@ -1291,41 +1294,41 @@
 </li>
 <li>如果值为空，th:if 将计算为 false</li>
 </ul>
-<h4 id="th-unless"><a href="#th-unless" class="headerlink" title="th:unless"></a>th:unless</h4><p><code>th:unless</code>与 <code>th:if </code>效果完全相反</p>
+<h4 id="th-unless"><a href="#th-unless" class="headerlink" title="th:unless"></a>th:unless</h4><p><code>th:unless</code>与 <code>th:if</code>效果完全相反</p>
 <h4 id="th-switch"><a href="#th-switch" class="headerlink" title="th:switch"></a>th:switch</h4><p>多分支条件判断，可以使用<code>th:switch</code>属性来实现</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>switch</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${eval}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>case</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>我是1<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>case</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>我是2<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>case</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>3<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>我是3<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:switch="${eval}">
+    <div th:case="1">我是1</div>
+    <div th:case="2">我是2</div>
+    <div th:case="3">我是3</div>
+</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="th-case"><a href="#th-case" class="headerlink" title="th:case"></a>th:case</h4><p>多分支条件判断没有default属性，可以使用<code>th:case=&quot;*&quot;</code>来代替：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>case</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>*<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>我是Default<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div th:case="*">我是Default</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h4 id="th-each"><a href="#th-each" class="headerlink" title="th:each"></a>th:each</h4><p>实现遍历，假如我们有一个存放书籍信息的List需要显示，那么如何快速生成一个列表呢？我们可以使用<code>th:each</code>来进行遍历操作：</p>
-<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
-<span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">doGet</span><span class="token punctuation">(</span>HttpServletRequest req<span class="token punctuation">,</span> HttpServletResponse resp<span class="token punctuation">)</span> <span class="token keyword">throws</span> ServletException<span class="token punctuation">,</span> IOException <span class="token punctuation">{</span>
-    Context context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    context<span class="token punctuation">.</span><span class="token function">setVariable</span><span class="token punctuation">(</span><span class="token string">"list"</span><span class="token punctuation">,</span> Arrays<span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span><span class="token string">"伞兵一号的故事"</span><span class="token punctuation">,</span> <span class="token string">"倒一杯卡布奇诺"</span><span class="token punctuation">,</span> <span class="token string">"玩游戏要啸着玩"</span><span class="token punctuation">,</span> <span class="token string">"十七张牌前的电脑屏幕"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    engine<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span><span class="token string">"test.html"</span><span class="token punctuation">,</span> context<span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">getWriter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    Context context = new Context();
+    context.setVariable("list", Arrays.asList("伞兵一号的故事", "倒一杯卡布奇诺", "玩游戏要啸着玩", "十七张牌前的电脑屏幕"));
+    engine.process("test.html", context, resp.getWriter());
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name"><span class="token namespace">th:</span>each</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>title : ${list}<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span><span class="token punctuation">'</span>《<span class="token punctuation">'</span>+${title}+<span class="token punctuation">'</span>》<span class="token punctuation">'</span><span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><ul>
+    <li th:each="title : ${list}" th:text="'《'+${title}+'》'"></li>
+</ul>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><code>th:each</code>语法： “<strong>单个元素名称 : ${列表}</strong>“，最后生成的结果为：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>《伞兵一号的故事》<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>《倒一杯卡布奇诺》<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>《玩游戏要啸着玩》<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
-  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span><span class="token punctuation">></span></span>《十七张牌前的电脑屏幕》<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><ul>
+  <li>《伞兵一号的故事》</li>
+  <li>《倒一杯卡布奇诺》</li>
+  <li>《玩游戏要啸着玩》</li>
+  <li>《十七张牌前的电脑屏幕》</li>
+</ul>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>我们还可以获取当前循环的迭代状态，只需要在 <code>th:each</code> 中添加 <code>iterStat</code> 即可，从中可以获取很多信息，比如当前的顺序 <code>$&#123;iterStat.index&#125;</code> ：</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>ul</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>li</span> <span class="token attr-name"><span class="token namespace">th:</span>each</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>title, iterStat : ${list}<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${iterStat.index}+<span class="token punctuation">'</span>.《<span class="token punctuation">'</span>+${title}+<span class="token punctuation">'</span>》<span class="token punctuation">'</span><span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>li</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>ul</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><ul>
+    <li th:each="title, iterStat : ${list}" th:text="${iterStat.index}+'.《'+${title}+'》'"></li>
+</ul>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>iterStat 属性有：</p>
 <ul>
@@ -1340,27 +1343,27 @@
 <h3 id="模板布局"><a href="#模板布局" class="headerlink" title="模板布局"></a>模板布局</h3><p>在某些网页中，我们会发现，整个网站的页面，除了中间部分的内容会随着我们的页面跳转而变化外，有些部分是一直保持一个状态的。</p>
 <p>Thymeleaf 可以轻松实现这样的操作，我们只需要将不会改变的板块设定为模板布局，并在不同的页面中插入这些模板布局，就无需每个页面都去编写同样的内容了。</p>
 <h4 id="模版页复用"><a href="#模版页复用" class="headerlink" title="模版页复用"></a>模版页复用</h4><p>1、编写一个模版页<code>head.html</code>，里面放每个页面公有的代码，例如每个页面主标题一样</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>head<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>fragment</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>head-title<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>简简<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>hr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div class="head" th:fragment="head-title">
+    <div>
+        <h1>简简</h1>
+    </div>
+    <hr>
+</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>2、编写另一个页面使用模版页</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">xmlns:</span>th</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.thymeleaf.org<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>主页<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>include</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>head.html::head-title<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span> <span class="token comment" spellcheck="true">&lt;!--引入head页面--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>慢慢来，比较快<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+<body>
+    <div th:include="head.html::head-title"></div> <!--引入head页面-->
+    <div>
+        <h1>慢慢来，比较快</h1>
+    </div>
+</body>
+</html>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>我们可以使用<code>th:insert</code>和<code>th:replace</code>和<code>th:include</code>这三种方法来进行页面内容替换，那么<code>th:insert</code>、<code>th:replace</code>、<code>th:include</code>（3.0以来不推荐）有什么区别？</p>
 <ul>
@@ -1370,33 +1373,33 @@
 </ul>
 <h4 id="模版页参数传递"><a href="#模版页参数传递" class="headerlink" title="模版页参数传递"></a>模版页参数传递</h4><p>例如我们现在希望插入二级标题，二级标题的内容不是定死的，不同页面不一样</p>
 <p>1、在二级标题处设置一个占位参数</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>head<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">th:</span>fragment</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>head-title(sub)<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>简简<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span> <span class="token attr-name"><span class="token namespace">th:</span>text</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${sub}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>hr</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><div class="head" th:fragment="head-title(sub)">
+    <div>
+        <h1>简简</h1>
+        <h2 th:text="${sub}"></h2>
+    </div>
+    <hr>
+</div>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>2、使用模版页是顺带传入参数</p>
-<pre class="line-numbers language-html"><code class="language-html"><span class="token doctype">&lt;!DOCTYPE html></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span> <span class="token attr-name">lang</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>en<span class="token punctuation">"</span></span> <span class="token attr-name"><span class="token namespace">xmlns:</span>th</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.thymeleaf.org<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>主页<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name"><span class="token namespace">th:</span>include</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>head.html::head-title(<span class="token punctuation">'</span>Web安全页<span class="token punctuation">'</span>)<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span> <span class="token comment" spellcheck="true">&lt;!--传参--></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
-        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>慢慢来，比较快<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
-    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
-<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span>
+<pre class="line-numbers language-lang-html"><code class="language-lang-html"><!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+<body>
+    <div th:include="head.html::head-title('Web安全页')"></div> <!--传参-->
+    <div>
+        <h1>慢慢来，比较快</h1>
+    </div>
+</body>
+</html>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
-<li></li>
+<li><h2 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h2></li>
 </ul>
-<h2 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h2><p>您的支持是我不断前进的动力，如果您恰巧财力雄厚，又感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
+<p>您的支持是我不断前进的动力，如果您恰巧财力雄厚，又感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
      <tr>
@@ -1924,6 +1927,7 @@
                             SE论文清单
 
 
+
 序号
 论文名称
 作者  年份
@@ -1934,8 +1938,9 @@
 
 
 
+
 7
-Prime Inner Product Encoding for EffectiveWildcard-based Multi-Keyword Fuzzy
+Prime Inner Product Encoding for EffectiveWildcard-based Multi-Keyword Fuz
                         
                     </div>
                     <div class="publish-info">
@@ -2193,7 +2198,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2424,6 +2429,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

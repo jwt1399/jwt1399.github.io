@@ -903,7 +903,7 @@
 <p><a target="_blank" rel="noopener" href="https://www.mit.edu/~andoni/LSH/">Locality Sensitive Hashing (LSH) Home Page (mit.edu)</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37710845/article/details/106725631">一文了解局部敏感哈希（LSH）的前世今生</a></p>
 <h3 id="2-布隆过滤器-BF"><a href="#2-布隆过滤器-BF" class="headerlink" title="2.布隆过滤器(BF)"></a>2.布隆过滤器(BF)</h3><p><strong>Bloom filter</strong>：<code>主要用于检索一个元素是否在一个集合中</code>，1970年由布隆提出，它实际上是一个很长的二进制向量(位图)和一系列随机映射函数（哈希函数）。存储的数据是 0 或 1 ，默认是0，0代表<code>不存在</code>某个数据，1代表<code>存在</code>某个数据。</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/640"></p>
+<p><img src="../images/可搜索加密：基础知识/640" alt=""></p>
 <h5 id="存入过程"><a href="#存入过程" class="headerlink" title="存入过程"></a>存入过程</h5><p>布隆过滤器上面说了，就是一个二进制数据的集合。当一个数据加入这个集合时，经历如下洗礼：</p>
 <ul>
 <li>通过 K 个哈希函数计算该数据，返回 K 个计算出的 hash 值</li>
@@ -911,7 +911,7 @@
 <li>将 K 个下标对应的二进制数据改成 1 。</li>
 </ul>
 <p>例如，将“你好”存入布隆过滤器，第一个哈希函数返回 3，第二个第三个哈希函数返回 5 与 7 ，那么布隆过滤器对应的下标3，5，7的位置改成1。</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/640-20220125184517663"></p>
+<p><img src="../images/可搜索加密：基础知识/640-20220125184517663" alt=""></p>
 <h5 id="查询过程"><a href="#查询过程" class="headerlink" title="查询过程"></a>查询过程</h5><p>布隆过滤器主要作用就是查询一个数据，在不在这个二进制的集合中，查询过程如下：</p>
 <ul>
 <li>通过 K 个哈希函数计算该数据，对应计算出的 K 个 hash 值</li>
@@ -919,7 +919,7 @@
 <li>判断：如果存在一处位置的二进制数据是 0，那么该数据不存在。如果都是1，该数据存在集合中。</li>
 </ul>
 <p>我们假设 BF 是一个 12bit 的二进制向量，{h1,h2}是两个哈希函数，{x,y,z}是一个集合。 用户想查询关键字 w,查询结果显示 w 在集合中不存在。</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/image-20220126235419137.png"></p>
+<p><img src="../images/可搜索加密：基础知识/image-20220126235419137.png" alt=""></p>
 <h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的<strong>误识别率</strong>和<strong>删除困难</strong>。</p>
 <p>添加数据是通过计算数据的 hash 值，那么很有可能存在这种情况：两个不同的数据计算得到相同的 hash值。这样查询的时候就会造成错误识别，同样如果已经存在有两个相同 hash 值的数据，删除时就会同时删除两个。</p>
 <p>BF详细内容请看：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/1AbsMXNvTcZ_baKES8K4Kg">最牛一篇布隆过滤器详解</a></p>
@@ -946,35 +946,40 @@
 <p>倒排索引是指以文档内容为 Key，文档 ID 为 Value</p>
 <p><strong>举个例子🌰</strong></p>
 <p>例如，有 3 个文档及其对应关键词</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
 <th>ID</th>
-<th align="left">文档</th>
+<th style="text-align:left">文档</th>
 <th>关键词</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>id1</td>
-<td align="left">《手机》</td>
+<td style="text-align:left">《手机》</td>
 <td>苹果、小米</td>
 </tr>
 <tr>
 <td>id2</td>
-<td align="left">《水果》</td>
+<td style="text-align:left">《水果》</td>
 <td>香蕉、苹果</td>
 </tr>
 <tr>
 <td>id3</td>
-<td align="left">《粮食》</td>
+<td style="text-align:left">《粮食》</td>
 <td>小米、玉米</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>正排索引：</p>
 <p><strong>{id1，苹果，小米}、{id2，香蕉，苹果}、{id3，小米，玉米}</strong></p>
 <p>倒排索引：</p>
 <p><strong>{苹果，id1，id2}、{小米，id1，id3}、{香蕉，id2}、{玉米，id3}</strong></p>
 <p><strong>两种索引优缺点</strong></p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -983,7 +988,8 @@
 <th>缺点</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>正排索引</td>
 <td>易维护、构建方便</td>
 <td>搜索耗时长</td>
@@ -993,12 +999,14 @@
 <td>搜索耗时短</td>
 <td>构建耗时、维护成本较高</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h3 id="5-安全最近邻算法-kNN"><a href="#5-安全最近邻算法-kNN" class="headerlink" title="5.安全最近邻算法(kNN)"></a>5.安全最近邻算法(kNN)</h3><p>KNN(k-nearest neighbour)：就是 K 个最近的邻居的意思，说的是每个样本都可以用它最接近的 K 个邻近值来代表</p>
 <p>安全K最近邻计算是 Wong 等人在2009年论文 <a target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/1559845.1559862?casa_token=SaRwoUNONpYAAAAA:yyggGhme_SdB5ChSC72vL3JT18SFp8NYfkOCsZJHIIR4eaRWLjTA-tgXMYrqKwLFIPheBAkRvHKV">Secure kNN computation on encrypted databases </a>提出的，用于计算两个加密数据库记录之间的距离。在一个安全的 KNN 计算中，所有的数据库记录都被扩展到 m 维的向量，并由 m位的向量 S 和两个 m × m 可逆矩阵 M1 和 M2 加密。</p>
 <p><strong>举个🌰</strong></p>
 <p>下图中，绿色圆要被决定赋予哪个类，是红色三角形还是蓝色四方形？<br>KNN的算法过程是是这样的：</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/webp-4501084."></p>
+<p><img src="../images/可搜索加密：基础知识/webp-4501084." alt=""></p>
 <ul>
 <li>最小的圈K=3，第二个圈K=5</li>
 <li>如果K=3，那么离绿色点最近的有2个红色三角形和1个蓝色的正方形，这3个点投票，于是绿色的这个待分类点属于红色的三角形。</li>
@@ -1007,14 +1015,14 @@
 <hr>
 <h3 id="6-词频-逆文档频度-TF-IDF"><a href="#6-词频-逆文档频度-TF-IDF" class="headerlink" title="6.词频-逆文档频度(TF-IDF)"></a>6.词频-逆文档频度(TF-IDF)</h3><p>词频-逆文档频度（Term Frequency - Inverse Document Frequency）是一种用于<strong>信息检索</strong>与<strong>文本挖掘</strong>的常用<strong>加权技术</strong>，用来<strong>评估一个词对于一个文档集或语料库中某个文档的重要程度</strong>，主要用在<strong>自动提取关键词算法</strong>中。</p>
 <h5 id="词频-TF"><a href="#词频-TF" class="headerlink" title="词频 (TF)"></a><strong>词频 (TF)</strong></h5><p>指的是某一个给定的词语在该文件中出现的次数。</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/webp"></p>
+<p><img src="../images/可搜索加密：基础知识/webp" alt=""></p>
 <h5 id="逆文档频率-IDF"><a href="#逆文档频率-IDF" class="headerlink" title="逆文档频率(IDF)"></a>逆文档频率(IDF)</h5><blockquote>
 <p>以统计一篇文档的关键词为例，最简单的方法就是计算每个词的词频，出现频率最高的词就是这篇文档的关键词，但是一篇文章中出现频率最高的词肯定是“的”、“是”、“在”……这样的词，这些词显然不能反应文章的意思，此时就需要对每个词加一个权重，最常见的词（”的”、”是”、”在”）给予最小的权重，较少见的但能反应这篇文章意思的词给予较大的权重，这个权重叫做<strong>逆文档频率</strong>。</p>
 </blockquote>
 <p>IDF 是一个词语普遍重要性的度量。如果一个词越常见，那么分母就越大，逆文档频率就越小越接近0。分母之所以要加1，是为了避免分母为0（即所有文档都不包含该词）。</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/webp-20220126224442893"></p>
+<p><img src="../images/可搜索加密：基础知识/webp-20220126224442893" alt=""></p>
 <h5 id="TF-IDF"><a href="#TF-IDF" class="headerlink" title="TF-IDF"></a>TF-IDF</h5><p>知道了 TF 和 IDF 以后，将这两个值相乘，就得到了一个词的 TF-IDF 值。某个词对文章的重要性越高，它的 TF-IDF 值就越大。所以，排在最前面的几个词，就是这篇文章的关键词。</p>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/bg2013031507.png"></p>
+<p><img src="../images/可搜索加密：基础知识/bg2013031507.png" alt=""></p>
 <p>可以看到，TF-IDF 与一个词在文档中的出现次数成正比，与该词在整个语言中的出现次数成反比。所以，自动提取关键词的算法就很清楚了，就是计算出文档的每个词的 TF-IDF 值，然后按降序排列，取排在最前面的几个词。</p>
 <h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>字词的重要性随着它在文件中出现的次数成正比增加 ，但同时会随着它在语料库中出现的频率成反比下降 。如果某个词比较少见，但是它在这篇文章中多次出现，那么它很可能就反映了这篇文章的特性，正是我们所需要的关键词。</p>
 <p>TF-IDF详细内容请看：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/b2c4ee414fac">TF-IDF（词频-逆文档频率）介绍</a></p>
@@ -1024,7 +1032,7 @@
 <ul>
 <li>当N=1 时称为 <code>uni-gram</code> </li>
 <li>当N=2 时称为 <code>bi-gram</code> <ul>
-<li>P(我帮你) = P(我) * P(帮|我) * P(你|帮)</li>
+<li>P(我帮你) = P(我) <em> P(帮|我) </em> P(你|帮)</li>
 <li>{“我帮”:1, “帮你”:2, “你帮”:3, “帮我”:4}</li>
 <li>我帮你→[1,1,0,0]</li>
 <li>你帮我→[0,0,1,1]</li>
@@ -1074,8 +1082,8 @@
 <li>即 y(0) = m<sub>i</sub> 和 y(α) = γ<sub>i</sub>，其中 α 和 γ<sub>i</sub> 只有验证者知道</li>
 <li>即 y(x) = m<sub>i</sub> + ( γ<sub>i</sub> −m<sub>i</sub>)∙x/α 成立。</li>
 <li>由于云服务器在计算函数 f 时需要进行一些基本的算术运算，因此需要引入同态加密，对加密后的数据进行直接计算。<ul>
-<li>f(γ<sub>1</sub>,···, γ<sub>n</sub>) = y(α)    —①</li>
-<li>f(m<sub>1</sub> ,···, m<sub>n</sub>) = y(0) —②</li>
+<li>f(γ<sub>1</sub>,···, γ<sub>n</sub>) = y(α)    —-①</li>
+<li>f(m<sub>1</sub> ,···, m<sub>n</sub>) = y(0) —-②</li>
 </ul>
 </li>
 <li>在方程①建立的条件下，验证器可以验证方程②。因此，该技术可以验证云服务器是否诚实地执行用户定义的搜索算法</li>
@@ -1089,7 +1097,7 @@
 <li><p>知道部分的明文和密文对，推出密钥和加密算法</p>
 </li>
 </ul>
-<p><img src="../images/%E5%8F%AF%E6%90%9C%E7%B4%A2%E5%8A%A0%E5%AF%86%EF%BC%9A%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0EzMzI4MDAwMGY=,size_16,color_FFFFFF,t_70.png"></p>
+<p><img src="../images/可搜索加密：基础知识/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0EzMzI4MDAwMGY=,size_16,color_FFFFFF,t_70.png" alt=""></p>
 <p><strong>SCKA</strong></p>
 <ul>
 <li><p>selectivelychosen-keyword attack</p>
@@ -1107,10 +1115,8 @@
 </ul>
 <p>IND-CKA2</p>
 <ul>
-<li><p>adaptively chosen-keyword attack</p>
-</li>
-<li><p>自适应选择关键字攻击</p>
-</li>
+<li>adaptively chosen-keyword attack</li>
+<li>自适应选择关键字攻击</li>
 <li><p>自适应攻击模型下满足抵抗选择性明文攻击的安全为CKA2</p>
 </li>
 <li><p>对手根据先前选择的查询及其陷门和搜索结果自适应地选择未来的每个查询。如果没有概率多项式时间（PPT）对手能够以不可忽略的优势区分真实项目和模拟项目，则该方案是自适应安全的，这是迄今为止基于SSE的关键字搜索最强大的安全模型。</p>
@@ -1122,11 +1128,11 @@
 </blockquote>
 <p>双线性映射可以用五元组 (p,G1,G2,GT,e) 来描述，G1，G2，GT 是三个素数阶乘法循环群，阶数皆为p，定义在这三个群上的一个映射关系e：G1*G2 —&gt;GT，满足以下性质： </p>
 <p>1、双线性性：对于任意a，b ∈ Z<sub>p</sub> 和 R，S ∈ G<sub>1</sub>，有e(R<sup>a</sup>, S<sup>b</sup>) = e(R, S)<sup>ab</sup>；</p>
-<p>2、非退化性：存在R，S ∈  G<sub>1</sub>，使得 e(R, S) ≠ 1<sub>G<sub>2</sub></sub>（1<sub>G<sub>2</sub></sub>代表G<Sub>2</sub>群的单位元）；</p>
+<p>2、非退化性：存在R，S ∈  G<sub>1</sub>，使得 e(R, S) ≠ 1<sub>G<sub>2</sub>&lt;/sub&gt;（1<sub>G<sub>2</sub>&lt;/sub&gt;代表G<Sub>2&lt;/sub&gt;群的单位元）；</p>
 <p>3、可计算性：存在有效的算法对任意的 R，S ∈  G<sub>1</sub>，计算e(R, S)的值。</p>
 <p>如果G1=G2则称上述双线性配对是对称的，否则是非对称的。</p>
-<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg2MDA2NzQwNw==&mid=2247483915&idx=1&sn=eaa67a4332c97d7c66906825ec5a0907&chksm=ce2d412bf95ac83dd2900defe103e654e39ee1fabf2655303cd1b724d7fb0bed0e5a10a74e25&scene=21#wechat_redirect">双线性对在密码学中的应用（上）</a></p>
-<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg2MDA2NzQwNw==&mid=2247483942&idx=1&sn=22a33eee26f8eb24a03b5ce394afe714&chksm=ce2d4106f95ac8101f921eef1e9140c66a574f0d438d5c54b7d4f886b7f13961532505a0c6c2&cur_album_id=1603503752706080773&scene=189#wechat_redirect">双线性对在密码学中的应用（下）</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg2MDA2NzQwNw==&amp;mid=2247483915&amp;idx=1&amp;sn=eaa67a4332c97d7c66906825ec5a0907&amp;chksm=ce2d412bf95ac83dd2900defe103e654e39ee1fabf2655303cd1b724d7fb0bed0e5a10a74e25&amp;scene=21#wechat_redirect">双线性对在密码学中的应用（上）</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg2MDA2NzQwNw==&amp;mid=2247483942&amp;idx=1&amp;sn=22a33eee26f8eb24a03b5ce394afe714&amp;chksm=ce2d4106f95ac8101f921eef1e9140c66a574f0d438d5c54b7d4f886b7f13961532505a0c6c2&amp;cur_album_id=1603503752706080773&amp;scene=189#wechat_redirect">双线性对在密码学中的应用（下）</a></p>
 <h2 id="Sponsor❤️"><a href="#Sponsor❤️" class="headerlink" title="Sponsor❤️"></a>Sponsor❤️</h2><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
@@ -1707,9 +1713,10 @@ SE介绍
 
 
 
+
 序号
 论文名称
-作者 
+作者
                         
                     </div>
                     <div class="publish-info">
@@ -1919,7 +1926,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2150,6 +2157,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

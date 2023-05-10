@@ -876,7 +876,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-01-06
+                    2023-05-10
                 </div>
                 
 
@@ -912,20 +912,24 @@
 </ul>
 <center><font size=5><b>B-SSE</b></center>
 
+<div class="table-container">
 <table>
 <thead>
 <tr>
-<th align="center">单关键字</th>
-<th align="center"><strong>动态更新</strong></th>
-<th align="center">可验证</th>
+<th style="text-align:center">单关键字</th>
+<th style="text-align:center"><strong>动态更新</strong></th>
+<th style="text-align:center">可验证</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">✅</td>
-<td align="center">✅</td>
-<td align="center">❌</td>
+<tbody>
+<tr>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h1 id="1、方案简介"><a href="#1、方案简介" class="headerlink" title="1、方案简介"></a>1、方案简介</h1><ul>
 <li><p>提出了一种基于 <code>BitMap</code> 索引的关键字动态可搜索机制，该机制以<code>倒排索引</code>形式表示一组文件。</p>
 </li>
@@ -936,14 +940,16 @@
 <li><p>在 <code>Couchbase</code> 上实现了 <code>B-SSE</code>，1w个关键字，1w个文件，搜索时间大约350ms</p>
 </li>
 </ul>
-<h1 id="2、具体实现"><a href="#2、具体实现" class="headerlink" title="2、具体实现"></a>2、具体实现</h1><table>
+<h1 id="2、具体实现"><a href="#2、具体实现" class="headerlink" title="2、具体实现"></a>2、具体实现</h1><div class="table-container">
+<table>
 <thead>
 <tr>
 <th>符号</th>
 <th>描述</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>F</td>
 <td>总文件集合</td>
 </tr>
@@ -959,7 +965,9 @@
 <td>W(f)</td>
 <td>文件 f 中包含的唯一关键字的集合</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <p>我们构造了一个由索引服务器和文件服务器组成的应用服务器。</p>
 <ul>
 <li>索引服务器维护搜索表$T_s$</li>
@@ -970,6 +978,7 @@
 </ul>
 <p>它返回与索引服务器给出的文件标识符相关联的加密文件，并根据用户的请求添加或删除文件表$T_f$中的文件。</p>
 <p>索引服务器和文件服务器通过其SDK（软件开发工具包）相互交互，该SDK建立连接并支持读/写和其他功能</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -978,10 +987,11 @@
 <th>$T_f$</th>
 </tr>
 </thead>
-<tbody><tr>
-<td><img src="https://img.jwt1399.top/img/202301061857310.png"></td>
-<td><img src="https://img.jwt1399.top/img/202301061857900.png"></td>
-<td><img src="https://img.jwt1399.top/img/202301061857614.png"></td>
+<tbody>
+<tr>
+<td><img src="https://img.jwt1399.top/img/202301061857310.png" alt=""></td>
+<td><img src="https://img.jwt1399.top/img/202301061857900.png" alt=""></td>
+<td><img src="https://img.jwt1399.top/img/202301061857614.png" alt=""></td>
 </tr>
 <tr>
 <td>Search</td>
@@ -989,13 +999,15 @@
 <td>Add</td>
 </tr>
 <tr>
-<td><img src="https://img.jwt1399.top/img/202301061857425.png"></td>
-<td><img src="https://img.jwt1399.top/img/202301061857028.png"></td>
-<td><img src="https://img.jwt1399.top/img/202301061857950.png"></td>
+<td><img src="https://img.jwt1399.top/img/202301061857425.png" alt=""></td>
+<td><img src="https://img.jwt1399.top/img/202301061857028.png" alt=""></td>
+<td><img src="https://img.jwt1399.top/img/202301061857950.png" alt=""></td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h2 id="Gen-1-k"><a href="#Gen-1-k" class="headerlink" title="$Gen(1^k)$"></a>$Gen(1^k)$</h2><ul>
-<li><p>generate random keys $K_1, K_2 ← {0, 1}^k$,</p>
+<li><p>generate random keys $K_1, K_2 ← \{0, 1\}^k$,</p>
 </li>
 <li><p>generate a encryption key $K_e ← SKE.Gen(1^k)$ </p>
 <ul>
@@ -1013,34 +1025,29 @@
 <ol>
 <li><p>compute $id(w_i) = P(K_1, w_i)$</p>
 <ul>
-<li><p>$P:{0,1}^k × {0,1}^ω → {0,1}^{l_w}$ be a pseudo-random function </p>
+<li><p>$P:\{0,1\}^k × \{0,1\}^ω → \{0,1\}^{l_w}$ be a pseudo-random function </p>
 </li>
 <li><p>where $ω = |w_i|$ and $l_w = |id(w_i)|$ </p>
 </li>
 </ul>
 </li>
-<li><p>generate $id(F(w_i))$</p>
-</li>
-<li><p>make the bitmap $B_m(w_i)$ where $B_m(w_i)[j]$ = 1 for all $j ∈ id(F(w_i))$</p>
-</li>
-<li><p>choose random $r_i ← {0,1}^{l_r}$ and compute $x_i = h_i ⊕ B_m(w_i)$ where $h_i = H(K_{w_i}||r_i)$ and $K_{w_i} =P(K_2, w_i)$</p>
+<li>generate $id(F(w_i))$</li>
+<li>make the bitmap $B_m(w_i)$ where $B_m(w_i)[j]$ = 1 for all $j ∈ id(F(w_i))$</li>
+<li><p>choose random $r_i ← \{0,1\}^{l_r}$ and compute $x_i = h_i ⊕ B_m(w_i)$ where $h_i = H(K_{w_i}||r_i)$ and $K_{w_i} =P(K_2, w_i)$</p>
 <ul>
-<li>$H : {0,1}^{k+l_r} → {0,1}^m$ be a hash function where $l_r$ is the length of random numbers</li>
+<li>$H : \{0,1\}^{k+l_r} → \{0,1\}^m$ be a hash function where $l_r$ is the length of random numbers</li>
 </ul>
 </li>
-<li><p>store $(key, value) = (id(w_i), x_i||r_i)$</p>
-</li>
+<li>store $(key, value) = (id(w_i), x_i||r_i)$</li>
 </ol>
 <ul>
 <li>Building the file table $T_f$ :</li>
 </ul>
 <p>​        For all $j ∈ id(f)$, where $f ≤ m$</p>
 <ol>
-<li> compute $c_j ← SKE.Enc_{K_e} (f_j)$</li>
+<li>compute $c_j ← SKE.Enc_{K_e} (f_j)$</li>
 </ol>
-<ol start="2">
-<li>store $(key, value) = (j, c_j)$</li>
-</ol>
+<p>2) store $(key, value) = (j, c_j)$</p>
 <ul>
 <li>output the index $I = (T_s, T_f)$.</li>
 </ul>
@@ -1062,7 +1069,7 @@
 <ul>
 <li><p>compute $id(w_i) = P(K_1, w_i)$</p>
 </li>
-<li><p>choose random $r_i ← {0,1}^r$ and compute $h_i = H(K_{w_i} ||r_i)$ where $K_{w_i} = P(K_2, w_i)$</p>
+<li><p>choose random $r_i ← \{0,1\}^r$ and compute $h_i = H(K_{w_i} ||r_i)$ where $K_{w_i} = P(K_2, w_i)$</p>
 </li>
 <li><p>output  $t_a = ({id(w_i)}, {h_i}, {r_i})$ and  $c ← SKE.Enc_{K_e} (f)$</p>
 </li>
@@ -1077,22 +1084,21 @@
 <ul>
 <li><p>Scan  $T_f$ </p>
 </li>
-<li><p> if  $T_f[j] = null$, assign the subscript $j$ to the added file and store $(key, value) = (j, c_j )$ in the $j-th$ row; </p>
+<li><p>if  $T_f[j] = null$, assign the subscript $j$ to the added file and store $(key, value) = (j, c_j )$ in the $j-th$ row; </p>
 </li>
-<li><p>if  $T_f[j]\neq null$, return ⊥ indicating an error.</p>
-</li>
+<li>if  $T_f[j]\neq null$, return ⊥ indicating an error.</li>
 </ul>
 </li>
 <li><p>Updating the bitmaps for $W(f)$ in $T_s$:</p>
 <p>For given $id(w_i)$ appeared for the first time</p>
 <ul>
-<li>store $(key, value) = (id(w_i), x_i||r_i)$ where $x_i = h_i ⊕ B_m({j})$</li>
+<li>store $(key, value) = (id(w_i), x_i||r_i)$ where $x_i = h_i ⊕ B_m(\{j\})$</li>
 </ul>
 <p>For given $id(w_i)$ existed before</p>
 <ul>
 <li>find the value $T_s[id(w_i)] = x_i||r_i$</li>
-<li>compute $new ~~ x_i = old ~~ x_i ⊕ B_m({j})$ </li>
-<li>where $B_m({j})$ is the m-bit array such that $j-th$ bit is 1 and the other bits are 0.</li>
+<li>compute $new ~~ x_i = old ~~ x_i ⊕ B_m(\{j\})$ </li>
+<li>where $B_m(\{j\})$ is the m-bit array such that $j-th$ bit is 1 and the other bits are 0.</li>
 </ul>
 </li>
 </ul>
@@ -1104,15 +1110,22 @@
 <li>Updating the bitmaps for $W(f_j)$ in $T_s$：<ul>
 <li>For all given $id(w_i)$</li>
 <li>find the value $T_s[id(w_i)] = x_i||r_i$,</li>
-<li> compute $x_i = x_i ⊕ B_m({j})$</li>
+<li>compute $x_i = x_i ⊕ B_m(\{j\})$</li>
 </ul>
 </li>
 </ul>
 <h2 id="BITMAP-EXPANSION"><a href="#BITMAP-EXPANSION" class="headerlink" title="BITMAP EXPANSION"></a>BITMAP EXPANSION</h2><p>为了存储超过 m 个文件，位图应扩展到 m 位以上。但是，简单地将额外的位添加到 m 位数组会导致系统参数长度的变化，例如哈希值和随机数。这是我们结构中不可取的修改。</p>
 <p>我们使用链接列表数据结构（LinkedList）来扩展位图大小。在存储 (m + 1) 个文件时，服务器为第 (m + 1) 个文件中包含的关键字生成额外的 m 位数组，其比特位置与 {m + 1,…, 2m}，并以链接列表形式绑定两个位图。链接列表形式包括表示下一个链接的地址（即位图）。为了隐藏第（m+1）个文件与其关键字标识符之间的关系，我们以与屏蔽位图相同的方式屏蔽地址。</p>
-<p>the search table Ts stores<br>$$<br>(\text { key, value })=\left(i d\left(w_i\right), x_{i, j}\left|r_{x_{i, j}}\right| y_{i, j} | r_{y_{i, j}}\right)<br>$$<br>where, for $1 ≤ i ≤ w$, $j ≥ 1$ and $K_3 ← {0, 1}^k$<br>$$<br>x_{i, j}=\mathrm{H}\left(K_{w_i} | r_{x_{i, j}}\right) \oplus \mathrm{B}<em>{\mathrm{m}(j)}\left(w_i\right), \quad K</em>{w_i}=\mathrm{P}\left(K_2, w_i\right) \<br>y_{i, j}=\mathrm{H}\left(K_{a_i} | r_{y_{i, j}}\right) \oplus addr_{i, j},\quad K_{a_i}=\mathrm{P}\left(K_3, w_i\right)<br>$$<br>The value $addr_{i,j}$  indicates the location of the $(j + 1)-th$ bitmap for the keyword $w_i$</p>
-<p>each bitmap $B_m(j)$ is the set representation of file identifiers ${(j − 1) · m + 1, . . . , j · m}$.</p>
-<p>When adding a new bitmap $B_{m(j+1)}$ for the keyword $w_i$, a random value is assigned to $addr_{i,j}$ by the exclusive-OR operation and becomes key to find the bitmap $B_{m(j+1)}$，where the $addr_{i,j+1}$ is set as zero bits. To search the files associated with the keyword $w_i$, we can consider the following SearchToken<br>$$<br>t_s=\left{\operatorname{id}\left(w_i\right), K_{w_i}, K_{a_i}\right}<br>$$<br>The server first finds the bitmap $B_m(1)(w_i)$ from the keyword identifiers $id(w_i)$ and recovers $addr_{i,j}$ by using the key $K_{a_i}$ recursively. If $addr_{i,j}$ is zero bits, the server stops searching the bitmaps for the keyword $w_i$. </p>
+<p>the search table Ts stores</p>
+<script type="math/tex; mode=display">
+(\text { key, value })=\left(i d\left(w_i\right), x_{i, j}\left\|r_{x_{i, j}}\right\| y_{i, j} \| r_{y_{i, j}}\right)</script><p>where, for $1 ≤ i ≤ w$, $j ≥ 1$ and $K_3 ← \{0, 1\}^k$</p>
+<script type="math/tex; mode=display">
+x_{i, j}=\mathrm{H}\left(K_{w_i} \| r_{x_{i, j}}\right) \oplus \mathrm{B}_{\mathrm{m}(j)}\left(w_i\right), \quad K_{w_i}=\mathrm{P}\left(K_2, w_i\right) \\
+y_{i, j}=\mathrm{H}\left(K_{a_i} \| r_{y_{i, j}}\right) \oplus addr_{i, j},\quad K_{a_i}=\mathrm{P}\left(K_3, w_i\right)</script><p>The value $addr_{i,j}$  indicates the location of the $(j + 1)-th$ bitmap for the keyword $w_i$</p>
+<p>each bitmap $B_m(j)$ is the set representation of file identifiers $\{(j − 1) · m + 1, . . . , j · m\}$.</p>
+<p>When adding a new bitmap $B_{m(j+1)}$ for the keyword $w_i$, a random value is assigned to $addr_{i,j}$ by the exclusive-OR operation and becomes key to find the bitmap $B_{m(j+1)}$，where the $addr_{i,j+1}$ is set as zero bits. To search the files associated with the keyword $w_i$, we can consider the following SearchToken</p>
+<script type="math/tex; mode=display">
+t_s=\left\{\operatorname{id}\left(w_i\right), K_{w_i}, K_{a_i}\right\}</script><p>The server first finds the bitmap $B_m(1)(w_i)$ from the keyword identifiers $id(w_i)$ and recovers $addr_{i,j}$ by using the key $K_{a_i}$ recursively. If $addr_{i,j}$ is zero bits, the server stops searching the bitmaps for the keyword $w_i$. </p>
 
             </div>
             <hr/>
@@ -1878,7 +1891,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 </main>
 
 
-<script src="https://cdn.bootcss.com/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script>
     MathJax.Hub.Config({
         tex2jax: {inlineMath: [['$', '$'], ['\(', '\)']]}
@@ -1899,7 +1912,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2130,6 +2143,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

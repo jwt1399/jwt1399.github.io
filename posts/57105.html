@@ -880,7 +880,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    5.7k
+                    1.1k
                 </div>
                 
 
@@ -900,734 +900,730 @@
             <div id="articleContent">
                 <h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h3 id="1-字符串基础"><a href="#1-字符串基础" class="headerlink" title="1.字符串基础"></a>1.字符串基础</h3><p>标准C语言库支持类型为<code>char</code>的字符串和类型为<code>wchar_t</code>的宽字符串。<br>字符串由一个以空字符(null)作为结束的连续字符序列组成，并包含此空字符(<code>sizeof=strlen+1</code>)<br>一个指向字符串的指针实际指向该字符串的起始字符。</p>
 <p>数组大小。数组带来的问题之一是确定其元素数量，例如下面的例子：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">clear</span><span class="token punctuation">(</span><span class="token keyword">int</span> array<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>array<span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>array<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span><span class="token punctuation">{</span>
-    array<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">void</span> <span class="token function">dowork</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-<span class="token keyword">int</span> dis<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-<span class="token function">clear</span><span class="token punctuation">(</span>dis<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">/* ... */</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void clear(int array[])
+{
+    for (size_t i = 0; i < sizeof(array) / sizeof(array[0]); ++i){
+    array[i] = 0;
+    }
+}
+void dowork(){
+int dis[12];
+clear(dis);
+/* ... */
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>array是一个参数，所以它的类型是指针。因此，<code>sizeof(array</code>)等于<code>sizeof(int*)</code>，<code>sizeof(array) / sizeof(array[0])</code>计算结果都是<code>1</code>。</p>
 <p>字符数组初始化：不要指定一个用字符串字面值初始化的字符数组的界限</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">const</span> <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"abc"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//不安全写法，少一个'\0'</span>
-<span class="token keyword">const</span> <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"abc"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//推荐初始化方式</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">const char s[3] = "abc"; //不安全写法，少一个'\0'
+const char s[] = "abc"; //推荐初始化方式
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="2-字符串的长度"><a href="#2-字符串的长度" class="headerlink" title="2.字符串的长度"></a>2.字符串的长度</h3><p>对一个以空字符结尾的字节字符串，<code>strlen()</code>统计终止空字节前面的字符数量。然而，宽字符可以包含空字节，所以计算结果会出问题。</p>
-<pre class="line-numbers language-c"><code class="language-c">wchar_t wide_str1<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token string">"0123456789"</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">wchar_t wide_str1[] = L"0123456789";
 
-wchar_t <span class="token operator">*</span>wide_str2 <span class="token operator">=</span> <span class="token punctuation">(</span>wchar_t<span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>wide_str1<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+wchar_t *wide_str2 = (wchar_t*)malloc(strlen(wide_str1) + 1);
 
-<span class="token keyword">if</span><span class="token punctuation">(</span>wide_str2 <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+if(wide_str2 == NULL)
 
-<span class="token punctuation">{</span>
+{
 
-<span class="token comment" spellcheck="true">/*处理错误*/</span>
+/*处理错误*/
 
-<span class="token punctuation">}</span>
+}
 
-<span class="token function">free</span><span class="token punctuation">(</span>wide_str2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+free(wide_str2);
 
-wide_str2 <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+wide_str2 = NULL;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>使用<code>wcslen()</code>可以计算宽字符串的大小</p>
-<pre class="line-numbers language-c"><code class="language-c">wchar_t wide_str1<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token string">"0123456789"</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">wchar_t wide_str1[] = L"0123456789";
 
-wchar_t <span class="token operator">*</span>wide_str2 <span class="token operator">=</span> <span class="token punctuation">(</span>wchar_t<span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">wcslen</span><span class="token punctuation">(</span>wide_str1<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+wchar_t *wide_str2 = (wchar_t*)malloc(wcslen(wide_str1) + 1);
 
-<span class="token keyword">if</span><span class="token punctuation">(</span>wide_str2 <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+if(wide_str2 == NULL)
 
-<span class="token punctuation">{</span>
+{
 
-<span class="token comment" spellcheck="true">/*处理错误*/</span>
+/*处理错误*/
 
-<span class="token punctuation">}</span>
+}
 
-<span class="token function">free</span><span class="token punctuation">(</span>wide_str2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+free(wide_str2);
 
-wide_str2 <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+wide_str2 = NULL;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>注意此长度没有乘<code>sizeof(wchar_t)</code>，所以还是不对,下面是最终正确写法：</p>
-<pre class="line-numbers language-c"><code class="language-c">wchar_t wide_str1<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> L<span class="token string">"0123456789"</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">wchar_t wide_str1[] = L"0123456789";
 
-wchar_t <span class="token operator">*</span>wide_str2 <span class="token operator">=</span> <span class="token punctuation">(</span>wchar_t<span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">wcslen</span><span class="token punctuation">(</span>wide_str1<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>wchar_t<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+wchar_t *wide_str2 = (wchar_t*)malloc((wcslen(wide_str1)+1)*sizeof(wchar_t));
 
-<span class="token keyword">if</span><span class="token punctuation">(</span>wide_str2 <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+if(wide_str2 == NULL)
 
-<span class="token punctuation">{</span>
+{
 
-<span class="token comment" spellcheck="true">/*处理错误*/</span>
+/*处理错误*/
 
-<span class="token punctuation">}</span>
+}
 
-<span class="token function">free</span><span class="token punctuation">(</span>wide_str2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+free(wide_str2);
 
-wide_str2 <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+wide_str2 = NULL;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="3-无界字符串复制"><a href="#3-无界字符串复制" class="headerlink" title="3.无界字符串复制"></a>3.无界字符串复制</h3><p>如果输入超出8个字符，那么会导致未定义的行为。因此不要从一个无界源复制数据到定长数组中，禁止这种方法。<br>危险性：谁能保证输入者只会按8个键？<br>避免方式：永远不用gets()函数！</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">get_y_or_n</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">char</span> response<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Continue? [y] n:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">gets</span><span class="token punctuation">(</span>response<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>response<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'n'</span><span class="token punctuation">)</span>
-    <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
- <span class="token keyword">return</span><span class="token punctuation">;</span>
- <span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void get_y_or_n(){
+    char response[8];
+    puts("Continue? [y] n:");
+    gets(response);
+    if(response[0] == 'n')
+    exit(0);
+ return;
+ }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>其实gets()函数在C99中以废弃并在C11中淘汰。它没有提供方法指定<code>读入的字符数的限制</code>。这种限制在此函数的如下实现中是显而易见的：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span><span class="token function">gets</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>dest<span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">int</span> c <span class="token operator">=</span> <span class="token function">getchar</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>p <span class="token operator">=</span> dest<span class="token punctuation">;</span>
-    <span class="token keyword">while</span><span class="token punctuation">(</span>c <span class="token operator">!=</span> <span class="token constant">EOF</span> <span class="token operator">&amp;&amp;</span> c <span class="token operator">!=</span> <span class="token string">'\n'</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token operator">*</span>p<span class="token operator">++</span> <span class="token operator">=</span> c<span class="token punctuation">;</span>
-        c <span class="token operator">=</span> <span class="token function">getchar</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> dest<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">char *gets(char *dest){
+    int c = getchar();
+    char *p = dest;
+    while(c != EOF && c != '\n')
+    {
+        *p++ = c;
+        c = getchar();
+    }
+    *p = '\0';
+    return dest;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例1：拷贝字符串时，源字符串长度可能大于目标数组空间。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> （ argc <span class="token operator">></span> <span class="token number">1</span> ）
-    <span class="token punctuation">{</span>
-        <span class="token function">strcpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 源字符串长度可能大于目标数组空间，造成缓冲区溢出</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">/*…*/</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void main(int argc, char *argv[])
+{
+    char dst[128];
+    if （ argc > 1 ）
+    {
+        strcpy(dst, argv[1]);  // 源字符串长度可能大于目标数组空间，造成缓冲区溢出
+    }
+    /*…*/ 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：根据源字符串长度来为目标字符串分配空间。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>dst <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> （ argc <span class="token operator">></span> <span class="token number">1</span> ）
-    <span class="token punctuation">{</span>
-        dst <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/* 【修改】确保字符串空间足够容纳argv[1] */</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span> dst <span class="token operator">!=</span> <span class="token constant">NULL</span> <span class="token punctuation">)</span>
-        <span class="token punctuation">{</span>
-            <span class="token function">strncpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            dst<span class="token punctuation">[</span><span class="token function">strlen</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">=</span> ’\<span class="token number">0</span>’<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【修改】dst以’\0’结尾</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">/*...dst使用后free...*/</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void main(int argc, char *argv[])
+{
+    char *dst = NULL;
+    if （ argc > 1 ）
+    {
+        dst = (char *)malloc(strlen(argv[1]) + 1); /* 【修改】确保字符串空间足够容纳argv[1] */
+        if( dst != NULL )
+        {
+            strncpy(dst, argv[1], strlen(argv[1]));
+            dst[strlen(argv[1])] = ’\0’; //【修改】dst以’\0’结尾
+        }
+    }
+    /*...dst使用后free...*/ 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例2：输入消息长度不可预测，不加检查的复制会造成缓冲区溢出。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span> temp <span class="token operator">=</span> <span class="token function">getInputMsg</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>temp <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token function">strcpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span>temp<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// temp长度可能超过dst的大小</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant()
+{
+    char dst[16];
+    char * temp = getInputMsg();
+    if(temp != NULL)
+    {
+        strcpy(dst,temp); // temp长度可能超过dst的大小
+    }
+    return; 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法： </p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>temp <span class="token operator">=</span> <span class="token function">getInputMsg</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>temp <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token function">strncpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> temp<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/* 【修改】只复制不超过数组dst大小的数据 */</span>
-    <span class="token punctuation">}</span>
-    dst<span class="token punctuation">[</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> ’\<span class="token number">0</span>’<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【修改】copy以’\0’结尾</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Compliant()
+{
+    char dst[16];
+    char *temp = getInputMsg();
+    if(temp != NULL)
+    {
+        strncpy(dst, temp, sizeof(dst)); /* 【修改】只复制不超过数组dst大小的数据 */
+    }
+    dst[sizeof(dst) -1] = ’\0’; //【修改】copy以’\0’结尾
+    return;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="4-复制和连接字符串"><a href="#4-复制和连接字符串" class="headerlink" title="4.复制和连接字符串"></a>4.复制和连接字符串</h3><p>strcpy(), strcat(), sprintf(), 容易执行无界操作。例如：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">/*argc参数个数，argv参数数组*/</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(int argc, char *argv[]){
+    /*argc参数个数，argv参数数组*/
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>当<code>argc&gt;0</code>，按照惯例，<code>argv[0]</code>指向的字符串是程序名。若<code>argc &gt; 1</code>,则<code>argv[0]~argv[argc-1]</code>引用的就是实际程序参数。<br>当分配的空间不足以复制一个程序的输入，就会产生漏洞。攻击者可以控制argv[0]的内容.</p>
 <p>输入一个大于128个字节的字符，栈溢出，即缓冲区溢出漏洞。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">/*argc参数个数，argv参数数组*/</span>
-    <span class="token keyword">char</span> prog_name<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token function">strcpy</span><span class="token punctuation">(</span>prog_name<span class="token punctuation">,</span> argv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">/* ... */</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(int argc, char *argv[])
+{
+    /*argc参数个数，argv参数数组*/
+    char prog_name[128];
+    strcpy(prog_name, argv[0]);
+    /* ... */
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>标准的写法应该是：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token comment" spellcheck="true">/* 不要假设argv[0]不许为空 */</span>
-    <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token keyword">const</span> name <span class="token operator">=</span> argv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">?</span> argv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>prog_name <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>prog_name <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-     <span class="token punctuation">{</span>
-        <span class="token function">strcpy</span><span class="token punctuation">(</span>prog_name<span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span>
-     <span class="token punctuation">}</span>
-    <span class="token keyword">else</span>
-     <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">/* 复原 */</span>
-     <span class="token punctuation">}</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(int argc, char *argv[])
+{
+    /* 不要假设argv[0]不许为空 */
+    const char *const name = argv[0]? argv[0] : "";
+    char *prog_name = (char*)malloc(strlen(name)+1);
+    if(prog_name != NULL)
+     {
+        strcpy(prog_name, name);
+     }
+    else
+     {
+        /* 复原 */
+     }
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>C++避免溢出，通过设置<code>域宽</code>可以消除gets()的缺陷</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;iostream></span></span>
-using namespace std<span class="token punctuation">;</span>
-<span class="token keyword">int</span> <span class="token function">mian</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    cin<span class="token punctuation">.</span><span class="token function">width</span><span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    cin <span class="token operator">>></span> buf<span class="token punctuation">;</span>
-    cout <span class="token operator">&lt;&lt;</span> buf <span class="token operator">&lt;&lt;</span>endl<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">#include<iostream>
+using namespace std;
+int mian(){
+    char buf[12];
+    cin.width(12);
+    cin >> buf;
+    cout << buf <<endl;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>例2:</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-  <span class="token punctuation">{</span> <span class="token keyword">char</span> name<span class="token punctuation">[</span><span class="token number">2048</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token function">strcpy</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">strcat</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>”<span class="token operator">=</span>”<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">strcat</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(int argc, char *argv[])
+  { char name[2048];
+        strcpy(name,argv[1]);
+        strcat(name,”=”);
+        strcat(name,argv[2]);
         …
-      <span class="token punctuation">}</span>
+      }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>一种改进方式：利用strlen()测试输入字符串的长度，然后动态地分配内存。(用实际串长度来申请临时空间）</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  
-  <span class="token punctuation">{</span> 
-    <span class="token keyword">char</span>  <span class="token operator">*</span>name<span class="token operator">=</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">+</span> <span class="token function">strlen</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>name<span class="token operator">!=</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-        <span class="token function">strcpy</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">strcat</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span><span class="token string">"="</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">strcat</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
-             <span class="token comment" spellcheck="true">/**其他代码**/</span>
-            <span class="token punctuation">}</span>
-    <span class="token keyword">else</span><span class="token punctuation">{</span>  
-            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">" No memory errorr!\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token keyword">return</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(int argc, char *argv[])  
+  { 
+    char  *name=(char *) malloc(strlen(argv[1])+ strlen(argv[2])+ 2);
+    if(name!=0){
+        strcpy(name,argv[1]);
+        strcat(name,"=");
+        strcat(name,argv[2]);
+        printf("%s\n",name);
+             /**其他代码**/
+            }
+    else{  
+            printf(" No memory errorr!\n");
+        }
+    return(0);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="5-差一错误"><a href="#5-差一错误" class="headerlink" title="5.差一错误"></a>5.差一错误</h3><p>从源字符串拷贝内容到目的字符串，刚好最后的’\0’没有</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>    
-        <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token function">strcpy</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span><span class="token string">"0123456789"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                  <span class="token comment" spellcheck="true">//错误1：s数组为10字节，复制了11个字节</span>
-        <span class="token keyword">char</span> <span class="token operator">*</span>dest <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//错误2：没有考虑结尾字符</span>
-        <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">11</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>              <span class="token comment" spellcheck="true">//错误3：多迭代了一次</span>
-        <span class="token punctuation">{</span>
-            dest<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> s<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>                  <span class="token comment" spellcheck="true">//错误4：dest[i]可能已经越界</span>
-            dest<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>    
-        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"dest=%s"</span><span class="token punctuation">,</span> dest<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(void)
+{    
+        char s[10];
+        strcpy(s,"0123456789");                  //错误1：s数组为10字节，复制了11个字节
+        char *dest = (char *)malloc(strlen(s)); //错误2：没有考虑结尾字符
+        for (i = 1; i <= 11; i++)              //错误3：多迭代了一次
+        {
+            dest[i] = s[i];                  //错误4：dest[i]可能已经越界
+            dest[i] = '\0';
+        }    
+        printf("dest=%s", dest);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p> 修改后的：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>    
-       <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//修改1</span>
-       <span class="token function">strcpy</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span><span class="token string">"0123456789"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-       <span class="token keyword">char</span> <span class="token operator">*</span>dest <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span><span class="token function">strlen</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//修改2</span>
-       <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span><span class="token number">11</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">//修改3</span>
-       <span class="token punctuation">{</span>
-           dest<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> s<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
-       <span class="token punctuation">}</span>    
-       dest<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
-       <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"dest=%s"</span><span class="token punctuation">,</span> dest<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(void)
+{    
+        char s[11];//修改1
+        strcpy(s,"0123456789");
+        char *dest = (char *)malloc(strlen(s)+1);//修改2
+        for (i = 1; i <11; i++)//修改3
+        {
+            dest[i] = s[i];
+        }    
+        dest[i] = '\0';
+        printf("dest=%s", dest);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例：典型的差一错误，未考虑’\0’结束符写入数组的位置，造成缓冲区溢出和内存改写。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">NoCompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span>ARRAY_SIZE <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> src<span class="token punctuation">[</span>ARRAY_SIZE <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token function">memset</span><span class="token punctuation">(</span>src<span class="token punctuation">,</span> <span class="token string">'@'</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> src<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!=</span> ’\<span class="token number">0</span>’ <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span><span class="token comment" spellcheck="true">//未考虑’\0’结束符</span>
-        dst<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> src<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    dst<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> ’\<span class="token number">0</span>’<span class="token punctuation">;</span> 
-    <span class="token comment" spellcheck="true">/*…*/</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void NoCompliant()
+{
+    char dst[ARRAY_SIZE + 1];
+    char src[ARRAY_SIZE + 1];
+    unsigned int i = 0;
+    memset(src, '@', sizeof(dst));
+    for(i=0; src[i] != ’\0’ && (i < sizeof(dst)); ++i )//未考虑’\0’结束符
+        dst[i] = src[i];
+    dst[i] = ’\0’; 
+    /*…*/ 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span>ARRAY_SIZE <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> src<span class="token punctuation">[</span>ARRAY_SIZE <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token function">memset</span><span class="token punctuation">(</span>src<span class="token punctuation">,</span> <span class="token string">'@'</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> src<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">!=</span>’\<span class="token number">0</span>’ <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span> <span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">/*【修改】考虑’\0’结束符 */</span>
-        dst<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> src<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    dst<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> ’\<span class="token number">0</span>’<span class="token punctuation">;</span> 
-    <span class="token comment" spellcheck="true">/*…*/</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void Compliant()
+{
+    char dst[ARRAY_SIZE + 1];
+    char src[ARRAY_SIZE + 1];
+    unsigned int i = 0;
+    memset(src, '@', sizeof(dst));
+    for(i=0; src[i]!=’\0’ && (i < sizeof(dst) - 1 ); ++i) /*【修改】考虑’\0’结束符 */
+        dst[i] = src[i];
+    dst[i] = ’\0’; 
+    /*…*/ 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="6-空字符结尾错误"><a href="#6-空字符结尾错误" class="headerlink" title="6.空字符结尾错误"></a>6.空字符结尾错误</h3><p><code>strncpy()</code>导致结果字符串不是以空字符结尾的</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> a<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> b<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> c<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"0123456789abcdef"</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//此处已经17个字符'\0'</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>b<span class="token punctuation">,</span> <span class="token string">"0123456789abcdef"</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//此处已经17个字符+'\0'</span>
-    <span class="token function">strcpy</span><span class="token punctuation">(</span>c<span class="token punctuation">,</span> a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(void)
+{
+    char a[16];
+    char b[16];
+    char c[16];
+    strncpy(a, "0123456789abcdef", sizeof(a));//此处已经17个字符'\0'
+    strncpy(b, "0123456789abcdef", sizeof(b));//此处已经17个字符+'\0'
+    strcpy(c, a);
+    system("pause");
+    return 0;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>修改后的：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> a<span class="token punctuation">[</span><span class="token number">17</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> b<span class="token punctuation">[</span><span class="token number">17</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> c<span class="token punctuation">[</span><span class="token number">17</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token string">"0123456789abcdef"</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    a<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>    
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>b<span class="token punctuation">,</span> <span class="token string">"0123456789abcdef"</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    b<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
-    <span class="token function">strcpy</span><span class="token punctuation">(</span>c<span class="token punctuation">,</span> a<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int main(void)
+{
+    char a[17];
+    char b[17];
+    char c[17];
+    strncpy(a, "0123456789abcdef", sizeof(a));
+    a[16] = '\0';    
+    strncpy(b, "0123456789abcdef", sizeof(b));
+    b[16] = '\0';
+    strcpy(c, a);
+    system("pause");
+    return 0;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例1：strlen()不会将’\0’结束符算入长度，配合memcpy使用时会丢失’\0’结束符。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> src<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"0123456789"</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>tmp <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token function">memset</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> <span class="token string">'@'</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
-    <span class="token function">memcpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> src<span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>src<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"src: %s \r\n"</span><span class="token punctuation">,</span> src<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    tmp <span class="token operator">=</span> dst<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//到此，dst还没有以’\0’结尾</span>
-    <span class="token keyword">do</span>
-    <span class="token punctuation">{</span>
-        <span class="token function">putchar</span><span class="token punctuation">(</span><span class="token operator">*</span>tmp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">*</span>tmp<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">// 访问越界</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant()
+{
+    char dst[11];
+    char src[] = "0123456789";
+    char *tmp = NULL;
+    memset(dst, '@', sizeof(dst)); 
+    memcpy(dst, src, strlen(src));
+    printf("src: %s \r\n", src);
+    tmp = dst;  //到此，dst还没有以’\0’结尾
+    do
+    {
+        putchar(*tmp);
+    }while (*tmp++);    // 访问越界
+    return; 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法： 为目标字符串设置’\0’结束符</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> src<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"0123456789"</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>tmp <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token function">memset</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> <span class="token string">'@'</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">memcpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> src<span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>src<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    dst<span class="token punctuation">[</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> ’\<span class="token number">0</span>’<span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">//【修改】dst以’\0’结尾</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"src: %s \r\n"</span><span class="token punctuation">,</span> src<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    tmp <span class="token operator">=</span> dst<span class="token punctuation">;</span>
-    <span class="token keyword">do</span>
-    <span class="token punctuation">{</span>
-        <span class="token function">putchar</span><span class="token punctuation">(</span><span class="token operator">*</span>tmp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span> <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">*</span>tmp<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Compliant()
+{
+    char dst[11];
+    char src[] = "0123456789";
+    char *tmp = NULL;
+    memset(dst, '@', sizeof(dst));
+    memcpy(dst, src, strlen(src));
+    dst[sizeof(dst) - 1] = ’\0’;     //【修改】dst以’\0’结尾
+    printf("src: %s \r\n", src);
+    tmp = dst;
+    do
+    {
+        putchar(*tmp);
+    } while (*tmp++);
+    return; 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例2：strncpy()拷贝限长字符串，截断了’\0’结束符。 </p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> src<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"0123456789"</span><span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> src<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
-     <span class="token function">printf</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//访问越界，dst没有’\0’结束符</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant()
+{
+    char dst[5];
+    char src[] = "0123456789";
+    strncpy(dst, src, sizeof(dst)); 
+     printf(dst); //访问越界，dst没有’\0’结束符
+    return;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法： </p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> dst<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">;</span> 
-    <span class="token keyword">char</span> src<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"0123456789"</span><span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>dst<span class="token punctuation">,</span> src<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    dst<span class="token punctuation">[</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> ’\<span class="token number">0</span>’<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 【修改】最后字节置为’\0’</span>
-     <span class="token function">printf</span><span class="token punctuation">(</span>dst<span class="token punctuation">)</span><span class="token punctuation">;</span> 
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Compliant()
+{
+    char dst[5]; 
+    char src[] = "0123456789";
+    strncpy(dst, src, sizeof(dst));
+    dst[sizeof(dst)-1] = ’\0’;  // 【修改】最后字节置为’\0’
+     printf(dst); 
+    return;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="7-使字符串对象的引用失效"><a href="#7-使字符串对象的引用失效" class="headerlink" title="7.使字符串对象的引用失效"></a>7.使字符串对象的引用失效</h3><p>栈溢出的话，可以把目标代码或者数据覆盖到栈里面，关于栈为什么会溢出，其实是因为在编译后，栈的大小就固定了。这种攻击方式也称注入不过解决方法也有很多，要么做边界检查，要么动态的分配内存，还有更简单的那就是直接使用std::basic_string。当然使用string也会出问题,例如迭代器失效。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">char</span> input<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-string email<span class="token punctuation">;</span>
-string<span class="token punctuation">:</span><span class="token punctuation">:</span>iterator loc <span class="token operator">=</span> email<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">//复制到string对象，同时把";" 转换成" "</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>input<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">";"</span><span class="token punctuation">)</span>
-        email<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>loc<span class="token operator">++</span><span class="token punctuation">,</span> input<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">else</span>
-        email<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>loc<span class="token operator">++</span><span class="token punctuation">,</span> <span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">char input[];
+string email;
+string::iterator loc = email.begin();
+//复制到string对象，同时把";" 转换成" "
+    for (size_t i = 0; i < strlen(input); ++i)
+    {
+        if(input[i] != ";")
+        email.insert(loc++, input[i]);
+    else
+        email.insert(loc++, ' ');
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>第一次insert之后，loc就已经失效，后面的insert都将产生未定义行为。<br>正确的写法：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">char</span> input<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-string email<span class="token punctuation">;</span>
-string<span class="token punctuation">:</span><span class="token punctuation">:</span>iterator loc <span class="token operator">=</span> email<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token comment" spellcheck="true">//复制到string对象，同时把";" 转换成" "</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token function">strlen</span><span class="token punctuation">(</span>input<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token keyword">if</span><span class="token punctuation">(</span>input<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">";"</span><span class="token punctuation">)</span>
-            loc <span class="token operator">=</span> email<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>loc<span class="token punctuation">,</span> input<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">else</span>
-            loc <span class="token operator">=</span> email<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>loc<span class="token punctuation">,</span> <span class="token string">' '</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-            <span class="token operator">++</span>loc<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">char input[];
+string email;
+string::iterator loc = email.begin();
+//复制到string对象，同时把";" 转换成" "
+    for (size_t i = 0; i < strlen(input); ++i)
+    {
+        if(input[i] != ";")
+            loc = email.insert(loc, input[i]);
+        else
+            loc = email.insert(loc, ' ');
+            ++loc;
+    }
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="8-进程内存组织"><a href="#8-进程内存组织" class="headerlink" title="8.进程内存组织"></a>8.进程内存组织</h3><p><img src="https://i1.100024.xyz/i/2019/10/31/12bq026.png"></p>
+<h3 id="8-进程内存组织"><a href="#8-进程内存组织" class="headerlink" title="8.进程内存组织"></a>8.进程内存组织</h3><p><img src="https://i1.100024.xyz/i/2019/10/31/12bq026.png" alt=""></p>
 <h3 id="9-代码注入"><a href="#9-代码注入" class="headerlink" title="9.代码注入"></a>9.代码注入</h3><p>恶意代码把栈中的返回代码修改成调用其它函数,甚至是系统中某些命令的代码,导致在该程序退出之前把本身具有的权限交给了这些命令,从而引发最严重的安全问题.<br>任何漏洞利用的主要部分都是恶意参数</p>
 <pre><code>恶意参数的特征:
 1.有漏洞的程序必须接受这些参数作为合法输入.
 2.参数,或其他可控制的输入,必须导致有漏洞的代码路径得到执行.
 3.参数不能在程序将控制权转移到ShellCode（恶意代码）之前导致程序异常中止.
-</code></pre>
-<h3 id="10-弧注入"><a href="#10-弧注入" class="headerlink" title="10.弧注入"></a>10.弧注入</h3><p>通过修改栈中的地址,改变程序执行的流程,达到绕过某些代码(特别是安全检查的代码)的技术。</p>
-<h3 id="11-字符串漏洞缓解策略"><a href="#11-字符串漏洞缓解策略" class="headerlink" title="11.字符串漏洞缓解策略"></a>11.字符串漏洞缓解策略</h3><p>基本方式是:<br>1.预防缓冲区溢出.<br>2.侦测缓冲区溢出,并安全恢复.<br>3.静态预防:设定缓冲区,不允许超过.<br>4.动态预防:在得到实参时,检测参数的长度,如果超出可处理范围,则安全退出.<br>5.用新的标准函数替代旧的有安全隐患的函数.例如用<code>strcpy_s()和strcat_s()</code>取代<code> strcpy()和strcat()</code>或用<code>strncpy()和strncat()</code>;用<code>fgets(buf,bufLen,stdin)和gets_s(buf,bufLen)</code>     代替<code>gets(buf)</code>.</p>
+</code></pre><h3 id="10-弧注入"><a href="#10-弧注入" class="headerlink" title="10.弧注入"></a>10.弧注入</h3><p>通过修改栈中的地址,改变程序执行的流程,达到绕过某些代码(特别是安全检查的代码)的技术。</p>
+<h3 id="11-字符串漏洞缓解策略"><a href="#11-字符串漏洞缓解策略" class="headerlink" title="11.字符串漏洞缓解策略"></a>11.字符串漏洞缓解策略</h3><p>基本方式是:<br>1.预防缓冲区溢出.<br>2.侦测缓冲区溢出,并安全恢复.<br>3.静态预防:设定缓冲区,不允许超过.<br>4.动态预防:在得到实参时,检测参数的长度,如果超出可处理范围,则安全退出.<br>5.用新的标准函数替代旧的有安全隐患的函数.例如用<code>strcpy_s()和strcat_s()</code>取代<code>strcpy()和strcat()</code>或用<code>strncpy()和strncat()</code>;用<code>fgets(buf,bufLen,stdin)和gets_s(buf,bufLen)</code>     代替<code>gets(buf)</code>.</p>
 <h3 id="12-禁用不安全函数或对象"><a href="#12-禁用不安全函数或对象" class="headerlink" title="12.禁用不安全函数或对象"></a>12.禁用不安全函数或对象</h3><p>说明：C标准的系列字符串处理函数，不检查目标缓冲区的大小，容易引入缓冲区溢出的安全漏洞。</p>
 <pre><code>    字符串拷贝函数：strcpy, wcscpy
     字符串拼接函数：strcat, wcscat
     字符串格式化输出函数：sprintf, swprintf, vsprintf, vswprintf, 
     字符串格式化输入函数：scanf, wscanf, sscanf, swscanf, fscanf, vfscanf, vscanf, vsscanf
     stdin流输入函数：gets
-</code></pre>
-<p>这类函数是公认的危险函数，应禁止使用此类函数（微软从Windows Vista的开发开始就全面禁用了危险API）。<br><strong>最优选择：</strong>使用ISO/IEC TR 24731-1定义的字符串操作函数的安全版本，如<code>strcpy_s、strcat_s()、sprintf_s()、scanf_s()、gets_s()</code><br>这个版本的函数增加了以下安全检查：</p>
+</code></pre><p>这类函数是公认的危险函数，应禁止使用此类函数（微软从Windows Vista的开发开始就全面禁用了危险API）。<br><strong>最优选择：</strong>使用ISO/IEC TR 24731-1定义的字符串操作函数的安全版本，如<code>strcpy_s、strcat_s()、sprintf_s()、scanf_s()、gets_s()</code><br>这个版本的函数增加了以下安全检查：</p>
 <pre><code>    检查源指针和目标指针是否为NULL；
     检查目标缓冲区的最大长度是否小于源字符串的长度；
     检查复制的源和目的对象是否重叠。
-</code></pre>
-<p>缺点是:编译器对TR 24731的支持还不普遍。<br><strong>次优选择：</strong>可以使用带n的替代函数，如<code>strncpy/strncat/snprintf</code><br>需要注意的是，带n版本的函数会截断超出长度限制的字符串，包括源字符串结尾的’\0’。这就很可能导致目标字符串以非’\0’结束。字符串缺少’\0’结束符，同样导致缓冲区溢出和其它未定义行为。需要程序员保证目标字符串以’\0’结束，所以带n版本的函数也还是存在一定风险。</p>
+</code></pre><p>缺点是:编译器对TR 24731的支持还不普遍。<br><strong>次优选择：</strong>可以使用带n的替代函数，如<code>strncpy/strncat/snprintf</code><br>需要注意的是，带n版本的函数会截断超出长度限制的字符串，包括源字符串结尾的’\0’。这就很可能导致目标字符串以非’\0’结束。字符串缺少’\0’结束符，同样导致缓冲区溢出和其它未定义行为。需要程序员保证目标字符串以’\0’结束，所以带n版本的函数也还是存在一定风险。</p>
 <p>延伸阅读材料：微软禁用了更多的危险API，参考以下链接：<br><a target="_blank" rel="noopener" href="http://msdn.microsoft.com/en-us/library/bb288454.aspx">http://msdn.microsoft.com/en-us/library/bb288454.aspx</a></p>
-<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><h3 id="1-函数指针"><a href="#1-函数指针" class="headerlink" title="1.函数指针"></a>1.函数指针</h3><pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;malloc.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;conio.h></span></span>
+<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><h3 id="1-函数指针"><a href="#1-函数指针" class="headerlink" title="1.函数指针"></a>1.函数指针</h3><pre class="line-numbers language-lang-c"><code class="language-lang-c">#include <malloc.h>
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
 
-<span class="token keyword">void</span> <span class="token function">good_function</span><span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"  This is good_function str=%s"</span><span class="token punctuation">,</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc <span class="token punctuation">,</span><span class="token keyword">char</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token macro property">#<span class="token directive keyword">define</span> BufLen 80</span>
-    <span class="token keyword">static</span> <span class="token keyword">char</span> Buf<span class="token punctuation">[</span>BufLen<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>FunPtr<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    FunPtr<span class="token operator">=</span><span class="token operator">&amp;</span>good_function<span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>Buf<span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span><span class="token function">strlen</span><span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\n argc=%d "</span><span class="token punctuation">,</span>argc<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\n argv[1]=%s"</span><span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\n argv[2]=%s"</span><span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\n argv[3]=%s"</span><span class="token punctuation">,</span>argv<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">getch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token operator">*</span>FunPtr<span class="token punctuation">)</span> <span class="token punctuation">(</span>argv<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+void good_function(const char *str)
+{
+    printf("  This is good_function str=%s",str); return;
+}
+void main(int argc ,char *argv[])
+{
+    #define BufLen 80
+    static char Buf[BufLen];
+    static void (*FunPtr) (const char *str);
+    FunPtr=&good_function;
+    strncpy(Buf,argv[1],strlen(argv[1]));
+    printf("\n argc=%d ",argc);
+    printf("\n argv[1]=%s",argv[1]);
+    printf("\n argv[2]=%s",argv[2]);
+    printf("\n argv[3]=%s",argv[3]);
+    getch();
+    (void)(*FunPtr) (argv[2]);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>如果有人恶意输入<code>argv[1]</code>超过<code>BufLen</code>长度,则会修改<code>good_function()</code>的地址.退出时的<code>shellcode</code>会取代该函数.</p>
-<h3 id="2-对象指针"><a href="#2-对象指针" class="headerlink" title="2.对象指针"></a>2.对象指针</h3><pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;conio.h></span></span>
-<span class="token keyword">void</span> <span class="token function">foo</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span>arg<span class="token punctuation">,</span><span class="token keyword">int</span> len<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-  <span class="token macro property">#<span class="token directive keyword">define</span> BufLen 40</span>
-  <span class="token keyword">int</span> i<span class="token punctuation">;</span>
-  <span class="token keyword">char</span> Buf<span class="token punctuation">[</span>BufLen<span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token keyword">long</span> <span class="token operator">*</span>ptr<span class="token punctuation">;</span>
-  <span class="token keyword">char</span> S<span class="token punctuation">[</span>BufLen<span class="token punctuation">]</span><span class="token punctuation">;</span>
-  ptr<span class="token operator">=</span><span class="token punctuation">(</span><span class="token keyword">long</span> <span class="token operator">*</span><span class="token punctuation">)</span>S<span class="token punctuation">;</span>
-  <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>BufLen<span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span>
-      Buf<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>i<span class="token punctuation">;</span>
-  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"\nAddress ptr=%x Buf=%x S=%x\n S[]="</span><span class="token punctuation">,</span>Buf<span class="token punctuation">,</span>ptr<span class="token punctuation">,</span>S<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>BufLen<span class="token operator">*</span><span class="token number">2</span><span class="token operator">+</span><span class="token number">4</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span>
-      <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%x,"</span><span class="token punctuation">,</span>S<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">getch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token comment" spellcheck="true">// memcpy(Buf,arg,len);   </span>
-  <span class="token comment" spellcheck="true">/*任意写覆盖内存.!!!现在的OS已经在很大程度上封杀了这种漏洞.注意运行时程序出错*/</span>
-  <span class="token comment" spellcheck="true">/* 其他程序*/</span>
-<span class="token punctuation">}</span>
+<h3 id="2-对象指针"><a href="#2-对象指针" class="headerlink" title="2.对象指针"></a>2.对象指针</h3><pre class="line-numbers language-lang-c"><code class="language-lang-c">#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <conio.h>
+void foo(void *arg,int len)
+{
+  #define BufLen 40
+  int i;
+  char Buf[BufLen];
+  long *ptr;
+  char S[BufLen];
+  ptr=(long *)S;
+  for(i=0;i<BufLen;i++)
+      Buf[i]=i;
+  printf("\nAddress ptr=%x Buf=%x S=%x\n S[]=",Buf,ptr,S);
+  for(i=0;i<BufLen*2+4;i++)
+      printf("%x,",S[i]);
+  getch();
+  // memcpy(Buf,arg,len);   
+  /*任意写覆盖内存.!!!现在的OS已经在很大程度上封杀了这种漏洞.注意运行时程序出错*/
+  /* 其他程序*/
+}
 
-<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-  <span class="token keyword">char</span> S<span class="token punctuation">[</span>BufLen<span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-  <span class="token keyword">int</span> i<span class="token punctuation">;</span>
-  <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>BufLen<span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span>
-  S<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>i<span class="token punctuation">;</span>
-  <span class="token function">foo</span><span class="token punctuation">(</span>S<span class="token punctuation">,</span><span class="token punctuation">(</span>BufLen<span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+int main()
+{
+  char S[BufLen*2];
+  int i;
+  for(i=0;i<BufLen*2;i++)
+  S[i]=i;
+  foo(S,(BufLen*2));
+  exit(0);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="3-禁止定义基类析构函数为非虚函数，所有可能被继承类的析构函数都必须定义为virtual"><a href="#3-禁止定义基类析构函数为非虚函数，所有可能被继承类的析构函数都必须定义为virtual" class="headerlink" title="3.禁止定义基类析构函数为非虚函数，所有可能被继承类的析构函数都必须定义为virtual"></a>3.禁止定义基类析构函数为非虚函数，所有可能被继承类的析构函数都必须定义为virtual</h3><p>说明：基类的析构函数如果不是virtual的，那么在对一个Base类型的指针进行delete时，就不会调用到派生类Derived的析构函数。而派生类里的析构函数一般会用于析构其内部的子对象，这样就可能会造成内存泄漏。</p>
 <p>错误示例：代码中的析构函数没有被定义成虚函数。</p>
-<pre class="line-numbers language-c"><code class="language-c">class Base 
-<span class="token punctuation">{</span>
-public<span class="token punctuation">:</span>
-    <span class="token operator">~</span><span class="token function">Base</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【错误】禁止定义基类析构函数为非虚函数</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-class Derived <span class="token punctuation">:</span> public Base 
-<span class="token punctuation">{</span>
-private<span class="token punctuation">:</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>pc<span class="token punctuation">;</span>
-public<span class="token punctuation">:</span>
-    <span class="token function">Derived</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        pc<span class="token operator">=</span>new <span class="token keyword">char</span><span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span> 
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-    <span class="token operator">~</span> <span class="token function">Derived</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        delete <span class="token punctuation">[</span><span class="token punctuation">]</span> pc<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    Base <span class="token operator">*</span>obj <span class="token operator">=</span> new <span class="token function">Derived</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    delete obj<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">class Base 
+{
+public:
+    ~Base(){}; //【错误】禁止定义基类析构函数为非虚函数
+};
+class Derived : public Base 
+{
+private:
+    char *pc;
+public:
+    Derived()
+    {
+        pc=new char[100]; 
+    };
+    ~ Derived()
+    {
+        delete [] pc;
+    };
+};
+void main()
+{
+    Base *obj = new Derived();
+    delete obj;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>以上示例代码基类Base的析构函数不是virtual的。因为不是virtual，所以在对Base类型的指针obj进行delete时，不会调用到派生类Derived的析构函数,这样就造成内存泄漏。<br>推荐做法：基类Base的析构函数定义为virtual，这样确保在对Base类型的指针obj进行delete时调用派生类Derived的析构函数。</p>
-<pre class="line-numbers language-c"><code class="language-c">class Base <span class="token punctuation">{</span>
-public<span class="token punctuation">:</span>
-    virtual <span class="token operator">~</span><span class="token function">Base</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//【修改】定义基类析构函数为虚函数</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-class Derived <span class="token punctuation">:</span> public Base <span class="token punctuation">{</span>
-private<span class="token punctuation">:</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>pc<span class="token punctuation">;</span>
-public<span class="token punctuation">:</span>
-    <span class="token function">Derived</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        pc<span class="token operator">=</span>new <span class="token keyword">char</span><span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span> 
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-    <span class="token operator">~</span> <span class="token function">Derived</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        delete <span class="token punctuation">[</span><span class="token punctuation">]</span> pc<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-<span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    Base <span class="token operator">*</span>obj <span class="token operator">=</span> new <span class="token function">Derived</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    delete obj<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">class Base {
+public:
+    virtual ~Base(){};//【修改】定义基类析构函数为虚函数
+};
+class Derived : public Base {
+private:
+    char *pc;
+public:
+    Derived()
+    {
+        pc=new char[100]; 
+    };
+    ~ Derived()
+    {
+        delete [] pc;
+    };
+};
+void main()
+{
+    Base *obj = new Derived();
+    delete obj;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="4-避免字符串-内存操作函数的源指针和目标指针指向内存重叠区"><a href="#4-避免字符串-内存操作函数的源指针和目标指针指向内存重叠区" class="headerlink" title="4.避免字符串/内存操作函数的源指针和目标指针指向内存重叠区"></a>4.避免字符串/内存操作函数的源指针和目标指针指向内存重叠区</h3><p>说明：内存重叠区是指一段确定大小及地址的内存区，该内存区被多个地址指针指向或引用，这些指针介于首地址和尾地址之间。<br>在使用像memcpy、strcpy、strncpy、sscanf()、sprintf()、snprintf()和wcstombs()这样的函数时，复制重叠对象会存在未定义的行为，这种行为可能破坏数据的完整性。<br>错误示例1：snprintf的参数使用存在问题</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-<span class="token macro property">#<span class="token directive keyword">define</span> MAX_LEN 1024</span>
-    <span class="token keyword">char</span> cBuf<span class="token punctuation">[</span>MAX_LEN <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> nPid <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>cBuf<span class="token punctuation">,</span> ”Hello World<span class="token operator">!</span>”<span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>”Hello World<span class="token operator">!</span>”<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">snprintf</span><span class="token punctuation">(</span>cBuf<span class="token punctuation">,</span> MAX_LEN<span class="token punctuation">,</span> <span class="token string">"%d: %s"</span><span class="token punctuation">,</span> nPid<span class="token punctuation">,</span> cBuf<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/* cBuf既是源又是目标，函数使用不安全 */</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span> 
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant()
+{
+#define MAX_LEN 1024
+    char cBuf[MAX_LEN + 1] = {0};
+    int nPid = 0;
+    strncpy(cBuf, ”Hello World!”, strlen(”Hello World!”));
+    snprintf(cBuf, MAX_LEN, "%d: %s", nPid, cBuf); /* cBuf既是源又是目标，函数使用不安全 */
+    return; 
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：使用不同源和目标缓冲区来实现复制功能。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-<span class="token macro property">#<span class="token directive keyword">define</span> MAX_LEN 1024</span>
-    <span class="token keyword">char</span> cBuf<span class="token punctuation">[</span>MAX_LEN <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> cDesc<span class="token punctuation">[</span>MAX_LEN <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【修改】另起一个缓冲区，防止缓冲区重叠出错</span>
-    <span class="token keyword">int</span> nPid <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token function">strncpy</span><span class="token punctuation">(</span>cDesc<span class="token punctuation">,</span> ”Hello World<span class="token operator">!</span>”<span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>”Hello World<span class="token operator">!</span>”<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/* 【修改】防止缓冲区重叠出错 */</span>
-    <span class="token function">snprintf</span><span class="token punctuation">(</span>cBuf<span class="token punctuation">,</span> MAX_LEN<span class="token punctuation">,</span> <span class="token string">"%d: %s"</span><span class="token punctuation">,</span> nPid<span class="token punctuation">,</span> cDesc<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/* 【修改】防止缓冲区重叠出错 */</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Compliant()
+{
+#define MAX_LEN 1024
+    char cBuf[MAX_LEN + 1] = {0};
+    char cDesc[MAX_LEN + 1] = {0}; //【修改】另起一个缓冲区，防止缓冲区重叠出错
+    int nPid = 0;
+    strncpy(cDesc, ”Hello World!”, strlen(”Hello World!”)); /* 【修改】防止缓冲区重叠出错 */
+    snprintf(cBuf, MAX_LEN, "%d: %s", nPid, cDesc); /* 【修改】防止缓冲区重叠出错 */
+    return;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例2：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">define</span> MSG_OFFSET 3</span>
-<span class="token macro property">#<span class="token directive keyword">define</span> MSG_SIZE 6</span>
-<span class="token keyword">void</span>  <span class="token function">NoCompliant</span> <span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> str<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"test string"</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr1 <span class="token operator">=</span> str<span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr2<span class="token punctuation">;</span>
-    ptr2 <span class="token operator">=</span> ptr1<span class="token operator">+</span>MSG_OFFSET<span class="token punctuation">;</span>
-    <span class="token function">memcpy</span><span class="token punctuation">(</span>ptr2<span class="token punctuation">,</span> ptr1<span class="token punctuation">,</span> MSG_SIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">#define MSG_OFFSET 3
+#define MSG_SIZE 6
+void  NoCompliant ()
+{
+    char str[] = "test string";
+    char *ptr1 = str;
+    char *ptr2;
+    ptr2 = ptr1+MSG_OFFSET;
+    memcpy(ptr2, ptr1, MSG_SIZE);
+    return;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：使用memmove函数，源字符串和目标字符串所指内存区域可以重叠，但复制后目标字符串内容会被更改，该函数将返回指向目标字符串的指针。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">define</span> MSG_OFFSET 3</span>
-<span class="token macro property">#<span class="token directive keyword">define</span> MSG_SIZE 6</span>
-<span class="token keyword">void</span>  <span class="token function">Compliant</span> <span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> str<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"test string"</span><span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr1 <span class="token operator">=</span> str<span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr2<span class="token punctuation">;</span>
-    ptr2 <span class="token operator">=</span> ptr1 <span class="token operator">+</span> MSG_OFFSET<span class="token punctuation">;</span>
-    <span class="token function">memmove</span><span class="token punctuation">(</span>ptr2<span class="token punctuation">,</span> ptr1<span class="token punctuation">,</span> MSG_SIZE<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">/*【修改】使用memmove代替memcpy，防止缓冲区重叠出错 */</span>
-    <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">#define MSG_OFFSET 3
+#define MSG_SIZE 6
+void  Compliant ()
+{
+    char str[] = "test string";
+    char *ptr1 = str;
+    char *ptr2;
+    ptr2 = ptr1 + MSG_OFFSET;
+    memmove(ptr2, ptr1, MSG_SIZE); /*【修改】使用memmove代替memcpy，防止缓冲区重叠出错 */
+    return;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>memcpy与memmove的目的都是将N个字节的源内存地址的内容拷贝到目标内存地址中。<br>但当源内存和目标内存存在重叠时，memcpy会出现错误，而memmove能正确地实施拷贝，但这也增加了一点点开销。<br>memmove的处理措施：</p>
 <pre><code>    当源内存的首地址等于目标内存的首地址时，不进行任何拷贝
     当源内存的首地址大于目标内存的首地址时，实行正向拷贝
     当源内存的首地址小于目标内存的首地址时，实行反向拷贝
-</code></pre>
-<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><h3 id="1-禁止引用未初始化的内存"><a href="#1-禁止引用未初始化的内存" class="headerlink" title="1.禁止引用未初始化的内存"></a>1.禁止引用未初始化的内存</h3><p>说明：有些函数如malloc分配出来的内存是没有初始化的，可以使用memset进行清零，或者使用calloc进行内存分配，calloc分配的内存是清零的。当然，如果后面需要对申请的内存进行全部赋值，就不要清零了，但要确保内存被引用前是被初始化的。此外，分配内存初始化，可以消除之前可能存放在内存中的敏感信息，避免敏感信息的泄露。<br>错误示例：如下代码没有对malloc的y内存进行初始化，所以功能不正确。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token comment" spellcheck="true">/* return y = Ax */</span>
-<span class="token keyword">int</span> <span class="token operator">*</span> <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token operator">*</span>A<span class="token punctuation">,</span> <span class="token keyword">int</span> <span class="token operator">*</span>x<span class="token punctuation">,</span> <span class="token keyword">int</span> n<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>n <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> <span class="token operator">*</span>y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span> <span class="token punctuation">(</span>n <span class="token operator">*</span> <span class="token keyword">sizeof</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>y <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">;</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token keyword">for</span> <span class="token punctuation">(</span>j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> <span class="token operator">++</span>j<span class="token punctuation">)</span>
-        <span class="token punctuation">{</span>
-            y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span><span class="token operator">=</span> A<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">*</span> x<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> y<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/*...申请的内存使用后free...*/</span> 
+</code></pre><h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><h3 id="1-禁止引用未初始化的内存"><a href="#1-禁止引用未初始化的内存" class="headerlink" title="1.禁止引用未初始化的内存"></a>1.禁止引用未初始化的内存</h3><p>说明：有些函数如malloc分配出来的内存是没有初始化的，可以使用memset进行清零，或者使用calloc进行内存分配，calloc分配的内存是清零的。当然，如果后面需要对申请的内存进行全部赋值，就不要清零了，但要确保内存被引用前是被初始化的。此外，分配内存初始化，可以消除之前可能存放在内存中的敏感信息，避免敏感信息的泄露。<br>错误示例：如下代码没有对malloc的y内存进行初始化，所以功能不正确。</p>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">/* return y = Ax */
+int * Noncompliant(int **A, int *x, int n)
+{
+    if(n <= 0)
+        return NULL;
+    int *y = (int*)malloc (n * sizeof (int));
+    if(y == NULL)
+        return NULL;
+    int i, j;
+    for (i = 0; i < n; ++i)
+    {
+        for (j = 0; j < n; ++j)
+        {
+            y[i] += A[i][j] * x[j];
+        }
+    }
+    return y;
+}
+/*...申请的内存使用后free...*/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：使用memset对分配出来的内存清零。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token operator">*</span> <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token operator">*</span>A<span class="token punctuation">,</span> <span class="token keyword">int</span> <span class="token operator">*</span>x<span class="token punctuation">,</span> <span class="token keyword">int</span> n<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>n <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> <span class="token operator">*</span>y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span>n <span class="token operator">*</span> <span class="token keyword">sizeof</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>y <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">,</span> j<span class="token punctuation">;</span>
-    <span class="token function">memset</span> <span class="token punctuation">(</span>y<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> n <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【修改】确保内存被初始化后才被引用</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token keyword">for</span> <span class="token punctuation">(</span>j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> <span class="token operator">++</span>j<span class="token punctuation">)</span>
-        <span class="token punctuation">{</span>
-            y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span><span class="token operator">=</span> A<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">*</span> x<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">;</span>
-        <span class="token punctuation">}</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> y<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/*...申请的内存使用后free...*/</span> 
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int * Compliant(int **A, int *x, int n)
+{
+    if(n <= 0)
+        return NULL;
+    int *y = (int*)malloc(n * sizeof (int));
+    if(y == NULL)
+        return NULL;
+    int i, j;
+    memset (y, 0, n * sizeof(int)); //【修改】确保内存被初始化后才被引用
+    for (i = 0; i < n; ++i)
+    {
+        for (j = 0; j < n; ++j)
+        {
+            y[i] += A[i][j] * x[j];
+        }
+    }
+    return y;
+}
+/*...申请的内存使用后free...*/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="2-禁止访问已经释放的内存"><a href="#2-禁止访问已经释放的内存" class="headerlink" title="2.禁止访问已经释放的内存"></a>2.禁止访问已经释放的内存</h3><p>说明：访问已经释放的内存，是很危险的行为，主要分为两种情况：<br>（1）堆内存：一块内存释放了，归还内存池以后，就不应该再访问。因为这块内存可能已经被其他部分代码申请走，内容可能已经被修改；直接修改释放的内存，可能会导致其他使用该内存的功能不正常；读也不能保证数据就是释放之前写入的值。在一定的情况下，可以被利用执行恶意的代码。即使是对空指针的解引用，也可能导致任意代码执行漏洞。如果黑客事先对内存0地址内容进行恶意的构造，解引用后会指向黑客指定的地址，执行任意代码。<br>（2）栈内存：在函数执行时，函数内局部变量的存储单元都可以在栈上创建，函数执行完毕结束时这些存储单元自动释放。如果返回这些已释放的存储单元的地址（栈地址），可能导致程序崩溃或恶意代码被利用。<br>错误示例1：解引用一个已经释放了内存的指针，会导致未定义的行为。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> _tagNode
-<span class="token punctuation">{</span>
-    <span class="token keyword">int</span>    value<span class="token punctuation">;</span>
-    <span class="token keyword">struct</span> _tagNode <span class="token operator">*</span> next<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>Node<span class="token punctuation">;</span>
-Node <span class="token operator">*</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    Node <span class="token operator">*</span> head <span class="token operator">=</span> <span class="token punctuation">(</span>Node <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span>Node<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>head<span class="token operator">==</span><span class="token constant">NULL</span><span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">/* ...do something... */</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    <span class="token function">free</span><span class="token punctuation">(</span>head<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    head<span class="token operator">-></span>next <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//【错误】解引用了已经释放的内存</span>
-    <span class="token keyword">return</span> head<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct _tagNode
+{
+    int    value;
+    struct _tagNode * next;
+}Node;
+Node *  Noncompliant()
+{
+    Node * head = (Node *)malloc(Node);
+    if (head==NULL)
+    {
+        /* ...do something... */
+        return NULL;
+    }
+    /* ...do something... */
+    free(head);
+    /* ...do something... */
+    head->next = NULL;  //【错误】解引用了已经释放的内存
+    return head;
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>错误示例2：函数中返回的局部变量数据有可能会被覆盖掉，导致未定义的行为。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">char</span> <span class="token operator">*</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> msg<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    <span class="token keyword">return</span> msg<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//【错误】返回了局部变量</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">char *  Noncompliant()
+{
+    char msg[128];
+    /* ...do something... */
+    return msg;  //【错误】返回了局部变量
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="3-禁止重复释放内存"><a href="#3-禁止重复释放内存" class="headerlink" title="3.禁止重复释放内存"></a>3.禁止重复释放内存</h3><p>说明：重复释放内存（double-free）会导致内存管理器出现问题。重复释放内存在一定情况下，有可能导致“堆溢出”漏洞，可以被用来执行恶意代码，具有很大的安全隐患。<br>错误示例：如下代码两次释放了ptr。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>ptr<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">/* ...do something... */</span>
-        <span class="token function">free</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    <span class="token function">free</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【错误】有可能出现2次释放内存的错误</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant()
+{
+    char *ptr = (char*)malloc(size);
+    if (ptr)
+    {
+        /* ...do something... */
+        free(ptr);
+    }
+    /* ...do something... */
+    free(ptr); //【错误】有可能出现2次释放内存的错误
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：申请的内存应该只释放一次。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>ptr<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">/* ...do something... */</span>
-        <span class="token function">free</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        ptr <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span> 
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    <span class="token comment" spellcheck="true">//【修改】删掉free(ptr)</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Compliant()
+{
+    char *ptr = (char*)malloc(size);
+    if (ptr)
+    {
+        /* ...do something... */
+        free(ptr);
+        ptr = NULL;
+    } 
+    /* ...do something... */
+    //【修改】删掉free(ptr)
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="4-必须对指定申请内存大小的整数值进行合法性校验"><a href="#4-必须对指定申请内存大小的整数值进行合法性校验" class="headerlink" title="4.必须对指定申请内存大小的整数值进行合法性校验"></a>4.必须对指定申请内存大小的整数值进行合法性校验</h3><p>说明：申请内存时没有对指定的内存大小整数作合法性校验，会导致未定义的行为，主要分为两种情况：<br>（1）使用 0 字节长度去申请内存的行为是没有定义的，在引用内存申请函数返回的地址时会引发不可预知或不能立即发现的问题。对于可能出现申请0地址的情况，需要增加必要的判断，避免出现这种情况<br>（2）使用负数长度去申请内存，负数会被当成一个很大的无符号整数，从而导致因申请内存过大而出现失败，造成拒绝服务。<br>错误示例：下列代码进行内存分配时，没有对内存大小整数作合法性校验。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token operator">*</span> <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> <span class="token operator">*</span> y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span> x <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//未对x进行合法性校验</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>x<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        y<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> i<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> y<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/*...申请的内存使用后free...*/</span> 
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int * Noncompliant(int x)
+{
+    int i;
+    int * y = (int *)malloc( x * sizeof(int));  //未对x进行合法性校验
+    for(i=0; i<x; ++i)
+    {
+        y[i] = i;
+    }
+    return y;
+}
+/*...申请的内存使用后free...*/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：调用malloc之前，需要判断malloc的参数是否合法。确保x为整数后才申请内存，否则视为参数无效，不予申请，以避免出现申请过大内存而导致拒绝服务。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token operator">*</span> <span class="token function">Compliant</span><span class="token punctuation">(</span><span class="token keyword">int</span> x<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
-    <span class="token keyword">int</span> <span class="token operator">*</span>y<span class="token punctuation">;</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>x <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">//【修改】增加对x进行合法性校验</span>
-    <span class="token punctuation">{</span>
-        y <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token function">malloc</span><span class="token punctuation">(</span> x <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>y <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-            <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">else</span>
-    <span class="token punctuation">{</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>x<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        y<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>i<span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> y<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token comment" spellcheck="true">/*...申请的内存使用后free...*/</span> 
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">int * Compliant(int x)
+{
+    int i;
+    int *y;
+    if(x > 0)   //【修改】增加对x进行合法性校验
+    {
+        y = (int *)malloc( x * sizeof(int));
+        if (y == NULL)
+            return NULL;
+    }
+    else
+    {
+        return NULL;
+    }
+    for(i=0; i<x; ++i)
+    {
+        y[i]=i;
+    }
+    return y;
+}
+/*...申请的内存使用后free...*/
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="5-禁止释放非动态申请的内存"><a href="#5-禁止释放非动态申请的内存" class="headerlink" title="5.禁止释放非动态申请的内存"></a>5.禁止释放非动态申请的内存</h3><p>说明：非动态申请的内存并不是由内存分配器管理的，如果使用free函数对这块内存进行释放，会对内存分配器产生影响，造成拒绝服务。如果黑客能控制非动态申请的内存内容，并对其进行精心的构造，甚至导致程序执行任意代码。<br>错误示例：非法释放非动态申请的内存。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> str<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"this is a string"</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    <span class="token function">free</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//【错误】str不是动态申请的内存，因此不能释放</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant()
+{
+    char str[] = "this is a string";
+    /* ...do something... */
+    free(str);    //【错误】str不是动态申请的内存，因此不能释放
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：非动态分配的内存不需要释放，把原来释放函数free()去掉。</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Compliant</span> <span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">char</span> str<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"this is a string"</span><span class="token punctuation">;</span>
-    <span class="token comment" spellcheck="true">/* ...do something... */</span>
-    <span class="token comment" spellcheck="true">//【修改】删除free(str)</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Compliant ()
+{
+    char str[] = "this is a string";
+    /* ...do something... */
+    //【修改】删除free(str)
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="6-避免使用alloca函数申请内存"><a href="#6-避免使用alloca函数申请内存" class="headerlink" title="6.避免使用alloca函数申请内存"></a>6.避免使用alloca函数申请内存</h3><p>说明：POSIX和C99 均未定义 alloca 的行为，在不支持的平台上运行会有未定义的后果，且该函数在栈帧里申请内存，申请的大小可能越过栈的边界而无法预知。<br>错误示例：使用了alloca从堆栈分配内存</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">void</span>  <span class="token function">Noncompliant</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>buff<span class="token punctuation">,</span> <span class="token keyword">int</span> len<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token keyword">int</span> size <span class="token operator">=</span> len <span class="token operator">*</span> <span class="token number">3</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> i<span class="token punctuation">;</span>
-    <span class="token keyword">char</span> <span class="token operator">*</span>ptr <span class="token operator">=</span> <span class="token function">alloca</span> <span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token operator">*</span>p<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//【不推荐】避免使用alloca函数申请内存</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>ptr <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
-        <span class="token keyword">return</span><span class="token punctuation">;</span>
-    p <span class="token operator">=</span> ptr<span class="token punctuation">;</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> len<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
-    <span class="token punctuation">{</span>
-        p <span class="token operator">+</span><span class="token operator">=</span> <span class="token function">_snprintf</span><span class="token punctuation">(</span>p<span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token string">"%02x "</span><span class="token punctuation">,</span> buff<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span>
-    <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span> ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">void  Noncompliant(char *buff, int len)
+{
+    int size = len * 3 + 1, i;
+    char *ptr = alloca (size), *p; //【不推荐】避免使用alloca函数申请内存
+    if (len <= 0)
+        return;
+    if (ptr == NULL)
+        return;
+    p = ptr;
+    for (i = 0; i < len; ++i)
+    {
+        p += _snprintf(p, 4, "%02x ", buff[i]);
+    }
+    *p = NULL;
+    printf ("%s", ptr);
+}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>推荐做法：alloca函数返回后，使用指向函数局部堆栈内存区也会出现问题，改用malloc从堆分配内存。</p>
 
@@ -2404,7 +2400,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2635,6 +2631,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

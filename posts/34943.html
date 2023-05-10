@@ -902,7 +902,7 @@ String 底层数据结构为 SDS（Simple Dyn">
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img.jwt1399.top/img/202303231236751.png"></p>
+                <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img.jwt1399.top/img/202303231236751.png" alt=""></p>
 <h2 id="简单动态字符串-SDS"><a href="#简单动态字符串-SDS" class="headerlink" title="简单动态字符串-SDS"></a>简单动态字符串-SDS</h2><blockquote>
 <p>String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 <code>512M</code>。</p>
 </blockquote>
@@ -921,7 +921,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><strong>减少内存分配次数</strong> ： 为了避免修改（增加/减少）字符串时，每次都需要重新分配内存（C 语言的字符串是这样的），SDS 实现了<strong>空间预分配</strong>和<strong>惰性空间释放</strong>两种优化策略。当 SDS 需要增加字符串时，Redis 会为 SDS 分配好内存，并且根据特定的算法分配多余的内存，这样可以减少连续执行字符串增长操作所需的内存重分配次数。当 SDS 需要减少字符串时，这部分内存不会立即被回收，会被记录下来，等待后续使用（支持手动释放，有对应的 API）。</li>
 <li><strong>二进制安全</strong> ：C 语言中的字符串以空字符 <code>\0</code> 作为字符串结束的标识，这存在一些问题，像一些二进制文件（比如图片、视频、音频）就可能包括空字符，C 字符串无法正确保存。SDS 使用 len 属性判断字符串是否结束，不存在这个问题。</li>
 </ol>
-<h2 id="压缩列表-ZipList"><a href="#压缩列表-ZipList" class="headerlink" title="压缩列表 - ZipList"></a>压缩列表 - ZipList</h2><p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-6.png"></p>
+<h2 id="压缩列表-ZipList"><a href="#压缩列表-ZipList" class="headerlink" title="压缩列表 - ZipList"></a>压缩列表 - ZipList</h2><p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-6.png" alt=""></p>
 <ul>
 <li><code>zlbytes</code>存储的是整个ziplist所占用的内存的字节数</li>
 <li><code>zltail</code>指的是ziplist中最后一个entry的偏移量. 用于快速定位最后一个entry, 以快速完成pop等操作</li>
@@ -929,39 +929,39 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><code>zlend</code>是一个终止字节, 其值为全F, 即0xff.</li>
 </ul>
 <h2 id="快表-QuickList"><a href="#快表-QuickList" class="headerlink" title="快表 - QuickList"></a>快表 - QuickList</h2><p>QuickList = 双向链表+压缩列表</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-4.png"></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-4.png" alt=""></p>
 <h2 id="哈希表-Dict"><a href="#哈希表-Dict" class="headerlink" title="哈希表 - Dict"></a>哈希表 - Dict</h2><p>哈希表是由数组 table 组成，table 中每个元素都是指向 dictEntry 结构</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-13.png"></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-13.png" alt=""></p>
 <p><strong>哈希表结构定义</strong>：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> dictht<span class="token punctuation">{</span>
-    dictEntry <span class="token operator">*</span><span class="token operator">*</span>table<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">//哈希表数组</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> size<span class="token punctuation">;</span>       <span class="token comment" spellcheck="true">//哈希表大小</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> sizemask<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//哈希表大小掩码，用于计算索引值，总是等于 size-1</span>
-    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> used<span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">//该哈希表已有节点的数量</span>
-<span class="token punctuation">}</span>dictht
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct dictht{
+    dictEntry **table;         //哈希表数组
+    unsigned long size;       //哈希表大小
+    unsigned long sizemask;  //哈希表大小掩码，用于计算索引值，总是等于 size-1
+    unsigned long used;     //该哈希表已有节点的数量
+}dictht
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>哈希表是由数组 table 组成，table 中每个元素都是指向 dict.h/dictEntry 结构，dictEntry 结构定义如下：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> dictEntry<span class="token punctuation">{</span>
-     <span class="token keyword">void</span> <span class="token operator">*</span>key<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//键</span>
-     <span class="token keyword">union</span><span class="token punctuation">{</span>     <span class="token comment" spellcheck="true">//值</span>
-          <span class="token keyword">void</span> <span class="token operator">*</span>val<span class="token punctuation">;</span>
-          uint64_tu64<span class="token punctuation">;</span>
-          int64_ts64<span class="token punctuation">;</span>
-     <span class="token punctuation">}</span>v<span class="token punctuation">;</span>
-     <span class="token keyword">struct</span> dictEntry <span class="token operator">*</span>next<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//指向下一个哈希表节点，形成链表</span>
-<span class="token punctuation">}</span>dictEntry
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct dictEntry{
+     void *key;  //键
+     union{     //值
+          void *val;
+          uint64_tu64;
+          int64_ts64;
+     }v;
+     struct dictEntry *next;  //指向下一个哈希表节点，形成链表
+}dictEntry
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="整数集合-intset"><a href="#整数集合-intset" class="headerlink" title="整数集合-intset"></a>整数集合-intset</h2><p>首先看源码结构</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> intset <span class="token punctuation">{</span>
-    uint32_t encoding<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//编码方式</span>
-    uint32_t length<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//其中存储的整数的个数</span>
-    int8_t contents<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//实际存储数值的连续内存区域</span>
-<span class="token punctuation">}</span> intset<span class="token punctuation">;</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct intset {
+    uint32_t encoding; //编码方式
+    uint32_t length;  //其中存储的整数的个数
+    int8_t contents[]; //实际存储数值的连续内存区域
+} intset;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="跳表-SkipList"><a href="#跳表-SkipList" class="headerlink" title="跳表-SkipList"></a>跳表-SkipList</h2><p>对于于一个单链表来讲，即便链表中存储的数据是有序的，如果我们要想在其中查找某个数据，也只能从头到尾遍历链表。这样查找效率就会很低，时间复杂度会很高，是 O(n)。比如查找12，需要7次查找</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-9.png"></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-9.png" alt=""></p>
 <p>如果我们增加如下两级索引，那么它搜索次数就变成了3次</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-10.png"></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-10.png" alt=""></p>
 <p><strong>skiplist与平衡树、哈希表的比较</strong>（为什么不用平衡树或者哈希表）</p>
 <ul>
 <li><p><strong>哈希表上只能做单个key的查找，不适宜做范围查找。</strong>skiplist和各种平衡树（如AVL、红黑树等）的元素是有序排列的，而哈希表不是有序的。</p>
@@ -985,23 +985,22 @@ String 底层数据结构为 SDS（Simple Dyn">
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Redis支持Pipeline模式来批量发送数据给服务端，这样的好处是节省了网络时间，缺点是服务端会耗费更多内存，以及单个命令的时间会被整体拖慢。</p>
 <p>生产中，不建议过度使用Pipeline，只有在真正需要的时候，比如在一个线程需要更新多个数据的时候，就比较合适。</p>
 <h1 id="Redis运行原理"><a href="#Redis运行原理" class="headerlink" title="Redis运行原理"></a>Redis运行原理</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>redisDb代表Redis数据库结构</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token comment" spellcheck="true">// from Redis 5.0.5</span>
+<pre class="line-numbers language-lang-c"><code class="language-lang-c">// from Redis 5.0.5
 
-<span class="token keyword">typedef</span> <span class="token keyword">struct</span> redisDb <span class="token punctuation">{</span>
-    dict <span class="token operator">*</span>dict<span class="token punctuation">;</span>                 <span class="token comment" spellcheck="true">/* The keyspace for this DB */</span>
-    dict <span class="token operator">*</span>expires<span class="token punctuation">;</span>              <span class="token comment" spellcheck="true">/* Timeout of keys with a timeout set */</span>
-    dict <span class="token operator">*</span>blocking_keys<span class="token punctuation">;</span>        <span class="token comment" spellcheck="true">/* Keys with clients waiting for data (BLPOP)*/</span>
-    dict <span class="token operator">*</span>ready_keys<span class="token punctuation">;</span>           <span class="token comment" spellcheck="true">/* Blocked keys that received a PUSH */</span>
-    dict <span class="token operator">*</span>watched_keys<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">/* WATCHED keys for MULTI/EXEC CAS */</span>
-    <span class="token keyword">int</span> id<span class="token punctuation">;</span>                     <span class="token comment" spellcheck="true">/* Database ID */</span>
-    <span class="token keyword">long</span> <span class="token keyword">long</span> avg_ttl<span class="token punctuation">;</span>          <span class="token comment" spellcheck="true">/* Average TTL, just for stats */</span>
-    list <span class="token operator">*</span>defrag_later<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">/* List of key names to attempt to defrag one by one, gradually. */</span>
-<span class="token punctuation">}</span> redisDb<span class="token punctuation">;</span>
+typedef struct redisDb {
+    dict *dict;                 /* The keyspace for this DB */
+    dict *expires;              /* Timeout of keys with a timeout set */
+    dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP)*/
+    dict *ready_keys;           /* Blocked keys that received a PUSH */
+    dict *watched_keys;         /* WATCHED keys for MULTI/EXEC CAS */
+    int id;                     /* Database ID */
+    long long avg_ttl;          /* Average TTL, just for stats */
+    list *defrag_later;         /* List of key names to attempt to defrag one by one, gradually. */
+} redisDb;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" />
-
+<p><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" /></p>
 <p>RedisObject 就是存储在dict数据结构里</p>
-<pre class="line-numbers language-C"><code class="language-C">typedef struct dict {
+<pre class="line-numbers language-lang-C"><code class="language-lang-C">typedef struct dict {
     dictType *type;
     void *privdata;
     dictht ht[2];
@@ -1016,10 +1015,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li>删除数据：把key和value都从dict中删除</li>
 </ul>
 <h2 id="过期键"><a href="#过期键" class="headerlink" title="过期键"></a>过期键</h2><p>过期键存在expires字典上，过期字典来保存数据过期的时间。过期字典的键指向 Redis 数据库中的某个 key(键)，过期字典的值是一个 long long 类型的整数，这个整数保存了 key 所指向的数据库键的过期时间（毫秒精度的 UNIX 时间戳）。</p>
-<img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" />
-
-
-
+<p><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" /></p>
 <h2 id="SET-a-b，这个数据的存储结构是怎样的？"><a href="#SET-a-b，这个数据的存储结构是怎样的？" class="headerlink" title="SET a b，这个数据的存储结构是怎样的？"></a>SET a b，这个数据的存储结构是怎样的？</h2><p>如果a在字典中，则value进行覆盖。如果a不存在字典中，则将key添加到字典中对应的偏移位置，并将b作为value进行存储。</p>
 <h2 id="SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？"><a href="#SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？" class="headerlink" title="SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？"></a>SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？</h2><p>如果添加了对键a添加了ttl，则会立马将其key添加到过期字典中，并存储毫秒精度的时间戳</p>
 <h2 id="过期的数据的删除策略了解么？"><a href="#过期的数据的删除策略了解么？" class="headerlink" title="过期的数据的删除策略了解么？"></a>过期的数据的删除策略了解么？</h2><ol>
@@ -1052,8 +1048,8 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>③ Redis采用多路复用的机制，使其在网络IO操作中能并发处理大量的客户端请求，实现高吞吐量</p>
 <h2 id="Redis6-0后引入了多线程，你知道为什么吗？"><a href="#Redis6-0后引入了多线程，你知道为什么吗？" class="headerlink" title="Redis6.0后引入了多线程，你知道为什么吗？"></a>Redis6.0后引入了多线程，你知道为什么吗？</h2><p>随着发展，很多业务的请求量剧增，IO操作比如读取请求、发送回包成为了性能提升的瓶颈，所以在维持单线程框架执行Redis指令的基础上引入了多线程处理IO操作</p>
 <h2 id="Redis6-0的多线程是默认开启的吗？"><a href="#Redis6-0的多线程是默认开启的吗？" class="headerlink" title="Redis6.0的多线程是默认开启的吗？"></a>Redis6.0的多线程是默认开启的吗？</h2><p>不是，默认是关闭的，如果想要开启需要用户在 redis.conf 配置文件中修改</p>
-<pre class="line-numbers language-bash"><code class="language-bash">io-threads 4 <span class="token comment" spellcheck="true">#设置1的话只会开启主线程</span>
-<span class="token comment" spellcheck="true"># 官网建议4核的机器建议设置为2或3个线程，8核的建议设置为6个线程</span>
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">io-threads 4 #设置1的话只会开启主线程
+# 官网建议4核的机器建议设置为2或3个线程，8核的建议设置为6个线程
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h2 id="Redis6-0的多线程主要负责命令执行的哪一块？"><a href="#Redis6-0的多线程主要负责命令执行的哪一块？" class="headerlink" title="Redis6.0的多线程主要负责命令执行的哪一块？"></a>Redis6.0的多线程主要负责命令执行的哪一块？</h2><p>读取并解析指令以及回包；</p>
 <p>单线程模式下是一个线程完成读取、解析、执行、将回包放入客户端缓冲区；</p>
@@ -1083,10 +1079,11 @@ String 底层数据结构为 SDS（Simple Dyn">
 <h2 id="Redis-LRU算法是标准的吗？为什么不用标准的"><a href="#Redis-LRU算法是标准的吗？为什么不用标准的" class="headerlink" title="Redis LRU算法是标准的吗？为什么不用标准的"></a>Redis LRU算法是标准的吗？为什么不用标准的</h2><p>不是，标准的LRU需要维护一个双向链表，如果数据过多，维护这个链表对redis来说就会是巨大的成本，所以采用了近似LRU算法</p>
 <h2 id="什么是LFU算法，为什么Redis要引入LFU算法"><a href="#什么是LFU算法，为什么Redis要引入LFU算法" class="headerlink" title="什么是LFU算法，为什么Redis要引入LFU算法"></a>什么是LFU算法，为什么Redis要引入LFU算法</h2><p>LFU淘汰算法，最不频繁淘汰算法，顾名思义，优先淘汰活跃最低，使用频率最低的。</p>
 <p>Redis在LFU策略下复用redisObject的lru字段，还是用它来表示LFU的信息，不过将24拆解，高16bit存储上一次访问时间戳（精度是1分钟），低8bit存储访问次数。一个Key是否活跃，就是这两个字段综合决定的。</p>
-<p><img src="../images/Q-A%EF%BC%9ARedis/image-20230315211617722.png"></p>
+<p><img src="../images/Q-A：Redis/image-20230315211617722.png" alt=""></p>
 <p>LRU本身已经能解决大部分问题，但是脱离频率，只谈最近访问，在部分场景是得不到我们希望的结果</p>
 <p>例如有的键访问频率很低，但是最近使用过；有的键访问频率很高，但是最近没使用。</p>
-<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="RDB和AOF本质区别是什么？"><a href="#RDB和AOF本质区别是什么？" class="headerlink" title="RDB和AOF本质区别是什么？"></a>RDB和AOF本质区别是什么？</h2><table>
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="RDB和AOF本质区别是什么？"><a href="#RDB和AOF本质区别是什么？" class="headerlink" title="RDB和AOF本质区别是什么？"></a>RDB和AOF本质区别是什么？</h2><div class="table-container">
+<table>
 <thead>
 <tr>
 <th></th>
@@ -1094,7 +1091,8 @@ String 底层数据结构为 SDS（Simple Dyn">
 <th>AOF</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>持久化</td>
 <td>通过保存快照</td>
 <td>通过追加日志</td>
@@ -1119,7 +1117,9 @@ String 底层数据结构为 SDS（Simple Dyn">
 <td>全量保存，开销更大</td>
 <td>追加操作，开销更小</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+</div>
 <h2 id="如果RDB和AOF只能选一种，你选哪个？"><a href="#如果RDB和AOF只能选一种，你选哪个？" class="headerlink" title="如果RDB和AOF只能选一种，你选哪个？"></a>如果RDB和AOF只能选一种，你选哪个？</h2><ul>
 <li><p>如果我们能接受分钟级别的数据丢失，可以考虑选择RDB</p>
 </li>
@@ -1157,7 +1157,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <ul>
 <li><p>如果数据量比较大的时候，会导致fork子进程 这个操作比较耗时，从而阻塞主进程</p>
 </li>
-<li><p> 由于采用了写时复制技术，如果在进行RDB快照保存的时候，有大量的写入操作执行，会导致主进程多拷贝一份数据给子进程，消耗大量额外的内存</p>
+<li><p>由于采用了写时复制技术，如果在进行RDB快照保存的时候，有大量的写入操作执行，会导致主进程多拷贝一份数据给子进程，消耗大量额外的内存</p>
 </li>
 </ul>
 </li>
@@ -1165,8 +1165,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>fork创建子进程之后，通过写时复制技术，子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。只有在发生修改内存数据的情况时，物理内存才会被复制一份。</p>
 <p>如果此时主进程需要修改某块数据，那么这块数据就会被复制一份到内存，生成该数据的副本，子进程会把这个副本数据写入 RDB 文件，而在这个过程中，主线程仍然可以直接修改原来的数据，子进程所看到的数据在它被创建的一瞬间就已经固定下来了</p>
 <p>写时复制技术：如果有多个调用者同时请求相同资源（如内存或磁盘上的数据存储），他们会共同获取相同的指针指向相同的资源，直到某个调用者试图修改资源的内容时，系统才会真正复制一份专用副本给该调用者，而其他调用者所见到的最初的资源仍然保持不变。。此作法主要的优点是如果调用者没有修改该资源，就不会有副本被创建，因此多个调用者只是读取操作时可以共享同一份资源。</p>
-<img src="https://img.jwt1399.top/img/202303252059896.png" style="zoom:50%;" />
-
+<p><img src="https://img.jwt1399.top/img/202303252059896.png" style="zoom:50%;" /></p>
 <h2 id="执行快照时，数据能被修改吗？"><a href="#执行快照时，数据能被修改吗？" class="headerlink" title="执行快照时，数据能被修改吗？"></a>执行快照时，数据能被修改吗？</h2><p>结论：执行 bgsave 过程中，Redis 依然可以修改数据，通过写时复制技术实现，执行 bgsave 命令的时候，会通过 <code>fork()</code> 创建子进程，此时子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。如果主线程（父进程）要<strong>修改共享数据里的某一块数据</strong>（比如键值对 <code>A</code>）时，就会发生写时复制，于是这块数据的<strong>物理内存就会被复制一份（键值对 <code>A&#39;</code>）</strong>，然后<strong>主线程在这个数据副本（键值对 <code>A&#39;</code>）进行修改操作</strong>。与此同时，<strong>bgsave 子进程可以继续把原来的数据（键值对 <code>A</code>）写入到 RDB 文件</strong>。但是bgsave 快照过程中，如果主线程修改了共享数据，<strong>发生了写时复制后，RDB 快照保存的是原本的内存数据</strong>，而主线程刚修改的数据，是没办法在这一时间写入 RDB 文件的，只能交由下一次的 bgsave 快照。</p>
 <p>详细分析：</p>
 <p>执行 bgsave 过程中，子进程来构建 RDB 文件，主线程还是可以继续工作的，此时主线程可以修改数据吗？</p>
@@ -1243,7 +1242,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>如果我们用了 RDB快照，由于在事务执行的时候，是不会进行 RDB 快照的，所以，如果Redis实例故障，事务操作的命令是不会记录到 RDB 快照的，所以和上面一样，实例重启之后，数据库是一致的。</p>
 <p>如果我们使用了 AOF 日志，当事务操作还没有被记录到 AOF 日志时，实例就发生了故障，那么，使用 AOF 日志恢复的数据库数据是一致的。如果只有部分操作被记录到了 AOF 日志，我们可以使用 redis-check-aof 清除事务中已经完成的操作，数据库恢复后也是一致的。</p>
 <p>所以，综上，Redis 事务机制对一致性属性是有保证的。</p>
-<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&mid=2247483815&idx=1&sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&scene=178&cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
+<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&amp;mid=2247483815&amp;idx=1&amp;sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&amp;chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&amp;scene=178&amp;cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
 <p>先更新数据库，再删除缓存，并配合消息队列来解决缓存一直性的问题</p>
 <p>大的方向有三：</p>
 <p>1.更新MySQL即可，不管Redis，以过期时间兜底</p>
@@ -1320,7 +1319,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <h2 id="大key是什么？热key是什么？"><a href="#大key是什么？热key是什么？" class="headerlink" title="大key是什么？热key是什么？"></a>大key是什么？热key是什么？</h2><p>大key是什么？在Redis中，大key指的是key对应的value值所占的内存空间比较大。</p>
 <p>热key是什么？在Redis中，我们把访问频率高的Key，称为热Key。</p>
 <h2 id="如何识别出大key，如何识别出热key？"><a href="#如何识别出大key，如何识别出热key？" class="headerlink" title="如何识别出大key，如何识别出热key？"></a>如何识别出大key，如何识别出热key？</h2><ul>
-<li>redis-cli –bigkeys、redis-cli –hotkeys</li>
+<li>redis-cli —bigkeys、redis-cli —hotkeys</li>
 <li>MEMORY USAGE key</li>
 <li>redis-rdb-tools工具</li>
 </ul>
@@ -1404,18 +1403,18 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>通过 HyperLogLog 来实现</p>
 </blockquote>
 <p>1、将访问指定页面的每个用户 ID 添加到 <code>HyperLogLog</code> 中。</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> PFADD PAGE_1:UV USER1 USER2 USER3  <span class="token comment" spellcheck="true"># 添加元素</span>
-<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">1</span>  <span class="token comment" spellcheck="true"># 添加成功返回1，添加失败返回0 </span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">127.0.0.1:6379> PFADD PAGE_1:UV USER1 USER2 USER3  # 添加元素
+(integer) 1  # 添加成功返回1，添加失败返回0
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>2、统计指定页面的 UV。</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> PFCOUNT PAGE_1:UV  <span class="token comment" spellcheck="true"># 统计数量</span>
-<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">3</span> <span class="token comment" spellcheck="true"># 返回数量</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">127.0.0.1:6379> PFCOUNT PAGE_1:UV  # 统计数量
+(integer) 3 # 返回数量
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>3、将多个页面的UV合并</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> PFMERGE PAGE_1:UV PAGE_2:UV <span class="token comment" spellcheck="true"># 将后面PAGE_2:UV中的值合并到前面的PAGE_1:UV 中</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">127.0.0.1:6379> PFMERGE PAGE_1:UV PAGE_2:UV # 将后面PAGE_2:UV中的值合并到前面的PAGE_1:UV 中
 OK
-<span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> pfcount user2  <span class="token comment" spellcheck="true"># 查看merge后的PAGE_1:UV</span>
-<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">5</span>
+127.0.0.1:6379> pfcount user2  # 查看merge后的PAGE_1:UV
+(integer) 5
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="使用-Redis-实现抽奖系统？"><a href="#使用-Redis-实现抽奖系统？" class="headerlink" title="使用 Redis 实现抽奖系统？"></a>使用 Redis 实现抽奖系统？</h2><blockquote>
 <p>通过 Set 来实现</p>
@@ -1437,15 +1436,15 @@ OK
 <p>我们如何能够简化一点呢？采用Redis的BitMap</p>
 <p>我们按月来统计用户签到信息，把每一个bit位对应当月的每一天，形成了映射关系。用0和1标示业务状态，签到记录为1，未签到则记录为0。这样我们就用极小的空间，来实现了大量数据的表示。</p>
 <p>Redis中是利用string类型数据结构实现BitMap，因此最大上限是512M，转换为bit则是 2^32个bit位。</p>
-<p><img src="https://img.jwt1399.top/img/202212041337440.png"></p>
+<p><img src="https://img.jwt1399.top/img/202212041337440.png" alt=""></p>
 <p><strong>问题1：</strong>什么叫做连续签到天数？</p>
 <p>从最后一次签到开始向前统计，直到遇到第一次未签到为止，计算总的签到次数，就是连续签到天数。</p>
 <p>Java逻辑代码：获得当前这个月的最后一次签到数据，定义一个计数器，然后不停的向前统计，直到获得第一个非1的数字即可，每得到一个非0的数字计数器+1，直到遍历完所有的数据，就可以获得连续签到天数了</p>
 <p><strong>问题2：</strong>如何得到本月到今天为止的所有签到数据？</p>
-<pre class="line-numbers language-sql"><code class="language-sql">BITFIELD <span class="token keyword">key</span> GET u<span class="token punctuation">[</span>dayOfMonth<span class="token punctuation">]</span> <span class="token number">0</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">BITFIELD key GET u[dayOfMonth] 0
 
-<span class="token comment" spellcheck="true"># u[dayOfMonth] 获取dayOfMonth个bit位</span>
-<span class="token comment" spellcheck="true"># 返回结果为10进制</span>
+# u[dayOfMonth] 获取dayOfMonth个bit位
+# 返回结果为10进制
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>假设今天是10号，那么我们就可以从当前月的第一天开始，获得到当前这一天的位数，是10号，那么就是10位，去拿这段时间的数据，就能拿到所有的数据了，那么这10天里边签到了多少次呢？统计有多少个1即可。</p>
 <p><strong>问题3：如何从后向前遍历每个bit位？</strong></p>
@@ -1464,24 +1463,24 @@ OK
 <li>BITPOS ：查找bit数组中指定范围内第一个0或1出现的位置</li>
 </ul>
 <p>使用日期（精确到天）作为 key，然后本月的第几天为 offset，如果当日活跃过就设置为 1。初始化数据：</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token operator">></span> SETBIT 20210308 1 1
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
-<span class="token operator">></span> SETBIT 20210308 2 1
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
-<span class="token operator">></span> SETBIT 20210309 1 1
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">> SETBIT 20210308 1 1
+(integer) 0
+> SETBIT 20210308 2 1
+(integer) 0
+> SETBIT 20210309 1 1
+(integer) 0
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>统计 20210308~20210309 总活跃用户数:</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token operator">></span> BITOP and desk1 20210308 20210309
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
-<span class="token operator">></span> BITCOUNT desk1
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">> BITOP and desk1 20210308 20210309
+(integer) 1
+> BITCOUNT desk1
+(integer) 1
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>统计 20210308~20210309 在线活跃用户数:</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token operator">></span> BITOP or desk2 20210308 20210309
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
-<span class="token operator">></span> BITCOUNT desk2
-<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 2
+<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">> BITOP or desk2 20210308 20210309
+(integer) 1
+> BITCOUNT desk2
+(integer) 2
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现分布式锁"><a href="#实现分布式锁" class="headerlink" title="实现分布式锁"></a>实现分布式锁</h2><p>setnx+过期时间+owner检测(分布式锁需要满足谁申请谁释放原则，不能释放别人的锁，也就是说，分布式锁，是要有归属的)+Lua(解决owner检测原子性)+主从容灾和多级部署</p>
 <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/y8kAflIenRpa4zIwCP_8iA?notreplace=true">支付宝一面：如何基于Redis实现分布式锁？ (qq.com)</a></p>
@@ -1516,17 +1515,17 @@ OK
 <p>单机 Redis 存在单点风险问题，也就是说，如果唯一的一个 Redis 节点宕机的话，就会导致大量的请求直接被打到数据库，严重的情况下，数据库很可能会直接被干宕机了。</p>
 </blockquote>
 <h3 id="Redis集群的主从复制模型是怎样的？"><a href="#Redis集群的主从复制模型是怎样的？" class="headerlink" title="Redis集群的主从复制模型是怎样的？"></a>Redis集群的主从复制模型是怎样的？</h3><p>主从复制 就是将一台 Redis 主节点的数据复制到其他的 Redis 从节点中，尽最大可能保证 Redis 主节点和从节点的数据是一致的。主节点负责写，从节点负责读，如果主节点宕机，就从节点中选出一个作为主节点</p>
-<pre class="line-numbers language-sql"><code class="language-sql">slaveof ip port  <span class="token comment" spellcheck="true"># ip port 是 master 的</span>
+<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">slaveof ip port  # ip port 是 master 的
 
-<span class="token comment" spellcheck="true"># 从 Redis 5 起使用 REPLICAOF 替代 SLAVEOF 。当然，为了向后兼容 SLAVEOF 命令仍然可用。</span>
+# 从 Redis 5 起使用 REPLICAOF 替代 SLAVEOF 。当然，为了向后兼容 SLAVEOF 命令仍然可用。
 
-<span class="token comment" spellcheck="true"># 在指定 redis 节点上执行 replicaof 命令就可以让其成为 master 的 slave</span>
+# 在指定 redis 节点上执行 replicaof 命令就可以让其成为 master 的 slave
 
-<span class="token comment" spellcheck="true"># 查看信息</span>
-info <span class="token keyword">replication</span>
+# 查看信息
+info replication
 
-<span class="token comment" spellcheck="true"># 不同步</span>
-SLAVEOF <span class="token keyword">no</span> one
+# 不同步
+SLAVEOF no one
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>全量复制的三个阶段？</li>
@@ -1570,13 +1569,13 @@ SLAVEOF <span class="token keyword">no</span> one
 </ul>
 <h3 id="如何从-Sentinel-集群中选择出-Leader-？"><a href="#如何从-Sentinel-集群中选择出-Leader-？" class="headerlink" title="如何从 Sentinel 集群中选择出 Leader ？"></a>如何从 Sentinel 集群中选择出 Leader ？</h3><p>当 sentinel 集群确认有 master 客观下线了，就会开始故障转移流程，故障转移流程的第一步就是在 sentinel 集群选择一个 leader，让 leader 来负责完成故障转移。  如何选择出 Leader 角色呢？  </p>
 <p>这就需要用到分布式领域的 <strong>共识算法</strong> 了。简单来说，共识算法就是让分布式系统中的节点就一个问题达成共识。在 sentinel 选举 leader 这个场景下，这些 sentinel 要达成的共识就是谁才是 leader 。  </p>
-<p>大部分共识算法都是基于 Paxos 算法改进而来，在 sentinel 选举 leader 这个场景下使用的是 <a target="_blank" rel="noopener" href="https://javaguide.cn/distributed-system/theorem&algorithm&protocol/raft-algorithm.html">Raft 算法</a>。这是一个比 Paxos 算法更易理解和实现的共识算法。更具体点来说，Raft 是 Multi-Paxos 的一个变种，其简化了 Multi-Paxos 的思想，变得更容易被理解以及工程实现。  </p>
+<p>大部分共识算法都是基于 Paxos 算法改进而来，在 sentinel 选举 leader 这个场景下使用的是 <a target="_blank" rel="noopener" href="https://javaguide.cn/distributed-system/theorem&amp;algorithm&amp;protocol/raft-algorithm.html">Raft 算法</a>。这是一个比 Paxos 算法更易理解和实现的共识算法。更具体点来说，Raft 是 Multi-Paxos 的一个变种，其简化了 Multi-Paxos 的思想，变得更容易被理解以及工程实现。  </p>
 <h3 id="Sentinel-可以防止脑裂吗？"><a href="#Sentinel-可以防止脑裂吗？" class="headerlink" title="Sentinel 可以防止脑裂吗？"></a>Sentinel 可以防止脑裂吗？</h3><p>如果 主节点1 和 从节点2、从节点3 之间的网络被隔离，也就是发生了脑裂，主节点1 和 从节点2、从节点3 隔离在了两个不同的网络分区中。这意味着， 从节点2 或者 从节点3 其中一个会被选为 master，这里假设为 从节点2。  </p>
 <p>但是！这样会出现问题了！！  </p>
 <p>如果客户端 C1 是和 主节点1  在一个网络分区的话，从网络被隔离到网络分区恢复这段时间，C1 写入 主节点1 的数据都会丢失，并且，C1 读取的可能也是过时的数据。这是因为当网络分区恢复之后，主节点1  将会成为 slave 节点。</p>
 <p>想要解决这个问题需要对 Redis 主从复制进行配置。  </p>
-<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">min-replicas-to-write</span> <span class="token attr-value">1</span>
-<span class="token attr-name">min-replicas-max-lag</span> <span class="token attr-value">10</span>
+<pre class="line-numbers language-lang-properties"><code class="language-lang-properties">min-replicas-to-write 1
+min-replicas-max-lag 10
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>下面对这两个配置进行解释：  </p>
 <ul>
@@ -1609,8 +1608,7 @@ SLAVEOF <span class="token keyword">no</span> one
 <p>Redis Cluster 通常有 16384 个哈希槽 ，要计算给定 key 应该分布到哪个哈希槽中，我们只需要先对每个 key 计算 CRC-16（XMODEM） 校验码，然后再对这个校验码对 16384(哈希槽的总数) 取模，得到的值即是 key 对应的哈希槽。  </p>
 <p>哈希槽的计算公式如下：  </p>
 <pre><code>HASH_SLOT = CRC16(key) mod NUMER_OF_SLOTS
-</code></pre>
-<p>创建并初始化 Redis Cluster 的时候，Redis 会自动平均分配这 16384 个哈希槽到各个节点，不需要我们手动分配。如果你想自己手动调整的话，Redis Cluster 也内置了相关的命令比如 ADDSLOTS、ADDSLOTSRANGE</p>
+</code></pre><p>创建并初始化 Redis Cluster 的时候，Redis 会自动平均分配这 16384 个哈希槽到各个节点，不需要我们手动分配。如果你想自己手动调整的话，Redis Cluster 也内置了相关的命令比如 ADDSLOTS、ADDSLOTSRANGE</p>
 <p>假设集群有 3 个 Redis 节点组成，每个节点负责整个集群的一部分数据，哈希槽可能是这样分配的（这里只是演示，实际效果可能会有差异）：  </p>
 <ul>
 <li>Node 1 ： 0 - 5500 的 hash slots  </li>
@@ -2173,9 +2171,11 @@ SLAVEOF <span class="token keyword">no</span> one
 
 
 
+
 区别
 Integer
 int
+
 
 
 
@@ -2200,8 +2200,7 @@ null
 
 
 占用空间
-较大
-
+较
                         
                     </div>
                     <div class="publish-info">
@@ -2463,7 +2462,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1067.4k</span>&nbsp;字
+                class="white-color">712.3k</span>&nbsp;字
             
             
             
@@ -2694,6 +2693,22 @@ $(function () {
     
 
         
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </body>
 
 </html>
