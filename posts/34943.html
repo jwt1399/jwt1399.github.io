@@ -47,7 +47,11 @@ String 底层数据结构为 SDS（Simple Dyn">
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -884,7 +888,7 @@ String 底层数据结构为 SDS（Simple Dyn">
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    16.8k
+                    16.9k
                 </div>
                 
 
@@ -902,7 +906,7 @@ String 底层数据结构为 SDS（Simple Dyn">
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img.jwt1399.top/img/202303231236751.png" alt=""></p>
+                <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img.jwt1399.top/img/202303231236751.png"></p>
 <h2 id="简单动态字符串-SDS"><a href="#简单动态字符串-SDS" class="headerlink" title="简单动态字符串-SDS"></a>简单动态字符串-SDS</h2><blockquote>
 <p>String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 <code>512M</code>。</p>
 </blockquote>
@@ -918,50 +922,50 @@ String 底层数据结构为 SDS（Simple Dyn">
 <ol>
 <li><strong>可以避免缓冲区溢出</strong> ：C 语言中的字符串被修改（比如拼接）时，一旦没有分配足够长度的内存空间，就会造成缓冲区溢出。SDS 被修改时，会先根据 len 属性检查空间大小是否满足要求，如果不满足，则先扩展至所需大小再进行修改操作。</li>
 <li><strong>获取字符串长度的复杂度较低</strong> ： C 语言中的字符串的长度通常是经过遍历计数来实现的，时间复杂度为 O(n)。SDS 的长度获取直接读取 len 属性即可，时间复杂度为 O(1)。</li>
-<li><strong>减少内存分配次数</strong> ： 为了避免修改（增加/减少）字符串时，每次都需要重新分配内存（C 语言的字符串是这样的），SDS 实现了<strong>空间预分配</strong>和<strong>惰性空间释放</strong>两种优化策略。当 SDS 需要增加字符串时，Redis 会为 SDS 分配好内存，并且根据特定的算法分配多余的内存，这样可以减少连续执行字符串增长操作所需的内存重分配次数。当 SDS 需要减少字符串时，这部分内存不会立即被回收，会被记录下来，等待后续使用（支持手动释放，有对应的 API）。</li>
+<li><strong>减少内存分配次数</strong> ： 为了避免修改（增加&#x2F;减少）字符串时，每次都需要重新分配内存（C 语言的字符串是这样的），SDS 实现了<strong>空间预分配</strong>和<strong>惰性空间释放</strong>两种优化策略。当 SDS 需要增加字符串时，Redis 会为 SDS 分配好内存，并且根据特定的算法分配多余的内存，这样可以减少连续执行字符串增长操作所需的内存重分配次数。当 SDS 需要减少字符串时，这部分内存不会立即被回收，会被记录下来，等待后续使用（支持手动释放，有对应的 API）。</li>
 <li><strong>二进制安全</strong> ：C 语言中的字符串以空字符 <code>\0</code> 作为字符串结束的标识，这存在一些问题，像一些二进制文件（比如图片、视频、音频）就可能包括空字符，C 字符串无法正确保存。SDS 使用 len 属性判断字符串是否结束，不存在这个问题。</li>
 </ol>
-<h2 id="压缩列表-ZipList"><a href="#压缩列表-ZipList" class="headerlink" title="压缩列表 - ZipList"></a>压缩列表 - ZipList</h2><p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-6.png" alt=""></p>
+<h2 id="压缩列表-ZipList"><a href="#压缩列表-ZipList" class="headerlink" title="压缩列表 - ZipList"></a>压缩列表 - ZipList</h2><p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-6.png"></p>
 <ul>
 <li><code>zlbytes</code>存储的是整个ziplist所占用的内存的字节数</li>
 <li><code>zltail</code>指的是ziplist中最后一个entry的偏移量. 用于快速定位最后一个entry, 以快速完成pop等操作</li>
 <li><code>zllen</code>指的是整个ziplit中entry的数量. </li>
 <li><code>zlend</code>是一个终止字节, 其值为全F, 即0xff.</li>
 </ul>
-<h2 id="快表-QuickList"><a href="#快表-QuickList" class="headerlink" title="快表 - QuickList"></a>快表 - QuickList</h2><p>QuickList = 双向链表+压缩列表</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-4.png" alt=""></p>
+<h2 id="快表-QuickList"><a href="#快表-QuickList" class="headerlink" title="快表 - QuickList"></a>快表 - QuickList</h2><p>QuickList &#x3D; 双向链表+压缩列表</p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-4.png"></p>
 <h2 id="哈希表-Dict"><a href="#哈希表-Dict" class="headerlink" title="哈希表 - Dict"></a>哈希表 - Dict</h2><p>哈希表是由数组 table 组成，table 中每个元素都是指向 dictEntry 结构</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-13.png" alt=""></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-13.png"></p>
 <p><strong>哈希表结构定义</strong>：</p>
-<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct dictht{
-    dictEntry **table;         //哈希表数组
-    unsigned long size;       //哈希表大小
-    unsigned long sizemask;  //哈希表大小掩码，用于计算索引值，总是等于 size-1
-    unsigned long used;     //该哈希表已有节点的数量
-}dictht
+<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> dictht<span class="token punctuation">{</span>
+    dictEntry <span class="token operator">*</span><span class="token operator">*</span>table<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">//哈希表数组</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> size<span class="token punctuation">;</span>       <span class="token comment" spellcheck="true">//哈希表大小</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> sizemask<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//哈希表大小掩码，用于计算索引值，总是等于 size-1</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> used<span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">//该哈希表已有节点的数量</span>
+<span class="token punctuation">}</span>dictht
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>哈希表是由数组 table 组成，table 中每个元素都是指向 dict.h/dictEntry 结构，dictEntry 结构定义如下：</p>
-<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct dictEntry{
-     void *key;  //键
-     union{     //值
-          void *val;
-          uint64_tu64;
-          int64_ts64;
-     }v;
-     struct dictEntry *next;  //指向下一个哈希表节点，形成链表
-}dictEntry
+<p>哈希表是由数组 table 组成，table 中每个元素都是指向 dict.h&#x2F;dictEntry 结构，dictEntry 结构定义如下：</p>
+<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> dictEntry<span class="token punctuation">{</span>
+     <span class="token keyword">void</span> <span class="token operator">*</span>key<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//键</span>
+     <span class="token keyword">union</span><span class="token punctuation">{</span>     <span class="token comment" spellcheck="true">//值</span>
+          <span class="token keyword">void</span> <span class="token operator">*</span>val<span class="token punctuation">;</span>
+          uint64_tu64<span class="token punctuation">;</span>
+          int64_ts64<span class="token punctuation">;</span>
+     <span class="token punctuation">}</span>v<span class="token punctuation">;</span>
+     <span class="token keyword">struct</span> dictEntry <span class="token operator">*</span>next<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//指向下一个哈希表节点，形成链表</span>
+<span class="token punctuation">}</span>dictEntry
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="整数集合-intset"><a href="#整数集合-intset" class="headerlink" title="整数集合-intset"></a>整数集合-intset</h2><p>首先看源码结构</p>
-<pre class="line-numbers language-lang-c"><code class="language-lang-c">typedef struct intset {
-    uint32_t encoding; //编码方式
-    uint32_t length;  //其中存储的整数的个数
-    int8_t contents[]; //实际存储数值的连续内存区域
-} intset;
+<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> intset <span class="token punctuation">{</span>
+    uint32_t encoding<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//编码方式</span>
+    uint32_t length<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//其中存储的整数的个数</span>
+    int8_t contents<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//实际存储数值的连续内存区域</span>
+<span class="token punctuation">}</span> intset<span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="跳表-SkipList"><a href="#跳表-SkipList" class="headerlink" title="跳表-SkipList"></a>跳表-SkipList</h2><p>对于于一个单链表来讲，即便链表中存储的数据是有序的，如果我们要想在其中查找某个数据，也只能从头到尾遍历链表。这样查找效率就会很低，时间复杂度会很高，是 O(n)。比如查找12，需要7次查找</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-9.png" alt=""></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-9.png"></p>
 <p>如果我们增加如下两级索引，那么它搜索次数就变成了3次</p>
-<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-10.png" alt=""></p>
+<p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-10.png"></p>
 <p><strong>skiplist与平衡树、哈希表的比较</strong>（为什么不用平衡树或者哈希表）</p>
 <ul>
 <li><p><strong>哈希表上只能做单个key的查找，不适宜做范围查找。</strong>skiplist和各种平衡树（如AVL、红黑树等）的元素是有序排列的，而哈希表不是有序的。</p>
@@ -985,22 +989,23 @@ String 底层数据结构为 SDS（Simple Dyn">
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Redis支持Pipeline模式来批量发送数据给服务端，这样的好处是节省了网络时间，缺点是服务端会耗费更多内存，以及单个命令的时间会被整体拖慢。</p>
 <p>生产中，不建议过度使用Pipeline，只有在真正需要的时候，比如在一个线程需要更新多个数据的时候，就比较合适。</p>
 <h1 id="Redis运行原理"><a href="#Redis运行原理" class="headerlink" title="Redis运行原理"></a>Redis运行原理</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>redisDb代表Redis数据库结构</p>
-<pre class="line-numbers language-lang-c"><code class="language-lang-c">// from Redis 5.0.5
+<pre class="line-numbers language-c"><code class="language-c"><span class="token comment" spellcheck="true">// from Redis 5.0.5</span>
 
-typedef struct redisDb {
-    dict *dict;                 /* The keyspace for this DB */
-    dict *expires;              /* Timeout of keys with a timeout set */
-    dict *blocking_keys;        /* Keys with clients waiting for data (BLPOP)*/
-    dict *ready_keys;           /* Blocked keys that received a PUSH */
-    dict *watched_keys;         /* WATCHED keys for MULTI/EXEC CAS */
-    int id;                     /* Database ID */
-    long long avg_ttl;          /* Average TTL, just for stats */
-    list *defrag_later;         /* List of key names to attempt to defrag one by one, gradually. */
-} redisDb;
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> redisDb <span class="token punctuation">{</span>
+    dict <span class="token operator">*</span>dict<span class="token punctuation">;</span>                 <span class="token comment" spellcheck="true">/* The keyspace for this DB */</span>
+    dict <span class="token operator">*</span>expires<span class="token punctuation">;</span>              <span class="token comment" spellcheck="true">/* Timeout of keys with a timeout set */</span>
+    dict <span class="token operator">*</span>blocking_keys<span class="token punctuation">;</span>        <span class="token comment" spellcheck="true">/* Keys with clients waiting for data (BLPOP)*/</span>
+    dict <span class="token operator">*</span>ready_keys<span class="token punctuation">;</span>           <span class="token comment" spellcheck="true">/* Blocked keys that received a PUSH */</span>
+    dict <span class="token operator">*</span>watched_keys<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">/* WATCHED keys for MULTI/EXEC CAS */</span>
+    <span class="token keyword">int</span> id<span class="token punctuation">;</span>                     <span class="token comment" spellcheck="true">/* Database ID */</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> avg_ttl<span class="token punctuation">;</span>          <span class="token comment" spellcheck="true">/* Average TTL, just for stats */</span>
+    list <span class="token operator">*</span>defrag_later<span class="token punctuation">;</span>         <span class="token comment" spellcheck="true">/* List of key names to attempt to defrag one by one, gradually. */</span>
+<span class="token punctuation">}</span> redisDb<span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" /></p>
+<img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" />
+
 <p>RedisObject 就是存储在dict数据结构里</p>
-<pre class="line-numbers language-lang-C"><code class="language-lang-C">typedef struct dict {
+<pre class="line-numbers language-C"><code class="language-C">typedef struct dict {
     dictType *type;
     void *privdata;
     dictht ht[2];
@@ -1015,7 +1020,10 @@ typedef struct redisDb {
 <li>删除数据：把key和value都从dict中删除</li>
 </ul>
 <h2 id="过期键"><a href="#过期键" class="headerlink" title="过期键"></a>过期键</h2><p>过期键存在expires字典上，过期字典来保存数据过期的时间。过期字典的键指向 Redis 数据库中的某个 key(键)，过期字典的值是一个 long long 类型的整数，这个整数保存了 key 所指向的数据库键的过期时间（毫秒精度的 UNIX 时间戳）。</p>
-<p><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" /></p>
+<img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/database/redis/redis-expired-dictionary.png" alt="redis过期字典" style="zoom: 25%;" />
+
+
+
 <h2 id="SET-a-b，这个数据的存储结构是怎样的？"><a href="#SET-a-b，这个数据的存储结构是怎样的？" class="headerlink" title="SET a b，这个数据的存储结构是怎样的？"></a>SET a b，这个数据的存储结构是怎样的？</h2><p>如果a在字典中，则value进行覆盖。如果a不存在字典中，则将key添加到字典中对应的偏移位置，并将b作为value进行存储。</p>
 <h2 id="SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？"><a href="#SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？" class="headerlink" title="SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？"></a>SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？</h2><p>如果添加了对键a添加了ttl，则会立马将其key添加到过期字典中，并存储毫秒精度的时间戳</p>
 <h2 id="过期的数据的删除策略了解么？"><a href="#过期的数据的删除策略了解么？" class="headerlink" title="过期的数据的删除策略了解么？"></a>过期的数据的删除策略了解么？</h2><ol>
@@ -1025,7 +1033,7 @@ typedef struct redisDb {
 <p>定期删除对内存更加友好，惰性删除对 CPU 更加友好。两者各有千秋，所以 Redis 采用的是 <strong>定期删除+惰性删除</strong> </p>
 <h1 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h1><h2 id="Redis是单线程还是多线程的？"><a href="#Redis是单线程还是多线程的？" class="headerlink" title="Redis是单线程还是多线程的？"></a>Redis是单线程还是多线程的？</h2><p>核心处理逻辑，Redis一直是单线程的；</p>
 <p>某些异步流程从4.0开始用多线程，如UNLINK、FLUSHALL ASYNC、FLUSHDB ASYNC等非阻塞的异步删除操作</p>
-<p>网络I/O解包从6.0开始用的都是多线程</p>
+<p>网络I&#x2F;O解包从6.0开始用的都是多线程</p>
 <h2 id="Redis为什么选择单线程做核心处理？"><a href="#Redis为什么选择单线程做核心处理？" class="headerlink" title="Redis为什么选择单线程做核心处理？"></a>Redis为什么选择单线程做核心处理？</h2><p>① 多线程引入的复杂性是很大的</p>
 <ul>
 <li><p>Redis本来是顺序执行的，如果引入多线程，为了支持事务的原子性、隔离性，就需要引入很复杂的实现；</p>
@@ -1048,21 +1056,21 @@ typedef struct redisDb {
 <p>③ Redis采用多路复用的机制，使其在网络IO操作中能并发处理大量的客户端请求，实现高吞吐量</p>
 <h2 id="Redis6-0后引入了多线程，你知道为什么吗？"><a href="#Redis6-0后引入了多线程，你知道为什么吗？" class="headerlink" title="Redis6.0后引入了多线程，你知道为什么吗？"></a>Redis6.0后引入了多线程，你知道为什么吗？</h2><p>随着发展，很多业务的请求量剧增，IO操作比如读取请求、发送回包成为了性能提升的瓶颈，所以在维持单线程框架执行Redis指令的基础上引入了多线程处理IO操作</p>
 <h2 id="Redis6-0的多线程是默认开启的吗？"><a href="#Redis6-0的多线程是默认开启的吗？" class="headerlink" title="Redis6.0的多线程是默认开启的吗？"></a>Redis6.0的多线程是默认开启的吗？</h2><p>不是，默认是关闭的，如果想要开启需要用户在 redis.conf 配置文件中修改</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">io-threads 4 #设置1的话只会开启主线程
-# 官网建议4核的机器建议设置为2或3个线程，8核的建议设置为6个线程
+<pre class="line-numbers language-bash"><code class="language-bash">io-threads 4 <span class="token comment" spellcheck="true">#设置1的话只会开启主线程</span>
+<span class="token comment" spellcheck="true"># 官网建议4核的机器建议设置为2或3个线程，8核的建议设置为6个线程</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h2 id="Redis6-0的多线程主要负责命令执行的哪一块？"><a href="#Redis6-0的多线程主要负责命令执行的哪一块？" class="headerlink" title="Redis6.0的多线程主要负责命令执行的哪一块？"></a>Redis6.0的多线程主要负责命令执行的哪一块？</h2><p>读取并解析指令以及回包；</p>
 <p>单线程模式下是一个线程完成读取、解析、执行、将回包放入客户端缓冲区；</p>
 <p>但在多线程模式下，会将不同的client放入clients_pending_read任务队列中，后续会通过Round-Robin轮询负载均衡策略把这些client分给其他IO线程和主线程进行读取和解析；</p>
 <p>在回包的时候，也是利用Round-Robin轮询负载均衡策略把等待回包队列中的任务连续均匀地分配给IO线程各自的本地FIFO任务队列和主线程自己，主线程轮询等待所有IO线程完成回包任务</p>
 <h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2><p>多路指的是多个socket连接，复用指的是复用一个线程。多路复用主要有三种技术：select，poll，epoll。epoll是最新的也是目前最好的多路复用技术。</p>
-<p>采用多路 I/O 复用技术可以让单个线程高效的处理多个连接请求（尽量减少网络IO的时间消耗），且Redis在内存中操作数据的速度非常快，主要以上两点造就了Redis具有很高的吞吐量。</p>
+<p>采用多路 I&#x2F;O 复用技术可以让单个线程高效的处理多个连接请求（尽量减少网络IO的时间消耗），且Redis在内存中操作数据的速度非常快，主要以上两点造就了Redis具有很高的吞吐量。</p>
 <p>Redis 基于 Reactor 模式开发了自己的网络事件处理器：这个处理器被称为文件事件处理器（file event handler）。</p>
 <ul>
-<li>文件事件处理器使用 I/O 多路复用（multiplexing）程序来同时监听多个套接字，并根据套接字目前执行的任务来为套接字关联不同的事件处理器。</li>
+<li>文件事件处理器使用 I&#x2F;O 多路复用（multiplexing）程序来同时监听多个套接字，并根据套接字目前执行的任务来为套接字关联不同的事件处理器。</li>
 <li>当被监听的套接字准备好执行连接应答（accept）、读取（read）、写入（write）、关 闭（close）等操作时，与操作相对应的文件事件就会产生，这时文件事件处理器就会调用套接字之前关联好的事件处理器来处理这些事件。</li>
 </ul>
-<p><strong>虽然文件事件处理器以单线程方式运行，但通过使用 I/O 多路复用程序来监听多个套接字</strong>，文件事件处理器既实现了高性能的网络通信模型，又可以很好地与 Redis 服务器中其他同样以单线程方式运行的模块进行对接，这保持了 Redis 内部单线程设计的简单性。</p>
+<p><strong>虽然文件事件处理器以单线程方式运行，但通过使用 I&#x2F;O 多路复用程序来监听多个套接字</strong>，文件事件处理器既实现了高性能的网络通信模型，又可以很好地与 Redis 服务器中其他同样以单线程方式运行的模块进行对接，这保持了 Redis 内部单线程设计的简单性。</p>
 <h1 id="内存淘汰"><a href="#内存淘汰" class="headerlink" title="内存淘汰"></a>内存淘汰</h1><h2 id="Redis有几种内存回收策略"><a href="#Redis有几种内存回收策略" class="headerlink" title="Redis有几种内存回收策略"></a>Redis有几种内存回收策略</h2><p>8种</p>
 <ul>
 <li>no-eviction</li>
@@ -1079,11 +1087,10 @@ typedef struct redisDb {
 <h2 id="Redis-LRU算法是标准的吗？为什么不用标准的"><a href="#Redis-LRU算法是标准的吗？为什么不用标准的" class="headerlink" title="Redis LRU算法是标准的吗？为什么不用标准的"></a>Redis LRU算法是标准的吗？为什么不用标准的</h2><p>不是，标准的LRU需要维护一个双向链表，如果数据过多，维护这个链表对redis来说就会是巨大的成本，所以采用了近似LRU算法</p>
 <h2 id="什么是LFU算法，为什么Redis要引入LFU算法"><a href="#什么是LFU算法，为什么Redis要引入LFU算法" class="headerlink" title="什么是LFU算法，为什么Redis要引入LFU算法"></a>什么是LFU算法，为什么Redis要引入LFU算法</h2><p>LFU淘汰算法，最不频繁淘汰算法，顾名思义，优先淘汰活跃最低，使用频率最低的。</p>
 <p>Redis在LFU策略下复用redisObject的lru字段，还是用它来表示LFU的信息，不过将24拆解，高16bit存储上一次访问时间戳（精度是1分钟），低8bit存储访问次数。一个Key是否活跃，就是这两个字段综合决定的。</p>
-<p><img src="../images/Q-A：Redis/image-20230315211617722.png" alt=""></p>
+<p><img src="/../images/Q-A%EF%BC%9ARedis/image-20230315211617722.png"></p>
 <p>LRU本身已经能解决大部分问题，但是脱离频率，只谈最近访问，在部分场景是得不到我们希望的结果</p>
 <p>例如有的键访问频率很低，但是最近使用过；有的键访问频率很高，但是最近没使用。</p>
-<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="RDB和AOF本质区别是什么？"><a href="#RDB和AOF本质区别是什么？" class="headerlink" title="RDB和AOF本质区别是什么？"></a>RDB和AOF本质区别是什么？</h2><div class="table-container">
-<table>
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="RDB和AOF本质区别是什么？"><a href="#RDB和AOF本质区别是什么？" class="headerlink" title="RDB和AOF本质区别是什么？"></a>RDB和AOF本质区别是什么？</h2><table>
 <thead>
 <tr>
 <th></th>
@@ -1091,8 +1098,7 @@ typedef struct redisDb {
 <th>AOF</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>持久化</td>
 <td>通过保存快照</td>
 <td>通过追加日志</td>
@@ -1117,9 +1123,7 @@ typedef struct redisDb {
 <td>全量保存，开销更大</td>
 <td>追加操作，开销更小</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h2 id="如果RDB和AOF只能选一种，你选哪个？"><a href="#如果RDB和AOF只能选一种，你选哪个？" class="headerlink" title="如果RDB和AOF只能选一种，你选哪个？"></a>如果RDB和AOF只能选一种，你选哪个？</h2><ul>
 <li><p>如果我们能接受分钟级别的数据丢失，可以考虑选择RDB</p>
 </li>
@@ -1165,7 +1169,8 @@ typedef struct redisDb {
 <p>fork创建子进程之后，通过写时复制技术，子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。只有在发生修改内存数据的情况时，物理内存才会被复制一份。</p>
 <p>如果此时主进程需要修改某块数据，那么这块数据就会被复制一份到内存，生成该数据的副本，子进程会把这个副本数据写入 RDB 文件，而在这个过程中，主线程仍然可以直接修改原来的数据，子进程所看到的数据在它被创建的一瞬间就已经固定下来了</p>
 <p>写时复制技术：如果有多个调用者同时请求相同资源（如内存或磁盘上的数据存储），他们会共同获取相同的指针指向相同的资源，直到某个调用者试图修改资源的内容时，系统才会真正复制一份专用副本给该调用者，而其他调用者所见到的最初的资源仍然保持不变。。此作法主要的优点是如果调用者没有修改该资源，就不会有副本被创建，因此多个调用者只是读取操作时可以共享同一份资源。</p>
-<p><img src="https://img.jwt1399.top/img/202303252059896.png" style="zoom:50%;" /></p>
+<img src="https://img.jwt1399.top/img/202303252059896.png" style="zoom:50%;" />
+
 <h2 id="执行快照时，数据能被修改吗？"><a href="#执行快照时，数据能被修改吗？" class="headerlink" title="执行快照时，数据能被修改吗？"></a>执行快照时，数据能被修改吗？</h2><p>结论：执行 bgsave 过程中，Redis 依然可以修改数据，通过写时复制技术实现，执行 bgsave 命令的时候，会通过 <code>fork()</code> 创建子进程，此时子进程和父进程是共享同一片内存数据的，因为创建子进程的时候，会复制父进程的页表，但是页表指向的物理内存还是一个。如果主线程（父进程）要<strong>修改共享数据里的某一块数据</strong>（比如键值对 <code>A</code>）时，就会发生写时复制，于是这块数据的<strong>物理内存就会被复制一份（键值对 <code>A&#39;</code>）</strong>，然后<strong>主线程在这个数据副本（键值对 <code>A&#39;</code>）进行修改操作</strong>。与此同时，<strong>bgsave 子进程可以继续把原来的数据（键值对 <code>A</code>）写入到 RDB 文件</strong>。但是bgsave 快照过程中，如果主线程修改了共享数据，<strong>发生了写时复制后，RDB 快照保存的是原本的内存数据</strong>，而主线程刚修改的数据，是没办法在这一时间写入 RDB 文件的，只能交由下一次的 bgsave 快照。</p>
 <p>详细分析：</p>
 <p>执行 bgsave 过程中，子进程来构建 RDB 文件，主线程还是可以继续工作的，此时主线程可以修改数据吗？</p>
@@ -1242,7 +1247,7 @@ typedef struct redisDb {
 <p>如果我们用了 RDB快照，由于在事务执行的时候，是不会进行 RDB 快照的，所以，如果Redis实例故障，事务操作的命令是不会记录到 RDB 快照的，所以和上面一样，实例重启之后，数据库是一致的。</p>
 <p>如果我们使用了 AOF 日志，当事务操作还没有被记录到 AOF 日志时，实例就发生了故障，那么，使用 AOF 日志恢复的数据库数据是一致的。如果只有部分操作被记录到了 AOF 日志，我们可以使用 redis-check-aof 清除事务中已经完成的操作，数据库恢复后也是一致的。</p>
 <p>所以，综上，Redis 事务机制对一致性属性是有保证的。</p>
-<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&amp;mid=2247483815&amp;idx=1&amp;sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&amp;chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&amp;scene=178&amp;cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
+<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&mid=2247483815&idx=1&sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&scene=178&cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
 <p>先更新数据库，再删除缓存，并配合消息队列来解决缓存一直性的问题</p>
 <p>大的方向有三：</p>
 <p>1.更新MySQL即可，不管Redis，以过期时间兜底</p>
@@ -1265,10 +1270,10 @@ typedef struct redisDb {
 </ul>
 <p>解决办法：</p>
 <ul>
-<li>数据库和缓存数据强一致场景 ：更新 db 的时候同样更新 cache，不过我们需要加一个锁/分布式锁来保证更新 cache 的时候不存在线程安全问题。</li>
+<li>数据库和缓存数据强一致场景 ：更新 db 的时候同样更新 cache，不过我们需要加一个锁&#x2F;分布式锁来保证更新 cache 的时候不存在线程安全问题。</li>
 <li>可以短暂地允许数据库和缓存数据不一致的场景 ：更新 db 的时候同样更新 cache，但是给缓存加一个比较短的过期时间，这样的话就可以保证即使数据不一致的话影响也比较小</li>
 </ul>
-<h2 id="Read-Write-Through-Cache-Pattern：读写穿透模式"><a href="#Read-Write-Through-Cache-Pattern：读写穿透模式" class="headerlink" title="Read/Write Through Cache Pattern：读写穿透模式"></a>Read/Write Through Cache Pattern：读写穿透模式</h2><p>Read/Write Through Pattern 中服务端把 cache 视为主要数据存储，从中读取数据并将数据写入其中。cache 服务负责将此数据读取和写入 db，从而减轻了应用程序的职责。</p>
+<h2 id="Read-x2F-Write-Through-Cache-Pattern：读写穿透模式"><a href="#Read-x2F-Write-Through-Cache-Pattern：读写穿透模式" class="headerlink" title="Read&#x2F;Write Through Cache Pattern：读写穿透模式"></a>Read&#x2F;Write Through Cache Pattern：读写穿透模式</h2><p>Read&#x2F;Write Through Pattern 中服务端把 cache 视为主要数据存储，从中读取数据并将数据写入其中。cache 服务负责将此数据读取和写入 db，从而减轻了应用程序的职责。</p>
 <p><strong>读(Read Through)：</strong></p>
 <ul>
 <li>从 cache 中读取数据，读取到就直接返回 </li>
@@ -1281,15 +1286,15 @@ typedef struct redisDb {
 </ul>
 <p>Read Through的优势是缓存对业务透明，业务代码更简洁。缺点是缓存命中时性能不如Cache Aside，相比直接访问缓存，还会多一次服务间调用。</p>
 <p>在使用Write-Through时要特别注意的是缓存的有效性管理，否则会导致大量的缓存占用内存资源。甚至有效的缓存数据被无效的缓存数据给清除掉。</p>
-<h2 id="Through-Cache-Pattern：异步缓存写入"><a href="#Through-Cache-Pattern：异步缓存写入" class="headerlink" title="Through Cache Pattern：异步缓存写入"></a>Through Cache Pattern：异步缓存写入</h2><p>Write Behind Pattern 和 Read/Write Through Pattern 很相似，两者都是由 cache 服务来负责 cache 和 db 的读写。</p>
-<p>但是，两个又有很大的不同：<strong>Read/Write Through 是同步更新 cache 和 db，而 Write Behind 则是只更新缓存，不直接更新 db，而是改为异步批量的方式来更新 db。</strong></p>
+<h2 id="Through-Cache-Pattern：异步缓存写入"><a href="#Through-Cache-Pattern：异步缓存写入" class="headerlink" title="Through Cache Pattern：异步缓存写入"></a>Through Cache Pattern：异步缓存写入</h2><p>Write Behind Pattern 和 Read&#x2F;Write Through Pattern 很相似，两者都是由 cache 服务来负责 cache 和 db 的读写。</p>
+<p>但是，两个又有很大的不同：<strong>Read&#x2F;Write Through 是同步更新 cache 和 db，而 Write Behind 则是只更新缓存，不直接更新 db，而是改为异步批量的方式来更新 db。</strong></p>
 <p>很明显，这种方式对数据一致性带来了更大的挑战，比如 cache 数据可能还没异步更新 db 的话，cache 服务可能就就挂掉了。</p>
 <p>应用场景：消息队列中消息的异步写入磁盘、MySQL 的 Innodb Buffer Pool 机制都用到了这种策略。</p>
 <p>Write Behind Pattern 下 db 的写性能非常高，非常适合一些数据经常变化又对数据一致性要求没那么高的场景，比如浏览量、点赞量。</p>
 <h1 id="缓存问题"><a href="#缓存问题" class="headerlink" title="缓存问题"></a>缓存问题</h1><h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>缓存和数据库中都没有的数据</p>
 <p>解决方案</p>
 <ul>
-<li><p>1.接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;=0的直接拦截；</p>
+<li><p>1.接口层增加校验，如用户鉴权校验，id做基础校验，id&lt;&#x3D;0的直接拦截；</p>
 </li>
 <li><p>2.缓存空值，缓存有效时间可以设置短点，如30秒（设置太长会导致正常情况也没法使用）。这样可以防止攻击用户反复用同一个id暴力攻击</p>
 </li>
@@ -1319,7 +1324,7 @@ typedef struct redisDb {
 <h2 id="大key是什么？热key是什么？"><a href="#大key是什么？热key是什么？" class="headerlink" title="大key是什么？热key是什么？"></a>大key是什么？热key是什么？</h2><p>大key是什么？在Redis中，大key指的是key对应的value值所占的内存空间比较大。</p>
 <p>热key是什么？在Redis中，我们把访问频率高的Key，称为热Key。</p>
 <h2 id="如何识别出大key，如何识别出热key？"><a href="#如何识别出大key，如何识别出热key？" class="headerlink" title="如何识别出大key，如何识别出热key？"></a>如何识别出大key，如何识别出热key？</h2><ul>
-<li>redis-cli —bigkeys、redis-cli —hotkeys</li>
+<li>redis-cli –bigkeys、redis-cli –hotkeys</li>
 <li>MEMORY USAGE key</li>
 <li>redis-rdb-tools工具</li>
 </ul>
@@ -1327,7 +1332,7 @@ typedef struct redisDb {
 <ul>
 <li><p>1.string类型的key超过10KB</p>
 </li>
-<li><p>2.hash/set/zset/list等数据结构中元素个数大于5k/整体占用内存大于10MB</p>
+<li><p>2.hash&#x2F;set&#x2F;zset&#x2F;list等数据结构中元素个数大于5k&#x2F;整体占用内存大于10MB</p>
 </li>
 </ul>
 <p>热key定义参考值如下：</p>
@@ -1356,8 +1361,6 @@ typedef struct redisDb {
 <li>大key设定了过期时间，当过期时这个key会被删除。假如redis版本低于4.0没有非同步删除机制，就会存在阻塞redis的可能性，并且慢查询查不到；同样，内存不足时的key驱逐或者是rename一个大key也会阻塞redis服务。长时间阻塞主库，可能会引发同步中断或主从切换。</li>
 </ul>
 </li>
-</ul>
-<ul>
 <li><p>占用大量的CPU资源，影响其他请求并导致整体性能降低。</p>
 </li>
 <li><p>集群架构下，产生访问倾斜，即某个数据分片被大量访问，而其他数据分片处于空闲状态，可能引起该数据分片的连接数被耗尽，新的连接建立请求被拒绝等问题。</p>
@@ -1390,8 +1393,6 @@ typedef struct redisDb {
 </li>
 <li><p>监控Redis的内存水位，设置报警提醒</p>
 </li>
-</ul>
-<ul>
 <li><p>使用读写分离架构：如果热Key的产生来自于读请求，那么读写分离是一个很好的解决方案。在使用读写分离架构时可以通过不断的增加从节点来降低每个Redis实例中的读请求压力。</p>
 </li>
 <li><p>Redis集群扩容：增加分片副本，分摊客户端发过来的读请求。</p>
@@ -1403,18 +1404,18 @@ typedef struct redisDb {
 <p>通过 HyperLogLog 来实现</p>
 </blockquote>
 <p>1、将访问指定页面的每个用户 ID 添加到 <code>HyperLogLog</code> 中。</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">127.0.0.1:6379> PFADD PAGE_1:UV USER1 USER2 USER3  # 添加元素
-(integer) 1  # 添加成功返回1，添加失败返回0
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> PFADD PAGE_1:UV USER1 USER2 USER3  <span class="token comment" spellcheck="true"># 添加元素</span>
+<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">1</span>  <span class="token comment" spellcheck="true"># 添加成功返回1，添加失败返回0 </span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>2、统计指定页面的 UV。</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">127.0.0.1:6379> PFCOUNT PAGE_1:UV  # 统计数量
-(integer) 3 # 返回数量
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> PFCOUNT PAGE_1:UV  <span class="token comment" spellcheck="true"># 统计数量</span>
+<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">3</span> <span class="token comment" spellcheck="true"># 返回数量</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>3、将多个页面的UV合并</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">127.0.0.1:6379> PFMERGE PAGE_1:UV PAGE_2:UV # 将后面PAGE_2:UV中的值合并到前面的PAGE_1:UV 中
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> PFMERGE PAGE_1:UV PAGE_2:UV <span class="token comment" spellcheck="true"># 将后面PAGE_2:UV中的值合并到前面的PAGE_1:UV 中</span>
 OK
-127.0.0.1:6379> pfcount user2  # 查看merge后的PAGE_1:UV
-(integer) 5
+<span class="token number">127.0</span><span class="token punctuation">.</span><span class="token number">0.1</span>:<span class="token number">6379</span><span class="token operator">></span> pfcount user2  <span class="token comment" spellcheck="true"># 查看merge后的PAGE_1:UV</span>
+<span class="token punctuation">(</span><span class="token keyword">integer</span><span class="token punctuation">)</span> <span class="token number">5</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="使用-Redis-实现抽奖系统？"><a href="#使用-Redis-实现抽奖系统？" class="headerlink" title="使用 Redis 实现抽奖系统？"></a>使用 Redis 实现抽奖系统？</h2><blockquote>
 <p>通过 Set 来实现</p>
@@ -1436,15 +1437,15 @@ OK
 <p>我们如何能够简化一点呢？采用Redis的BitMap</p>
 <p>我们按月来统计用户签到信息，把每一个bit位对应当月的每一天，形成了映射关系。用0和1标示业务状态，签到记录为1，未签到则记录为0。这样我们就用极小的空间，来实现了大量数据的表示。</p>
 <p>Redis中是利用string类型数据结构实现BitMap，因此最大上限是512M，转换为bit则是 2^32个bit位。</p>
-<p><img src="https://img.jwt1399.top/img/202212041337440.png" alt=""></p>
+<p><img src="https://img.jwt1399.top/img/202212041337440.png"></p>
 <p><strong>问题1：</strong>什么叫做连续签到天数？</p>
 <p>从最后一次签到开始向前统计，直到遇到第一次未签到为止，计算总的签到次数，就是连续签到天数。</p>
 <p>Java逻辑代码：获得当前这个月的最后一次签到数据，定义一个计数器，然后不停的向前统计，直到获得第一个非1的数字即可，每得到一个非0的数字计数器+1，直到遍历完所有的数据，就可以获得连续签到天数了</p>
 <p><strong>问题2：</strong>如何得到本月到今天为止的所有签到数据？</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">BITFIELD key GET u[dayOfMonth] 0
+<pre class="line-numbers language-sql"><code class="language-sql">BITFIELD <span class="token keyword">key</span> GET u<span class="token punctuation">[</span>dayOfMonth<span class="token punctuation">]</span> <span class="token number">0</span>
 
-# u[dayOfMonth] 获取dayOfMonth个bit位
-# 返回结果为10进制
+<span class="token comment" spellcheck="true"># u[dayOfMonth] 获取dayOfMonth个bit位</span>
+<span class="token comment" spellcheck="true"># 返回结果为10进制</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>假设今天是10号，那么我们就可以从当前月的第一天开始，获得到当前这一天的位数，是10号，那么就是10位，去拿这段时间的数据，就能拿到所有的数据了，那么这10天里边签到了多少次呢？统计有多少个1即可。</p>
 <p><strong>问题3：如何从后向前遍历每个bit位？</strong></p>
@@ -1463,24 +1464,24 @@ OK
 <li>BITPOS ：查找bit数组中指定范围内第一个0或1出现的位置</li>
 </ul>
 <p>使用日期（精确到天）作为 key，然后本月的第几天为 offset，如果当日活跃过就设置为 1。初始化数据：</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">> SETBIT 20210308 1 1
-(integer) 0
-> SETBIT 20210308 2 1
-(integer) 0
-> SETBIT 20210309 1 1
-(integer) 0
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token operator">></span> SETBIT 20210308 1 1
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+<span class="token operator">></span> SETBIT 20210308 2 1
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
+<span class="token operator">></span> SETBIT 20210309 1 1
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 0
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>统计 20210308~20210309 总活跃用户数:</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">> BITOP and desk1 20210308 20210309
-(integer) 1
-> BITCOUNT desk1
-(integer) 1
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token operator">></span> BITOP and desk1 20210308 20210309
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+<span class="token operator">></span> BITCOUNT desk1
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>统计 20210308~20210309 在线活跃用户数:</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">> BITOP or desk2 20210308 20210309
-(integer) 1
-> BITCOUNT desk2
-(integer) 2
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token operator">></span> BITOP or desk2 20210308 20210309
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 1
+<span class="token operator">></span> BITCOUNT desk2
+<span class="token punctuation">(</span>integer<span class="token punctuation">)</span> 2
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现分布式锁"><a href="#实现分布式锁" class="headerlink" title="实现分布式锁"></a>实现分布式锁</h2><p>setnx+过期时间+owner检测(分布式锁需要满足谁申请谁释放原则，不能释放别人的锁，也就是说，分布式锁，是要有归属的)+Lua(解决owner检测原子性)+主从容灾和多级部署</p>
 <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/y8kAflIenRpa4zIwCP_8iA?notreplace=true">支付宝一面：如何基于Redis实现分布式锁？ (qq.com)</a></p>
@@ -1515,17 +1516,17 @@ OK
 <p>单机 Redis 存在单点风险问题，也就是说，如果唯一的一个 Redis 节点宕机的话，就会导致大量的请求直接被打到数据库，严重的情况下，数据库很可能会直接被干宕机了。</p>
 </blockquote>
 <h3 id="Redis集群的主从复制模型是怎样的？"><a href="#Redis集群的主从复制模型是怎样的？" class="headerlink" title="Redis集群的主从复制模型是怎样的？"></a>Redis集群的主从复制模型是怎样的？</h3><p>主从复制 就是将一台 Redis 主节点的数据复制到其他的 Redis 从节点中，尽最大可能保证 Redis 主节点和从节点的数据是一致的。主节点负责写，从节点负责读，如果主节点宕机，就从节点中选出一个作为主节点</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">slaveof ip port  # ip port 是 master 的
+<pre class="line-numbers language-sql"><code class="language-sql">slaveof ip port  <span class="token comment" spellcheck="true"># ip port 是 master 的</span>
 
-# 从 Redis 5 起使用 REPLICAOF 替代 SLAVEOF 。当然，为了向后兼容 SLAVEOF 命令仍然可用。
+<span class="token comment" spellcheck="true"># 从 Redis 5 起使用 REPLICAOF 替代 SLAVEOF 。当然，为了向后兼容 SLAVEOF 命令仍然可用。</span>
 
-# 在指定 redis 节点上执行 replicaof 命令就可以让其成为 master 的 slave
+<span class="token comment" spellcheck="true"># 在指定 redis 节点上执行 replicaof 命令就可以让其成为 master 的 slave</span>
 
-# 查看信息
-info replication
+<span class="token comment" spellcheck="true"># 查看信息</span>
+info <span class="token keyword">replication</span>
 
-# 不同步
-SLAVEOF no one
+<span class="token comment" spellcheck="true"># 不同步</span>
+SLAVEOF <span class="token keyword">no</span> one
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ul>
 <li>全量复制的三个阶段？</li>
@@ -1561,7 +1562,7 @@ SLAVEOF no one
 <h3 id="Sentinel-如何选择出新的-master（选举机制）"><a href="#Sentinel-如何选择出新的-master（选举机制）" class="headerlink" title="Sentinel 如何选择出新的 master（选举机制）?"></a>Sentinel 如何选择出新的 master（选举机制）?</h3><p>slave 必须是在线状态才能参加新的 master 的选举，筛选出所有在线的 slave 之后，通过下面 3 个维度进行最后的筛选（优先级依次降低）：  </p>
 <ul>
 <li><strong>slave 优先级</strong> ：可以通过修改 <code>slave-priority</code>（redis.conf中配置，Redis5.0 后该配置属性名称被修改为 replica-priority） 配置的值来手动设置 slave 的优先级。slave-priority 默认值为 100，其值越小得分越高，越有机会成为 master。<ul>
-<li>比如说假设有三个优先级分别为 10,100,25 的 slave ，哨兵将选择优先级为 10 的。不过，0 是一个特殊的优先级值 ，如果一个 slave 的 slave-priority值为 0，代表其没有参加 master 选举的资格。如果没有优先级最高的，再判断复制进度。  </li>
+<li>比如说假设有三个优先级分别为 10,100,25 的 slave ，哨兵将选择优先级为 10 的。不过，0 是一个特殊的优先级值 ，如果一个 slave 的 slave-priority值为 0，代表其没有参加 master 选举的资格。如果没有优先级最高的，再判断复制进度。</li>
 </ul>
 </li>
 <li><strong>复制进度</strong> ：Sentinel 总是希望选择出数据最完整（与旧 master 数据最接近）也就是复制进度最快的 slave 被提升为新的 master，复制进度越快得分也就越高。  </li>
@@ -1569,29 +1570,29 @@ SLAVEOF no one
 </ul>
 <h3 id="如何从-Sentinel-集群中选择出-Leader-？"><a href="#如何从-Sentinel-集群中选择出-Leader-？" class="headerlink" title="如何从 Sentinel 集群中选择出 Leader ？"></a>如何从 Sentinel 集群中选择出 Leader ？</h3><p>当 sentinel 集群确认有 master 客观下线了，就会开始故障转移流程，故障转移流程的第一步就是在 sentinel 集群选择一个 leader，让 leader 来负责完成故障转移。  如何选择出 Leader 角色呢？  </p>
 <p>这就需要用到分布式领域的 <strong>共识算法</strong> 了。简单来说，共识算法就是让分布式系统中的节点就一个问题达成共识。在 sentinel 选举 leader 这个场景下，这些 sentinel 要达成的共识就是谁才是 leader 。  </p>
-<p>大部分共识算法都是基于 Paxos 算法改进而来，在 sentinel 选举 leader 这个场景下使用的是 <a target="_blank" rel="noopener" href="https://javaguide.cn/distributed-system/theorem&amp;algorithm&amp;protocol/raft-algorithm.html">Raft 算法</a>。这是一个比 Paxos 算法更易理解和实现的共识算法。更具体点来说，Raft 是 Multi-Paxos 的一个变种，其简化了 Multi-Paxos 的思想，变得更容易被理解以及工程实现。  </p>
+<p>大部分共识算法都是基于 Paxos 算法改进而来，在 sentinel 选举 leader 这个场景下使用的是 <a target="_blank" rel="noopener" href="https://javaguide.cn/distributed-system/theorem&algorithm&protocol/raft-algorithm.html">Raft 算法</a>。这是一个比 Paxos 算法更易理解和实现的共识算法。更具体点来说，Raft 是 Multi-Paxos 的一个变种，其简化了 Multi-Paxos 的思想，变得更容易被理解以及工程实现。  </p>
 <h3 id="Sentinel-可以防止脑裂吗？"><a href="#Sentinel-可以防止脑裂吗？" class="headerlink" title="Sentinel 可以防止脑裂吗？"></a>Sentinel 可以防止脑裂吗？</h3><p>如果 主节点1 和 从节点2、从节点3 之间的网络被隔离，也就是发生了脑裂，主节点1 和 从节点2、从节点3 隔离在了两个不同的网络分区中。这意味着， 从节点2 或者 从节点3 其中一个会被选为 master，这里假设为 从节点2。  </p>
 <p>但是！这样会出现问题了！！  </p>
 <p>如果客户端 C1 是和 主节点1  在一个网络分区的话，从网络被隔离到网络分区恢复这段时间，C1 写入 主节点1 的数据都会丢失，并且，C1 读取的可能也是过时的数据。这是因为当网络分区恢复之后，主节点1  将会成为 slave 节点。</p>
 <p>想要解决这个问题需要对 Redis 主从复制进行配置。  </p>
-<pre class="line-numbers language-lang-properties"><code class="language-lang-properties">min-replicas-to-write 1
-min-replicas-max-lag 10
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">min-replicas-to-write</span> <span class="token attr-value">1</span>
+<span class="token attr-name">min-replicas-max-lag</span> <span class="token attr-value">10</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>下面对这两个配置进行解释：  </p>
 <ul>
 <li>min-replicas-to-write 1：用于配置写 master 至少写入的 slave 数量，设置为 0 表示关闭该功能。3 个节点的情况下，可以配置为 1 ，表示 master 必须写入至少 1 个 slave ，否则就停止接受新的写入命令请求。  </li>
-<li>min-replicas-max-lag 10 ：用于配置 master 多长时间（秒）无法得到从节点的响应，就认为这个节点失联。我们这里配置的是 10 秒，也就是说 master 10 秒都得不到一个从节点的响应，就会认为这个从节点失联，停止接受新的写入命令请求。  </li>
+<li>min-replicas-max-lag 10 ：用于配置 master 多长时间（秒）无法得到从节点的响应，就认为这个节点失联。我们这里配置的是 10 秒，也就是说 master 10 秒都得不到一个从节点的响应，就会认为这个从节点失联，停止接受新的写入命令请求。</li>
 </ul>
 <p>不过，这样配置会降低 Redis 服务的整体可用性，如果 2 个 slave 都挂掉，master 将会停止接受新的写入命令请求。</p>
 <h2 id="集群-Cluster"><a href="#集群-Cluster" class="headerlink" title="集群-Cluster"></a><strong>集群-Cluster</strong></h2><h3 id="为什么需要-Redis-Cluster？解决了什么问题？有什么优势？"><a href="#为什么需要-Redis-Cluster？解决了什么问题？有什么优势？" class="headerlink" title="为什么需要 Redis Cluster？解决了什么问题？有什么优势？"></a>为什么需要 Redis Cluster？解决了什么问题？有什么优势？</h3><p>高并发场景下，使用 Redis 主要会遇到的两个问题：  </p>
 <ul>
 <li>缓存的数据量太大 ：实际缓存的数据量可以达到几十 G，甚至是成百上千 G；  </li>
-<li>并发量要求太大 ：虽然 Redis 号称单机可以支持 10w 并发，但实际项目中，不可靠因素太多，就比如一些复杂的写/读操作就可能会让这个并发量大打折扣。而且，就算真的可以实际支持 10w 并发，达到瓶颈了，可能也没办法满足系统的实际需求。  </li>
+<li>并发量要求太大 ：虽然 Redis 号称单机可以支持 10w 并发，但实际项目中，不可靠因素太多，就比如一些复杂的写&#x2F;读操作就可能会让这个并发量大打折扣。而且，就算真的可以实际支持 10w 并发，达到瓶颈了，可能也没办法满足系统的实际需求。</li>
 </ul>
 <p><strong>主从复制</strong>和 <strong>Redis Sentinel</strong> 这两种方案本质都是通过增加主库（master）的副本（slave）数量的方式来提高 Redis 服务的整体可用性和读吞吐量，都不支持横向扩展来缓解写压力以及解决缓存数据量过大的问题。</p>
 <p>对于这两种方案来说，如果写压力太大或者缓存数据量太大的话，我们可以考虑提高服务器硬件的配置。不过，提高硬件配置成本太高，能力有限，无法动态扩容缩容，局限性太大。从本质上来说，靠堆硬件配置的方式并没有实质性地解决问题，依然无法满足高并发场景下分布式缓存的要求。  </p>
 <p>通常情况下，更建议使用 <strong>Redis 切片集群</strong> 这种方案，更能满足高并发场景下分布式缓存的要求。  </p>
-<p>简单来说，Redis 切片集群 就是部署多台 Redis 主节点（master），这些节点之间平等，并没有主从之说，同时对外提供读/写服务。缓存的数据库相对均匀地分布在这些 Redis 实例上，客户端的请求通过路由规则转发到目标 master 上。</p>
+<p>简单来说，Redis 切片集群 就是部署多台 Redis 主节点（master），这些节点之间平等，并没有主从之说，同时对外提供读&#x2F;写服务。缓存的数据库相对均匀地分布在这些 Redis 实例上，客户端的请求通过路由规则转发到目标 master 上。</p>
 <p>为了保障集群整体的高可用，我们需要保证集群中每一个 master 的高可用，可以通过主从复制给每个 master 配置一个或者多个从节点（slave）。</p>
 <p>Redis 切片集群对于横向扩展非常友好，只需要增加 Redis 节点到集群中即可。</p>
 <p>Redis Cluster 这种方案可以很方便地进行 横向拓展（Scale Out），内置了开箱即用的解决方案。当 Redis Cluster 的处理能力达到瓶颈无法满足系统要求的时候，直接动态添加 Redis 节点到集群中即可。</p>
@@ -1608,12 +1609,13 @@ min-replicas-max-lag 10
 <p>Redis Cluster 通常有 16384 个哈希槽 ，要计算给定 key 应该分布到哪个哈希槽中，我们只需要先对每个 key 计算 CRC-16（XMODEM） 校验码，然后再对这个校验码对 16384(哈希槽的总数) 取模，得到的值即是 key 对应的哈希槽。  </p>
 <p>哈希槽的计算公式如下：  </p>
 <pre><code>HASH_SLOT = CRC16(key) mod NUMER_OF_SLOTS
-</code></pre><p>创建并初始化 Redis Cluster 的时候，Redis 会自动平均分配这 16384 个哈希槽到各个节点，不需要我们手动分配。如果你想自己手动调整的话，Redis Cluster 也内置了相关的命令比如 ADDSLOTS、ADDSLOTSRANGE</p>
+</code></pre>
+<p>创建并初始化 Redis Cluster 的时候，Redis 会自动平均分配这 16384 个哈希槽到各个节点，不需要我们手动分配。如果你想自己手动调整的话，Redis Cluster 也内置了相关的命令比如 ADDSLOTS、ADDSLOTSRANGE</p>
 <p>假设集群有 3 个 Redis 节点组成，每个节点负责整个集群的一部分数据，哈希槽可能是这样分配的（这里只是演示，实际效果可能会有差异）：  </p>
 <ul>
 <li>Node 1 ： 0 - 5500 的 hash slots  </li>
 <li>Node 2 ： 5501 - 11000 的 hash slots  </li>
-<li>Node 3 ： 11001 - 16383 的 hash slots  </li>
+<li>Node 3 ： 11001 - 16383 的 hash slots</li>
 </ul>
 <p>在任意一个 master 节点上执行 <code>CLUSTER SLOTS</code>命令即可返回哈希槽和节点的映射关系</p>
 <p>客户端连接 Redis Cluster 中任意一个 master 节点即可访问 Redis Cluster 的数据，当客户端发送命令请求的时候，需要先根据 key 通过上面的计算公示找到的对应的哈希槽，然后再查询哈希槽和节点的映射关系，即可找到目标节点。</p>
@@ -1637,7 +1639,7 @@ min-replicas-max-lag 10
 <p>为了保证 Redis Cluster 在扩容和缩容期间依然能够对外正常提供服务，Redis Cluster 提供了重定向机制</p>
 <ul>
 <li>1、客户端发送请求命令，如果请求的 key 对应的哈希槽还在当前节点的话，就直接响应客户端的请求。  </li>
-<li>2、如果客户端请求的 key 对应的哈希槽当前正在迁移至新的节点，就会返回 ASK 重定向错误，告知客户端要将请求发送到哈希槽被迁移到的目标节点。  </li>
+<li>2、如果客户端请求的 key 对应的哈希槽当前正在迁移至新的节点，就会返回 ASK 重定向错误，告知客户端要将请求发送到哈希槽被迁移到的目标节点。</li>
 </ul>
 <h3 id="Redis-Cluster-中的节点是怎么进行通信的？"><a href="#Redis-Cluster-中的节点是怎么进行通信的？" class="headerlink" title="Redis Cluster 中的节点是怎么进行通信的？"></a>Redis Cluster 中的节点是怎么进行通信的？</h3><p>Redis Cluster 中的各个节点基于 Gossip 协议 来进行通信共享信息，每个 Redis 节点都维护了一份集群的状态信息。</p>
 <h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
@@ -2171,11 +2173,9 @@ min-replicas-max-lag 10
 
 
 
-
 区别
 Integer
 int
-
 
 
 
@@ -2200,7 +2200,8 @@ null
 
 
 占用空间
-较
+较大
+
                         
                     </div>
                     <div class="publish-info">
@@ -2252,7 +2253,7 @@ null
 关系型数据库采用了关系模型（二维表格类型）组织数据，一般遵守事务的ACID特性 
 
 优点：支持通用SQL语句、支持事务、数据存储在磁盘，安全可靠
-缺点：高并发读写能力差（磁盘I/O有限）、海量数
+缺点：高并发读写能力差（磁盘I&#x2F;O有限
                         
                     </div>
                     <div class="publish-info">
@@ -2462,7 +2463,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -2693,22 +2694,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>

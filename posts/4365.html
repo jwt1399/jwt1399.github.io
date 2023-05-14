@@ -44,7 +44,11 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -881,7 +885,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.4k
+                    1.6k
                 </div>
                 
 
@@ -901,10 +905,10 @@
             <div id="articleContent">
                 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天开始学习我自己总结的 <a href="https://jwt1399.top/posts/29829.html">Java-学习路线</a> 中的《Spring-JDBCTemplate》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;</p>
 <ul>
-<li>[x] 🚩时间安排：预计1天更新完</li>
-<li>[x] 🎯开始时间：04-15</li>
-<li>[x] 🎉结束时间：04-15</li>
-<li>[x] 🍀总结：按时完成，但是完全记不住，自己写还得看文档！</li>
+<li><input checked="" disabled="" type="checkbox"> 🚩时间安排：预计1天更新完</li>
+<li><input checked="" disabled="" type="checkbox"> 🎯开始时间：04-15</li>
+<li><input checked="" disabled="" type="checkbox"> 🎉结束时间：04-15</li>
+<li><input checked="" disabled="" type="checkbox"> 🍀总结：按时完成，但是完全记不住，自己写还得看文档！</li>
 </ul>
 <h2 id="JdbcTemplate"><a href="#JdbcTemplate" class="headerlink" title="JdbcTemplate"></a>JdbcTemplate</h2><p>Spring 框架对 JDBC 进行封装，使用 JdbcTemplate 方便实现对数据库操作 </p>
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p><strong>1、引入相关jar包</strong></p>
@@ -913,92 +917,93 @@ mysql-connector-java-8.0.28.jar
 spring-jdbc-5.3.18.jar
 spring-orm-5.3.18.jar
 spring-tx-5.3.18.jar
-</code></pre><p><strong>2、在spring配置文件配置数据库连接池</strong></p>
-<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!--引入外部属性文件，需要配置context名称空间--> 
-<context:property-placeholder location="classpath:druid.properties"/>
-<!--配置连接池--> 
-<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-    <property name="driverClassName" value="${jdbc.driverClass}"></property>
-    <property name="url" value="${jdbc.url}"></property>
-    <property name="username" value="${jdbc.username}"></property>
-    <property name="password" value="${jdbc.password}"></property>
-</bean>
+</code></pre>
+<p><strong>2、在spring配置文件配置数据库连接池</strong></p>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--引入外部属性文件，需要配置context名称空间--></span> 
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">context:</span>property-placeholder</span> <span class="token attr-name">location</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>classpath:druid.properties<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+<span class="token comment" spellcheck="true">&lt;!--配置连接池--></span> 
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.alibaba.druid.pool.DruidDataSource<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>driverClassName<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.driverClass}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>url<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.url}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>username<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.username}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>password<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.password}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>druid.properties</p>
-<pre class="line-numbers language-lang-properties"><code class="language-lang-properties">jdbc.driverClass=com.mysql.jdbc.Driver
-jdbc.url=jdbc:mysql://localhost:3306/jwt
-jdbc.username=root
-jdbc.password=root
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">jdbc.driverClass</span><span class="token punctuation">=</span><span class="token attr-value">com.mysql.jdbc.Driver</span>
+<span class="token attr-name">jdbc.url</span><span class="token punctuation">=</span><span class="token attr-value">jdbc:mysql://localhost:3306/jwt</span>
+<span class="token attr-name">jdbc.username</span><span class="token punctuation">=</span><span class="token attr-value">root</span>
+<span class="token attr-name">jdbc.password</span><span class="token punctuation">=</span><span class="token attr-value">root</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>3、配置JdbcTemplate对象，注入DataSource</strong></p>
-<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!-- JdbcTemplate对象 -->
-<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-   <!--注入dataSource--> 
-   <property name="dataSource" ref="dataSource"/>
-</bean>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!-- JdbcTemplate对象 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>jdbcTemplate<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.springframework.jdbc.core.JdbcTemplate<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+   <span class="token comment" spellcheck="true">&lt;!--注入dataSource--></span> 
+   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>4、创建service类，创建dao类</strong></p>
 <ul>
 <li>在dao中注入jdbcTemplate对象</li>
 <li>在service中注入dao对象</li>
 </ul>
-<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!-- 组件扫描 -->
-<context:component-scan base-package="com.jwt"></context:component-scan>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!-- 组件扫描 --></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">context:</span>component-scan</span> <span class="token attr-name">base-package</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.jwt<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">context:</span>component-scan</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Service
-public class BookService {
-    //注入dao
-    @Autowired
-    private BookDao bookDao;
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookService</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//注入dao</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> BookDao bookDao<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">public interface BookDao {
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">BookDao</span> <span class="token punctuation">{</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Repository
-public class BookDaoImpl implements BookDao {
-    //注入JdbcTemplate
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookDaoImpl</span> <span class="token keyword">implements</span> <span class="token class-name">BookDao</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//注入JdbcTemplate</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> JdbcTemplate jdbcTemplate<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现添加操作"><a href="#实现添加操作" class="headerlink" title="实现添加操作"></a>实现添加操作</h2><p>1、先创建一个表</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">CREATE TABLE `book`(
-  id INT,
-  name VARCHAR (255),
-  status VARCHAR (255)
-)CHARACTER SET utf8 COLLATE utf8_bin ENGINE INNODB ;
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token punctuation">`</span>book<span class="token punctuation">`</span><span class="token punctuation">(</span>
+  id <span class="token keyword">INT</span><span class="token punctuation">,</span>
+  name <span class="token keyword">VARCHAR</span> <span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">status</span> <span class="token keyword">VARCHAR</span> <span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token keyword">CHARACTER SET</span> utf8 <span class="token keyword">COLLATE</span> utf8_bin <span class="token keyword">ENGINE</span> <span class="token keyword">INNODB</span> <span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>2、创建表对应实体类</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class Book {
-    private String bookId;
-    private String bookName;
-    private String bookStatus;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Book</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> String bookId<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String bookName<span class="token punctuation">;</span>
+    <span class="token keyword">private</span> String bookStatus<span class="token punctuation">;</span>
 
-    public String getBookId() {
-        return bookId;
-    }
+    <span class="token keyword">public</span> String <span class="token function">getBookId</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> bookId<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    public void setBookId(String bookId) {
-        this.bookId = bookId;
-    }
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setBookId</span><span class="token punctuation">(</span>String bookId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>bookId <span class="token operator">=</span> bookId<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    public String getBookName() {
-        return bookName;
-    }
+    <span class="token keyword">public</span> String <span class="token function">getBookName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> bookName<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    public void setBookName(String bookName) {
-        this.bookName = bookName;
-    }
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setBookName</span><span class="token punctuation">(</span>String bookName<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>bookName <span class="token operator">=</span> bookName<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    public String getBookStatus() {
-        return bookStatus;
-    }
+    <span class="token keyword">public</span> String <span class="token function">getBookStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> bookStatus<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    public void setBookStatus(String bookStatus) {
-        this.bookStatus = bookStatus;
-    }
-}
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">setBookStatus</span><span class="token punctuation">(</span>String bookStatus<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>bookStatus <span class="token operator">=</span> bookStatus<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>3、编写<strong>service</strong>和<strong>dao</strong> </p>
 <ul>
@@ -1006,152 +1011,153 @@ public class BookDaoImpl implements BookDao {
 <li>2.在dao的实现类中实现该方法<ul>
 <li>调用JdbcTemplate对象里面update(String sql, Object… args)方法实现添加操作 </li>
 <li>第一个参数：sql语句 </li>
-<li>第二个参数：可变参数，设置sql语句值  </li>
+<li>第二个参数：可变参数，设置sql语句值</li>
 </ul>
 </li>
 <li>3.在service中调用dao的添加方法</li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">public interface BookDao {
-     void add(Book book);//添加的方法
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">BookDao</span> <span class="token punctuation">{</span>
+     <span class="token keyword">void</span> <span class="token function">add</span><span class="token punctuation">(</span>Book book<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//添加的方法</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Repository
-public class BookDaoImpl implements BookDao {
-    //注入JdbcTemplate
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookDaoImpl</span> <span class="token keyword">implements</span> <span class="token class-name">BookDao</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//注入JdbcTemplate</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> JdbcTemplate jdbcTemplate<span class="token punctuation">;</span>
 
-    @Override
-    public void add(Book book) {
-        // 创建sql语句
-        String sql = "INSERT INTO `book` VALUES (?, ?, ?)";
-        // 调用方法实现
-        int update = jdbcTemplate.update(sql, book.getBookId(), book.getBookName(), book.getBookStatus());
-        System.out.println(update);
-    }
-}
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">add</span><span class="token punctuation">(</span>Book book<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 创建sql语句</span>
+        String sql <span class="token operator">=</span> <span class="token string">"INSERT INTO `book` VALUES (?, ?, ?)"</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 调用方法实现</span>
+        <span class="token keyword">int</span> update <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> book<span class="token punctuation">.</span><span class="token function">getBookId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> book<span class="token punctuation">.</span><span class="token function">getBookName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> book<span class="token punctuation">.</span><span class="token function">getBookStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>update<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Service
-public class BookService {
-    //注入dao
-    @Autowired
-    private BookDao bookDao;
-
-    public void add(Book book) {
-        bookDao.add(book);
-    }
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">BookService</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//注入dao</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> BookDao bookDao<span class="token punctuation">;</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">add</span><span class="token punctuation">(</span>Book book<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        bookDao<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>4、测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">public class testJDBC {
-    @Test
-    public void testadd() {
-        ApplicationContext context =
-                new ClassPathXmlApplicationContext("jdbc.xml");
-        BookService bookService = context.getBean("bookService", BookService.class);
-        Book book = new Book();
-        book.setBookId("1");
-        book.setBookName("java");
-        book.setBookStatus("a");
-        bookService.add(book);
-    }
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">testJDBC</span> <span class="token punctuation">{</span>
+    <span class="token annotation punctuation">@Test</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testadd</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        ApplicationContext context <span class="token operator">=</span>
+                <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Book book <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Book</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        book<span class="token punctuation">.</span><span class="token function">setBookId</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        book<span class="token punctuation">.</span><span class="token function">setBookName</span><span class="token punctuation">(</span><span class="token string">"java"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        book<span class="token punctuation">.</span><span class="token function">setBookStatus</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        bookService<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>运行后表中就会成功增加一条数据</p>
 <h2 id="实现修改操作"><a href="#实现修改操作" class="headerlink" title="实现修改操作"></a>实现修改操作</h2><p>详细请参考添加操作</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public void update(Book book) {
-  String sql = "update book set name=?,status=? where id=?";
-  Object[] args = {book.getBookName(), book.getBookStatus(),book.getBookId()};
-  int update = jdbcTemplate.update(sql, args);
-  System.out.println(update);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">update</span><span class="token punctuation">(</span>Book book<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"update book set name=?,status=? where id=?"</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> args <span class="token operator">=</span> <span class="token punctuation">{</span>book<span class="token punctuation">.</span><span class="token function">getBookName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> book<span class="token punctuation">.</span><span class="token function">getBookStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>book<span class="token punctuation">.</span><span class="token function">getBookId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> update <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>update<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testupdate() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  Book book = new Book();
-  book.setBookName("C++");
-  book.setBookStatus("b");
-  book.setBookId("1");
-  bookService.update(book);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testupdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Book book <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Book</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  book<span class="token punctuation">.</span><span class="token function">setBookName</span><span class="token punctuation">(</span><span class="token string">"C++"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  book<span class="token punctuation">.</span><span class="token function">setBookStatus</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  book<span class="token punctuation">.</span><span class="token function">setBookId</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  bookService<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>book<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="实现添加操作-1"><a href="#实现添加操作-1" class="headerlink" title="实现添加操作"></a>实现添加操作</h2><pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public void delete(String id) {
-  String sql = "delete from book where id=?";
-  int update = jdbcTemplate.update(sql,id);
-  System.out.println(update);
-}
+<h2 id="实现添加操作-1"><a href="#实现添加操作-1" class="headerlink" title="实现添加操作"></a>实现添加操作</h2><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">delete</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"delete from book where id=?"</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> update <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>update<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testdelete() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  bookService.delete("1");
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testdelete</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  bookService<span class="token punctuation">.</span><span class="token function">delete</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现查询操作"><a href="#实现查询操作" class="headerlink" title="实现查询操作"></a>实现查询操作</h2><h3 id="查询返回某个值"><a href="#查询返回某个值" class="headerlink" title="查询返回某个值"></a>查询返回某个值</h3><ul>
 <li><p>查询表里面有多少条记录，返回是某个值</p>
 </li>
-<li><p>queryForObject(String sql, Class\<T> requiredType)</p>
+<li><p>queryForObject(String sql, Class&lt;T&gt; requiredType)</p>
 <ul>
 <li><p>第一个参数：sql语句 </p>
 </li>
-<li><p>第二个参数：返回类型Class  </p>
+<li><p>第二个参数：返回类型Class</p>
 </li>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public int select() {
-  String sql = "select count(*) from book";
-  Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-  return count;
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"select count(*) from book"</span><span class="token punctuation">;</span>
+  Integer count <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">queryForObject</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> Integer<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> count<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testselect() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  int select = bookService.select();
-  System.out.println("select = " + select);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testselect</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> select <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"select = "</span> <span class="token operator">+</span> select<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="查询返回对象"><a href="#查询返回对象" class="headerlink" title="查询返回对象"></a>查询返回对象</h3><ul>
-<li>queryForObject(String sql, RowMapper\<T> rowMapper, 0bject… args)<ul>
+<li>queryForObject(String sql, RowMapper&lt;T&gt; rowMapper, 0bject… args)<ul>
 <li>第一个参数：sql语句</li>
 <li>第二个参数：RowMapper 是接口，针对返回不同类型数据，使用这个接口里面 实现类完成数据封装</li>
 <li>第三个参数：sql 语句值</li>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//查询返回对象
-@Override
-public Book selectObj(String id) {
-  String sql = "select * from book where `id`=?";
-  Book book = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<Book>(Book.class), id);
-  return book;
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//查询返回对象</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> Book <span class="token function">selectObj</span><span class="token punctuation">(</span>String id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"select * from book where `id`=?"</span><span class="token punctuation">;</span>
+  Book book <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">queryForObject</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> <span class="token keyword">new</span> <span class="token class-name">BeanPropertyRowMapper</span><span class="token operator">&lt;</span>Book<span class="token operator">></span><span class="token punctuation">(</span>Book<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> book<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testselectObj() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  Book book = bookService.selectObj("1");
-  System.out.println("book = " + book);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testselectObj</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Book book <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">selectObj</span><span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"book = "</span> <span class="token operator">+</span> book<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>数据库中表的字段名要和实体类Book中的字段名字一样，不然会返回null</p>
 <h3 id="查询返回集合"><a href="#查询返回集合" class="headerlink" title="查询返回集合"></a>查询返回集合</h3><ul>
-<li><p>query(String sql, RowMapper\<T> rowMapper, 0bject… args)</p>
+<li><p>query(String sql, RowMapper&lt;T&gt; rowMapper, 0bject… args)</p>
 <ul>
-<li>第一个参数: sql语句</li>
+<li><p>第一个参数: sql语句</p>
+</li>
 <li><p>第二个参数: RowMapper 是接口，针对返回不同类型数据，使用这个接口里面实现类完成数据封装</p>
 </li>
 <li><p>第三个参数: sql 语句值</p>
@@ -1159,94 +1165,94 @@ public void testselectObj() {
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public List<Book> selectCollection() {
-  String sql = "select * from book";
-  //调用方法
-  List<Book> bookList = jdbcTemplate.query(sql,new BeanPropertyRowMapper<Book>(Book.class));
-  return bookList;
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> List<span class="token operator">&lt;</span>Book<span class="token operator">></span> <span class="token function">selectCollection</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"select * from book"</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">//调用方法</span>
+  List<span class="token operator">&lt;</span>Book<span class="token operator">></span> bookList <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">query</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span><span class="token keyword">new</span> <span class="token class-name">BeanPropertyRowMapper</span><span class="token operator">&lt;</span>Book<span class="token operator">></span><span class="token punctuation">(</span>Book<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> bookList<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testselectCollection() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  List<Book> books = bookService.selectCollection();
-  System.out.println("books = " + books);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testselectCollection</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  List<span class="token operator">&lt;</span>Book<span class="token operator">></span> books <span class="token operator">=</span> bookService<span class="token punctuation">.</span><span class="token function">selectCollection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"books = "</span> <span class="token operator">+</span> books<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现批量操作"><a href="#实现批量操作" class="headerlink" title="实现批量操作"></a>实现批量操作</h2><h3 id="批量添加"><a href="#批量添加" class="headerlink" title="批量添加"></a>批量添加</h3><ul>
 <li>batchUpdate方法<ul>
-<li>第一个参数：sql语句    </li>
+<li>第一个参数：sql语句	</li>
 <li>第二个参数：List集合，添加多条记录数据</li>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public void batchAdd(List<Object[]> batchArgs) {
-  String sql = "insert into book values(?,?,?)";
-  int[] ints = jdbcTemplate.batchUpdate(sql, batchArgs);
-  System.out.println(Arrays.toString(ints));
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">batchAdd</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> batchArgs<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"insert into book values(?,?,?)"</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ints <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">batchUpdate</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> batchArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>ints<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testbatchAdd() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  List<Object[]> batchArgs = new ArrayList<>();
-  Object[] o1 = {"3","java","a"};
-  Object[] o2 = {"4","c++","b"};
-  Object[] o3 = {"5","MySQL","c"};
-  batchArgs.add(o1);
-  batchArgs.add(o2);
-  batchArgs.add(o3);
-  //调用批量添加
-  bookService.batchAdd(batchArgs);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testbatchAdd</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  List<span class="token operator">&lt;</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> batchArgs <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o1 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"3"</span><span class="token punctuation">,</span><span class="token string">"java"</span><span class="token punctuation">,</span><span class="token string">"a"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o2 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"4"</span><span class="token punctuation">,</span><span class="token string">"c++"</span><span class="token punctuation">,</span><span class="token string">"b"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o3 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"5"</span><span class="token punctuation">,</span><span class="token string">"MySQL"</span><span class="token punctuation">,</span><span class="token string">"c"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">//调用批量添加</span>
+  bookService<span class="token punctuation">.</span><span class="token function">batchAdd</span><span class="token punctuation">(</span>batchArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="批量修改"><a href="#批量修改" class="headerlink" title="批量修改"></a>批量修改</h3><pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public void batchUpdate(List<Object[]> batchArgs) {
-  String sql = "update book set name=?,status=? where id=?";
-  int[] ints = jdbcTemplate.batchUpdate(sql, batchArgs);
-  System.out.println(Arrays.toString(ints));
-}
+<h3 id="批量修改"><a href="#批量修改" class="headerlink" title="批量修改"></a>批量修改</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">batchUpdate</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> batchArgs<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"update book set name=?,status=? where id=?"</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ints <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">batchUpdate</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> batchArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>ints<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testbatchUpdate() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  List<Object[]> batchArgs = new ArrayList<>();
-  Object[] o1 = {"java2","a3","3"};
-  Object[] o2 = {"c++2","b4","4"};
-  Object[] o3 = {"MySQL2","c5","5"};
-  batchArgs.add(o1);
-  batchArgs.add(o2);
-  batchArgs.add(o3);
-  bookService.batchUpdate(batchArgs);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testbatchUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  List<span class="token operator">&lt;</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> batchArgs <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o1 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"java2"</span><span class="token punctuation">,</span><span class="token string">"a3"</span><span class="token punctuation">,</span><span class="token string">"3"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o2 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"c++2"</span><span class="token punctuation">,</span><span class="token string">"b4"</span><span class="token punctuation">,</span><span class="token string">"4"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o3 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"MySQL2"</span><span class="token punctuation">,</span><span class="token string">"c5"</span><span class="token punctuation">,</span><span class="token string">"5"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  bookService<span class="token punctuation">.</span><span class="token function">batchUpdate</span><span class="token punctuation">(</span>batchArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="批量删除"><a href="#批量删除" class="headerlink" title="批量删除"></a>批量删除</h3><pre class="line-numbers language-lang-java"><code class="language-lang-java">@Override
-public void batchDelete(List<Object[]> batchArgs) {
-  String sql = "delete from book where id=?";
-  int[] ints = jdbcTemplate.batchUpdate(sql, batchArgs);
-  System.out.println(Arrays.toString(ints));
-}
+<h3 id="批量删除"><a href="#批量删除" class="headerlink" title="批量删除"></a>批量删除</h3><pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">batchDelete</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> batchArgs<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  String sql <span class="token operator">=</span> <span class="token string">"delete from book where id=?"</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> ints <span class="token operator">=</span> jdbcTemplate<span class="token punctuation">.</span><span class="token function">batchUpdate</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span> batchArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Arrays<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span>ints<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testbatchDelete() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  BookService bookService = context.getBean("bookService", BookService.class);
-  List<Object[]> batchArgs = new ArrayList<>();
-  Object[] o1 = {"3"};
-  Object[] o2 = {"4"};
-  batchArgs.add(o1);
-  batchArgs.add(o2);
-  bookService.batchDelete(batchArgs);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testbatchDelete</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  BookService bookService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"bookService"</span><span class="token punctuation">,</span> BookService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  List<span class="token operator">&lt;</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> batchArgs <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o1 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"3"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">[</span><span class="token punctuation">]</span> o2 <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"4"</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  batchArgs<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>o2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  bookService<span class="token punctuation">.</span><span class="token function">batchDelete</span><span class="token punctuation">(</span>batchArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h2><p>您的支持是我不断前进的动力，如果您恰巧财力雄厚，又感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
@@ -1775,7 +1781,7 @@ public void testbatchDelete() {
                         
                             前言今天开始学习我自己总结的 Java-学习路线 中的《Spring-事务》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;
 
-[x] 🚩时间安
+ 🚩时间安排：预
                         
                     </div>
                     <div class="publish-info">
@@ -1825,7 +1831,7 @@ public void testbatchDelete() {
                         
                             前言今天开始学习我自己总结的 Java-学习路线 中的《Spring-AOP》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;
 
-[x] 🚩时间
+ 🚩时间安排：
                         
                     </div>
                     <div class="publish-info">
@@ -2035,7 +2041,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -2266,22 +2272,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>

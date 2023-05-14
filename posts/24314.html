@@ -7,7 +7,7 @@
     <meta name="keywords" content="Spring-事务, 简简,简简博客,网络安全,计算机,Java开发">
     <meta name="description" content="前言今天开始学习我自己总结的 Java-学习路线 中的《Spring-事务》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&amp;lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&amp;gt;
 
-[x] 🚩时间安">
+ 🚩时间安排：预">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
@@ -45,7 +45,11 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -882,7 +886,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.2k
+                    2.8k
                 </div>
                 
 
@@ -902,17 +906,18 @@
             <div id="articleContent">
                 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天开始学习我自己总结的 <a href="https://jwt1399.top/posts/29829.html">Java-学习路线</a> 中的《Spring-事务》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;</p>
 <ul>
-<li>[x] 🚩时间安排：预计1天更新完</li>
-<li>[x] 🎯开始时间：04-17</li>
-<li>[x] 🎉结束时间：04-17</li>
-<li>[x] 🍀总结：使用很简单，一天搞定，源码部分后面再看</li>
+<li><input checked="" disabled="" type="checkbox"> 🚩时间安排：预计1天更新完</li>
+<li><input checked="" disabled="" type="checkbox"> 🎯开始时间：04-17</li>
+<li><input checked="" disabled="" type="checkbox"> 🎉结束时间：04-17</li>
+<li><input checked="" disabled="" type="checkbox"> 🍀总结：使用很简单，一天搞定，源码部分后面再看</li>
 </ul>
 <h2 id="事物概念"><a href="#事物概念" class="headerlink" title="事物概念"></a>事物概念</h2><ul>
-<li>事务是数据库操作最基本单元，逻辑上一组操作，要么都成功，如果有一个失败所有操作都失败</li>
+<li><p>事务是数据库操作最基本单元，逻辑上一组操作，要么都成功，如果有一个失败所有操作都失败</p>
+</li>
 <li><p>典型场景：银行转账</p>
 <ul>
 <li>小明转账100元给小红</li>
-<li>小明少100，小红多100 </li>
+<li>小明少100，小红多100</li>
 </ul>
 </li>
 <li><p>事务四个特性(ACID)</p>
@@ -938,115 +943,115 @@
 </li>
 </ul>
 <p>1、创建数据表，添加记录</p>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">id    name    money
-1     小明     1000
-2     小红     1000
+<pre class="line-numbers language-sql"><code class="language-sql">id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">1000</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1000</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>2、创建 service，搭建 dao，完成对象创建和注入关系</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//在 dao 注入 JdbcTemplate，service 注入 dao
-public interface UserDao{
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//在 dao 注入 JdbcTemplate，service 注入 dao</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserDao</span><span class="token punctuation">{</span>
+  
+<span class="token punctuation">}</span>
 
-}
+<span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserDaoImpl</span> <span class="token keyword">implements</span> <span class="token class-name">UserDao</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true">//注入 JdbcTemplate</span>
+   <span class="token annotation punctuation">@Autowired</span>
+   <span class="token keyword">private</span> JdbcTemplate jdbcTemplate<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-@Repository
-public class UserDaoImpl implements UserDao {
-   //注入 JdbcTemplate
-   @Autowired
-   private JdbcTemplate jdbcTemplate;
-}
-
-@Service
-public class UserService {
-   //注入 dao
-   @Autowired
-   private UserDao userDao;
-}
+<span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true">//注入 dao</span>
+   <span class="token annotation punctuation">@Autowired</span>
+   <span class="token keyword">private</span> UserDao userDao<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>3、在 dao 创建两个方法：多钱和少钱的方法， 在 service 创建转账的方法</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">public interface UserDao{
-  void reduceMoney();
-  void addMoney(); 
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">UserDao</span><span class="token punctuation">{</span>
+  <span class="token keyword">void</span> <span class="token function">reduceMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">void</span> <span class="token function">addMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+<span class="token punctuation">}</span>
 
-@Repository
-public class UserDaoImpl implements UserDao {
-   @Autowired
-   private JdbcTemplate jdbcTemplate;
-   //少钱
-   @Override
-   public void reduceMoney() {
-       String sql = "update account set money=money-? where username=?";
-       jdbcTemplate.update(sql,100,"小明");
-   }
-   //多钱
-   @Override
-   public void addMoney() {
-       String sql = "update account set money=money+? where username=?";
-       jdbcTemplate.update(sql,100,"小红");
-   }
-}
+<span class="token annotation punctuation">@Repository</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserDaoImpl</span> <span class="token keyword">implements</span> <span class="token class-name">UserDao</span> <span class="token punctuation">{</span>
+   <span class="token annotation punctuation">@Autowired</span>
+   <span class="token keyword">private</span> JdbcTemplate jdbcTemplate<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true">//少钱</span>
+   <span class="token annotation punctuation">@Override</span>
+   <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">reduceMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       String sql <span class="token operator">=</span> <span class="token string">"update account set money=money-? where username=?"</span><span class="token punctuation">;</span>
+       jdbcTemplate<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span><span class="token number">100</span><span class="token punctuation">,</span><span class="token string">"小明"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+   <span class="token comment" spellcheck="true">//多钱</span>
+   <span class="token annotation punctuation">@Override</span>
+   <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       String sql <span class="token operator">=</span> <span class="token string">"update account set money=money+? where username=?"</span><span class="token punctuation">;</span>
+       jdbcTemplate<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>sql<span class="token punctuation">,</span><span class="token number">100</span><span class="token punctuation">,</span><span class="token string">"小红"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-@Service
-public class UserService {
-   //注入 dao
-   @Autowired
-   private UserDao userDao;
-   //转账的方法
-   public void accountMoney() {
-       userDao.reduceMoney();
-       userDao.addMoney();
-   }
-}
+<span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true">//注入 dao</span>
+   <span class="token annotation punctuation">@Autowired</span>
+   <span class="token keyword">private</span> UserDao userDao<span class="token punctuation">;</span>
+   <span class="token comment" spellcheck="true">//转账的方法</span>
+   <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       userDao<span class="token punctuation">.</span><span class="token function">reduceMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+       userDao<span class="token punctuation">.</span><span class="token function">addMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>4、测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testTransaction() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  UserService userService = context.getBean("userService", UserService.class);
-  userService.accountMoney();
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testTransaction</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  UserService userService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"userService"</span><span class="token punctuation">,</span> UserService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  userService<span class="token punctuation">.</span><span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">id    name    money
-1     小明     900
-2     小红     1100
+<pre class="line-numbers language-sql"><code class="language-sql">id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">900</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1100</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>上边代码正常执行没有问题，但是如果代码执行过程中出现异常，就有问题，如下模拟异常！</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Service
-public class UserService {
-    //这里执行后将会产生错误（异常），小明少100后，小红不会多100，这就不对了！！
-    private UserDao userDao;
-    //转账方法
-    public void accountMoney(){
-        userDao.reduceMoney();//小明少100
-        int x=10/0; //异常
-        userDao.addMoney(); //小红不会增加100
-    }
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//这里执行后将会产生错误（异常），小明少100后，小红不会多100，这就不对了！！</span>
+    <span class="token keyword">private</span> UserDao userDao<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">//转账方法</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        userDao<span class="token punctuation">.</span><span class="token function">reduceMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//小明少100</span>
+        <span class="token keyword">int</span> x<span class="token operator">=</span><span class="token number">10</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//异常</span>
+        userDao<span class="token punctuation">.</span><span class="token function">addMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//小红不会增加100</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">id    name    money
-1     小明     900
-2     小红     1000 #没有增加100
+<pre class="line-numbers language-sql"><code class="language-sql">id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">900</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1000</span> <span class="token comment" spellcheck="true">#没有增加100</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>上面问题如何解决呢？ 答：使用事务进行解决 </p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//解决上边的异常方法——【编程式事务（传统方法）】
-//转账的方法
-public void accountMoney() {
-  try {
-    //第一步 开启事务
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//解决上边的异常方法——【编程式事务（传统方法）】</span>
+<span class="token comment" spellcheck="true">//转账的方法</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">try</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//第一步 开启事务</span>
 
-    //第二步 进行业务操作
-    userDao.reduceMoney();
+    <span class="token comment" spellcheck="true">//第二步 进行业务操作</span>
+    userDao<span class="token punctuation">.</span><span class="token function">reduceMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    //模拟异常
-    int i = 10/0;
+    <span class="token comment" spellcheck="true">//模拟异常</span>
+    <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">10</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span>
 
-    userDao.addMoney();
+    userDao<span class="token punctuation">.</span><span class="token function">addMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    //第三步 没有发生异常，提交事务
-  }catch(Exception e) {
-    //第四步 出现异常，事务回滚
-  }
-}
+    <span class="token comment" spellcheck="true">//第三步 没有发生异常，提交事务</span>
+  <span class="token punctuation">}</span><span class="token keyword">catch</span><span class="token punctuation">(</span>Exception e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//第四步 出现异常，事务回滚</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="事务管理"><a href="#事务管理" class="headerlink" title="事务管理"></a>事务管理</h2><ul>
 <li><p>事务添加到 JavaEE 三层结构里面的 Service 层（业务逻辑层）</p>
@@ -1067,28 +1072,28 @@ public void accountMoney() {
 </li>
 </ul>
 <h2 id="注解声明式"><a href="#注解声明式" class="headerlink" title="注解声明式"></a>注解声明式</h2><p>1、在 spring 配置文件配置事务管理器</p>
-<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><!--创建事务管理器-->
-<bean id="transactionManager"
-class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
- <!--注入数据源-->
- <property name="dataSource" ref="dataSource"></property>
-</bean>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token comment" spellcheck="true">&lt;!--创建事务管理器--></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span>
+<span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.springframework.jdbc.datasource.DataSourceTransactionManager<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+ <span class="token comment" spellcheck="true">&lt;!--注入数据源--></span>
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>2、在 spring 配置文件，开启事务注解,引入tx名称空间</p>
-<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>beans</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>context</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/context<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>aop</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/aop<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>tx</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/tx<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
-
-</beans>
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>beans</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>3、开启事务注解</p>
-<pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">tx:</span>annotation-driven</span> <span class="token attr-name">transaction-manager</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">tx:</span>annotation-driven</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>4、在 service 类上面（或者 service 类里面方法上面）添加事务注解</p>
 <ul>
@@ -1096,167 +1101,166 @@ class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 <li>如果把这个注解添加类上面，这个类里面所有的方法都添加事务</li>
 <li>如果把这个注解添加方法上面，为这个方法添加事务</li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Service
-@Transactional  //添加事务注解
-public class UserService {
-    //注入 dao
-    @Autowired
-    private UserDao userDao;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Service</span>
+<span class="token annotation punctuation">@Transactional</span>  <span class="token comment" spellcheck="true">//添加事务注解</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">UserService</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//注入 dao</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> UserDao userDao<span class="token punctuation">;</span>
 
-    //转账的方法
-    //@Transactional
-    public void accountMoney() {
-        userDao.reduceMoney();
-        int x=10/0; //异常
-        userDao.addMoney();
-    }
-}
+    <span class="token comment" spellcheck="true">//转账的方法</span>
+    <span class="token comment" spellcheck="true">//@Transactional</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        userDao<span class="token punctuation">.</span><span class="token function">reduceMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> x<span class="token operator">=</span><span class="token number">10</span><span class="token operator">/</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//异常</span>
+        userDao<span class="token punctuation">.</span><span class="token function">addMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testTransaction() {
-  ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("jdbc.xml");
-  UserService userService = context.getBean("userService", UserService.class);
-  userService.accountMoney();
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testTransaction</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"jdbc.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  UserService userService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"userService"</span><span class="token punctuation">,</span> UserService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  userService<span class="token punctuation">.</span><span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#有异常
-id    name    money
-1     小明     1000
-2     小红     1000
-#无异常
-id    name    money
-1     小明     900
-2     小红     1100
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#有异常</span>
+id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">1000</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1000</span>
+<span class="token comment" spellcheck="true">#无异常</span>
+id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">900</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1100</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>添加事务注解后就不会出现小明转了钱但是小红没有收到的情况</p>
-<h2 id="完全注解声明式"><a href="#完全注解声明式" class="headerlink" title="完全注解声明式"></a>完全注解声明式</h2><pre class="line-numbers language-lang-java"><code class="language-lang-java">//创建配置类，使用配置类替代xml配置文件
-@Configuration //配置类
-@ComponentScan(basePackages = "com.jwt") //组件扫描
-@EnableTransactionManagement //开启事务
-public class TxConfig {
-    //创建数据库连接池
-    @Bean
-    public DruidDataSource getDruidDataSource() {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/jwt");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
-        return dataSource;
-    }
+<h2 id="完全注解声明式"><a href="#完全注解声明式" class="headerlink" title="完全注解声明式"></a>完全注解声明式</h2><pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//创建配置类，使用配置类替代xml配置文件</span>
+<span class="token annotation punctuation">@Configuration</span> <span class="token comment" spellcheck="true">//配置类</span>
+<span class="token annotation punctuation">@ComponentScan</span><span class="token punctuation">(</span>basePackages <span class="token operator">=</span> <span class="token string">"com.jwt"</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//组件扫描</span>
+<span class="token annotation punctuation">@EnableTransactionManagement</span> <span class="token comment" spellcheck="true">//开启事务</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">TxConfig</span> <span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//创建数据库连接池</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> DruidDataSource <span class="token function">getDruidDataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        DruidDataSource dataSource <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DruidDataSource</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setDriverClassName</span><span class="token punctuation">(</span><span class="token string">"com.mysql.jdbc.Driver"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setUrl</span><span class="token punctuation">(</span><span class="token string">"jdbc:mysql://localhost:3306/jwt"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setUsername</span><span class="token punctuation">(</span><span class="token string">"root"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        dataSource<span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span><span class="token string">"root"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> dataSource<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
-    //创建 JdbcTemplate 对象
-    @Bean
-    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {//从IOC容器中拿到配置注入的数据源
-        //到 ioc 容器中根据类型找到 dataSource
-        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        //注入 dataSource
-        jdbcTemplate.setDataSource(dataSource);
-        return jdbcTemplate;
-    }
+    <span class="token comment" spellcheck="true">//创建 JdbcTemplate 对象</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> JdbcTemplate <span class="token function">getJdbcTemplate</span><span class="token punctuation">(</span>DataSource dataSource<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token comment" spellcheck="true">//从IOC容器中拿到配置注入的数据源</span>
+        <span class="token comment" spellcheck="true">//到 ioc 容器中根据类型找到 dataSource</span>
+        JdbcTemplate jdbcTemplate <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">JdbcTemplate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//注入 dataSource</span>
+        jdbcTemplate<span class="token punctuation">.</span><span class="token function">setDataSource</span><span class="token punctuation">(</span>dataSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> jdbcTemplate<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
 
 
-    //创建事务管理器
-    @Bean
-    public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource) {
-        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager();
-        transactionManager.setDataSource(dataSource);
-        return transactionManager;
-    }
-}
+    <span class="token comment" spellcheck="true">//创建事务管理器</span>
+    <span class="token annotation punctuation">@Bean</span>
+    <span class="token keyword">public</span> DataSourceTransactionManager <span class="token function">getDataSourceTransactionManager</span><span class="token punctuation">(</span>DataSource dataSource<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        DataSourceTransactionManager transactionManager <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DataSourceTransactionManager</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        transactionManager<span class="token punctuation">.</span><span class="token function">setDataSource</span><span class="token punctuation">(</span>dataSource<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> transactionManager<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testTransaction2() {
-  AnnotationConfigApplicationContext context =
-    new AnnotationConfigApplicationContext(TxConfig.class);
-  UserService userService = context.getBean("userService", UserService.class);
-  userService.accountMoney();
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testTransaction2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  AnnotationConfigApplicationContext context <span class="token operator">=</span>
+    <span class="token keyword">new</span> <span class="token class-name">AnnotationConfigApplicationContext</span><span class="token punctuation">(</span>TxConfig<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  UserService userService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"userService"</span><span class="token punctuation">,</span> UserService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  userService<span class="token punctuation">.</span><span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#有异常
-id    name    money
-1     小明     1000
-2     小红     1000
-#无异常
-id    name    money
-1     小明     900
-2     小红     1100
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#有异常</span>
+id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">1000</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1000</span>
+<span class="token comment" spellcheck="true">#无异常</span>
+id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">900</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1100</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="XML声明式"><a href="#XML声明式" class="headerlink" title="XML声明式"></a>XML声明式</h2><pre class="line-numbers language-lang-xml"><code class="language-lang-xml"><beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<h2 id="XML声明式"><a href="#XML声明式" class="headerlink" title="XML声明式"></a>XML声明式</h2><pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>beans</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>xsi</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.w3.org/2001/XMLSchema-instance<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>context</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/context<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>aop</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/aop<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xmlns:</span>tx</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/tx<span class="token punctuation">"</span></span>
+       <span class="token attr-name"><span class="token namespace">xsi:</span>schemaLocation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
 
-    <!--引入外部属性文件-->
-    <context:property-placeholder location="classpath:druid.properties"/>
-    <!--配置连接池-->
-    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
-        <property name="driverClassName" value="${jdbc.driverClass}"></property>
-        <property name="url" value="${jdbc.url}"></property>
-        <property name="username" value="${jdbc.username}"></property>
-        <property name="password" value="${jdbc.password}"></property>
-    </bean>
-    <!--创建 JdbcTemplate 对象-->
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <!--注入dataSource-->
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-    <!-- 组件扫描 -->
-    <context:component-scan base-package="com.jwt"></context:component-scan>
+    <span class="token comment" spellcheck="true">&lt;!--引入外部属性文件--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">context:</span>property-placeholder</span> <span class="token attr-name">location</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>classpath:druid.properties<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token comment" spellcheck="true">&lt;!--配置连接池--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.alibaba.druid.pool.DruidDataSource<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>driverClassName<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.driverClass}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>url<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.url}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>username<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.username}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>password<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>${jdbc.password}<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
+    <span class="token comment" spellcheck="true">&lt;!--创建 JdbcTemplate 对象--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>jdbcTemplate<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.springframework.jdbc.core.JdbcTemplate<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--注入dataSource--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
+    <span class="token comment" spellcheck="true">&lt;!-- 组件扫描 --></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">context:</span>component-scan</span> <span class="token attr-name">base-package</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.jwt<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">context:</span>component-scan</span><span class="token punctuation">></span></span>
 
 
-    <!--1、创建事务管理器-->
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <!--注入数据源-->
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
+    <span class="token comment" spellcheck="true">&lt;!--1、创建事务管理器--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>bean</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>transactionManager<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.springframework.jdbc.datasource.DataSourceTransactionManager<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--注入数据源--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>property</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>dataSource<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>property</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>bean</span><span class="token punctuation">></span></span>
 
-    <!--2、配置通知-->
-    <tx:advice id="txadvice">
-        <!--配置事务参数-->
-        <tx:attributes>
-            <!--指定哪种规则的方法上面添加事务-->
-            <tx:method name="accountMoney" propagation="REQUIRED"/>
-            <!--指定匹配规则上的方法添加事务-->
-            <!--<tx:method name="account*"/>-->
-        </tx:attributes>
-    </tx:advice>
+    <span class="token comment" spellcheck="true">&lt;!--2、配置通知--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">tx:</span>advice</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>txadvice<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--配置事务参数--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">tx:</span>attributes</span><span class="token punctuation">></span></span>
+            <span class="token comment" spellcheck="true">&lt;!--指定哪种规则的方法上面添加事务--></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">tx:</span>method</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>accountMoney<span class="token punctuation">"</span></span> <span class="token attr-name">propagation</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>REQUIRED<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+            <span class="token comment" spellcheck="true">&lt;!--指定匹配规则上的方法添加事务--></span>
+            <span class="token comment" spellcheck="true">&lt;!--&lt;tx:method name="account*"/>--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">tx:</span>attributes</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">tx:</span>advice</span><span class="token punctuation">></span></span>
 
-    <!--3、配置切入点和切面-->
-    <aop:config>
-        <!--配置切入点-->
-        <aop:pointcut id="pt" expression="execution(* com.jwt.transaction_.UserService.*(..))"/>
-        <!--配置切面-->
-        <aop:advisor advice-ref="txadvice" pointcut-ref="pt"/>
-    </aop:config>
-</beans>
+    <span class="token comment" spellcheck="true">&lt;!--3、配置切入点和切面--></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>config</span><span class="token punctuation">></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--配置切入点--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>pointcut</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>pt<span class="token punctuation">"</span></span> <span class="token attr-name">expression</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>execution(* com.jwt.transaction_.UserService.*(..))<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+        <span class="token comment" spellcheck="true">&lt;!--配置切面--></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span><span class="token namespace">aop:</span>advisor</span> <span class="token attr-name">advice-ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>txadvice<span class="token punctuation">"</span></span> <span class="token attr-name">pointcut-ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>pt<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span><span class="token namespace">aop:</span>config</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>beans</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">@Test
-public void testTransaction3() {
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("bean7.xml");
-    UserService userService = context.getBean("userService", UserService.class);
-    userService.accountMoney();
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@Test</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">testTransaction3</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    ClassPathXmlApplicationContext context <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ClassPathXmlApplicationContext</span><span class="token punctuation">(</span><span class="token string">"bean7.xml"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    UserService userService <span class="token operator">=</span> context<span class="token punctuation">.</span><span class="token function">getBean</span><span class="token punctuation">(</span><span class="token string">"userService"</span><span class="token punctuation">,</span> UserService<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    userService<span class="token punctuation">.</span><span class="token function">accountMoney</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lang-sql"><code class="language-lang-sql">#有异常
-id    name    money
-1     小明     1000
-2     小红     1000
-#无异常
-id    name    money
-1     小明     900
-2     小红     1100
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token comment" spellcheck="true">#有异常</span>
+id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">1000</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1000</span>
+<span class="token comment" spellcheck="true">#无异常</span>
+id	name	money
+<span class="token number">1</span>	 小明	 <span class="token number">900</span>
+<span class="token number">2</span>	 小红	 <span class="token number">1100</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="声明式事务参数"><a href="#声明式事务参数" class="headerlink" title="声明式事务参数"></a>声明式事务参数</h2><p><img src="https://img.jwt1399.top/img/image-20220417211523013.png" alt=""></p>
+<h2 id="声明式事务参数"><a href="#声明式事务参数" class="headerlink" title="声明式事务参数"></a>声明式事务参数</h2><p><img src="https://img.jwt1399.top/img/image-20220417211523013.png"></p>
 <h3 id="propagation：事务传播行为"><a href="#propagation：事务传播行为" class="headerlink" title="propagation：事务传播行为"></a>propagation：事务传播行为</h3><p>多事务方法直接进行互相调用，Spring 框架事务传播行为有7种</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1264,8 +1268,7 @@ id    name    money
 <th>描述</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>REQUIRED</td>
 <td>如果有事务在运行,当前的方法就在这个事务内运行,否则就启动一个新事务,并在自己的事务内运行</td>
 </tr>
@@ -1293,25 +1296,22 @@ id    name    money
 <td>NESTED</td>
 <td>如果有事务运行,当前的方法就应该在这个事务的嵌套事务内运行,否则,就启动一个新的事务,并在它自己的事务内运行</td>
 </tr>
-</tbody>
-</table>
-</div>
-<p><img src="/Users/jianjian/jwt1399.github.io/source/images/Spring-事务/image-20220417212238809.png" alt=""></p>
+</tbody></table>
+<p><img src="/Users/jianjian/jwt1399.github.io/source/images/Spring-%E4%BA%8B%E5%8A%A1/image-20220417212238809.png"></p>
 <p>如上，传播级别为 REQUIRED。</p>
 <p>即：如果 add 方法本身有事务，调用 update 方法之后，update 使用当前 add 方法里面的事务。如果 add 方法本身没有事务，调用 update 方法之后，update 创建新事务</p>
 <p>如上，传播级别为REQUIRES_NEW。即：add 方法本身无论是否有事务，update都创建新的事务</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//配置
-@Transactional(propagation = Propagation.REQUIRED)
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//配置</span>
+<span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>propagation <span class="token operator">=</span> Propagation<span class="token punctuation">.</span>REQUIRED<span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="ioslation：事务隔离级别"><a href="#ioslation：事务隔离级别" class="headerlink" title="ioslation：事务隔离级别"></a>ioslation：事务隔离级别</h3><p>事务有特性成为隔离性，多事务操作之间不会产生影响。不考虑隔离性产生很多问题</p>
 <p>三个读问题：脏读、不可重复读、虚(幻)读 </p>
 <ul>
 <li>脏读：一个未提交事务读取到另一个未提交事务的数据</li>
 <li>不可重复读：一个未提交事务读取到另一提交事务修改数据  </li>
-<li>虚读：一个未提交事务读取到另一提交事务添加数据 </li>
+<li>虚读：一个未提交事务读取到另一提交事务添加数据</li>
 </ul>
 <p>解决：通过设置事务隔离级别，解决读问题。MYSQL默认隔离级别:可重复读</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -1321,8 +1321,7 @@ id    name    money
 <th>虚读</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>READ_UNCOMMITTED(读未提交)</td>
 <td>不可解决</td>
 <td>不可解决</td>
@@ -1346,11 +1345,9 @@ id    name    money
 <td>可解决</td>
 <td>可解决</td>
 </tr>
-</tbody>
-</table>
-</div>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//配置
-@Transactional(isolation = Isolation.READ_COMMITTED)
+</tbody></table>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//配置</span>
+<span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>isolation <span class="token operator">=</span> Isolation<span class="token punctuation">.</span>READ_COMMITTED<span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="timeout：超时时间"><a href="#timeout：超时时间" class="headerlink" title="timeout：超时时间"></a>timeout：超时时间</h3><ul>
 <li><p>事务需要在一定时间内进行提交，如果不提交进行回滚</p>
@@ -1358,8 +1355,8 @@ id    name    money
 <li><p>默认值是 -1 ，设置时间以秒单位进行计算</p>
 </li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//设置
-@Transactional(timeout = 60)
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//设置</span>
+<span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>timeout <span class="token operator">=</span> <span class="token number">60</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="readOnly：是否只读"><a href="#readOnly：是否只读" class="headerlink" title="readOnly：是否只读"></a>readOnly：是否只读</h3><ul>
 <li><p>读：查询操作，写：添加修改删除操作</p>
@@ -1369,16 +1366,16 @@ id    name    money
 <li><p>设置 readOnly 值是 true，设置成 true 之后，只能查询</p>
 </li>
 </ul>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//设置
-@Transactional(readOnly = false)
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//设置</span>
+<span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>readOnly <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="rollbackFor：回滚"><a href="#rollbackFor：回滚" class="headerlink" title="rollbackFor：回滚"></a>rollbackFor：回滚</h3><p>设置出现哪些异常进行事务回滚</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//设置
-@Transactional(rollbackFor = NullPointerException.class)
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//设置</span>
+<span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>rollbackFor <span class="token operator">=</span> NullPointerException<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h3 id="noRollBackFor：不回滚"><a href="#noRollBackFor：不回滚" class="headerlink" title="noRollBackFor：不回滚"></a>noRollBackFor：不回滚</h3><p>设置出现哪些异常不进行事务回滚</p>
-<pre class="line-numbers language-lang-java"><code class="language-lang-java">//设置
-@Transactional(noRollbackFor = NullPointerException.class)
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//设置</span>
+<span class="token annotation punctuation">@Transactional</span><span class="token punctuation">(</span>noRollbackFor <span class="token operator">=</span> NullPointerException<span class="token punctuation">.</span><span class="token keyword">class</span><span class="token punctuation">)</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <h2 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h2><p>您的支持是我不断前进的动力，如果您恰巧财力雄厚，又感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
@@ -1907,7 +1904,7 @@ id    name    money
                         
                             前言今天开始学习我自己总结的 Java-学习路线 中的《Spring5-新特性》，小简从 0 开始学 Java 知识，并不定期更新所学笔记，期待一年后的蜕变吧！&lt;有同样想法的小伙伴，可以联系我一起交流学习哦！&gt;
 
-[x] 🚩时
+ 🚩时间安排
                         
                     </div>
                     <div class="publish-info">
@@ -2166,7 +2163,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -2397,22 +2394,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>

