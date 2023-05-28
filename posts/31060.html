@@ -881,14 +881,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-05-25
+                    2023-05-28
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    14.6k
+                    14.8k
                 </div>
                 
 
@@ -949,11 +949,11 @@
 </ul>
 </li>
 <li><strong>第二次握手：</strong>服务端在收到客户端发来的报文后，会随机生成一个服务端的起始序列号y，然后给客户端回复一段报文（包括标志位<code>SYN=1</code>，<code>ACK=1</code>，序列号<code>seq=y</code>，确认号<code>ack=x+1</code>）。（其中<code>SYN=1</code>表示要和客户端建立一个连接，<code>ACK=1</code>表示确认信号有效）<ul>
-<li>第二次握手前服务端的状态为<code>LISTEN</code>，第二次握手后服务端的状态为<code>SYN-RCVD</code>，此时客户端的状态为<code>SYN-SENT</code>。</li>
+<li>第二次握手前服务端的状态为<code>LISTEN</code>，第二次握手后服务端的状态为<code>SYN-RCVD</code>，此时客户端的状态为<code>SYN-SEND</code>。</li>
 </ul>
 </li>
 <li><strong>第三次握手：</strong>客户端收到服务端发来的报文后，会再向服务端发送报文（包含标志位<code>ACK=1</code>，序列号<code>seq=x+1</code>，确认号<code>ack=y+1</code>）。<ul>
-<li>第三次握手前客户端的状态为<code>SYN-SENT</code>，第三次握手后客户端和服务端的状态都为<code>ESTABLISHED</code>。<strong>此时连接建立完成，客户端和服务端就可以传输数据啦。</strong></li>
+<li>第三次握手前客户端的状态为<code>SYN-SEND</code>，第三次握手后客户端和服务端的状态都为<code>ESTABLISHED</code>。<strong>此时连接建立完成，客户端和服务端就可以传输数据啦。</strong></li>
 </ul>
 </li>
 </ol>
@@ -1179,7 +1179,8 @@
 <li>未发送但是接收方准备接收的TCP段（可以发送）；</li>
 <li>未发送并且接收方也并未准备接受的TCP段（不可发送）。</li>
 </ol>
-<p><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/cs-basics/network/tcp-send-window.png"></p>
+<img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/cs-basics/network/tcp-send-window.png" style="zoom:50%;" />
+
 <ul>
 <li><strong>SND.WND</strong> ：发送窗口。</li>
 <li><strong>SND.UNA</strong>：Send Unacknowledged 指针，指向发送窗口的第一个字节。</li>
@@ -1193,7 +1194,8 @@
 <li>不可接收且不允许发送方发送TCP段（不可接收）。</li>
 </ol>
 <p><strong>TCP 接收窗口结构图示</strong> ：</p>
-<p><img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/cs-basics/network/tcp-receive-window.png"></p>
+<img src="https://guide-blog-images.oss-cn-shenzhen.aliyuncs.com/github/javaguide/cs-basics/network/tcp-receive-window.png" style="zoom:50%;" />
+
 <p><strong>接收窗口的大小是根据接收端处理数据的速度动态调整的。</strong> 如果接收端读取数据快，接收窗口可能会扩大。 否则，它可能会缩小。</p>
 <p><strong>总结：</strong>通信双方都各自维护一个发送窗口和一个接收窗口，接收窗口的大小是根据接收端处理数据的速度动态调整的。 如果接收端读取数据快，接收窗口可能会扩大。 否则，它可能会缩小。</p>
 <h3 id="🌟TCP-的拥塞控制是怎么实现的？"><a href="#🌟TCP-的拥塞控制是怎么实现的？" class="headerlink" title="🌟TCP 的拥塞控制是怎么实现的？"></a>🌟TCP 的拥塞控制是怎么实现的？</h3><p><strong>拥塞：</strong>在某段时间，若对网络中某一资源的需求超过了该资源所能提供的可用部分，网络的性能就要变坏。</p>
@@ -1207,11 +1209,11 @@
 <blockquote>
 <p>当主机开始发送数据时，如果立即把大量数据字节注入到网络，那么可能会引起网络阻塞。</p>
 </blockquote>
-<p><strong>较好的方法是先探测一下，由小到大逐渐增大发送窗口，也就是由小到大逐渐增大拥塞窗口数值</strong>。cwnd 初始值为 1，每经过一个传输轮次，cwnd 加倍。</p>
+<p><strong>较好的方法是先探测一下，由小到大逐渐增大发送窗口，也就是由小到大逐渐增大拥塞窗口数值</strong>。拥塞窗口 cwnd 初始值为 1，每经过一个传输轮次，拥塞窗口 cwnd 加倍。</p>
 <ul>
 <li><strong>拥塞避免</strong></li>
 </ul>
-<p>让拥塞窗口 cwnd 缓慢增大，即每经过一个传输轮次就把发送方的 cwnd 加 1。</p>
+<p>让拥塞窗口 cwnd 缓慢增大，即每经过一个传输轮次就把发送方的 拥塞窗口 加 1。</p>
 <ul>
 <li><strong>快重传</strong></li>
 </ul>
@@ -1223,7 +1225,7 @@
 <ul>
 <li><strong>快恢复</strong></li>
 </ul>
-<p>当发送方<strong>连续收到三个重复确认</strong>，就会把<strong>慢开始门限（ssthresh）减半</strong>，接着把 cwnd 值设置为慢开始门限<br>ssthresh减半后的数值，然后开始<strong>执行拥塞避免算法</strong>，使拥塞窗口缓慢地线性增大。</p>
+<p>当发送方<strong>连续收到三个重复确认</strong>，就会把<strong>慢开始门限（ssthresh）减半</strong>，接着把 拥塞窗口 cwnd 值设置为慢开始门限，然后开始<strong>执行拥塞避免算法</strong>，使拥塞窗口缓慢地线性增大。</p>
 <p>在采用快恢复算法时，慢开始算法只是在TCP连接建立时和网络出现超时时才使用。采用这样的拥塞控制方法使得TCP的性能有明显的改进。</p>
 <h3 id="🌟什么是-TCP-粘包和拆包？"><a href="#🌟什么是-TCP-粘包和拆包？" class="headerlink" title="🌟什么是 TCP 粘包和拆包？"></a>🌟什么是 TCP 粘包和拆包？</h3><p>因为TCP是面向流，没有边界，而操作系统在发送TCP数据时，会通过缓冲区来进行优化，例如缓冲区为1024个字节大小。</p>
 <p>如果一次请求发送的数据量比较小，没达到缓冲区大小，TCP就会将多个请求合并为同一个请求进行发送，这就形成了<strong>粘包</strong>。</p>
@@ -1278,7 +1280,7 @@
 <h3 id="🌟简述-HTTPS-的加密与认证过程-（SSL-x2F-TLS）"><a href="#🌟简述-HTTPS-的加密与认证过程-（SSL-x2F-TLS）" class="headerlink" title="🌟简述 HTTPS 的加密与认证过程 （SSL&#x2F;TLS）"></a>🌟简述 HTTPS 的加密与认证过程 （SSL&#x2F;TLS）</h3><ol>
 <li>浏览器将支持的加密算法信息发给服务器</li>
 <li>服务器选择一套浏览器支持的加密算法，以证书的形式回发给浏览器</li>
-<li>客户端(SSL&#x2F;TLS)解析证书验证证书合法性，生成对称加密的密钥，我们将该密钥称之为client key，即客户端密钥，用服务器的公钥对客户端密钥进行非对称加密。</li>
+<li>客户端(SSL&#x2F;TLS)解析证书验证证书合法性，生成对称加密的密钥，即客户端密钥，用服务器的公钥对客户端密钥进行非对称加密。</li>
 <li>客户端会发起HTTPS中的第二个HTTP请求，将加密之后的客户端对称密钥发送给服务器</li>
 <li>服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。</li>
 <li>服务器将加密后的密文发送给客户端</li>
@@ -1355,15 +1357,12 @@
 <h4 id="⓷HTTP-2-0——2015"><a href="#⓷HTTP-2-0——2015" class="headerlink" title="⓷HTTP 2.0——2015"></a>⓷HTTP 2.0——2015</h4><blockquote>
 <p>http2.0是一种安全高效的下一代http传输协议。安全是因为http2.0建立在https协议的基础上，高效是因为它是通过二进制分帧来进行数据传输。正因为这些特性，http2.0协议也在被越来越多的网站支持。</p>
 </blockquote>
+<p><img src="https://oss.javaguide.cn/github/javaguide/cs-basics/network/http1.1-vs-http2.0.png" alt="HTTP/1.0 和 HTTP/2.0 对比"></p>
 <ul>
-<li><p><strong>二进制分帧：</strong>HTTP2.0通过在应用层和传输层之间增加一个二进制分层帧，突破了HTTP1.1的性能限制，改进传输性能。</p>
-</li>
-<li><p><strong>多路复用</strong>：使用多个stream，每个stream又分帧传输，使得一个tcp连接能够处理多个http请求</p>
-</li>
-<li><p><strong>头部压缩</strong>：通讯双方各自维护一个header的索引表，使得不需要直接发送值，通过发送key缩减头部大小</p>
-</li>
-<li><p><strong>服务器推送</strong>：服务器除了最初请求的响应外，服务器还可额外向客户端推送资源，而无需客户端明确的需求</p>
-</li>
+<li><strong>二进制分帧：</strong>HTTP&#x2F;2.0 使用二进制帧进行数据传输，而 HTTP&#x2F;1.1 则使用文本格式的报文。二进制帧更加紧凑和高效，减少了传输的数据量和带宽消耗。</li>
+<li><strong>多路复用</strong>：HTTP&#x2F;2.0 在同一连接上可以同时传输多个请求和响应。HTTP&#x2F;1.1 则使用串行方式，每个请求和响应都需要独立的连接。这使得 HTTP&#x2F;2.0 在处理多个请求时更加高效，减少了网络延迟和提高了性能。</li>
+<li><strong>头部压缩</strong>：HTTP&#x2F;1.1 支持<code>Body</code>压缩，不支持<code>Header</code>压缩。HTTP&#x2F;2.0 支持<code>Header</code>压缩，减少了网络开销。</li>
+<li><strong>服务器推送</strong>：HTTP&#x2F;2.0 支持服务器推送，可以在客户端请求一个资源时，将其他相关资源一并推送给客户端，从而减少了客户端的请求次数和延迟。而 HTTP&#x2F;1.1 需要客户端自己发送请求来获取相关资源。</li>
 </ul>
 <p>参考：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/a83_NE-ww36FZsy320MQFQ">深入理解http2.0协议，看这篇就够了！</a></p>
 <h4 id="⓸HTTP-3-0——2022"><a href="#⓸HTTP-3-0——2022" class="headerlink" title="⓸HTTP 3.0——2022"></a>⓸HTTP 3.0——2022</h4><blockquote>
@@ -1578,7 +1577,7 @@
 </li>
 <li><p>若没有，则搜索<strong>操作系统中的DNS缓存</strong>和<strong>hosts文件</strong></p>
 </li>
-<li><p>若没有，则操作系统将域名发送至<strong>本地域名服务器</strong>，查找成功则返回结果，否则依次向<strong>根域名服务器</strong>、<strong>顶级域名服务器</strong>、<strong>权限域名服务器</strong>发起查询请求，最终返回IP地址给本地域名服务器</p>
+<li><p>若没有，则操作系统将域名发送至<strong>本地域名服务器</strong>，查找成功则返回结果，否则依次向<strong>根域名服务器</strong>、<strong>顶级域名服务器</strong>、<strong>权威域名服务器</strong>发起查询请求，最终返回IP地址给<strong>本地域名服务器</strong></p>
 </li>
 <li><p><strong>本地域名服务器</strong>将得到的IP地址<strong>缓存起来</strong>并返回给<strong>操作系统</strong></p>
 </li>
@@ -1650,13 +1649,13 @@
 </thead>
 <tbody><tr>
 <td align="left">调度</td>
-<td>程序执行的基本单位</td>
-<td>资源管理的基本单位</td>
+<td>处理器任务调度和执行的基本单位</td>
+<td>操作系统资源管理的基本单位</td>
 </tr>
 <tr>
 <td align="left">资源</td>
-<td>独立的内存和资源</td>
 <td>共享本进程的地址空间和资源</td>
+<td>独立的内存和资源</td>
 </tr>
 <tr>
 <td align="left">关系</td>
@@ -1674,6 +1673,9 @@
 <td>创建、销毁开销大</td>
 </tr>
 </tbody></table>
+<h3 id="🌟为什么切换线程比切换进程开销小"><a href="#🌟为什么切换线程比切换进程开销小" class="headerlink" title="🌟为什么切换线程比切换进程开销小"></a>🌟为什么切换线程比切换进程开销小</h3><p>现在都采用轮转时间片的方式去运行，当切换进程时，需要保存进程的执行现场，然后去执行下一个进程，恢复执行时，首先要恢复执行现场，才能继续执行。切换线程也是同样的道理，需要保存线程的执行现场。</p>
+<p>但是在进程内切换线程，进程内的资源是共享的不用切换。</p>
+<p>可以理解为线程上下文是进程上下文的子集。</p>
 <h3 id="🌟进程间的通信方式"><a href="#🌟进程间的通信方式" class="headerlink" title="🌟进程间的通信方式"></a>🌟进程间的通信方式</h3><ol>
 <li><strong>管道&#x2F;匿名管道(Pipes)</strong> ：用于具有亲缘关系的父子进程间或者兄弟进程之间的通信。</li>
 <li><strong>有名管道(Named Pipes)</strong> : 匿名管道由于没有名字，只能用于亲缘关系的进程间通信。为了克服这个缺点，提出了有名管道。有名管道严格遵循**先进先出(first in first out)**。有名管道以磁盘文件的方式存在，可以实现本机任意两个进程通信。</li>
@@ -2557,7 +2559,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1058.4k</span>&nbsp;字
+                class="white-color">1061.7k</span>&nbsp;字
             
             
             

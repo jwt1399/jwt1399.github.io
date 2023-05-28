@@ -881,14 +881,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-02-21
+                    2023-05-26
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    8.3k
+                    8.7k
                 </div>
                 
 
@@ -2105,9 +2105,48 @@ change job profession <span class="token keyword">varchar</span><span class="tok
 <h4 id="SQL26-每个6-x2F-7级用户活跃情况"><a href="#SQL26-每个6-x2F-7级用户活跃情况" class="headerlink" title="SQL26 每个6&#x2F;7级用户活跃情况"></a>SQL26 每个6&#x2F;7级用户活跃情况</h4><p>题解：</p>
 <pre class="line-numbers language-sql"><code class="language-sql">
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h3 id="05-窗口函数"><a href="#05-窗口函数" class="headerlink" title="05-窗口函数"></a>05-窗口函数</h3><h4 id="SQL27-每类试卷得分前3名"><a href="#SQL27-每类试卷得分前3名" class="headerlink" title="SQL27 每类试卷得分前3名"></a>SQL27 每类试卷得分前3名</h4><p>题解：</p>
-<pre class="line-numbers language-sql"><code class="language-sql">
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="05-窗口函数"><a href="#05-窗口函数" class="headerlink" title="05-窗口函数"></a>05-窗口函数</h3><blockquote>
+<p><strong>1）窗口函数：有三种排序方式</strong></p>
+<ul>
+<li>rank() over() 1 2 2 4 4 6 (计数排名，跳过相同的几个，eg.没有3没有5)</li>
+<li>row_number() over() 1 2 3 4 5 6 (赋予唯一排名)</li>
+<li>dense_rank() over() 1 2 2 3 3 4 (不跳过排名，可以理解为对类别进行计数)</li>
+</ul>
+<p><strong>2）聚合函数：通常查找最大值最小值的时候，首先会想到使用聚合函数。</strong></p>
+<p>a.group by的常见搭配：常和以下聚合函数搭配 </p>
+<ul>
+<li>avg（）– 求平均值</li>
+<li>count（）– 计数</li>
+<li>sum（）– 求和</li>
+<li>max（） – 最大值</li>
+<li>min（）– 最小值</li>
+</ul>
+<p>b.group by 的进阶用法，和with rollup一起使用。 </p>
+<p><strong>3）左右连接</strong></p>
+<p>左连接：表1 left join 表2 on 表1.字段&#x3D;表2.字段 （以表1为准，表2进行匹配）</p>
+<p>右连接：表1 right join 表2 on 表1.字段&#x3D;表2.字段 （以表2为准，表1进行匹配）</p>
+<p>全连接：表1 union all 表2 （表1 和表2的列数必须一样多，union 去除重复项，union all 不剔除重复项）</p>
+<p>内连接：表1 inner join 表2（取表1和表2相交部分）</p>
+<p>外连接：表1 full outer join 表2 （取表1和表2不相交的部分）</p>
+<p>ps：MYSQL 不支持外连接，可以用左右连接后再全连接代替</p>
+</blockquote>
+<h4 id="SQL27-每类试卷得分前3名"><a href="#SQL27-每类试卷得分前3名" class="headerlink" title="SQL27 每类试卷得分前3名"></a>SQL27 每类试卷得分前3名</h4><p><strong>求：找到每类试卷得分的前3名，如果两人最大分数相同，选择最小分数大者，如果还相同，选择uid大者。</strong></p>
+<p>题解：</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> tag<span class="token punctuation">,</span> uid<span class="token punctuation">,</span> ranking
+<span class="token keyword">from</span><span class="token punctuation">(</span>
+    <span class="token keyword">select</span> ei<span class="token punctuation">.</span>tag<span class="token punctuation">,</span>er<span class="token punctuation">.</span>uid<span class="token punctuation">,</span>row_number<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">over</span> <span class="token punctuation">(</span><span class="token keyword">partition</span> <span class="token keyword">by</span> tag
+        <span class="token keyword">order</span> <span class="token keyword">by</span>
+            <span class="token function">max</span><span class="token punctuation">(</span>er<span class="token punctuation">.</span>score<span class="token punctuation">)</span> <span class="token keyword">DESC</span><span class="token punctuation">,</span>
+            <span class="token function">min</span><span class="token punctuation">(</span>er<span class="token punctuation">.</span>score<span class="token punctuation">)</span> <span class="token keyword">DESC</span><span class="token punctuation">,</span>
+            er<span class="token punctuation">.</span>uid <span class="token keyword">DESC</span>
+        <span class="token punctuation">)</span> ranking
+        <span class="token keyword">from</span> exam_record <span class="token keyword">as</span> er
+        <span class="token keyword">left</span> <span class="token keyword">join</span> examination_info <span class="token keyword">as</span> ei <span class="token keyword">on</span> er<span class="token punctuation">.</span>exam_id <span class="token operator">=</span> ei<span class="token punctuation">.</span>exam_id
+        <span class="token keyword">group</span> <span class="token keyword">by</span> ei<span class="token punctuation">.</span>tag<span class="token punctuation">,</span> er<span class="token punctuation">.</span>uid
+    <span class="token punctuation">)</span> t1
+<span class="token keyword">where</span>
+    ranking <span class="token operator">&lt;=</span> <span class="token number">3</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="SQL28-第二快-x2F-慢用时之差大于试卷时长一半的试卷"><a href="#SQL28-第二快-x2F-慢用时之差大于试卷时长一半的试卷" class="headerlink" title="SQL28 第二快&#x2F;慢用时之差大于试卷时长一半的试卷"></a>SQL28 第二快&#x2F;慢用时之差大于试卷时长一半的试卷</h4><p>题解：</p>
 <pre class="line-numbers language-sql"><code class="language-sql">
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -2904,7 +2943,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1058.4k</span>&nbsp;字
+                class="white-color">1061.7k</span>&nbsp;字
             
             
             
