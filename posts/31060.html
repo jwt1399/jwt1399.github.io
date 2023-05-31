@@ -881,14 +881,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-05-28
+                    2023-05-29
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    14.8k
+                    15k
                 </div>
                 
 
@@ -986,12 +986,13 @@
 </tr>
 </tbody></table>
 <ul>
-<li>三次握手才可以防止了已失效的连接请求初始化造成混乱（主要原因）</li>
-<li>三次握手才可以同步双方的初始序列号</li>
-<li>三次握手才可以避免资源浪费</li>
+<li>第三次握手<strong>防止了已失效的连接请求报文段</strong>突然又传输到了服务端（主要原因）</li>
 </ul>
-<p>两次握手的话服务端无法确认自己发送和对方接收是否正常，三次握手就能确认双发收发功能都正常，缺一不可。</p>
-<p>即第三次握手<strong>防止了已失效的连接请求报文段</strong>突然又传输到了服务端。</p>
+<p>如果服务端接收到了一个早已失效的来自客户端的连接请求报文，会向客户端发送确认报文同意建立TCP连接。但因为客户端并不需要向服务端发送数据，所以此次TCP连接没有意义并且浪费了资源。</p>
+<ul>
+<li>两次握手服务端无法确认自己发送和对方接收是否正常，三次握手就能确认双方收发功能都正常，缺一不可。</li>
+</ul>
+<p>假设建立TCP连接仅需要两次握手，那么如果第二次握手时，服务端返回给客户端的确认报文丢失了，客户端这边认为服务端没有和他建立连接，而服务端却以为已经和客户端建立了连接，并且可能向服务端已经开始向客户端发送数据，但客户端并不会接收这些数据，浪费了资源。如果是三次握手，不会出现双方连接还未完全建立成功就开始发送数据的情况。</p>
 <h3 id="🌟TCP-中-SYN-攻击是什么？如何防止？"><a href="#🌟TCP-中-SYN-攻击是什么？如何防止？" class="headerlink" title="🌟TCP 中 SYN 攻击是什么？如何防止？"></a>🌟TCP 中 SYN 攻击是什么？如何防止？</h3><p>我们都知道 TCP 连接建立是需要三次握手，假设攻击者短时间伪造不同 IP 地址的 <code>SYN</code> 报文，服务端每接收到一个 <code>SYN</code> 报文，就进入<code>SYN_RCVD</code> 状态，但服务端发送出去的 <code>ACK + SYN</code> 报文，无法得到未知 IP 主机的 <code>ACK</code> 应答，久而久之就会<strong>占满服务端的半连接队列</strong>，使得服务端不能为正常用户服务。</p>
 <p>SYN 攻击方式最直接的表现就会把 TCP 半连接队列（SYN队列）打满，这样<strong>当 TCP 半连接队列满了，后续再在收到 SYN 报文就会丢弃</strong>，导致客户端无法和服务端建立连接。</p>
 <p>避免 SYN 攻击方式，可以有以下四种方法：</p>
@@ -2559,7 +2560,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1061.7k</span>&nbsp;字
+                class="white-color">1063.6k</span>&nbsp;字
             
             
             
