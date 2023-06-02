@@ -877,7 +877,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2022-05-17
+                    2023-06-01
                 </div>
                 
 
@@ -905,12 +905,12 @@
                 <p>在CTF比赛中，对于流量包的分析取证是一种十分重要的题型。通常这类题目都是会提供一个包含流量数据的<code>pcap</code>文件，选手通过该文件筛选和过滤其中无关的流量信息，根据关键流量信息找出flag或者相关线索,一般flag隐藏在某个数据包里面，或者需要从中提取一个文件出来等等，还有wifi的握手包，需要获取wifi密码等。</p>
 <h2 id="附件下载"><a href="#附件下载" class="headerlink" title="附件下载"></a>附件下载</h2><p>本文章涉及的所有题目附件下载地址：<br>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/18mWo5vn1zp_XbmcQrMOKRA">https://pan.baidu.com/s/18mWo5vn1zp_XbmcQrMOKRA</a><br>提取码：hrc4 </p>
 <h2 id="Wireshark的使用"><a href="#Wireshark的使用" class="headerlink" title="Wireshark的使用"></a>Wireshark的使用</h2><p>下载地址：<a target="_blank" rel="noopener" href="https://www.wireshark.org/download.html">https://www.wireshark.org/download.html</a><br><code>pcap流量包</code>的分析通常是通过图形化的网络嗅探器——<code>Wireshark</code>进行的.<br>Wireshark的基本使用分为数据包筛选、数据包搜索、数据包还原、数据提取四个部分。</p>
-<h3 id="数据包筛选"><a href="#数据包筛选" class="headerlink" title="数据包筛选"></a>数据包筛选</h3><h4 id="筛选ip"><a href="#筛选ip" class="headerlink" title="筛选ip"></a>筛选ip</h4><blockquote>
+<h3 id="①数据包筛选"><a href="#①数据包筛选" class="headerlink" title="①数据包筛选"></a>①数据包筛选</h3><h4 id="筛选ip"><a href="#筛选ip" class="headerlink" title="筛选ip"></a>筛选ip</h4><blockquote>
 <p>源ip筛选</p>
 </blockquote>
 <p><strong>方法一：</strong></p>
-<pre><code>ip.src == 源ip地址
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">ip.src</span> <span class="token punctuation">=</span><span class="token attr-value">= 源ip地址</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230113252.png"></p>
 <p><strong>方法二：</strong><br>选中一个源IP是筛选条件的数据包，找到<code>Internet Protocol Version 4</code>下的<code>Source</code>字段。</p>
 <p><img src="https://img.jwt1399.top//img/20201230113315.png"></p>
@@ -920,51 +920,51 @@
 <p>目的ip筛选</p>
 </blockquote>
 <p><strong>方法一：</strong></p>
-<pre><code>ip.dst == 目的ip地址
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">ip.dst</span> <span class="token punctuation">=</span><span class="token attr-value">= 目的ip地址</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230113452.png"></p>
 <p><strong>方法二：</strong><br>跟上面源IP筛选方法类似</p>
 <p>选中一个源IP是筛选条件的数据包，找到<code>Internet Protocol Version 4</code>下的<code>Destination</code>字段。</p>
 <p>右击<code>Destination</code>字段，再选择<code>作为过滤器应用</code> –-&gt; 最后点击<code>选中</code>，就可筛选出该目的IP的所有包了</p>
-<h4 id="mac地址筛选"><a href="#mac地址筛选" class="headerlink" title="mac地址筛选"></a>mac地址筛选</h4><pre><code>eth.dst ==A0:00:00:04:C5:84 筛选目标mac地址
+<h4 id="mac地址筛选"><a href="#mac地址筛选" class="headerlink" title="mac地址筛选"></a>mac地址筛选</h4><pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">eth.dst</span> <span class="token punctuation">=</span><span class="token attr-value">=A0:00:00:04:C5:84 筛选目标mac地址</span>
 
-eth.addr==A0:00:00:04:C5:84 筛选MAC地址
-</code></pre>
-<h4 id="端口筛选"><a href="#端口筛选" class="headerlink" title="端口筛选"></a>端口筛选</h4><pre><code>tcp.dstport == 80  筛选tcp协议的目标端口为80的流量包
+<span class="token attr-name">eth.addr</span><span class="token punctuation">=</span><span class="token attr-value">=A0:00:00:04:C5:84 筛选MAC地址</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h4 id="端口筛选"><a href="#端口筛选" class="headerlink" title="端口筛选"></a>端口筛选</h4><pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">tcp.dstport</span> <span class="token punctuation">=</span><span class="token attr-value">= 80  筛选tcp协议的目标端口为80的流量包</span>
 
-tcp.srcport == 80  筛选tcp协议的源端口为80的流量包
+<span class="token attr-name">tcp.srcport</span> <span class="token punctuation">=</span><span class="token attr-value">= 80  筛选tcp协议的源端口为80的流量包</span>
 
-udp.srcport == 80  筛选udp协议的源端口为80的流量包
-</code></pre>
-<h4 id="协议筛选"><a href="#协议筛选" class="headerlink" title="协议筛选"></a>协议筛选</h4><pre><code>tcp  筛选协议为tcp的流量包
+<span class="token attr-name">udp.srcport</span> <span class="token punctuation">=</span><span class="token attr-value">= 80  筛选udp协议的源端口为80的流量包</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="协议筛选"><a href="#协议筛选" class="headerlink" title="协议筛选"></a>协议筛选</h4><pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">tcp</span> <span class="token attr-value"> 筛选协议为tcp的流量包</span>
 
-udp 筛选协议为udp的流量包
+<span class="token attr-name">udp</span> <span class="token attr-value">筛选协议为udp的流量包</span>
 
-arp/icmp/http/ftp/dns/ip  筛选协议为arp/icmp/http/ftp/dns/ip的流量包
-</code></pre>
-<h4 id="包长度筛选"><a href="#包长度筛选" class="headerlink" title="包长度筛选"></a>包长度筛选</h4><pre><code>udp.length ==20   筛选长度为20的udp流量包
+<span class="token attr-name">arp/icmp/http/ftp/dns/ip</span> <span class="token attr-value"> 筛选协议为arp/icmp/http/ftp/dns/ip的流量包</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="包长度筛选"><a href="#包长度筛选" class="headerlink" title="包长度筛选"></a>包长度筛选</h4><pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">udp.length</span> <span class="token punctuation">=</span><span class="token attr-value">=20   筛选长度为20的udp流量包</span>
 
-tcp.len &gt;=20  筛选长度大于20的tcp流量包
+<span class="token attr-name">tcp.len</span> <span class="token attr-value">>=20  筛选长度大于20的tcp流量包</span>
 
-ip.len ==20  筛选长度为20的IP流量包
+<span class="token attr-name">ip.len</span> <span class="token punctuation">=</span><span class="token attr-value">=20  筛选长度为20的IP流量包</span>
 
-frame.len ==20 筛选长度为20的整个流量包
-</code></pre>
-<h4 id="http请求筛选"><a href="#http请求筛选" class="headerlink" title="http请求筛选"></a>http请求筛选</h4><pre><code>请求方法为GET：http.request.method==“GET”        筛选HTTP请求方法为GET的 流量包
+<span class="token attr-name">frame.len</span> <span class="token punctuation">=</span><span class="token attr-value">=20 筛选长度为20的整个流量包</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="http请求筛选"><a href="#http请求筛选" class="headerlink" title="http请求筛选"></a>http请求筛选</h4><pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">请求方法为GET：http.request.method</span><span class="token punctuation">=</span><span class="token attr-value">=“GET”        筛选HTTP请求方法为GET的 流量包</span>
 
-请求方法为POST：http.request.method==“POST”      筛选HTTP请求方法为POST的流量包
+<span class="token attr-name">请求方法为POST：http.request.method</span><span class="token punctuation">=</span><span class="token attr-value">=“POST”      筛选HTTP请求方法为POST的流量包</span>
 
-指定URI：http.request.uri==“/img/logo-edu.gif”  筛选HTTP请求的URL为/img/logo-edu.gif的流量包
+<span class="token attr-name">指定URI：http.request.uri</span><span class="token punctuation">=</span><span class="token attr-value">=“/img/logo-edu.gif”  筛选HTTP请求的URL为/img/logo-edu.gif的流量包</span>
 
-请求或相应中包含特定内容：http contains “FLAG”    筛选HTTP内容为/FLAG的流量包
-</code></pre>
-<h3 id="数据包搜索"><a href="#数据包搜索" class="headerlink" title="数据包搜索"></a>数据包搜索</h3><p>在wireshark界面按“Ctrl+F”，可以进行关键字搜索：</p>
+<span class="token attr-name">请求或相应中包含特定内容：http</span> <span class="token attr-value">contains “FLAG”    筛选HTTP内容为/FLAG的流量包</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="②数据包搜索"><a href="#②数据包搜索" class="headerlink" title="②数据包搜索"></a>②数据包搜索</h3><p>在wireshark界面按“Ctrl+F”，可以进行关键字搜索：</p>
 <p><img src="https://img.jwt1399.top//img/20201230113551.png">Wireshark的搜索功能支持正则表达式、字符串、十六进制等方式进行搜索，通常情况下直接使用字符串方式进行搜索。<br><img src="https://img.jwt1399.top//img/20201230113616.png"><br>搜索栏的左边下拉，有分组列表、分组详情、分组字节流三个选项，分别对应wireshark界面的三个部分，搜索时选择不同的选项以指定搜索区域：<br><img src="https://img.jwt1399.top//img/20201230113637.png"><br><img src="https://img.jwt1399.top//img/20201230113647.png"></p>
-<h3 id="数据包还原"><a href="#数据包还原" class="headerlink" title="数据包还原"></a>数据包还原</h3><p>在wireshark中，存在一个追踪流的功能，可以将HTTP或TCP流量集合在一起并还原成原始数据，具体操作方式如下：</p>
+<h3 id="③数据包还原"><a href="#③数据包还原" class="headerlink" title="③数据包还原"></a>③数据包还原</h3><p>在wireshark中，存在一个追踪流的功能，可以将HTTP或TCP流量集合在一起并还原成原始数据，具体操作方式如下：</p>
 <p>选中想要还原的流量包，右键选中，选择追踪流 – TCP流&#x2F;UPD流&#x2F;SSL流&#x2F;HTTP流。</p>
 <p><img src="https://img.jwt1399.top//img/20201230114031.png"></p>
 <p>可在弹出的窗口中看到被还原的流量信息：<br><img src="https://img.jwt1399.top//img/20201230114048.png"></p>
-<h3 id="数据提取"><a href="#数据提取" class="headerlink" title="数据提取"></a>数据提取</h3><p>Wireshark支持提取通过http传输（上传&#x2F;下载）的文件内容，方法如下：<br><strong>自动提取通过http传输的文件内容</strong><br>文件-&gt;导出对象-&gt;HTTP</p>
+<h3 id="④数据提取"><a href="#④数据提取" class="headerlink" title="④数据提取"></a>④数据提取</h3><p>Wireshark支持提取通过http传输（上传&#x2F;下载）的文件内容，方法如下：<br><strong>自动提取通过http传输的文件内容</strong><br>文件-&gt;导出对象-&gt;HTTP</p>
 <p><img src="https://img.jwt1399.top//img/20201230113852.png"></p>
 <p>在打开的对象列表中找到有价值的文件，如压缩文件、文本文件、音频文件、图片等，点击<code>Save</code>进行保存，或者<code>Save All</code>保存所有对象再进入文件夹进行分析。</p>
 <p><img src="https://img.jwt1399.top//img/20201230114122.png"><strong>手动提取通过http传输的文件内容</strong><br>选中http文件传输流量包，在分组详情中找到<code>data</code>,<code>Line-based text</code>, <code>JPEG File Interchange Format</code>, <code>data:text/html</code>层，鼠标右键点击 – 选中 导出分组字节流。</p>
@@ -972,7 +972,7 @@ frame.len ==20 筛选长度为20的整个流量包
 <p><img src="https://img.jwt1399.top//img/20201230114300.png"></p>
 <p>最后点击<code>Save as</code>按钮导出。</p>
 <h2 id="流量分析经典题型"><a href="#流量分析经典题型" class="headerlink" title="流量分析经典题型"></a>流量分析经典题型</h2><p>CTF题型主要分为流量包修复、数据提取、WEB流量包分析、USB流量包分析、无线密码破解和工控流量包分析等等。</p>
-<h3 id="入门题型"><a href="#入门题型" class="headerlink" title="入门题型"></a>入门题型</h3><h4 id="题目：Cephalopod-图片提取"><a href="#题目：Cephalopod-图片提取" class="headerlink" title="题目：Cephalopod(图片提取)"></a>题目：Cephalopod(图片提取)</h4><p>题目来源：XCTF 3rd-HITB CTF-2017<br>考点：图片提取<br>题目信息：(Cephalopod.pcapng)</p>
+<h3 id="①入门题型"><a href="#①入门题型" class="headerlink" title="①入门题型"></a>①入门题型</h3><h4 id="题目：Cephalopod-图片提取"><a href="#题目：Cephalopod-图片提取" class="headerlink" title="题目：Cephalopod(图片提取)"></a>题目：Cephalopod(图片提取)</h4><p>题目来源：XCTF 3rd-HITB CTF-2017<br>考点：图片提取<br>题目信息：(Cephalopod.pcapng)</p>
 <p><img src="https://img.jwt1399.top//img/20201230114329.png">数据包打开，分组字节流查询flag，发现出现了flag.png的字样，但是并没有这个图片文件，往下翻，图片应该在长度较大的流中，追踪tcp流在tcp.stream eq 2处找到图片文件，保存为原始数据</p>
 <p><img src="https://img.jwt1399.top//img/20201230114344.png">删除PNG前面多余部分，保存为1.png<br><img src="https://img.jwt1399.top//img/20201230114411.png"></p>
 <p>得到flag<br><img src="https://img.jwt1399.top//img/20201230114431.png"></p>
@@ -985,19 +985,19 @@ frame.len ==20 筛选长度为20的整个流量包
 <p>依次查看所有icmp包拼凑字符得到flag<br><code>flag&#123;Icmp_backdoor_can_transfer-some_infomation&#125;</code></p>
 <h4 id="题目：手机热点-蓝牙传输协议obex-数据提取"><a href="#题目：手机热点-蓝牙传输协议obex-数据提取" class="headerlink" title="题目：手机热点(蓝牙传输协议obex,数据提取)"></a>题目：手机热点(蓝牙传输协议obex,数据提取)</h4><p>题目来源：第七季极客大挑战<br>考点：蓝牙传输协议obex,数据提取<br>题目信息：(Blatand_1.pcapng)<br><img src="https://img.jwt1399.top//img/20201230114648.png"><br>根据题目提示，手机共享，那么应该是蓝牙传输，蓝牙传输协议为<strong>OBEX</strong>，过滤后发现含有一个压缩包<br><img src="https://img.jwt1399.top//img/20201230114717.png"><br><strong>方法一</strong>：foremost分离后得到压缩包，解压得到flag.gif<br><img src="https://img.jwt1399.top//img/20201230114729.png" alt="img"><br><strong>方法二</strong>：选中含secret.rar包，进行如下操作<br><img src="https://img.jwt1399.top//img/20201230114755.png" alt="img"><br>保存为1.rar，解压后得到flag.gif</p>
 <h4 id="题目：想蹭网先解开密码-无线密码破解"><a href="#题目：想蹭网先解开密码-无线密码破解" class="headerlink" title="题目：想蹭网先解开密码(无线密码破解)"></a>题目：想蹭网先解开密码(无线密码破解)</h4><p>题目来源：bugku<br>考点：无线密码破解<br>题目信息：(wifi.cap)<br><img src="https://img.jwt1399.top//img/20201230114817.png"><br>下载cap包，WIFI连接认证的重点在WPA的四次握手包，也就是eapol协议的包，过滤一下<br><img src="https://img.jwt1399.top//img/20201230114836.png"><br>果然存在四次握手包，直接进行无线密码爆破<br>创建密码字典：</p>
-<pre><code>crunch 11 11 -t 1391040%%%% &gt;&gt; wifipass.txt
-</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">crunch 11 11 -t 1391040%%%% <span class="token operator">>></span> wifipass.txt
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230114850.png"></p>
 <p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a3401b0f3d9a">Linux下的字典生成工具Crunch</a><br>利用aircrack-ng 进行爆破</p>
-<pre><code>aircrack-ng -w wifipass.txt wifi.cap
-</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">aircrack-ng -w wifipass.txt wifi.cap
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230114940.png"><br>得到flag<br><code>flag&#123;13910407686&#125;</code></p>
-<h3 id="进阶题型"><a href="#进阶题型" class="headerlink" title="进阶题型"></a>进阶题型</h3><h4 id="题目：抓到一只苍蝇-数据包筛选-数据提取"><a href="#题目：抓到一只苍蝇-数据包筛选-数据提取" class="headerlink" title="题目：抓到一只苍蝇(数据包筛选,数据提取)"></a>题目：抓到一只苍蝇(数据包筛选,数据提取)</h4><p>题目来源：bugku<br>考点：数据包筛选,数据提取<br>题目信息：(misc_fly.pcapng)<br><img src="https://img.jwt1399.top//img/20201230114957.png"><br>首先打开数据包，题目提示了抓到一只苍蝇，试一试搜索苍蝇</p>
-<pre class="line-numbers language-php"><code class="language-php">http contains <span class="token string">"苍蝇"</span>
+<h3 id="②进阶题型"><a href="#②进阶题型" class="headerlink" title="②进阶题型"></a>②进阶题型</h3><h4 id="题目：抓到一只苍蝇-数据包筛选-数据提取"><a href="#题目：抓到一只苍蝇-数据包筛选-数据提取" class="headerlink" title="题目：抓到一只苍蝇(数据包筛选,数据提取)"></a>题目：抓到一只苍蝇(数据包筛选,数据提取)</h4><p>题目来源：bugku<br>考点：数据包筛选,数据提取<br>题目信息：(misc_fly.pcapng)<br><img src="https://img.jwt1399.top//img/20201230114957.png"><br>首先打开数据包，题目提示了抓到一只苍蝇，试一试搜索苍蝇</p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">http</span> <span class="token attr-value">contains "苍蝇"</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>发现一些可疑信息，仔细分析一下发现是在发qq邮件，并且还上传了文件</p>
 <p><img src="https://img.jwt1399.top//img/20201230115027.png"><br>既然上传了文件，我们再过滤POST请求试试:</p>
-<pre class="line-numbers language-html"><code class="language-html">http.request.method==POST
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">http.request.method</span><span class="token punctuation">=</span><span class="token attr-value">=POST</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>可以看到13号数据包调用函数<code>CreateFile</code>，然后下面几个可能就是文件内容了，具体是几个，仔细看看URL，738号数据包有个需要调用函数<code>CheckFile</code>，并且前面的5个数据包url的路径一样，<br>所以从第一个开始，后5个数据包是flag.rar内容<br><img src="https://img.jwt1399.top//img/20201230115058.png"><br>我们将分组字节流中的原始数据分别保存为1、2、3、4、5，方便操作<br><img src="https://img.jwt1399.top//img/20201230115114.png"><br><img src="https://img.jwt1399.top//img/20201230115126.png"><br>但是由于TCP包有文件头，我们需要去掉文件头才能将原始数据合成一个文件，<br>从第一个数据包可以看出来：</p>
 <p><img src="https://img.jwt1399.top//img/20201230115138.png"><br>文件大小是525701字节，我们需要的这5个数据包的大小(Media Type中可看到):</p>
@@ -1006,21 +1006,21 @@ frame.len ==20 筛选长度为20的整个流量包
 </blockquote>
 <p>tcp包的文件头就为364</p>
 <p>然后使用linux的一些工具进行操作即可得到flag.rar<br>依次把五个文件去掉文件头保存到另一文件<br>这里使用dd：</p>
-<pre class="line-numbers language-php"><code class="language-php">dd <span class="token keyword">if</span><span class="token operator">=</span><span class="token number">1</span> bs<span class="token operator">=</span><span class="token number">1</span> skip<span class="token operator">=</span><span class="token number">364</span> of<span class="token operator">=</span><span class="token number">1.1</span>
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">dd</span> if<span class="token operator">=</span>1 bs<span class="token operator">=</span>1 skip<span class="token operator">=</span>364 of<span class="token operator">=</span>1.1
 
 dd命令语法：
 <span class="token keyword">if</span> 输入文件名
-bs 设置每次读写块的大小为<span class="token number">1</span>字节 
+bs 设置每次读写块的大小为1字节 
 skip 指定从输入文件开头跳过多少个块后再开始复制
 of 输出文件名
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230115153.png"><br>然后再用linux的输入流来合并成一个文件：</p>
-<pre class="line-numbers language-php"><code class="language-php">cat <span class="token number">1.1</span> <span class="token number">2.1</span> <span class="token number">3.1</span> <span class="token number">4.1</span> <span class="token number">5.1</span> <span class="token operator">></span> fly<span class="token punctuation">.</span>rar
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">cat</span> 1.1 2.1 3.1 4.1 5.1 <span class="token operator">></span> fly.rar
 或者
-copy <span class="token operator">/</span>B <span class="token number">1.1</span><span class="token operator">+</span><span class="token number">2.1</span><span class="token operator">+</span><span class="token number">3.1</span><span class="token operator">+</span><span class="token number">4.1</span><span class="token operator">+</span><span class="token number">5.1</span> fly<span class="token punctuation">.</span>rar
+copy /B 1.1+2.1+3.1+4.1+5.1 fly.rar
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230115208.png"><br>然后fly.rar又被伪加密了，所以需要将这个文件用HXD打开后，将其中的74 84改为74 80就能打开了<br><img src="https://img.jwt1399.top//img/20201230115219.png"><br>解压得到flag.txt，用HXD打开，显示在win32下运行，<br><img src="https://img.jwt1399.top//img/20201230115233.png"><br>因此改为exe可执行文件后，一堆苍蝇出现了。。。。<br>binwalk一下发现含有很多图片,foremost提取一下，得到一个二维码<br><img src="https://img.jwt1399.top//img/20201230115246.png"><br>扫码得到flag<br><img src="https://img.jwt1399.top//img/20201230115302.png"></p>
-<h3 id="数据分析题"><a href="#数据分析题" class="headerlink" title="数据分析题"></a>数据分析题</h3><blockquote>
+<h3 id="③数据分析题"><a href="#③数据分析题" class="headerlink" title="③数据分析题"></a>③数据分析题</h3><blockquote>
 <p>题目一,二,三,四<br>题目给了10个流量包，其中只有四个流量包能够分析出有用信息<br>为了方便，分为题目一二三四对四个流量包进行了分析</p>
 </blockquote>
 <p>题目详情：<br><img src="https://img.jwt1399.top//img/20201230115317.jpg"></p>
@@ -1029,8 +1029,8 @@ copy <span class="token operator">/</span>B <span class="token number">1.1</span
 <p>题目要求：<br>1.黑客攻击的第一个受害主机的网卡IP地址<br>2.黑客对URL的哪一个参数实施了SQL注入<br>3.第一个受害主机网站数据库的表前缀（加上下划线例如abc_）<br>4.第一个受害主机网站数据库的名字</p>
 </blockquote>
 <p>打开流量包，流量包有点大，打开比较慢，这里我们先过滤为HTTP协议可以看到<code>202.1.1.2</code>对<code>192.168.1.8</code>进行了疯狂的爆破<br><img src="https://img.jwt1399.top//img/20201230115337.png"><br>不难看出，黑客利用的SqlMap在对目标站点进行不断的SQL试探注入<br>因此受害主机的网卡IP地址为**<code>192.168.1.8 </code>**<br>而注入的参数也可以清晰的看见，为**<code>list[select]</code>**<br><img src="https://img.jwt1399.top//img/20201230115349.png"><br>追踪http流，根据回显内容，目标站点数据库抛出的错误，可以清晰的看见<br><img src="https://img.jwt1399.top//img/20201230115404.png"><br>不难确定，目标站点的数据库表名前缀为**<code>ajtuc_</code>**<br>接着为了确定受害主机网站数据库的名字，再进行了一次过滤</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>此时挑选最后一次注入的payload进行url解码<br><img src="https://img.jwt1399.top//img/20201230115419.png"><br>可以清楚的看到</p>
 <pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">FROM</span> joomla<span class="token punctuation">.</span>ajtuc_users
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -1049,11 +1049,11 @@ joomla
 <p>题目要求：<br>1.黑客第一次获得的php木马的密码是什么<br>2.黑客第二次上传php木马是什么时间<br>3.第二次上传的木马通过HTTP协议中的哪个头传递数据</p>
 </blockquote>
 <p>根据题目一已确定目标ip，所以依旧使用以下过滤简化操作</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>可以看到一个奇怪文件<code>kkkaaa.php</code>,跟进POST数据查看<br><img src="https://img.jwt1399.top//img/20201230115437.png"><br>不难发现，是中国菜刀的流量,木马密码为**<code>zzz</code>**<br>接着确定黑客第二次上传php木马的时间<br>我进行了过滤，猜想黑客应该是根据第一个木马来上传的第二个木马</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http.request.method==POST
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http.request.method==POST</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>此时一条数据格外引人注目<br><img src="https://img.jwt1399.top//img/20201230115452.png"><br>我们对其16进制进行分析<br><img src="https://img.jwt1399.top//img/20201230115505.png"><br>将保存的值放入HXD中得到源码<br><img src="https://img.jwt1399.top//img/20201230115518.png"><br>将文件保存为php,但是代码经过混淆过的，在代码末尾加上下面两句代码</p>
 <pre class="line-numbers language-php"><code class="language-php"><span class="token function">var_dump</span><span class="token punctuation">(</span><span class="token variable">$j</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token function">var_dump</span><span class="token punctuation">(</span><span class="token variable">$x</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -1114,12 +1114,12 @@ joomla
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>容易看到此时有两个与HTTP头有关的参数</p>
-<pre><code>$rr = @$_SERVER[&quot;HTTP_REFERER&quot;];
-$ra = @$_SERVER[&quot;HTTP_ACCEPT_LANGUAGE&quot;];
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">$rr</span> <span class="token punctuation">=</span> <span class="token attr-value">@$_SERVER["HTTP_REFERER"];</span>
+<span class="token attr-name">$ra</span> <span class="token punctuation">=</span> <span class="token attr-value">@$_SERVER["HTTP_ACCEPT_LANGUAGE"];</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>还是使用过滤</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>然后可以看到许多请求footer.php的页面，点开一个查看详情<br><img src="https://img.jwt1399.top//img/20201230115556.png"><br>容易发现referer数据十分可疑，而ACCEPT_LANGUAGE较为正常<br>所以可以基本确定，木马通过HTTP协议中的**<code>Referer</code>**头传递数据</p>
 <h5 id="答案-1"><a href="#答案-1" class="headerlink" title="答案"></a>答案</h5><pre><code>1.黑客第一次获得的php木马的密码是什么
 zzz
@@ -1133,14 +1133,14 @@ Referer
 <p>题目要求：<br>1.内网主机的mysql用户名和请求连接的密码hash是多少(用户:密码hash)<br>2.php代理第一次被使用时最先连接了哪个IP地址</p>
 </blockquote>
 <p>直接进行过滤</p>
-<pre><code>tcp contains &quot;mysql&quot; &amp;&amp; mysql
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">tcp</span> <span class="token attr-value">contains "mysql" &amp;&amp; mysql</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>得到大量数据，可以发现黑客应该在对Mysql的登录进行爆破，内网受害机器为192.168.2.20<br><img src="https://img.jwt1399.top//img/20201230115614.png"><br>我们找到最后一条登录数据<br><img src="https://img.jwt1399.top//img/20201230115627.png"><br>该值就为我们需要的mysql密码hash了<br>简单过滤一下</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230115643.png"><br>目标机器已经被挂上了tunnel.php，方便外网对内网的访问<br>为方便查看黑客操作，我们过滤出POST请求</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http.request.method==POST &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; http.request.method==POST &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230115656.png"><br>我们清晰的看见黑客的php代理第一次使用时最先连接4.2.2.2这个ip</p>
 <h5 id="答案-2"><a href="#答案-2" class="headerlink" title="答案"></a>答案</h5><pre><code>1.内网主机的mysql用户名和请求连接的密码hash是多少(用户:密码hash)
 admin:1a3068c3e29e03e3bcfdba6f8669ad23349dc6c4
@@ -1152,32 +1152,32 @@ admin:1a3068c3e29e03e3bcfdba6f8669ad23349dc6c4
 <p>题目要求：<br>1.黑客第一次获取到当前目录下的文件列表的漏洞利用请求发生在什么时候<br>2.黑客在内网主机中添加的用户名和密码是多少<br>3.黑客从内网服务器中下载下来的文件名</p>
 </blockquote>
 <p>为确定黑客第一次获取到当前目录下的文件列表的漏洞利用请求发生在什么时候，我们继续进行过滤</p>
-<pre><code>(ip.addr == 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; (http contains &quot;dir&quot; || http contains &quot;ls&quot;)
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">(ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.1.8 || ip.addr == 202.1.1.2) &amp;&amp; (http contains "dir" || http contains "ls")</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="https://img.jwt1399.top//img/20201230115712.png"><br>此时一条为ls，一条为dir，我们先对ls的进行验证<br>追踪其tcp流<br><img src="https://img.jwt1399.top//img/20201230115738.png"><br>发现并没有执行成功,再对dir进行验证<br><img src="https://img.jwt1399.top//img/20201230115752.png"><br>于是可以确定无误，目标系统为windows，同时dir命令执行成功<br>时间为：<code>18:37:38.482420</code><br>既然该192.168.2.20的机器可以执行命令，于是我改变过滤方式，查看黑客如何进行攻击</p>
-<pre><code>ip.addr == 192.168.2.20 &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.2.20 &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>不难发现,黑客利用echo命令写入了一个名为sh.php的后门<br><img src="https://img.jwt1399.top//img/20201230115807.png"><br><img src="https://img.jwt1399.top//img/20201230115815.png"><br>我们进一步跟进黑客执行的指令，由于是中国菜刀流量，我们选择根据回显明文，猜测指令，这样更有效率</p>
-<pre><code>ip.src == 192.168.2.20 &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">ip.src</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.2.20 &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>在18:50:09.344660时，我们发现可疑操作,我们发现一条可疑数据，判断黑客应该是执行了<code>net user</code>的命令</p>
 <p><img src="https://img.jwt1399.top//img/20201230115829.png"></p>
 <p>然后在18:50:42.908737发现黑客再次执行了net user命令<br>此时回显为：<br><img src="https://img.jwt1399.top//img/20201230115842.png"><br>看来黑客成功添加了管理员用户kaka<br>确定了大致的作案时间，我们即可使用过滤</p>
-<pre><code>ip.addr == 192.168.2.20 &amp;&amp; http
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">ip.addr</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.2.20 &amp;&amp; http</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>根据之前的判断，我们可以知道<br>18:49:27.767754时，不存在kaka用户<br>18:50:42.908737时，kaka用户已成为管理员<br>所以可以断定作案时间点在这段时间内<br><img src="https://img.jwt1399.top//img/20201230115857.png"><br>在此期间，一共4个POST请求，我们挨个查看，果不其然，在第一个POST中就发现了问题</p>
 <pre><code>Y2QvZCJDOlxwaHBTdHVkeVxXV1dcYjJldm9sdXRpb25caW5zdGFsbFx0ZXN0XCImbmV0IHVzZXIg
 a2FrYSBrYWthIC9hZGQmZWNobyBbU10mY2QmZWNobyBbRV0=
 </code></pre>
 <p>解码后</p>
-<pre><code>cd/d&quot;C:\phpStudy\WWW\b2evolution\install\test\&quot;&amp;net user kaka kaka /add&amp;echo [S]&amp;cd&amp;echo [E]
-</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">cd/d"C:\phpStudy\WWW\b2evolution\install\test\"<span class="token operator">&amp;</span>net user kaka kaka /add<span class="token operator">&amp;</span><span class="token keyword">echo</span> <span class="token punctuation">[</span>S<span class="token punctuation">]</span><span class="token operator">&amp;</span><span class="token function">cd</span><span class="token operator">&amp;</span><span class="token keyword">echo</span> <span class="token punctuation">[</span>E<span class="token punctuation">]</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>可以明显看到</p>
-<pre><code>net user kaka kaka /add
-</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">net user kaka kaka /add
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>于是可以断定，用户名和密码均为<code>kaka</code><br>最后一题既然是下载，应该是利用中国菜刀进行下载了，那我们只过滤出post流量，查看命令即可</p>
-<pre><code>ip.dst == 192.168.2.20 &amp;&amp; http.request.method==POST
-</code></pre>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">ip.dst</span> <span class="token punctuation">=</span><span class="token attr-value">= 192.168.2.20 &amp;&amp; http.request.method==POST</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>然后我们在数据包的最后发现如下数据<br><img src="https://img.jwt1399.top//img/20201230115917.png"><br>我们将其解码<br><img src="https://img.jwt1399.top//img/20201230115924.png"><br>发现使用了procdump.exe<br>同时发现文件<br><img src="https://img.jwt1399.top//img/20201230115938.png"><br>解码得到<br><img src="https://img.jwt1399.top//img/20201230115950.png"><br>最后我们可以确定，黑客下载了<code>lsass.exe_180208_185247.dmp</code>文件</p>
 <h5 id="答案-3"><a href="#答案-3" class="headerlink" title="答案"></a>答案</h5><pre><code>1.黑客第一次获取到当前目录下的文件列表的漏洞利用请求发生在什么时候
 18:37:38.482420
@@ -1978,7 +1978,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1063.6k</span>&nbsp;字
+                class="white-color">1063.7k</span>&nbsp;字
             
             
             
