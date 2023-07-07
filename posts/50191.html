@@ -882,14 +882,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-06-02
+                    2023-06-29
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    29.9k
+                    30.1k
                 </div>
                 
 
@@ -2353,6 +2353,12 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <p>我们对老库的更新操作（增删改），同时也要写入新库（双写）。如果操作的数据不存在于新库的话，需要插入到新库中。 这样就能保证，咱们新库里的数据是最新的。</p>
 <p>在迁移过程，双写只会让被更新操作过的老库中的数据同步到新库，我们还需要自己写脚本将老库中的数据和新库的数据做比对。如果新库中没有，那咱们就把数据插入到新库。如果新库有，旧库没有，就把新库对应的数据删除（冗余数据清理）。重复上一步的操作，直到老库和新库的数据一致为止。</p>
 <p>想要在项目中实施双写还是比较麻烦的，很容易会出现问题。我们可以借助数据库同步工具 Canal 做增量数据迁移（还是依赖 binlog，开发和维护成本较低）。</p>
+<h3 id="🌟为什么不使用自增ID"><a href="#🌟为什么不使用自增ID" class="headerlink" title="🌟为什么不使用自增ID"></a>🌟为什么不使用自增ID</h3><ul>
+<li>id的规律性太明显</li>
+<li>受单表数据量的限制，分布式下自增id重复</li>
+</ul>
+<p>场景分析一：如果我们的id具有太明显的规则，用户或者说商业对手很容易猜测出来我们的一些敏感信息，比如商城在一天时间内，卖出了多少单，这明显不合适。</p>
+<p>场景分析二：随着我们商城规模越来越大，mysql的单表的容量不宜超过500W，数据量过大之后，我们要进行拆库拆表，但拆分表了之后，他们从逻辑上讲他们是同一张表，所以他们的id是不能一样的， 于是乎我们需要保证id的唯一性。</p>
 <h3 id="🌟分布式id号的要求有哪些呢？"><a href="#🌟分布式id号的要求有哪些呢？" class="headerlink" title="🌟分布式id号的要求有哪些呢？"></a>🌟分布式id号的要求有哪些呢？</h3><ol>
 <li>全局唯一性：不能出现重复的ID号，既然是唯一标识，这是最基本的要求。</li>
 <li>趋势递增：在MySQL InnoDB引擎中使用的是聚集索引，由于多数RDBMS使用B-tree的数据结构来存储索引数据，在主键的选择上面我们应该尽量使用有序的主键保证写入性能。</li>
@@ -3192,7 +3198,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1071.5k</span>&nbsp;字
+                class="white-color">1077.4k</span>&nbsp;字
             
             
             

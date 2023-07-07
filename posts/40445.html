@@ -888,14 +888,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-06-13
+                    2023-07-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    71.9k
+                    75.8k
                 </div>
                 
 
@@ -5623,6 +5623,53 @@ minStack.pop();
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="901-股票价格跨度-单调栈"><a href="#901-股票价格跨度-单调栈" class="headerlink" title="901. 股票价格跨度-单调栈"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/online-stock-span/?envType=study-plan-v2&envId=leetcode-75">901. 股票价格跨度-单调栈</a></h4><p>设计一个算法收集某些股票的每日报价，并返回该股票当日价格的 <strong>跨度</strong> 。</p>
+<p>当日股票价格的 <strong>跨度</strong> 被定义为股票价格小于或等于今天价格的最大连续日数（从今天开始往回数，包括今天）。</p>
+<ul>
+<li>例如，如果未来 7 天股票的价格是 <code>[100,80,60,70,60,75,85]</code>，那么股票跨度将是 <code>[1,1,1,2,1,4,6]</code> 。</li>
+</ul>
+<p>实现 <code>StockSpanner</code> 类：</p>
+<ul>
+<li><code>StockSpanner()</code> 初始化类对象。</li>
+<li><code>int next(int price)</code> 给出今天的股价 <code>price</code> ，返回该股票当日价格的 <strong>跨度</strong> 。</li>
+</ul>
+<p><strong>示例：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties">输入：
+<span class="token attr-name">["StockSpanner",</span> <span class="token attr-value">"next", "next", "next", "next", "next", "next", "next"]</span>
+<span class="token attr-name">[[],</span> <span class="token attr-value">[100], [80], [60], [70], [60], [75], [85]]</span>
+输出：
+<span class="token attr-name">[null,</span> <span class="token attr-value">1, 1, 1, 2, 1, 4, 6]</span>
+
+解释：
+<span class="token attr-name">StockSpanner</span> <span class="token attr-value">stockSpanner = new StockSpanner();</span>
+<span class="token attr-name">stockSpanner.next(100);</span> <span class="token attr-value">// 返回 1</span>
+<span class="token attr-name">stockSpanner.next(80);</span> <span class="token attr-value"> // 返回 1</span>
+<span class="token attr-name">stockSpanner.next(60);</span> <span class="token attr-value"> // 返回 1</span>
+<span class="token attr-name">stockSpanner.next(70);</span> <span class="token attr-value"> // 返回 2</span>
+<span class="token attr-name">stockSpanner.next(60);</span> <span class="token attr-value"> // 返回 1</span>
+<span class="token attr-name">stockSpanner.next(75);</span> <span class="token attr-value"> // 返回 4 ，因为截至今天的最后 4 个股价 (包括今天的股价 75) 都小于或等于今天的股价。</span>
+<span class="token attr-name">stockSpanner.next(85);</span> <span class="token attr-value"> // 返回 6</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<hr>
+<p>维护一个价格单调递减的栈使用「单调栈」，栈中每个元素存放的是 <code>(price, cnt)</code> 数据对，其中 price 表示价格，cnt 表示当前价格的跨度。</p>
+<p>每次调用 <code>next(price)</code>，我们将其与栈顶元素进行比较，如果栈顶元素的价格小于等于 price，则将当日价格的跨度 cnt 加上栈顶元素的跨度，然后将栈顶元素出栈，直到栈顶元素的价格大于 price，或者栈为空为止。</p>
+<p>最后将 (price, cnt) 入栈，返回 cnt 即可。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">StockSpanner</span> <span class="token punctuation">{</span>
+    Deque<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> stack<span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token function">StockSpanner</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        stack <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedList</span><span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token keyword">int</span> price<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> cnt <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span>stack<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> stack<span class="token punctuation">.</span><span class="token function">peek</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">&lt;=</span> price<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            cnt <span class="token operator">+=</span> stack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        stack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span>price<span class="token punctuation">,</span> cnt<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> cnt<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="84-柱状图中最大的矩形-单调栈-防御式编程"><a href="#84-柱状图中最大的矩形-单调栈-防御式编程" class="headerlink" title="84. 柱状图中最大的矩形-单调栈-防御式编程"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/largest-rectangle-in-histogram/description/">84. 柱状图中最大的矩形-单调栈-防御式编程</a></h4><p>给定 <em>n</em> 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。</p>
 <p>求在该柱状图中，能够勾勒出来的矩形的最大面积。 </p>
 <p><strong>示例 1:</strong></p>
@@ -6051,6 +6098,220 @@ minStack.pop();
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="215-数组中的第K个最大元素-优先队列"><a href="#215-数组中的第K个最大元素-优先队列" class="headerlink" title="215. 数组中的第K个最大元素-优先队列"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/kth-largest-element-in-an-array/">215. 数组中的第K个最大元素-优先队列</a></h4><p>给定整数数组 <code>nums</code> 和整数 <code>k</code>，请返回数组中第 <code>k</code> 个最大的元素。</p>
+<p>请注意，你需要找的是数组排序后的第 <code>k</code> 个最大的元素，而不是第 <code>k</code> 个不同的元素。</p>
+<p>你必须设计并实现时间复杂度为 <code>O(n)</code> 的算法解决此问题。</p>
+<p><strong>示例 1:</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入</span><span class="token punctuation">:</span> <span class="token attr-value">[3,2,1,5,6,4], k = 2</span>
+<span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">5</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2:</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入</span><span class="token punctuation">:</span> <span class="token attr-value">[3,2,3,1,2,4,5,5,6], k = 4</span>
+<span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">4</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p><strong>方法一：暴力法</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">findKthLargest</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> nums<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        Arrays<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>nums<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> nums<span class="token punctuation">[</span>len <span class="token operator">-</span> k<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>时间复杂度：O(Nlog⁡N)，这里 N 是数组的长度，算法的性能消耗主要在排序，JDK 默认使用快速排序，因此时间复杂度为 O(Nlog⁡N)；</li>
+<li>空间复杂度：O(log⁡N)，这里认为编程语言使用的排序方法是「快速排序」，空间复杂度为递归调用栈的高度，为 log⁡N。</li>
+</ul>
+<p><strong>方法二：优先队列</strong></p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">findKthLargest</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 小顶堆，堆顶是最小元素</span>
+        PriorityQueue<span class="token operator">&lt;</span>Integer<span class="token operator">></span> pq <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PriorityQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> e <span class="token operator">:</span> nums<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 每个元素都要过一遍二叉堆</span>
+            pq<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 堆中元素多于 k 个时，删除堆顶元素</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>pq<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">></span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                pq<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span> 
+        <span class="token comment" spellcheck="true">// pq 中剩下的是 nums 中 k 个最大元素，</span>
+        <span class="token comment" spellcheck="true">// 堆顶是最小的那个，即第 k 个最大元素</span>
+        <span class="token keyword">return</span> pq<span class="token punctuation">.</span><span class="token function">peek</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>二叉堆插入和删除的时间复杂度和堆中的元素个数有关，在这里我们堆的大小不会超过 <code>k</code>，所以插入和删除元素的复杂度是 <code>O(logk)</code>，再套一层 for 循环，假设数组元素总数为 <code>N</code>，总的时间复杂度就是 <code>O(Nlogk)</code>。空间复杂度很显然就是二叉堆的大小，为 <code>O(k)</code>。</p>
+<ul>
+<li><p>时间复杂度： <code>O(Nlogk)</code></p>
+</li>
+<li><p>空间复杂度： <code>O(k)</code></p>
+</li>
+</ul>
+<p><strong>方法三：快速选择</strong></p>
+<p>「快速排序」虽然快，但是「快速排序」在遇到特殊测试用例（「顺序数组」或者「逆序数组」）的时候，递归树会退化成链表，时间复杂度会变成 O(N^2)。</p>
+<p>事实上，有一个很经典的基于「快速排序」的算法，可以通过一次遍历，确定某一个元素在排序以后的位置，这个算法叫「快速选择」。</p>
+<p>首先，题目问「第 <code>k</code> 个最大的元素」，相当于数组升序排序后「排名第 <code>n - k</code> 的元素」，为了方便表述，后文另 <code>target = n - k</code>。</p>
+<p><code>partition</code> 函数会将 <code>nums[p]</code> 排到正确的位置，使得 <code>nums[left..p-1] &lt; nums[p] &lt; nums[p+1..right]</code>：</p>
+<p>这时候，虽然还没有把整个数组排好序，但我们已经让 <code>nums[p]</code> 左边的元素都比 <code>nums[p]</code> 小了，也就知道 <code>nums[p]</code> 的排名了。</p>
+<p><strong>那么我们可以把 <code>p</code> 和 <code>target</code> 进行比较，如果 <code>p &lt; target</code> 说明第 <code>target</code> 大的元素在 <code>nums[p+1..right]</code> 中，如果 <code>p &gt; target</code> 说明第 <code>target</code> 大的元素在 <code>nums[left..p-1]</code> 中</strong>。</p>
+<p>进一步，去 <code>nums[p+1..right]</code> 或者 <code>nums[left..p-1]</code> 这两个子数组中执行 <code>partition</code> 函数，就可以进一步缩小排在第 <code>target</code> 的元素的范围，最终找到目标元素。</p>
+<blockquote>
+<p>注意：本题必须随机初始化 pivot 元素，否则通过时间会很慢，因为测试用例中有极端测试用例。为了应对极端测试用例，使得递归树加深，可以在循环一开始的时候，随机交换第 1 个元素与任意 1 个元素的位置。</p>
+</blockquote>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">findKthLargest</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> len <span class="token operator">=</span> nums<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token keyword">int</span> target <span class="token operator">=</span> len <span class="token operator">-</span> k<span class="token punctuation">;</span>
+        <span class="token keyword">int</span> left <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> right <span class="token operator">=</span> len <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token function">quickSelect</span><span class="token punctuation">(</span>nums<span class="token punctuation">,</span> left<span class="token punctuation">,</span> right<span class="token punctuation">,</span> target<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">quickSelect</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> a<span class="token punctuation">,</span> <span class="token keyword">int</span> l<span class="token punctuation">,</span> <span class="token keyword">int</span> r<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>l <span class="token operator">></span> r<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">int</span> p <span class="token operator">=</span> <span class="token function">partition</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> l<span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>p <span class="token operator">==</span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> a<span class="token punctuation">[</span>p<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> p <span class="token operator">&lt;</span> k <span class="token operator">?</span> <span class="token function">quickSelect</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> p <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> r<span class="token punctuation">,</span> k<span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token function">quickSelect</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> l<span class="token punctuation">,</span> p <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">,</span> k<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">static</span> Random random <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Random</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">partition</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> arr<span class="token punctuation">,</span> <span class="token keyword">int</span> left<span class="token punctuation">,</span> <span class="token keyword">int</span> right<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 生成 [left, 数组长度] 的随机数</span>
+        <span class="token keyword">int</span> randomIndex <span class="token operator">=</span> random<span class="token punctuation">.</span><span class="token function">nextInt</span><span class="token punctuation">(</span>right <span class="token operator">-</span> left <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> left<span class="token punctuation">;</span>
+        <span class="token function">swap</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> left<span class="token punctuation">,</span> randomIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> pivot <span class="token operator">=</span> arr<span class="token punctuation">[</span>left<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//定义基准值为数组第一个数</span>
+        <span class="token keyword">int</span> i <span class="token operator">=</span> left<span class="token punctuation">;</span>
+        <span class="token keyword">int</span> j <span class="token operator">=</span> right<span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>i <span class="token operator">!=</span> j<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//从右往左找比基准值小的数</span>
+            <span class="token keyword">while</span> <span class="token punctuation">(</span>pivot <span class="token operator">&lt;=</span> arr<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> i <span class="token operator">&lt;</span> j<span class="token punctuation">)</span> j<span class="token operator">--</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//从左往右找比基准值大的数</span>
+            <span class="token keyword">while</span> <span class="token punctuation">(</span>pivot <span class="token operator">>=</span> arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> i <span class="token operator">&lt;</span> j<span class="token punctuation">)</span> i<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&lt;</span> j<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment" spellcheck="true">//如果i&lt;j，交换它们</span>
+                <span class="token function">swap</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> i<span class="token punctuation">,</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">//把基准值放到合适的位置</span>
+        <span class="token function">swap</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> left<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">swap</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums<span class="token punctuation">,</span> <span class="token keyword">int</span> index1<span class="token punctuation">,</span> <span class="token keyword">int</span> index2<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> temp <span class="token operator">=</span> nums<span class="token punctuation">[</span>index1<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        nums<span class="token punctuation">[</span>index1<span class="token punctuation">]</span> <span class="token operator">=</span> nums<span class="token punctuation">[</span>index2<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        nums<span class="token punctuation">[</span>index2<span class="token punctuation">]</span> <span class="token operator">=</span> temp<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>时间复杂度：O(N)，这里 N 是数组的长度</li>
+<li>空间复杂度：O(logN)</li>
+</ul>
+<h4 id="2336-无限集中的最小数字"><a href="#2336-无限集中的最小数字" class="headerlink" title="2336. 无限集中的最小数字"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/smallest-number-in-infinite-set/description/">2336. 无限集中的最小数字</a></h4><p>现有一个包含所有正整数的集合 <code>[1, 2, 3, 4, 5, ...]</code> 。</p>
+<p>实现 <code>SmallestInfiniteSet</code> 类：</p>
+<ul>
+<li><code>SmallestInfiniteSet()</code> 初始化 <strong>SmallestInfiniteSet</strong> 对象以包含 <strong>所有</strong> 正整数。</li>
+<li><code>int popSmallest()</code> <strong>移除</strong> 并返回该无限集中的最小整数。</li>
+<li><code>void addBack(int num)</code> 如果正整数 <code>num</code> <strong>不</strong> 存在于无限集中，则将一个 <code>num</code> <strong>添加</strong> 到该无限集中。</li>
+</ul>
+<p><strong>示例：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties">输入
+<span class="token attr-name">["SmallestInfiniteSet",</span> <span class="token attr-value">"addBack", "popSmallest", "popSmallest", "popSmallest", "addBack", "popSmallest", "popSmallest", "popSmallest"]</span>
+<span class="token attr-name">[[],</span> <span class="token attr-value">[2], [], [], [], [1], [], [], []]</span>
+输出
+<span class="token attr-name">[null,</span> <span class="token attr-value">null, 1, 2, 3, null, 1, 4, 5]</span>
+
+解释
+<span class="token attr-name">SmallestInfiniteSet</span> <span class="token attr-value">smallestInfiniteSet = new SmallestInfiniteSet();</span>
+<span class="token attr-name">smallestInfiniteSet.addBack(2);</span> <span class="token attr-value">   // 2 已经在集合中，所以不做任何变更。</span>
+<span class="token attr-name">smallestInfiniteSet.popSmallest();</span> <span class="token attr-value">// 返回 1 ，因为 1 是最小的整数，并将其从集合中移除。</span>
+<span class="token attr-name">smallestInfiniteSet.popSmallest();</span> <span class="token attr-value">// 返回 2 ，并将其从集合中移除。</span>
+<span class="token attr-name">smallestInfiniteSet.popSmallest();</span> <span class="token attr-value">// 返回 3 ，并将其从集合中移除。</span>
+<span class="token attr-name">smallestInfiniteSet.addBack(1);</span> <span class="token attr-value">   // 将 1 添加到该集合中。</span>
+<span class="token attr-name">smallestInfiniteSet.popSmallest();</span> <span class="token attr-value">// 返回 1 ，因为 1 在上一步中被添加到集合中，</span>
+<span class="token attr-name">                                   //</span> <span class="token attr-value">且 1 是最小的整数，并将其从集合中移除。</span>
+<span class="token attr-name">smallestInfiniteSet.popSmallest();</span> <span class="token attr-value">// 返回 4 ，并将其从集合中移除。</span>
+<span class="token attr-name">smallestInfiniteSet.popSmallest();</span> <span class="token attr-value">// 返回 5 ，并将其从集合中移除。 </span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<hr>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">SmallestInfiniteSet</span> <span class="token punctuation">{</span>
+    PriorityQueue<span class="token operator">&lt;</span>Integer<span class="token operator">></span> pq <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PriorityQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token function">SmallestInfiniteSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> <span class="token number">1000</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            pq<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">popSmallest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> pq<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addBack</span><span class="token punctuation">(</span><span class="token keyword">int</span> num<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>pq<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            pq<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 1、没有插入，或插入的都被移除，此时用一个变量记录无限集的最小值；</span>
+<span class="token comment" spellcheck="true">// 2、插入值，且比记录的最小值小，用小根堆（或二叉搜索树）记录插入的最小值；</span>
+<span class="token keyword">class</span> <span class="token class-name">SmallestInfiniteSet</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">int</span> min<span class="token punctuation">;</span>
+    PriorityQueue<span class="token operator">&lt;</span>Integer<span class="token operator">></span> pq<span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token function">SmallestInfiniteSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        min <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        pq <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PriorityQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">popSmallest</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>pq<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> pq<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> min<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addBack</span><span class="token punctuation">(</span><span class="token keyword">int</span> num<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>num <span class="token operator">&lt;</span> min <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>pq<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            pq<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="2542-最大子序列的分数"><a href="#2542-最大子序列的分数" class="headerlink" title="2542. 最大子序列的分数"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/maximum-subsequence-score/description/">2542. 最大子序列的分数</a></h4><p>给你两个下标从 <strong>0</strong> 开始的整数数组 <code>nums1</code> 和 <code>nums2</code> ，两者长度都是 <code>n</code> ，再给你一个正整数 <code>k</code> 。你必须从 <code>nums1</code> 中选一个长度为 <code>k</code> 的 <strong>子序列</strong> 对应的下标。</p>
+<p>对于选择的下标 <code>i0</code> ，<code>i1</code> ，…， <code>ik - 1</code> ，你的 <strong>分数</strong> 定义如下：</p>
+<ul>
+<li><code>nums1</code> 中下标对应元素求和，乘以 <code>nums2</code> 中下标对应元素的 <strong>最小值</strong> 。</li>
+<li>用公示表示： <code>(nums1[i0] + nums1[i1] +...+ nums1[ik - 1]) * min(nums2[i0] , nums2[i1], ... ,nums2[ik - 1])</code> 。</li>
+</ul>
+<p>请你返回 <strong>最大</strong> 可能的分数。</p>
+<p>一个数组的 <strong>子序列</strong> 下标是集合 <code>&#123;0, 1, ..., n-1&#125;</code> 中删除若干元素得到的剩余集合，也可以不删除任何元素。</p>
+<p><strong>示例 1：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：nums1</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,3,3,2], nums2 = [2,1,3,4], k = 3</span>
+输出：12
+解释：
+四个可能的子序列分数为：
+<span class="token attr-name">-</span> <span class="token attr-value">选择下标 0 ，1 和 2 ，得到分数 (1+3+3) * min(2,1,3) = 7 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">选择下标 0 ，1 和 3 ，得到分数 (1+3+2) * min(2,1,4) = 6 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">选择下标 0 ，2 和 3 ，得到分数 (1+3+2) * min(2,3,4) = 12 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">选择下标 1 ，2 和 3 ，得到分数 (3+3+2) * min(1,3,4) = 8 。</span>
+<span class="token attr-name">所以最大分数为</span> <span class="token attr-value">12 。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：nums1</span> <span class="token punctuation">=</span> <span class="token attr-value">[4,2,3,1,1], nums2 = [7,5,10,9,6], k = 1</span>
+输出：30
+解释：
+<span class="token attr-name">选择下标</span> <span class="token attr-value">2 最优：nums1[2] * nums2[2] = 3 * 10 = 30 是最大可能分数。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<hr>
+<p>根据nums2进行降序排序，这样每次去的数都是递减并且可以获取最小的乘数，又因为要让nums1中的和为尽可能的大，那么可以使用优先队列小根堆来实现每次抛出最小的那个数使得和尽可能的大</p>
+<pre class="line-numbers language-java"><code class="language-java">
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="④哈希表"><a href="#④哈希表" class="headerlink" title="④哈希表"></a>④哈希表</h2><h3 id="❶基础知识"><a href="#❶基础知识" class="headerlink" title="❶基础知识"></a>❶基础知识</h3><p>哈希表(Hash table)，是根据<strong>关键码值</strong>(Key value)而直接进行访问的数据结构。也就是说，它通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做哈希表。</p>
 <p>常见的三种哈希结构</p>
 <ul>
@@ -9472,13 +9733,12 @@ lRUCache<span class="token punctuation">.</span><span class="token function">get
                 <span class="token punctuation">}</span> 
             <span class="token punctuation">}</span>
             res<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>last<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
-              
         <span class="token punctuation">}</span>
         <span class="token keyword">return</span> res<span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h5 id="2-DFS"><a href="#2-DFS" class="headerlink" title="2.DFS"></a><strong>2.DFS</strong></h5><p>用 DFS 递归遍历算法，同样需要反过来，先递归 <code>root.right</code> 再递归 <code>root.left</code>，同时用 <code>res</code> 记录每一层的最右侧节点作为右侧视图。</p>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h5 id="2-DFS"><a href="#2-DFS" class="headerlink" title="2.DFS"></a><strong>2.DFS</strong></h5><p>用 DFS 递归遍历算法，同样需要反过来，先递归 <code>root.right</code> 再递归 <code>root.left</code>。按照 「根结点 -&gt; 右子树 -&gt; 左子树」 的顺序访问，就可以保证每层都是最先访问最右边的节点的。同时用 <code>res</code> 记录每一层的最右侧节点作为右侧视图。</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
   
     List<span class="token operator">&lt;</span>Integer<span class="token operator">></span> res <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -9493,6 +9753,7 @@ lRUCache<span class="token punctuation">.</span><span class="token function">get
             <span class="token keyword">return</span><span class="token punctuation">;</span>
         <span class="token punctuation">}</span>
         <span class="token comment" spellcheck="true">// 先访问 当前节点，再递归地访问 右子树 和 左子树。</span>
+        <span class="token comment" spellcheck="true">// 如果当前节点所在深度还没有出现在res里，说明在该深度下当前节点是第一个被访问的节点，因此将当前节点加入res中。</span>
         <span class="token keyword">if</span> <span class="token punctuation">(</span>depth <span class="token operator">==</span> res<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>   
             res<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token punctuation">}</span>
@@ -9501,7 +9762,7 @@ lRUCache<span class="token punctuation">.</span><span class="token function">get
         <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> depth<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="572-另一棵树的子树"><a href="#572-另一棵树的子树" class="headerlink" title="572. 另一棵树的子树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/subtree-of-another-tree/">572. 另一棵树的子树</a></h4><p>给你两棵二叉树 <code>root</code> 和 <code>subRoot</code> 。检验 <code>root</code> 中是否包含和 <code>subRoot</code> 具有相同结构和节点值的子树。如果存在，返回 <code>true</code> ；否则，返回 <code>false</code> 。</p>
 <p>二叉树 <code>tree</code> 的一棵子树包括 <code>tree</code> 的某个节点和这个节点的所有后代节点。<code>tree</code> 也可以看做它自身的一棵子树。</p>
 <p><strong>示例 1：</strong></p>
@@ -9991,6 +10252,7 @@ List<span class="token operator">&lt;</span>Integer<span class="token operator">
 <li>第一重递归使用前序遍历的方法遍历每个节点</li>
 <li>第二重递归用于以每一个节点为开始节点再次遍历寻找符合结果的路径</li>
 </ol>
+<p> 枚举每个节点，计算往下遍历过程中和为targetSum的路径个数。</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
     <span class="token keyword">int</span> count <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
     <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">pathSum</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">long</span> targetSum<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -10068,6 +10330,58 @@ List<span class="token operator">&lt;</span>Integer<span class="token operator">
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="1372-二叉树中的最长交错路径"><a href="#1372-二叉树中的最长交错路径" class="headerlink" title="1372. 二叉树中的最长交错路径"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-zigzag-path-in-a-binary-tree/description/">1372. 二叉树中的最长交错路径</a></h4><p>给你一棵以 <code>root</code> 为根的二叉树，二叉树中的交错路径定义如下：</p>
+<ul>
+<li>选择二叉树中 <strong>任意</strong> 节点和一个方向（左或者右）。</li>
+<li>如果前进方向为右，那么移动到当前节点的的右子节点，否则移动到它的左子节点。</li>
+<li>改变前进方向：左变右或者右变左。</li>
+<li>重复第二步和第三步，直到你在树中无法继续移动。</li>
+</ul>
+<p>交错路径的长度定义为：<strong>访问过的节点数目 - 1</strong>（单个节点的路径长度为 0 ）。</p>
+<p>请你返回给定树中最长 <strong>交错路径</strong> 的长度。</p>
+<p><strong>示例 1：</strong></p>
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/03/07/sample_1_1702.png" style="zoom: 50%;" />
+
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,null,1,1,1,null,null,1,1,null,1,null,null,null,1,null,1]</span>
+输出：3
+<span class="token attr-name">解释：蓝色节点为树中最长交错路径（右</span> <span class="token attr-value">-> 左 -> 右）。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/03/07/sample_2_1702.png" style="zoom:60%;" />
+
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,1,1,null,1,null,null,1,1,null,1]</span>
+输出：4
+<span class="token attr-name">解释：蓝色节点为树中最长交错路径（左</span> <span class="token attr-value">-> 右 -> 左 -> 右）。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 3：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[1]</span>
+输出：0
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p> 设 direct &#x3D;&#x3D; 1表示向左移动，direct &#x3D;&#x3D; 2表示向右移动 </p>
+<p>dfs递归遍历树节点时需要注意，如果连续向左或者向右，则需要重新计算交错节点。 如：dfs(root.left, direct &#x3D;&#x3D; 1 ? 1 : count + 1, 1); </p>
+<p>当root向左移动，并且direct &#x3D;&#x3D; 1时，那么这个时候连续的交错节点就断开了（因为连续两次或以上向左移动），count需要重新计算，所以递归下去的值要为1，否则为count + 1</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> max <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">longestZigZag</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+        <span class="token keyword">return</span> max<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">dfs</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> count<span class="token punctuation">,</span> <span class="token keyword">int</span> direct<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        max <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span>max<span class="token punctuation">,</span> count<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> direct <span class="token operator">==</span> <span class="token number">1</span> <span class="token operator">?</span> <span class="token number">1</span> <span class="token operator">:</span> count <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> direct <span class="token operator">==</span> <span class="token number">2</span> <span class="token operator">?</span> <span class="token number">1</span> <span class="token operator">:</span> count <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="面试题-04-12-求和路径"><a href="#面试题-04-12-求和路径" class="headerlink" title="面试题 04.12. 求和路径 "></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/paths-with-sum-lcci/">面试题 04.12. 求和路径 </a></h4><h4 id="988-叶结点开始的最小字符串"><a href="#988-叶结点开始的最小字符串" class="headerlink" title="988. 叶结点开始的最小字符串"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/smallest-string-starting-from-leaf/">988. 叶结点开始的最小字符串</a></h4><h4 id="129-根节点到叶节点数字之和"><a href="#129-根节点到叶节点数字之和" class="headerlink" title="129. 根节点到叶节点数字之和"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/sum-root-to-leaf-numbers/description/">129. 根节点到叶节点数字之和</a></h4><h4 id="687-最长同值路径"><a href="#687-最长同值路径" class="headerlink" title="687. 最长同值路径"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-univalue-path/">687. 最长同值路径</a></h4><h3 id="❺二叉树节点"><a href="#❺二叉树节点" class="headerlink" title="❺二叉树节点"></a>❺二叉树节点</h3><h4 id="404-左叶子之和"><a href="#404-左叶子之和" class="headerlink" title="404. 左叶子之和"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/sum-of-left-leaves/">404. 左叶子之和</a></h4><p>给定二叉树的根节点 <code>root</code> ，返回所有左叶子之和。 </p>
 <p><strong>示例 1：</strong></p>
 <p><img src="https://assets.leetcode.com/uploads/2021/04/08/leftsum-tree.jpg"></p>
@@ -10373,6 +10687,93 @@ List<span class="token operator">&lt;</span>Integer<span class="token operator">
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="872-叶子相似的树"><a href="#872-叶子相似的树" class="headerlink" title="872. 叶子相似的树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/leaf-similar-trees/description/">872. 叶子相似的树</a></h4><p>请考虑一棵二叉树上所有的叶子，这些叶子的值按从左到右的顺序排列形成一个 <strong>叶值序列</strong> 。</p>
+<img src="https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/16/tree.png" style="zoom:38%;" />
+
+<p>举个例子，如上图所示，给定一棵叶值序列为 <code>(6, 7, 4, 9, 8)</code> 的树。</p>
+<p>如果有两棵二叉树的叶值序列是相同，那么我们就认为它们是 <em>叶相似</em> 的。</p>
+<p>如果给定的两个根结点分别为 <code>root1</code> 和 <code>root2</code> 的树是叶相似的，则返回 <code>true</code>；否则返回 <code>false</code> 。</p>
+<p><strong>示例 1：</strong></p>
+<img src="https://assets.leetcode.com/uploads/2020/09/03/leaf-similar-1.jpg" style="zoom:33%;" />
+
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root1</span> <span class="token punctuation">=</span> <span class="token attr-value">[3,5,1,6,2,9,8,null,null,7,4], root2 = [3,5,1,6,7,4,2,null,null,null,null,null,null,9,8]</span>
+输出：true
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<img src="https://assets.leetcode.com/uploads/2020/09/03/leaf-similar-2.jpg" style="zoom:33%;" />
+
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root1</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,2,3], root2 = [1,3,2]</span>
+输出：false
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">leafSimilar</span><span class="token punctuation">(</span>TreeNode root1<span class="token punctuation">,</span> TreeNode root2<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        List<span class="token operator">&lt;</span>Integer<span class="token operator">></span> list1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root1 <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token function">dfs</span><span class="token punctuation">(</span>root1<span class="token punctuation">,</span> list1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        List<span class="token operator">&lt;</span>Integer<span class="token operator">></span> list2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root2 <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token function">dfs</span><span class="token punctuation">(</span>root2<span class="token punctuation">,</span> list2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> list1<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>list2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">dfs</span><span class="token punctuation">(</span>TreeNode node<span class="token punctuation">,</span> List<span class="token operator">&lt;</span>Integer<span class="token operator">></span> list<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left <span class="token operator">==</span> null <span class="token operator">&amp;&amp;</span> node<span class="token punctuation">.</span>right <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            list<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left <span class="token operator">!=</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token function">dfs</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">,</span> list<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right <span class="token operator">!=</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token function">dfs</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">,</span> list<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="1448-统计二叉树中好节点的数目"><a href="#1448-统计二叉树中好节点的数目" class="headerlink" title="1448. 统计二叉树中好节点的数目"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/count-good-nodes-in-binary-tree/description/">1448. 统计二叉树中好节点的数目</a></h4><p>给你一棵根为 <code>root</code> 的二叉树，请你返回二叉树中好节点的数目。</p>
+<p>「好节点」X 定义为：从根到该节点 X 所经过的节点中，没有任何节点的值大于 X 的值。</p>
+<p><strong>示例 1：</strong></p>
+<p><img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/05/16/test_sample_1.png">*</p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[3,1,4,3,null,1,5]</span>
+输出：4
+解释：图中蓝色节点为好节点。
+<span class="token attr-name">根节点</span> <span class="token attr-value">(3) 永远是个好节点。</span>
+<span class="token attr-name">节点</span> <span class="token attr-value">4 -> (3,4) 是路径中的最大值。</span>
+<span class="token attr-name">节点</span> <span class="token attr-value">5 -> (3,4,5) 是路径中的最大值。</span>
+<span class="token attr-name">节点</span> <span class="token attr-value">3 -> (3,1,3) 是路径中的最大值。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<p><img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2020/05/16/test_sample_2.png"></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[3,3,null,4,2]</span>
+输出：3
+<span class="token attr-name">解释：节点</span> <span class="token attr-value">2 -> (3, 3, 2) 不是好节点，因为 "3" 比它大。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 3：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[1]</span>
+输出：1
+解释：根节点是好节点。
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<hr>
+<p>DFS深度递归子节点，递归过程中维护根节点到子节点的最大值，然后比较子节点和最大值来判断该节点是否为好节点。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">private</span> <span class="token keyword">int</span> ans <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">goodNodes</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> root<span class="token punctuation">.</span>val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> ans<span class="token punctuation">;</span>
+
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">dfs</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> max<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>val <span class="token operator">>=</span> max<span class="token punctuation">)</span><span class="token punctuation">{</span>
+            ans<span class="token operator">++</span><span class="token punctuation">;</span>
+            max <span class="token operator">=</span> root<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> max<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> max<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="❻二叉树构建"><a href="#❻二叉树构建" class="headerlink" title="❻二叉树构建"></a>❻二叉树构建</h3><h4 id="106-从中序与后序遍历序列构造二叉树"><a href="#106-从中序与后序遍历序列构造二叉树" class="headerlink" title="106. 从中序与后序遍历序列构造二叉树"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/description/">106. 从中序与后序遍历序列构造二叉树</a></h4><p>给定两个整数数组 <code>inorder</code> 和 <code>postorder</code> ，其中 <code>inorder</code> 是二叉树的中序遍历， <code>postorder</code> 是同一棵树的后序遍历，请你构造并返回这颗 <em>二叉树</em> 。</p>
 <p><strong>示例 1:</strong></p>
 <p><img src="https://assets.leetcode.com/uploads/2021/02/19/tree.jpg"></p>
@@ -11038,11 +11439,11 @@ List<span class="token operator">&lt;</span>Integer<span class="token operator">
 <span class="token attr-name">输出</span><span class="token punctuation">:</span> <span class="token attr-value">[]</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <hr>
-<p><strong>情况 1</strong>：<code>A</code> 恰好是末端节点，两个子节点都为空，那么它可以当场去世了：</p>
+<p><strong>情况 1</strong>：<code>key</code> 恰好是末端节点，两个子节点都为空，那么它可以当场去世了：</p>
 <p><img src="https://img.jwt1399.top/img/202212041947805.png"></p>
-<p><strong>情况 2</strong>：<code>A</code> 只有一个非空子节点，那么它要让这个孩子接替自己的位置：</p>
+<p><strong>情况 2</strong>：<code>key</code> 只有一个非空子节点，那么它要让这个孩子接替自己的位置：</p>
 <p><img src="https://img.jwt1399.top/img/202212041947953.png"></p>
-<p><strong>情况 3</strong>：<code>A</code> 有两个子节点，麻烦了，为了不破坏 BST 的性质，<code>A</code> 必须找到左子树中最大的那个节点或者右子树中最小的那个节点来接替自己，我的解法是用右子树中最小节点来替换：</p>
+<p><strong>情况 3</strong>：<code>key</code> 有两个子节点，麻烦了，为了不破坏 BST 的性质，<code>key</code> 必须找到左子树中最大的那个节点或者右子树中最小的那个节点来接替自己，我的解法是用右子树中最小节点来替换：</p>
 <p><img src="https://img.jwt1399.top/img/202212041947896.png"></p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">//解题框架</span>
 TreeNode <span class="token function">deleteNode</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">,</span> <span class="token keyword">int</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -11794,6 +12195,55 @@ root<span class="token punctuation">.</span>val <span class="token operator">=</
 cur<span class="token punctuation">.</span>right<span class="token punctuation">.</span>next <span class="token operator">=</span> cur<span class="token punctuation">.</span>next<span class="token punctuation">.</span>left<span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>。。。</p>
+<h4 id="1161-最大层内元素和"><a href="#1161-最大层内元素和" class="headerlink" title="1161. 最大层内元素和 "></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/maximum-level-sum-of-a-binary-tree/description/">1161. 最大层内元素和 </a></h4><p>给你一个二叉树的根节点 <code>root</code>。设根节点位于二叉树的第 <code>1</code> 层，而根节点的子节点位于第 <code>2</code> 层，依此类推。</p>
+<p>请返回层内元素之和 <strong>最大</strong> 的那几层（可能只有一层）的层号，并返回其中 <strong>最小</strong> 的那个。</p>
+<p><strong>示例 1：</strong></p>
+<img src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2019/08/17/capture.jpeg" style="zoom:50%;" />
+
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,7,0,7,-8,null,null]</span>
+输出：2
+解释：
+<span class="token attr-name">第</span> <span class="token attr-value">1 层各元素之和为 1，</span>
+<span class="token attr-name">第</span> <span class="token attr-value">2 层各元素之和为 7 + 0 = 7，</span>
+<span class="token attr-name">第</span> <span class="token attr-value">3 层各元素之和为 7 + -8 = -1，</span>
+<span class="token attr-name">所以我们返回第</span> <span class="token attr-value">2 层的层号，它的层内元素之和最大。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：root</span> <span class="token punctuation">=</span> <span class="token attr-value">[989,null,10250,98693,-89388,null,null,null,-32127]</span>
+输出：2
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p> 使用BFS广搜来遍历树的每层，计算每层的节点总和并维护遍历层级过程中的节点总和最大值和深度。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">maxLevelSum</span><span class="token punctuation">(</span>TreeNode root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> maxValue <span class="token operator">=</span> Integer<span class="token punctuation">.</span>MIN_VALUE<span class="token punctuation">;</span>
+        <span class="token keyword">int</span> maxDeep <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> deep <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        Queue<span class="token operator">&lt;</span>TreeNode<span class="token operator">></span> queue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        queue<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>root<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token operator">!</span>queue<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">int</span> n <span class="token operator">=</span> queue<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> levelSum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+            <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                TreeNode node <span class="token operator">=</span> queue<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                levelSum <span class="token operator">+=</span> node<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left <span class="token operator">!=</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                    queue<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>left<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right <span class="token operator">!=</span> null<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                    queue<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>right<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>levelSum <span class="token operator">></span> maxValue<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                maxValue <span class="token operator">=</span> levelSum<span class="token punctuation">;</span>
+                maxDeep <span class="token operator">=</span> deep<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            deep<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> maxDeep<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="⑧图"><a href="#⑧图" class="headerlink" title="⑧图"></a>⑧图</h2><blockquote>
 <p>图这种数据结构有一些比较特殊的算法，比如二分图判断，有环图无环图的判断，拓扑排序，以及最经典的最小生成树，单源最短路径问题，更难的就是类似网络流这样的问题。</p>
 <p>参考：<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/tu-lun-ji--d55b2/">图论基础及遍历算法</a>、<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/er-fen-tu--73400/">二分图判定算法</a>、<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/huan-jian--e36de/">环检测和拓扑排序</a>、<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/tu-lun-ji--d55b2/">图遍历算法</a>、<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/zhong-li-x-ec564/">名流问题</a>、<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/bing-cha-j-323f3/">并查集算法计算连通分量</a>、<a target="_blank" rel="noopener" href="https://labuladong.github.io/algo/di-yi-zhan-da78c/shou-ba-sh-03a72/dijkstra-s-6d0b2/">Dijkstra 最短路径算法</a></p>
@@ -12948,7 +13398,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1071.5k</span>&nbsp;字
+                class="white-color">1077.4k</span>&nbsp;字
             
             
             
