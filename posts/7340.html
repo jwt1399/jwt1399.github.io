@@ -860,14 +860,14 @@ Zookeeper 提供的主要功能包括：配置管理、分布式锁、集群管�
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-07-22
+                    2023-07-23
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.1k
+                    6k
                 </div>
                 
 
@@ -905,7 +905,7 @@ cp  zoo_sample.cfg  zoo.cfg
 <pre class="line-numbers language-shell"><code class="language-shell">./zkServer.sh status
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>standalone代表zk没有搭建集群，现在是单节点</p>
-<h2 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h2><p>ZooKeeper 是一个树形目录服务，其数据模型和Unix的文件系统目录树很类似，拥有一个层次化结构。</p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p>ZooKeeper 是一个树形目录服务，其数据模型和Unix的文件系统目录树很类似，拥有一个层次化结构。</p>
 <p>这里面的每一个节点都被称为： ZNode，每个节点上都会保存自己的数据和节点信息。</p>
 <p>节点可以拥有子节点，同时也允许少量（1MB）数据存储在该节点之下。</p>
 <p>节点可以分为四大类：</p>
@@ -1408,7 +1408,261 @@ numChildren：当前节点的子节点个数
 
 
 <p>总结：多个客户端在一个节点下创建<code>临时顺序</code>节点，然后去找序号最小的节点就是锁，用完之后删除就可以了。</p>
-<h3 id="分布式锁案例"><a href="#分布式锁案例" class="headerlink" title="分布式锁案例"></a>分布式锁案例</h3><h2 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h2><h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><ul>
+<p>在Curator中有五种锁方案：</p>
+<ul>
+<li><p>InterProcessSemaphoreMutex：分布式排它锁（非可重入锁）</p>
+</li>
+<li><p>InterProcessMutex：分布式可重入排它锁</p>
+</li>
+<li><p>InterProcessReadWriteLock：分布式读写锁</p>
+</li>
+<li><p>InterProcessMultiLock：将多个锁作为单个实体管理的容器</p>
+</li>
+<li><p>InterProcessSemaphoreV2：共享信号量</p>
+</li>
+</ul>
+<h3 id="分布式锁案例"><a href="#分布式锁案例" class="headerlink" title="分布式锁案例"></a>分布式锁案例</h3><p>模拟12306售票</p>
+<img src="https://img.jwt1399.top/img/202307231935613.png"  style="zoom:50%;" />
+
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LockTest</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Ticket12306 ticket12306 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Ticket12306</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment" spellcheck="true">//创建客户端</span>
+        Thread t1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span>ticket12306<span class="token punctuation">,</span><span class="token string">"携程"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Thread t2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span>ticket12306<span class="token punctuation">,</span><span class="token string">"飞猪"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          Thread t3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Thread</span><span class="token punctuation">(</span>ticket12306<span class="token punctuation">,</span><span class="token string">"去哪儿"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        t1<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        t2<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        t3<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Ticket12306</span> <span class="token keyword">implements</span> <span class="token class-name">Runnable</span><span class="token punctuation">{</span>
+
+    <span class="token keyword">private</span> <span class="token keyword">int</span> tickets <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//数据库的票数</span>
+
+    <span class="token keyword">private</span> InterProcessMutex lock <span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 构造函数</span>
+    <span class="token keyword">public</span> <span class="token function">Ticket12306</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 连接 ZK</span>
+        RetryPolicy retryPolicy <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ExponentialBackoffRetry</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//重试策略</span>
+        CuratorFramework client <span class="token operator">=</span> CuratorFrameworkFactory<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">connectString</span><span class="token punctuation">(</span><span class="token string">"127.0.0.1:2181"</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">sessionTimeoutMs</span><span class="token punctuation">(</span><span class="token number">60</span> <span class="token operator">*</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">connectionTimeoutMs</span><span class="token punctuation">(</span><span class="token number">15</span> <span class="token operator">*</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">retryPolicy</span><span class="token punctuation">(</span>retryPolicy<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        client<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//开启连接</span>
+        <span class="token comment" spellcheck="true">// 创建锁</span>
+        lock <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">InterProcessMutex</span><span class="token punctuation">(</span>client<span class="token punctuation">,</span><span class="token string">"/lock"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        <span class="token keyword">while</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">//获取锁</span>
+            <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                lock<span class="token punctuation">.</span><span class="token function">acquire</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span> TimeUnit<span class="token punctuation">.</span>SECONDS<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>tickets <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                    System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">":"</span><span class="token operator">+</span>tickets<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    Thread<span class="token punctuation">.</span><span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    tickets<span class="token operator">--</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token keyword">finally</span> <span class="token punctuation">{</span>
+                <span class="token comment" spellcheck="true">//释放锁</span>
+                <span class="token keyword">try</span> <span class="token punctuation">{</span>
+                    lock<span class="token punctuation">.</span><span class="token function">release</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">Exception</span> e<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    e<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h2><h3 id="集群搭建"><a href="#集群搭建" class="headerlink" title="集群搭建"></a>集群搭建</h3><h4 id="1-1-搭建要求"><a href="#1-1-搭建要求" class="headerlink" title="1.1 搭建要求"></a><strong>1.1 搭建要求</strong></h4><p>真实的集群是需要部署在不同的服务器上的，但是在我们测试时同时启动很多个虚拟机内存会吃不消，所以我们通常会搭建<strong>伪集群</strong>，也就是把所有的服务都搭建在一台虚拟机上，用端口进行区分。</p>
+<p>我们这里要求搭建一个三个节点的Zookeeper集群（伪集群）。</p>
+<h4 id="1-2-准备工作"><a href="#1-2-准备工作" class="headerlink" title="1.2 准备工作"></a><strong>1.2 准备工作</strong></h4><p>重新部署一台虚拟机作为我们搭建集群的测试服务器。</p>
+<p>（1）安装JDK  【此步骤省略】。</p>
+<p>（2）Zookeeper压缩包上传到服务器</p>
+<p>（3）将Zookeeper解压 ，建立&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster目录，将解压后的Zookeeper复制到以下三个目录</p>
+<ul>
+<li>&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster&#x2F;zookeeper-1</li>
+<li>&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster&#x2F;zookeeper-2</li>
+<li>&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster&#x2F;zookeeper-3</li>
+</ul>
+<pre class="line-numbers language-shell"><code class="language-shell">[root@localhost ~]# mkdir /usr/local/zookeeper-cluster
+[root@localhost ~]# cp -r  apache-zookeeper-3.5.6-bin /usr/local/zookeeper-cluster/zookeeper-1
+[root@localhost ~]# cp -r  apache-zookeeper-3.5.6-bin /usr/local/zookeeper-cluster/zookeeper-2
+[root@localhost ~]# cp -r  apache-zookeeper-3.5.6-bin /usr/local/zookeeper-cluster/zookeeper-3
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>（4）创建data目录 ，并且将 conf下zoo_sample.cfg 文件改名为 zoo.cfg</p>
+<pre class="line-numbers language-shell"><code class="language-shell">mkdir /usr/local/zookeeper-cluster/zookeeper-1/data
+mkdir /usr/local/zookeeper-cluster/zookeeper-2/data
+mkdir /usr/local/zookeeper-cluster/zookeeper-3/data
+
+mv  /usr/local/zookeeper-cluster/zookeeper-1/conf/zoo_sample.cfg  /usr/local/zookeeper-cluster/zookeeper-1/conf/zoo.cfg
+mv  /usr/local/zookeeper-cluster/zookeeper-2/conf/zoo_sample.cfg  /usr/local/zookeeper-cluster/zookeeper-2/conf/zoo.cfg
+mv  /usr/local/zookeeper-cluster/zookeeper-3/conf/zoo_sample.cfg  /usr/local/zookeeper-cluster/zookeeper-3/conf/zoo.cfg
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>（5） 配置每一个Zookeeper 的dataDir 和 clientPort 分别为2181  2182  2183</p>
+<p>修改&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster&#x2F;zookeeper-1&#x2F;conf&#x2F;zoo.cfg</p>
+<pre class="line-numbers language-shell"><code class="language-shell">vim /usr/local/zookeeper-cluster/zookeeper-1/conf/zoo.cfg
+
+clientPort=2181
+dataDir=/usr/local/zookeeper-cluster/zookeeper-1/data
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>修改&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster&#x2F;zookeeper-2&#x2F;conf&#x2F;zoo.cfg</p>
+<pre class="line-numbers language-shell"><code class="language-shell">vim /usr/local/zookeeper-cluster/zookeeper-2/conf/zoo.cfg
+
+clientPort=2182
+dataDir=/usr/local/zookeeper-cluster/zookeeper-2/data
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>修改&#x2F;usr&#x2F;local&#x2F;zookeeper-cluster&#x2F;zookeeper-3&#x2F;conf&#x2F;zoo.cfg</p>
+<pre class="line-numbers language-shell"><code class="language-shell">vim /usr/local/zookeeper-cluster/zookeeper-3/conf/zoo.cfg
+
+clientPort=2183
+dataDir=/usr/local/zookeeper-cluster/zookeeper-3/data
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="1-3-配置集群"><a href="#1-3-配置集群" class="headerlink" title="1.3 配置集群"></a><strong>1.3 配置集群</strong></h4><p>（1）在每个zookeeper的 data 目录下创建一个 myid 文件，内容分别是1、2、3 。这个文件就是记录每个服务器的ID</p>
+<pre class="line-numbers language-shell"><code class="language-shell">echo 1 >/usr/local/zookeeper-cluster/zookeeper-1/data/myid
+echo 2 >/usr/local/zookeeper-cluster/zookeeper-2/data/myid
+echo 3 >/usr/local/zookeeper-cluster/zookeeper-3/data/myid
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>（2）在每一个zookeeper 的 zoo.cfg配置客户端访问端口（clientPort）和集群服务器IP列表。</p>
+<p>集群服务器IP列表如下</p>
+<pre class="line-numbers language-shell"><code class="language-shell">vim /usr/local/zookeeper-cluster/zookeeper-1/conf/zoo.cfg
+vim /usr/local/zookeeper-cluster/zookeeper-2/conf/zoo.cfg
+vim /usr/local/zookeeper-cluster/zookeeper-3/conf/zoo.cfg
+
+server.1=127.0.0.1:2881:3881
+server.2=127.0.0.1:2882:3882
+server.3=127.0.0.1:2883:3883
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>解释：server.服务器ID&#x3D;服务器IP地址：服务器之间通信端口：服务器之间投票选举端口</p>
+<h4 id="1-4-启动集群"><a href="#1-4-启动集群" class="headerlink" title="1.4 启动集群"></a><strong>1.4 启动集群</strong></h4><p>启动集群就是分别启动每个实例。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-1/bin/zkServer.sh start
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh start
+/usr/local/zookeeper-cluster/zookeeper-3/bin/zkServer.sh start 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>启动后我们查询一下每个实例的运行状态</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-1/bin/zkServer.sh status
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh status
+/usr/local/zookeeper-cluster/zookeeper-3/bin/zkServer.sh status
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>先查询第一个服务</p>
+<p>Mode为follower表示是<strong>跟随者</strong>（从）</p>
+<p>再查询第二个服务Mod 为leader表示是<strong>领导者</strong>（主）</p>
+<p>查询第三个为<strong>跟随者</strong>（从）</p>
+<h4 id="1-5-模拟集群异常"><a href="#1-5-模拟集群异常" class="headerlink" title="1.5 模拟集群异常"></a><strong>1.5 模拟集群异常</strong></h4><p>（1）首先我们先测试如果是从服务器挂掉，会怎么样</p>
+<p>把3号服务器停掉，观察1号和2号，发现状态并没有变化</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-3/bin/zkServer.sh stop
+
+/usr/local/zookeeper-cluster/zookeeper-1/bin/zkServer.sh status
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh status 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>由此得出结论，3个节点的集群，从服务器挂掉，集群正常</p>
+<p>（2）我们再把1号服务器（从服务器）也停掉，查看2号（主服务器）的状态，发现已经停止运行了。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-1/bin/zkServer.sh stop
+
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh status
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>由此得出结论，3个节点的集群，2个从服务器都挂掉，主服务器也无法运行。因为可运行的机器没有超过集群总数量的半数。</p>
+<p>（3）我们再次把1号服务器启动起来，发现2号服务器又开始正常工作了。而且依然是领导者。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-1/bin/zkServer.sh start
+
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh status 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>（4）我们把3号服务器也启动起来，把2号服务器停掉,停掉后观察1号和3号的状态。</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-3/bin/zkServer.sh start
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh stop
+
+/usr/local/zookeeper-cluster/zookeeper-1/bin/zkServer.sh status
+/usr/local/zookeeper-cluster/zookeeper-3/bin/zkServer.sh status
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>发现新的leader产生了~  </p>
+<p>由此我们得出结论，当集群中的主服务器挂了，集群中的其他服务器会自动进行选举状态，然后产生新得leader </p>
+<p>（5）我们再次测试，当我们把2号服务器重新启动起来启动后，会发生什么？2号服务器会再次成为新的领导吗？我们看结果</p>
+<pre class="line-numbers language-shell"><code class="language-shell">/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh start
+
+/usr/local/zookeeper-cluster/zookeeper-2/bin/zkServer.sh status
+/usr/local/zookeeper-cluster/zookeeper-3/bin/zkServer.sh status 
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我们会发现，2号服务器启动后依然是跟随者（从服务器），3号服务器依然是领导者（主服务器），没有撼动3号服务器的领导地位。</p>
+<p>由此我们得出结论，当领导者产生后，再次有新服务器加入集群，不会影响到现任领导者。</p>
+<h3 id="集群角色"><a href="#集群角色" class="headerlink" title="集群角色"></a>集群角色</h3><p>ZooKeeper 中没有选择传统的 Master&#x2F;Slave 概念，而是引入了 Leader、Follower 和 Observer 三种角色。如下图所示</p>
+<img src="https://img.jwt1399.top/img/202307231400587.png" style="zoom:75%;" />
+
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Leader</td>
+<td>处理客户端事务请求(读写&#x2F;增删改查)，负责投票的发起和决议，更新系统状态。</td>
+</tr>
+<tr>
+<td>Follower</td>
+<td>处理客户端非事务请求(读&#x2F;查)，如果是写服务则转发给 Leader。参与Leader选举投票。</td>
+</tr>
+<tr>
+<td>Observer</td>
+<td>处理客户端非事务请求(读&#x2F;查)，如果是写服务则转发给 Leader。不参与Leader选举投票，也不参与“过半写成功”策略。在不影响写性能的情况下提升集群的读性能。此角色于 ZooKeeper3.3 系列新增的角色。</td>
+</tr>
+</tbody></table>
+<p>ZooKeeper 集群中的所有机器通过一个 <strong>Leader 选举过程</strong> 来选定一台称为 “<strong>Leader</strong>” 的机器，Leader 既可以为客户端提供写服务又能提供读服务。除了 Leader 外，<strong>Follower</strong> 和 <strong>Observer</strong> 都只能提供读服务。Follower 和 Observer 唯一的区别在于 Observer 机器不参与 Leader 的选举过程，也不参与写操作的“过半写成功”策略，因此 Observer 机器<strong>可以在不影响写性能的情况下提升集群的读性能</strong>。</p>
+<h3 id="Leader-选举"><a href="#Leader-选举" class="headerlink" title="Leader 选举"></a>Leader 选举</h3><p>Leader选举规则：</p>
+<ul>
+<li><p>Serverid：服务器ID</p>
+<ul>
+<li><p>比如有三台服务器，编号分别是1,2,3。</p>
+</li>
+<li><p>编号越大在选择算法中的权重越大。</p>
+</li>
+</ul>
+</li>
+<li><p>Zxid：数据ID</p>
+<ul>
+<li><p>服务器中存放的最大数据ID。值越大说明数据越新，在选举算法中数据越新权重越大。</p>
+</li>
+<li><p>在Leader选举的过程中，如果某台 ZooKeeper 获得了超过半数的选票，则此ZooKeeper就可以成为Leader</p>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>当 Leader 服务器出现网络中断、崩溃退出与重启等异常情况时，就会进入 Leader 选举过程，这个过程会选举产生新的 Leader 服务器。</p>
+</blockquote>
+<p>Leader产生过程：</p>
+<ol>
+<li><strong>Leader election（选举阶段）</strong>：节点在一开始都处于选举阶段，只要有一个节点得到超半数节点的票数，它就可以当选准 leader。</li>
+<li><strong>Discovery（发现阶段）</strong>：在这个阶段，followers 跟准 leader 进行通信，同步 followers 最近接收的事务提议。</li>
+<li><strong>Synchronization（同步阶段）</strong>：同步阶段主要是利用 leader 前一阶段获得的最新提议历史，同步集群中所有的副本。同步完成之后准 leader 才会成为真正的 leader。</li>
+<li><strong>Broadcast（广播阶段）</strong>：到了这个阶段，ZooKeeper 集群才能正式对外提供事务服务，并且 leader 可以进行消息广播。同时如果有新的节点加入，还需要对新节点进行同步。</li>
+</ol>
+<p>ZooKeeper 集群中的服务器状态有下面几种：</p>
+<ul>
+<li><strong>LOOKING</strong>：寻找 Leader。</li>
+<li><strong>LEADING</strong>：Leader 状态，对应的节点为 Leader。</li>
+<li><strong>FOLLOWING</strong>：Follower 状态，对应的节点为 Follower。</li>
+<li><strong>OBSERVING</strong>：Observer 状态，对应节点为 Observer，该节点不参与 Leader 选举。</li>
+</ul>
+<h2 id="ZAB-协议"><a href="#ZAB-协议" class="headerlink" title="ZAB 协议"></a>ZAB 协议</h2><p>Paxos算法：一种基于消息传递且具有高度容错特性的一致性算法。</p>
+<p>Paxos算法解决的问题：快速正确的在一个分布式系统中对某个数据值达成一致，并且保证不论发生任何异常，都不会破坏整个系统的一致性。</p>
+<p>Zab 借鉴了 Paxos 算法，特别为 Zookeeper 设计的支持崩溃恢复的原子广播协议。基于该协议，Zookeeper 设计为只有一台客户端(Leader)负责处理外部的写事务请求，然后Leader 客户端将数据同步到其他 Follower 节点。即 Zookeeper 只有一个 Leader 可以发起提案。</p>
+<p>ZAB 协议两种基本的模式：崩溃恢复和消息广播</p>
+<p><strong>崩溃恢复</strong>：当整个服务框架在启动过程中，或是当 Leader 服务器出现网络中断、崩溃退出与重启等异常情况时，ZAB 协议就会进入恢复模式并选举产生新的 Leader 服务器。当选举产生了新的 Leader 服务器，同时集群中已经有过半的机器与该 Leader 服务器完成了状态同步之后，ZAB 协议就会退出恢复模式。其中，<strong>所谓的状态同步是指数据同步，用来保证集群中存在过半的机器能够和 Leader 服务器的数据状态保持一致</strong>。</p>
+<p><strong>消息广播</strong>：<strong>当集群中已经有过半的 Follower 服务器完成了和 Leader 服务器的状态同步，那么整个服务框架就可以进入消息广播模式了。</strong> 当一台同样遵守 ZAB 协议的服务器启动后加入到集群中时，如果此时集群中已经存在一个 Leader 服务器在负责进行消息广播，那么新加入的服务器就会自觉地进入数据恢复模式：找到 Leader 所在的服务器，并与其进行数据同步，然后一起参与到消息广播流程中去。</p>
+<h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1M741137qY">Zookeeper</a></li>
 <li></li>
 </ul>
@@ -2208,7 +2462,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1089.4k</span>&nbsp;字
+                class="white-color">1098.6k</span>&nbsp;字
             
             
             
