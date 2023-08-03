@@ -24,22 +24,16 @@ null
 
 存储位置
 堆
-栈
+栈(局部变量)或堆(成员变量)
 
 
 用于泛型
-可用于
 可以
+不可以
 
 
 方法
-封装了方法，更灵活
-无
-
-
-占用空间
-较大
-">
+封装了方法，更灵">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
@@ -892,14 +886,14 @@ null
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-05-29
+                    2023-08-03
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    8.9k
+                    9.3k
                 </div>
                 
 
@@ -936,12 +930,12 @@ null
 <tr>
 <td>存储位置</td>
 <td>堆</td>
-<td>栈</td>
+<td>栈(局部变量)或堆(成员变量)</td>
 </tr>
 <tr>
 <td>用于泛型</td>
-<td>可用于</td>
 <td>可以</td>
+<td>不可以</td>
 </tr>
 <tr>
 <td>方法</td>
@@ -955,6 +949,26 @@ null
 </tr>
 </tbody></table>
 <p><strong>为什么有包装类型？</strong>Java是面向对象的嘛，集合里面只能存储对象</p>
+<h3 id="包装类相关"><a href="#包装类相关" class="headerlink" title="包装类相关"></a>包装类相关</h3><p><strong>什么是自动拆装箱？</strong></p>
+<ul>
+<li><strong>装箱</strong>：将基本类型用它们对应的引用类型包装起来；<ul>
+<li>装箱其实就是调用了 包装类的<code>valueOf()</code>方法</li>
+</ul>
+</li>
+<li><strong>拆箱</strong>：将包装类型转换为基本数据类型；<ul>
+<li>拆箱其实就是调用了 <code>xxxValue()</code>方法。</li>
+</ul>
+</li>
+</ul>
+<p>因此</p>
+<ul>
+<li><code>Integer i = 10</code> 等价于 <code>Integer i = Integer.valueOf(10)</code></li>
+<li><code>int n = i</code> 等价于 <code>int n = i.intValue()</code>;</li>
+</ul>
+<p><strong>包装类型的缓存机制了解么？</strong></p>
+<p>Java 基本数据类型的包装类型的大部分都用到了缓存机制来提升性能。</p>
+<p><code>Byte</code>,<code>Short</code>,<code>Integer</code>,<code>Long</code> 这 4 种包装类默认创建了数值 <strong>[-128，127]</strong> 的相应类型的缓存数据，<code>Character</code> 创建了数值在 <strong>[0,127]</strong> 范围的缓存数据，<code>Boolean</code> 直接返回 <code>True</code> or <code>False</code>。</p>
+<p>两种浮点数类型的包装类 <code>Float</code>,<code>Double</code> 并没有实现缓存机制。</p>
 <h3 id="🌟重载和重写的区别"><a href="#🌟重载和重写的区别" class="headerlink" title="🌟重载和重写的区别"></a>🌟重载和重写的区别</h3><ul>
 <li>重载：发生在同一个类中，方法名相同参数列表不同（参数类型不同、个数不同、顺序不同），与方法返回值和访问修饰符无关。发生在编译期</li>
 <li>重写：发生在父子类中，方法名、参数列表必须相同，返回值小于等于父类，抛出的异常小于等于父类，访问修饰符大于等于父类（里氏代换原则）；如果父类方法访问修饰符为<code>private</code>则子类中就不能重写。发生在运行期<ul>
@@ -1072,17 +1086,25 @@ null
 </li>
 </ul>
 <p>总结一下，一共两点：<strong>第一，在<code>HashSet</code>等集合中，不重写<code>hashCode</code>方法会导致其功能出现问题；第二，可以提高集合效率。</strong></p>
-<h3 id="🌟Exception-和-Error-有什么区别？"><a href="#🌟Exception-和-Error-有什么区别？" class="headerlink" title="🌟Exception 和 Error 有什么区别？"></a>🌟Exception 和 Error 有什么区别？</h3><img src="https://oss.javaguide.cn/github/javaguide/java/basis/types-of-exceptions-in-java.png" alt="Java 异常类层次结构图" style="zoom:50%;" />
+<h3 id="🌟Exception-和-Error-有什么区别？"><a href="#🌟Exception-和-Error-有什么区别？" class="headerlink" title="🌟Exception 和 Error 有什么区别？"></a>🌟Exception 和 Error 有什么区别？</h3><img src="https://img.jwt1399.top/img/202308031042922.png" alt="Java 异常类层次结构图" style="zoom:50%;" />
 
 <p>在 Java 中，所有的异常都有一个共同的祖先 <code>java.lang</code> 包中的 <code>Throwable</code> 类。<code>Throwable</code> 类有两个重要的子类:</p>
 <ul>
 <li><p><strong><code>Exception</code></strong> :程序本身可以处理的异常，可以通过 <code>catch</code> 来进行捕获。<code>Exception</code> 又可以分为 </p>
 <ul>
-<li>Checked Exception (受检查异常，必须处理) </li>
-<li>Unchecked Exception (不受检查异常，可以不处理)</li>
+<li>Checked Exception (受检查异常，必须处理) <ul>
+<li>除了<code>RuntimeException</code>及其子类以外，其他的<code>Exception</code>类及其子类都属于受检查异常 。</li>
+<li>常见的受检查异常有：<code>IOException</code>、<code>ClassNotFoundException</code>、<code>SQLException</code>…。</li>
 </ul>
 </li>
-<li><p>**<code>Error</code>**：程序无法处理的错误 ，我们没办法通过 <code>catch</code> 来进行捕获不建议通过<code>catch</code>捕获 。</p>
+<li>Unchecked Exception (不受检查异常，可以不处理)<ul>
+<li><code>RuntimeException</code> 及其子类都统称为非受检查异常。</li>
+<li>常见的有：<code>NullPointerException</code>(空指针错误)、<code>IllegalArgumentException</code>(参数错误)、<code>ArrayIndexOutOfBoundsException</code>（数组越界错误）、<code>ClassCastException</code>（类型转换错误）、<code>ArithmeticException</code>（算术错误）、<code>SecurityException</code> （安全错误比如权限不够）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>**<code>Error</code>**：程序无法处理的错误 ，不建议通过<code>catch</code>捕获 。</p>
 <ul>
 <li>例如 Java 虚拟机运行错误（<code>Virtual MachineError</code>）、虚拟机内存不够错误(<code>OutOfMemoryError</code>)、类定义错误（<code>NoClassDefFoundError</code>）等 。这些异常发生时，Java 虚拟机（JVM）一般会选择线程终止。</li>
 </ul>
@@ -1221,6 +1243,15 @@ null
 <p><strong>BIO</strong> ：来到厨房，开始烧水，并一直等着水烧开。</p>
 <p><strong>NIO</strong>：来到厨房，开始烧水，不用一直等水烧开，而是做其他事，然后每隔几分钟到厨房看一下水有没有烧开。</p>
 <p><strong>AIO</strong>：来到厨房，开始烧水，不用一直等水烧开，而是在水壶上面装个开关，水烧开之后它会通知我。</p>
+<h3 id="深浅、引用拷贝"><a href="#深浅、引用拷贝" class="headerlink" title="深浅、引用拷贝"></a>深浅、引用拷贝</h3><ul>
+<li><p>浅拷贝只拷贝对象本身，不对其属性中的引用类型创建新的对象，即拷贝前后的两个对象中的引用指向同一个对象。</p>
+</li>
+<li><p>深拷贝则会为引用类型递归地创建新的对象。对于基本数据类型的属性则都会复制一份。Java中对象的clone方法默认是浅拷贝，如果想深拷贝可以重写clone来实现</p>
+</li>
+<li><p>引用拷贝就是两个不同的引用指向同一个对象。</p>
+</li>
+</ul>
+<p><img src="https://oss.javaguide.cn/github/javaguide/java/basis/shallow&deep-copy.png"></p>
 <h3 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h3><table>
 <thead>
 <tr>
@@ -1234,13 +1265,13 @@ null
 <td>编译时，检查添加元素的类型，更安全，减少了类型转换次数，提高效率。比如原生的List返回类型是Object对象，需要手动转换类型才能使用，使用泛型后编译器自动转换，还提高了代码复用性</td>
 </tr>
 <tr>
-<td>泛型类、泛型接口、泛型方法</td>
+<td>使用方式：泛型类、泛型接口、泛型方法</td>
 </tr>
 <tr>
 <td>支持通配符 &lt;?&gt; :支持任意泛型类型 &lt;? extends A&gt;:支持A类以及A类的子类，规定了泛型的上限 &lt;? super A&gt;:支持A类以及A类的父类，不限于直接父类，规定了泛型的下限</td>
 </tr>
 <tr>
-<td>构建集合工具类，自定义接口通用返回结果、excel导出类型</td>
+<td>场景：构建集合工具类，自定义接口通用返回结果、excel导出类型</td>
 </tr>
 </tbody></table>
 <h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><table>
@@ -1250,7 +1281,7 @@ null
 </tr>
 </thead>
 <tbody><tr>
-<td>Spring&#x2F;Spring Boot、MyBatis 等等框架中都大量使用了反射机制。 这些框架中也大量使用了动态代理，而JDK动态代理的实现也依赖反射。</td>
+<td>场景：Spring&#x2F;Spring Boot、MyBatis 等等框架中都大量使用了反射机制。 这些框架中也大量使用了动态代理，而JDK动态代理的实现也依赖反射。</td>
 </tr>
 <tr>
 <td>优点：运行期类型的判断，动态加载类，提高代码灵活度。</td>
@@ -1328,7 +1359,7 @@ null
 <td>当多个 ServiceLoader 同时 load 时，会有并发问题。</td>
 </tr>
 </tbody></table>
-<img src="https://oss.javaguide.cn/github/javaguide/java/basis/spi/1ebd1df862c34880bc26b9d494535b3dtplv-k3u1fbpfcp-watermark.png" style="zoom:33%;" />
+<img src="https://img.jwt1399.top/img/202308031041571.png" style="zoom:33%;" />
 
 <h3 id="语法糖"><a href="#语法糖" class="headerlink" title="语法糖"></a>语法糖</h3><p><strong>语法糖</strong> 代指的是编程语言<strong>为了方便程序员开发</strong>程序而设计的一种特殊语法。实现相同的功能，基于语法糖写出来的代码往往更简单简洁且更易阅读。</p>
 <p>Java 中最常用的语法糖主要有泛型、自动拆装箱、增强 for 循环、try-with-resources 语法、lambda 表达式、变长参数、枚举、内部类等。</p>
@@ -2299,7 +2330,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1098.6k</span>&nbsp;字
+                class="white-color">1100k</span>&nbsp;字
             
             
             
