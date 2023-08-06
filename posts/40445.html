@@ -54,9 +54,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-</head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -876,7 +876,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    75.8k
+                    77.3k
                 </div>
                 
 
@@ -6290,9 +6290,147 @@ minStack.pop();
 <span class="token attr-name">选择下标</span> <span class="token attr-value">2 最优：nums1[2] * nums2[2] = 3 * 10 = 30 是最大可能分数。</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <hr>
-<p>根据nums2进行降序排序，这样每次去的数都是递减并且可以获取最小的乘数，又因为要让nums1中的和为尽可能的大，那么可以使用优先队列小根堆来实现每次抛出最小的那个数使得和尽可能的大</p>
+<p>根据nums2进行降序排序，这样每次取的数都是递减并且可以获取最小的乘数，又因为要让nums1中的和为尽可能的大，那么可以使用优先队列小根堆来实现每次抛出最小的那个数使得和尽可能的大</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">maxScore</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums1<span class="token punctuation">,</span> <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> nums2<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> n <span class="token operator">=</span> nums1<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        Integer<span class="token punctuation">[</span><span class="token punctuation">]</span> sorts <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Integer</span><span class="token punctuation">[</span>n<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            sorts<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> i<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> 
+        <span class="token comment" spellcheck="true">// 根据nums2进行降序排序</span>
+        <span class="token comment" spellcheck="true">// 使得 sorts 中的元素按照对应的 nums2 中的元素值降序排列</span>
+        <span class="token comment" spellcheck="true">// 比如,在nums2里的是[2,1,3,4](对应的下标是[0,1,2,3]),</span>
+        <span class="token comment" spellcheck="true">// 如果对nums2排序的话[4,3,2,1](对应的下标是[3,2,0,1]), 此时 sorts为[3,2,0,1]</span>
+        Arrays<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>sorts<span class="token punctuation">,</span> <span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> nums2<span class="token punctuation">[</span>b<span class="token punctuation">]</span> <span class="token operator">-</span> nums2<span class="token punctuation">[</span>a<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 小根堆</span>
+        PriorityQueue<span class="token operator">&lt;</span>Integer<span class="token operator">></span> pq <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PriorityQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">long</span> sum <span class="token operator">=</span> 0L<span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> k <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            sum <span class="token operator">+=</span> nums1<span class="token punctuation">[</span>sorts<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            pq<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>nums1<span class="token punctuation">[</span>sorts<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">long</span> ans <span class="token operator">=</span> 0L<span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> k <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            sum <span class="token operator">+=</span> nums1<span class="token punctuation">[</span>sorts<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            pq<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>nums1<span class="token punctuation">[</span>sorts<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            ans <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span>ans<span class="token punctuation">,</span> nums2<span class="token punctuation">[</span>sorts<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">*</span> sum<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            sum <span class="token operator">-=</span> pq<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> ans<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2462-雇佣-K-位工人的总代价"><a href="#2462-雇佣-K-位工人的总代价" class="headerlink" title="2462. 雇佣 K 位工人的总代价"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/total-cost-to-hire-k-workers/?envType=study-plan-v2&envId=leetcode-75">2462. 雇佣 K 位工人的总代价</a></h3><p>给你一个下标从 <strong>0</strong> 开始的整数数组 <code>costs</code> ，其中 <code>costs[i]</code> 是雇佣第 <code>i</code> 位工人的代价。</p>
+<p>同时给你两个整数 <code>k</code> 和 <code>candidates</code> 。我们想根据以下规则恰好雇佣 <code>k</code> 位工人：</p>
+<ul>
+<li>总共进行 <code>k</code> 轮雇佣，且每一轮恰好雇佣一位工人。</li>
+<li>在每一轮雇佣中，从最前面 candidates 和最后面 candidates 人中选出代价最小的一位工人，如果有多位代价相同且最小的工人，选择下标更小的一位工人。<ul>
+<li>比方说，<code>costs = [3,2,7,7,1,2]</code> 且 <code>candidates = 2</code> ，第一轮雇佣中，我们选择第 <code>4</code> 位工人，因为他的代价最小 <code>[3,2,7,7,1,2]</code> 。</li>
+<li>第二轮雇佣，我们选择第 <code>1</code> 位工人，因为他们的代价与第 <code>4</code> 位工人一样都是最小代价，而且下标更小，<code>[3,2,7,7,2]</code> 。注意每一轮雇佣后，剩余工人的下标可能会发生变化。</li>
+</ul>
+</li>
+<li>如果剩余员工数目不足 <code>candidates</code> 人，那么下一轮雇佣他们中代价最小的一人，如果有多位代价相同且最小的工人，选择下标更小的一位工人。</li>
+<li>一位工人只能被选择一次。</li>
+</ul>
+<p>返回雇佣恰好 <code>k</code> 位工人的总代价。</p>
+<p><strong>示例 1：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：costs</span> <span class="token punctuation">=</span> <span class="token attr-value">[17,12,10,2,7,2,11,20,8], k = 3, candidates = 4</span>
+输出：11
+<span class="token attr-name">解释：我们总共雇佣</span> <span class="token attr-value">3 位工人。总代价一开始为 0 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">第一轮雇佣，我们从 [17,12,10,2,7,2,11,20,8] 中选择。最小代价是 2 ，有两位工人，我们选择下标更小的一位工人，即第 3 位工人。总代价是 0 + 2 = 2 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">第二轮雇佣，我们从 [17,12,10,7,2,11,20,8] 中选择。最小代价是 2 ，下标为 4 ，总代价是 2 + 2 = 4 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">第三轮雇佣，我们从 [17,12,10,7,11,20,8] 中选择，最小代价是 7 ，下标为 3 ，总代价是 4 + 7 = 11 。注意下标为 3 的工人同时在最前面和最后面 4 位工人中。</span>
+<span class="token attr-name">总雇佣代价是</span> <span class="token attr-value">11 。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：costs</span> <span class="token punctuation">=</span> <span class="token attr-value">[1,2,4,1], k = 3, candidates = 3</span>
+输出：4
+<span class="token attr-name">解释：我们总共雇佣</span> <span class="token attr-value">3 位工人。总代价一开始为 0 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">第一轮雇佣，我们从 [1,2,4,1] 中选择。最小代价为 1 ，有两位工人，我们选择下标更小的一位工人，即第 0 位工人，总代价是 0 + 1 = 1 。注意，下标为 1 和 2 的工人同时在最前面和最后面 3 位工人中。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">第二轮雇佣，我们从 [2,4,1] 中选择。最小代价为 1 ，下标为 2 ，总代价是 1 + 1 = 2 。</span>
+<span class="token attr-name">-</span> <span class="token attr-value">第三轮雇佣，少于 3 位工人，我们从剩余工人 [2,4] 中选择。最小代价是 2 ，下标为 0 。总代价为 2 + 2 = 4 。</span>
+<span class="token attr-name">总雇佣代价是</span> <span class="token attr-value">4 。</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<hr>
+<ol>
+<li><p>根据题意，优先元素小的元素，然后优先索引，根据此我们可以创建一个小顶堆</p>
+</li>
+<li><p>从candidates 前后选择对应的索引，遍历数组，将对应的索引添加到小顶堆</p>
+</li>
+<li><p>需要雇佣k位工人，遍历k次，弹出堆顶元素累加 result +&#x3D; costs[poll[0]]，每次遍历，弹出的元素不再参于下一次计算，不停的比较 left 于 right</p>
+</li>
+</ol>
 <pre class="line-numbers language-java"><code class="language-java">
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">totalCost</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> costs<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">,</span> <span class="token keyword">int</span> candidates<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+        PriorityQueue<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> queue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PriorityQueue</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>o1<span class="token punctuation">,</span> o2<span class="token punctuation">)</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>costs<span class="token punctuation">[</span>o1<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">==</span> costs<span class="token punctuation">[</span>o2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> o1<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">-</span> o2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token keyword">return</span> costs<span class="token punctuation">[</span>o1<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">-</span> costs<span class="token punctuation">[</span>o2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">int</span> left <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> right <span class="token operator">=</span> costs<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>left <span class="token operator">&lt;</span> candidates<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            queue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span>left<span class="token operator">++</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span>left<span class="token punctuation">,</span> costs<span class="token punctuation">.</span>length <span class="token operator">-</span> candidates<span class="token punctuation">)</span> <span class="token operator">&lt;=</span> right<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            queue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span>right<span class="token operator">--</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">long</span> result <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> k<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            
+            <span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> poll <span class="token operator">=</span> queue<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            result <span class="token operator">+=</span> costs<span class="token punctuation">[</span>poll<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>left <span class="token operator">&lt;=</span> right<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>poll<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    queue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span>left<span class="token operator">++</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                    queue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">{</span>right<span class="token operator">--</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li>由于每次获取的是代价最小的工人，所以采用小顶堆来存储元素，方便每次弹出最小的元素。使用两个小顶堆（left、right）分别存储最前面 candidates 个工人和最后面 candidates 个工人，同时使用双指针（i、j）来表明小顶堆包含的元素范围；</li>
+<li>初始化：[0,candidate−1] 范围内的元素加入到 left 中，[n−candidate,n−1]范围内的元素加入到 right 中，i -&gt; candidate， 如果长度够的话，j -&gt; n−candidate−1。</li>
+<li>总共遍历 k 次，每次遍历时，比较两个小顶堆的堆顶元素，将较小的代价弹出，累加到结果中，移动相应的指针（指针都是往中间移动，i++, j--），并将代价加入到对应的小顶堆中。</li>
+</ul>
+<p>代码：</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">long</span> <span class="token function">totalCost</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">[</span><span class="token punctuation">]</span> costs<span class="token punctuation">,</span> <span class="token keyword">int</span> k<span class="token punctuation">,</span> <span class="token keyword">int</span> candidates<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">long</span> res <span class="token operator">=</span> <span class="token number">0L</span><span class="token punctuation">;</span>
+        PriorityQueue<span class="token operator">&lt;</span>Integer<span class="token operator">></span> left <span class="token operator">=</span> <span class="token keyword">new</span> PriorityQueue<span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> right <span class="token operator">=</span> <span class="token keyword">new</span> PriorityQueue<span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> n <span class="token operator">=</span> costs<span class="token punctuation">.</span>length<span class="token punctuation">,</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> j <span class="token operator">=</span> n <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 初始化：将 [0, candidates] 范围内的元素加入 left 中，将 [n - candidate, n - 1] 范围内元素加入 right 中。</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span>i <span class="token operator">&lt;</span> candidates<span class="token punctuation">)</span> left<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>costs<span class="token punctuation">[</span>i<span class="token operator">++</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span>j <span class="token operator">>=</span> i <span class="token operator">&amp;&amp;</span> j <span class="token operator">>=</span> n <span class="token operator">-</span> candidates<span class="token punctuation">)</span> right<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>costs<span class="token punctuation">[</span>j<span class="token operator">--</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span>k<span class="token operator">--</span> <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 由于队列可能为空，需要做判断，下面会比较大小然后取较小值，如果一个为空，直接赋值最大值。</span>
+            <span class="token keyword">int</span> a <span class="token operator">=</span> left<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">?</span> Integer<span class="token punctuation">.</span>MAX_VALUE <span class="token operator">:</span> left<span class="token punctuation">.</span><span class="token function">peek</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">int</span> b <span class="token operator">=</span> right<span class="token punctuation">.</span><span class="token function">isEmpty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">?</span> Integer<span class="token punctuation">.</span>MAX_VALUE <span class="token operator">:</span> right<span class="token punctuation">.</span><span class="token function">peek</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>a <span class="token operator">&lt;=</span> b<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                res <span class="token operator">+</span><span class="token operator">=</span> a<span class="token punctuation">;</span>
+                left<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>i <span class="token operator">&lt;=</span> j<span class="token punctuation">)</span> left<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>costs<span class="token punctuation">[</span>i<span class="token operator">++</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                res <span class="token operator">+</span><span class="token operator">=</span> b<span class="token punctuation">;</span>
+                right<span class="token punctuation">.</span><span class="token function">poll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span><span class="token punctuation">(</span>i <span class="token operator">&lt;=</span> j<span class="token punctuation">)</span> right<span class="token punctuation">.</span><span class="token function">offer</span><span class="token punctuation">(</span>costs<span class="token punctuation">[</span>j<span class="token operator">--</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> res<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="④哈希表"><a href="#④哈希表" class="headerlink" title="④哈希表"></a>④哈希表</h2><h3 id="❶基础知识"><a href="#❶基础知识" class="headerlink" title="❶基础知识"></a>❶基础知识</h3><p>哈希表(Hash table)，是根据<strong>关键码值</strong>(Key value)而直接进行访问的数据结构。也就是说，它通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度。这个映射函数叫做散列函数，存放记录的数组叫做哈希表。</p>
 <p>常见的三种哈希结构</p>
 <ul>
@@ -13379,7 +13517,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1099.9k</span>&nbsp;字
+                class="white-color">1106.7k</span>&nbsp;字
             
             
             

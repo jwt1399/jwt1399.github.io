@@ -5,8 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="Q&amp;A：JUC, 简简,简简博客,网络安全,计算机,Java开发">
-    <meta name="description" content="[TOC]
-①线程❶基础🌟线程和进程的区别
+    <meta name="description" content="①线程❶基础🌟线程和进程的区别
 
 
 区别
@@ -32,7 +31,8 @@
 
 切换
 上下文切换快
-上">
+上下文切换慢
+">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
@@ -74,9 +74,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
-</head>
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="简言之" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
 
 <body>
@@ -885,7 +885,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-06-02
+                    2023-08-05
                 </div>
                 
 
@@ -910,8 +910,7 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>[TOC]</p>
-<h1 id="①线程"><a href="#①线程" class="headerlink" title="①线程"></a>①线程</h1><h2 id="❶基础"><a href="#❶基础" class="headerlink" title="❶基础"></a>❶基础</h2><h3 id="🌟线程和进程的区别"><a href="#🌟线程和进程的区别" class="headerlink" title="🌟线程和进程的区别"></a>🌟线程和进程的区别</h3><table>
+                <h1 id="①线程"><a href="#①线程" class="headerlink" title="①线程"></a>①线程</h1><h2 id="❶基础"><a href="#❶基础" class="headerlink" title="❶基础"></a>❶基础</h2><h3 id="🌟线程和进程的区别"><a href="#🌟线程和进程的区别" class="headerlink" title="🌟线程和进程的区别"></a>🌟线程和进程的区别</h3><table>
 <thead>
 <tr>
 <th align="left">区别</th>
@@ -1183,7 +1182,7 @@
 <p>synchronized 修饰的方法并没有 <code>monitorenter</code> 指令和 <code>monitorexit</code> 指令，取得代之的确实是<code>ACC_SYNCHRONIZED</code> 标识，该标识指明了该方法是一个同步方法，JVM 通过该 <code>ACC_SYNCHRONIZED</code> 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
 <hr>
 <p>synchronized用的锁是存在对象头里的，对象头则由Mark Word和Class MetadataAddress组成。Mark Word存储对象的hashCode、分代年龄、<strong>锁标记位</strong>、偏向线程ID等信息。Java虚拟机是基于Monitor对象来实现重量级锁的，monitor对象存在于每个Java对象的对象头中</p>
-<p><img src="https://image.mianshi.online/img202205031510523.png" alt="monitor"></p>
+<p><img src="https://img.jwt1399.top/img/202308041542812.png" alt="monitor"></p>
 <p><strong>Java虚拟机是通过进入和退出Monitor对象来实现代码块同步和方法同步的，代码块同步使用的是monitorenter 和 monitorexit 指令实现的，而方法同步是通过Access flags后面的标识来确定该方法是否为同步方法。</strong></p>
 <p><a target="_blank" rel="noopener" href="https://www.mianshi.online/multi-thread-theory.html">synchronized关键字的底层原理 </a></p>
 <h3 id="🌟JDK1-6后synchronized做了哪些优化"><a href="#🌟JDK1-6后synchronized做了哪些优化" class="headerlink" title="🌟JDK1.6后synchronized做了哪些优化"></a>🌟JDK1.6后synchronized做了哪些优化</h3><p>JDK1.6 对锁的实现引入了大量的优化，如偏向锁、轻量级锁、自旋锁、适应性自旋锁、锁消除、锁粗化等技术来减少锁操作的开销。</p>
@@ -1593,22 +1592,22 @@
 <hr>
 <p>每个线程都有一个<code>ThreadLocalMap</code>（<code>ThreadLocal</code>的静态内部类），Map中元素的键为<code>ThreadLocal</code>，而值对应线程的变量副本。</p>
 <p>调用<code>threadLocal.set()</code>–&gt;调用<code>getMap(Thread)</code>–&gt;返回当前线程的<code>ThreadLocalMap&lt;ThreadLocal, value&gt;</code>–&gt;<code>map.set(this, value)</code>，this是<code>threadLocal</code>本身。源码如下：</p>
-<pre class="line-numbers language-Java"><code class="language-Java">public void set(T value) {
-    Thread t = Thread.currentThread();
-    ThreadLocalMap map = getMap(t);
-    if (map != null)
-        map.set(this, value);
-    else
-        createMap(t, value);
-}
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">set</span><span class="token punctuation">(</span>T value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Thread t <span class="token operator">=</span> Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    ThreadLocalMap map <span class="token operator">=</span> <span class="token function">getMap</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>map <span class="token operator">!=</span> null<span class="token punctuation">)</span>
+        map<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">else</span>
+        <span class="token function">createMap</span><span class="token punctuation">(</span>t<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-ThreadLocalMap getMap(Thread t) {
-    return t.threadLocals;
-}
+ThreadLocalMap <span class="token function">getMap</span><span class="token punctuation">(</span>Thread t<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> t<span class="token punctuation">.</span>threadLocals<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-void createMap(Thread t, T firstValue) {
-    t.threadLocals = new ThreadLocalMap(this, firstValue);
-}
+<span class="token keyword">void</span> <span class="token function">createMap</span><span class="token punctuation">(</span>Thread t<span class="token punctuation">,</span> T firstValue<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    t<span class="token punctuation">.</span>threadLocals <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ThreadLocalMap</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> firstValue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>调用<code>get()</code>–&gt;调用<code>getMap(Thread)</code>–&gt;返回当前线程的<code>ThreadLocalMap&lt;ThreadLocal, value&gt;</code>–&gt;<code>map.getEntry(this)</code>，返回<code>value</code>。源码如下：</p>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> T <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -1725,11 +1724,10 @@ void createMap(Thread t, T firstValue) {
 </li>
 <li><p>2、模板容易造成内存溢出（1和2队列过载、3线程池过载）</p>
 <ul>
-<li><p><strong>FixedThreadPool 和 SingleThreadExecutor</strong> ： 允许请求的队列长度为 Integer.MAX_VALUE ，可能堆积大量的请求，从而导致 OOM。</p>
-</li>
-<li><p>**CachedThreadPool ** ：允许创建的线程数量为 Integer.MAX_VALUE ，可能会创建大量线程，从而导致 OOM。</p>
-</li>
+<li><strong>FixedThreadPool 和 SingleThreadExecutor</strong> ： 允许请求的队列长度为 Integer.MAX_VALUE ，可能堆积大量的请求，从而导致 OOM。</li>
 </ul>
+</li>
+<li><p><strong>CachedThreadPool</strong> ：允许创建的线程数量为 Integer.MAX_VALUE ，可能会创建大量线程，从而导致 OOM。</p>
 </li>
 </ul>
 <h2 id="🌟ThreadPoolExecutor构造函数参数分析"><a href="#🌟ThreadPoolExecutor构造函数参数分析" class="headerlink" title="🌟ThreadPoolExecutor构造函数参数分析"></a>🌟ThreadPoolExecutor构造函数参数分析</h2><pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token function">ThreadPoolExecutor</span><span class="token punctuation">(</span><span class="token keyword">int</span> corePoolSize<span class="token punctuation">,</span><span class="token comment" spellcheck="true">//线程池的核心线程数量</span>
@@ -1760,7 +1758,7 @@ void createMap(Thread t, T firstValue) {
 </li>
 <li><p><strong><code>maximumPoolSize（线程池最大数量）</code></strong> ：线程中允许存在的最大工作线程数量</p>
 </li>
-<li><p><code>keepAliveTime（线程活动保持时间）</code>：当线程池中的数量大于核心线程数时，如果没有新的任务提交，核心线程外的线程不会立即销毁，而是会等到时间超过<code>keepAliveTime</code>时才会被销毁。</p>
+<li><p><code>keepAliveTime（线程活动保持时间）</code>：当线程池中的数量大于核心线程数时，如果没有新的任务提交，核心线程之外的线程不会立即销毁，而是会等到时间超过<code>keepAliveTime</code>时才会被销毁。</p>
 </li>
 <li><p><code>unit（线程活动保持时间的单位）</code> ：<code>keepAliveTime</code> 参数的时间单位。可选的单位有天（DAYS）、小时（HOURS）、分钟（MINUTES）、毫秒（MILLISECONDS）、微秒（MICROSECONDS，千分之一毫秒）和纳秒（NANOSECONDS，千分之一微秒）。</p>
 </li>
@@ -1768,7 +1766,7 @@ void createMap(Thread t, T firstValue) {
 </li>
 <li><p><code>threadFactory（线程工厂）</code>：为线程池提供创建新线程的线程工厂。</p>
 </li>
-<li><p><code>handler（饱和策略）</code> ：线程池任务队列超过<code>maxinumPoolSize</code> 之后的拒绝策略。</p>
+<li><p><code>handler（饱和策略）</code> ：当同时运行的线程数量达到最大线程数量并且阻塞队列也已经放满了任务时的拒绝策略。</p>
 </li>
 </ul>
 <h2 id="🌟ThreadPoolExecutor的任务队列"><a href="#🌟ThreadPoolExecutor的任务队列" class="headerlink" title="🌟ThreadPoolExecutor的任务队列"></a>🌟ThreadPoolExecutor的任务队列</h2><p>可以选择以下几个阻塞队列：（都是BlockingQueue 的实现类）</p>
@@ -1791,7 +1789,7 @@ void createMap(Thread t, T firstValue) {
 <li><code>AbortPolicy</code>策略：该策略会直接抛出异常拒绝新任务，<strong>默认策略</strong></li>
 <li><code>CallerRunsPolicy</code>策略：只用调用者所在线程来运行任务。</li>
 <li><code>DiscardPolicy</code>策略：直接丢弃新任务。</li>
-<li><code>DiscardOleddestPolicy</code>策略：丢弃最早的未处理的任务请求。</li>
+<li><code>DiscardOldestPolicy</code>策略：丢弃最早的未处理的任务请求。</li>
 </ul>
 <p>当然，也可以根据应用场景需要来实现 RejectedExecutionHandler 接口自定义策略。如记录日志或持久化存储不能处理的任务。</p>
 <p>补充：其他框架拒绝策略</p>
@@ -1852,7 +1850,7 @@ void createMap(Thread t, T firstValue) {
 </tr>
 <tr>
 <td align="center">返回类型为 <code>void</code></td>
-<td align="center">返回类型为 <code>Future</code></td>
+<td align="center">返回类型为 <code>Future/void</code></td>
 </tr>
 <tr>
 <td align="center">会直接抛出任务执行时的异常</td>
@@ -3115,7 +3113,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1099.9k</span>&nbsp;字
+                class="white-color">1106.7k</span>&nbsp;字
             
             
             
