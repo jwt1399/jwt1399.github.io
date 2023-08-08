@@ -862,7 +862,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-08-06
+                    2023-08-07
                 </div>
                 
 
@@ -1527,9 +1527,9 @@
 <h1 id="③事务"><a href="#③事务" class="headerlink" title="③事务"></a>③事务</h1><h2 id="🌟什么是数据库事务"><a href="#🌟什么是数据库事务" class="headerlink" title="🌟什么是数据库事务"></a>🌟什么是数据库事务</h2><blockquote>
 <p>MySQL 为什么会使用 InnoDB 作为默认选项</p>
 </blockquote>
-<p>数据库事务可以保证多个对数据库的操作（也就是 SQL 语句）构成一个逻辑上的整体。构成这个逻辑上的整体的这些数据库操作遵循：<strong>要么全部执行成功,要么全部不执行</strong> 。</p>
+<p>数据库事务可以保证多个对数据库的操作（也就是 SQL 语句）构成一个逻辑上的整体。这个整体：<strong>要么全部执行成功,要么全部不执行</strong> 。</p>
 <p>不过并不是所有的引擎都能支持事务，比如 MySQL 原生的 MyISAM 引擎就不支持事务，也正是这样，所以大多数 MySQL 的引擎都是用 InnoDB。</p>
-<h2 id="🌟简述事务的ACID特性"><a href="#🌟简述事务的ACID特性" class="headerlink" title="🌟简述事务的ACID特性"></a>🌟简述事务的ACID特性</h2><p><strong>原子性</strong>（<code>Atomicity</code>） ： 事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，要么完全不起作用；——通过 undo log（回滚日志） 来保证</p>
+<h2 id="🌟简述事务的ACID特性"><a href="#🌟简述事务的ACID特性" class="headerlink" title="🌟简述事务的ACID特性"></a>🌟简述事务的ACID特性</h2><p><strong>原子性</strong>（<code>Atomicity</code>） ：确保操作要么全部成功，要么全部失败；——通过 undo log（回滚日志） 来保证</p>
 <p><strong>一致性</strong>（<code>Consistency</code>）： 执行事务前后，数据保持一致，例如转账业务中，无论事务是否成功，转账者和收款人的总额应该是不变的；——通过持久性+原子性+隔离性来保证</p>
 <p><strong>隔离性</strong>（<code>Isolation</code>）： 并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数据库是独立的；——通过 MVCC（多版本并发控制） 或锁机制来保证</p>
 <p><strong>持久性</strong>（<code>Durability</code>）： 一个事务被提交之后。它对数据的改变是持久的，即使数据库发生故障也不应该对其有任何影响。——通过 redo log （重做日志）来保证</p>
@@ -1576,6 +1576,19 @@ SQL1<span class="token punctuation">,</span>SQL2<span class="token punctuation">
 <li>幻读：前后读取的记录数量不一致。</li>
 </ul>
 <p>这三个现象的严重性排序如下：脏读 &gt; 不可重复读 &gt; 幻读</p>
+<h2 id="🌟数据库的事务隔离级别有哪些？优缺点？"><a href="#🌟数据库的事务隔离级别有哪些？优缺点？" class="headerlink" title="🌟数据库的事务隔离级别有哪些？优缺点？"></a>🌟数据库的事务隔离级别有哪些？优缺点？</h2><p>SQL 标准提出了四种隔离级别来规避这些现象，隔离级别越高，性能效率就越低，这四个隔离级别如下：</p>
+<ul>
+<li><strong>读未提交（read uncommitted）</strong>，指一个事务还没提交时，它做的变更就能被其他事务看到；</li>
+<li><strong>读提交（read committed）</strong>，指一个事务提交之后，它做的变更才能被其他事务看到；</li>
+<li><strong>可重复读（repeatable read）</strong>，指一个事务执行过程中看到的数据，一直跟这个事务启动时看到的数据是一致的，**InnoDB 默认隔离级别 **；</li>
+<li><strong>串行化（serializable ）</strong>；会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
+</ul>
+<p>按隔离水平高低排序如下：串行化 &gt; 可重复读 &gt; 读提交 &gt; 读未提交</p>
+<p>针对不同的隔离级别，并发事务时可能发生的现象也会不同。</p>
+<img src="https://img.jwt1399.top/img/202308061457950.png" style="zoom:50%;" />
+
+<p><strong>各大企业通常为什么采用rc隔离级别?</strong></p>
+<p>rr隔离级别有gap锁，在并发的场景，很容易产生死锁，死锁问题的发生比出现幻读的问题成本更大</p>
 <h2 id="🌟如何解决脏读、可重复读、幻读的？"><a href="#🌟如何解决脏读、可重复读、幻读的？" class="headerlink" title="🌟如何解决脏读、可重复读、幻读的？"></a>🌟如何解决脏读、可重复读、幻读的？</h2><p>要<strong>解决脏读</strong>现象，就要<strong>升级到「读提交」以上</strong>的隔离级别；</p>
 <p>要<strong>解决不可重复读</strong>现象，就要<strong>升级到「可重复读」</strong>的隔离级别，</p>
 <p>要<strong>解决幻读</strong>现象不建议将隔离级别升级到「串行化」（影响性能）。</p>
@@ -1584,19 +1597,7 @@ SQL1<span class="token punctuation">,</span>SQL2<span class="token punctuation">
 <li>针对<strong>快照读</strong>（普通 select 语句），是<strong>通过 MVCC 方式解决了幻读</strong>，因为可重复读隔离级别下，事务执行过程中看到的数据，一直跟这个事务启动时看到的数据是一致的，即使中途有其他事务插入了一条数据，是查询不出来这条数据的，所以就很好了避免幻读问题。</li>
 <li>针对<strong>当前读</strong>（update、insert、delete、select … for update等语句），是<strong>通过 next-key lock（记录锁+间隙锁）方式解决了幻读</strong>，因为当执行 select … for update 语句的时候，会加上 next-key lock，如其他事务在 next-key lock 锁范围内插入了一条记录，那么这个插入语句就会被阻塞，无法成功插入，所以就很好避免幻读问题。</li>
 </ul>
-<h2 id="🌟数据库的事务隔离级别有哪些？优缺点？"><a href="#🌟数据库的事务隔离级别有哪些？优缺点？" class="headerlink" title="🌟数据库的事务隔离级别有哪些？优缺点？"></a>🌟数据库的事务隔离级别有哪些？优缺点？</h2><p>SQL 标准提出了四种隔离级别来规避这些现象，隔离级别越高，性能效率就越低，这四个隔离级别如下：</p>
-<ul>
-<li><strong>读未提交（read uncommitted）</strong>，指一个事务还没提交时，它做的变更就能被其他事务看到；</li>
-<li><strong>读提交（read committed）</strong>，指一个事务提交之后，它做的变更才能被其他事务看到；</li>
-<li><strong>可重复读（repeatable read）</strong>，指一个事务执行过程中看到的数据，一直跟这个事务启动时看到的数据是一致的，**InnoDB 引擎的默认隔离级别 **；</li>
-<li><strong>串行化（serializable ）</strong>；会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
-</ul>
-<p>按隔离水平高低排序如下：串行化 &gt; 可重复读 &gt; 读提交 &gt; 读未提交</p>
-<p>针对不同的隔离级别，并发事务时可能发生的现象也会不同。</p>
-<img src="https://img.jwt1399.top/img/202308061457950.png" style="zoom:50%;" />
-
-<h2 id="🌟各大企业通常为什么采用rc隔离级别"><a href="#🌟各大企业通常为什么采用rc隔离级别" class="headerlink" title="🌟各大企业通常为什么采用rc隔离级别?"></a>🌟各大企业通常为什么采用rc隔离级别?</h2><p>rr隔离级别有gap锁，在并发的场景，很容易产生死锁，死锁问题的发生比出现幻读的问题成本更大</p>
-<h2 id="🌟四种隔离级别具体是如何实现的呢？"><a href="#🌟四种隔离级别具体是如何实现的呢？" class="headerlink" title="🌟四种隔离级别具体是如何实现的呢？"></a>🌟四种隔离级别具体是如何实现的呢？</h2><p>事务的隔离机制主要是依靠锁机制和MVCC(多版本并发控制)实现的，读提交和可重复读可以通过MVCC&#x2F;锁实现，串行化可以通过锁机制实现。</p>
+<h2 id="🌟四种隔离级别具体是如何实现的呢？"><a href="#🌟四种隔离级别具体是如何实现的呢？" class="headerlink" title="🌟四种隔离级别具体是如何实现的呢？"></a>🌟四种隔离级别具体是如何实现的呢？</h2><p>事务的隔离机制主要是依靠<strong>锁机制</strong>和<strong>MVCC</strong>(多版本并发控制)实现的，读提交和可重复读可以通过MVCC&#x2F;锁实现，串行化可以通过锁机制实现。</p>
 <ul>
 <li><strong>对于「读未提交」隔离级别</strong>，因为可以读到未提交事务修改的数据，所以直接读取最新的数据就好了；</li>
 <li><strong>对于「串行化」隔离级别的事务来说</strong>，通过加读写锁的方式来避免并行访问；</li>
@@ -1641,18 +1642,18 @@ SQL1<span class="token punctuation">,</span>SQL2<span class="token punctuation">
 <img src="https://img.jwt1399.top/img/202308061458716.png" style="zoom:50%;" />
 
 <p>隔离级别实现是通过「事务的 Read View 里的字段」和「记录中的两个隐藏列」的比对，来控制并发事务访问同一个记录时的行为，这就叫 MVCC（多版本并发控制）。</p>
-<h2 id="🌟分布式事务"><a href="#🌟分布式事务" class="headerlink" title="🌟分布式事务"></a>🌟分布式事务</h2><p> 分布式系统会把一个应用系统拆分为可独立部署的多个服务，因此需要服务与服务之间远程协作才能完成事务操作，这种<strong>分布式系统环境下由不同的服务之间通过网络远程协作完成事务称之为分布式事务</strong>，例如用户注册送积分事务、创建订单减库存事务，银行转账事务等都是分布式事务。</p>
-<p>CAP理论</p>
-<p>如果系统没有发生“分区”，节点间的网络连接通信正常，也就不存在 P 了。这个时候，可以同时保证 C 和 A 了。如果系统发生“分区”，要考虑选择 CP 还是 AP。</p>
+<h2 id="🌟分布式事务"><a href="#🌟分布式事务" class="headerlink" title="🌟分布式事务"></a>🌟分布式事务</h2><p> 分布式系统会把一个应用系统拆分为多个可独立部署的服务，因此需要服务与服务之间远程协作才能完成事务操作，这种<strong>分布式系统环境下由不同的服务之间通过网络远程协作完成事务称之为分布式事务</strong>，例如用户注册送积分事务、创建订单减库存事务，银行转账事务等都是分布式事务。</p>
+<p><strong>CAP理论</strong></p>
 <ul>
 <li><strong>一致性（Consistency）</strong> : 所有节点访问同一份最新的数据副本</li>
 <li><strong>可用性（Availability）</strong>: 非故障的节点在合理的时间内返回合理的响应（不是错误或者超时的响应）。</li>
 <li><strong>分区容错性（Partition Tolerance）</strong> : 分布式系统出现网络分区的时候，仍然能够对外提供服务。</li>
 </ul>
+<p>如果系统没有发生“分区”，节点间的网络连接通信正常，也就不存在 P 了。这个时候，可以同时保证 C 和 A 了。如果系统发生“分区”，要考虑选择 CP 还是 AP。</p>
 <p>CAP 理论中分区容错性 P 是一定要满足的，在此基础上，只能满足可用性 A 或者一致性 C。</p>
 <p>因此，<strong>分布式系统理论上不可能选择 CA 架构，只能选择 CP 或者 AP 架构。</strong> 比如 ZooKeeper、HBase 就是 CP 架构，Cassandra、Eureka 就是 AP 架构，Nacos 不仅支持 CP 架构也支持 AP 架构。</p>
 <p><strong>为啥不可能选择 CA 架构呢？</strong> 举个例子：若系统出现“分区”，系统中的某个节点在进行写操作。为了保证 C， 必须要禁止其他节点的读写操作，这就和 A 发生冲突了。如果为了保证 A，其他节点的读写操作正常的话，那就和 C 发生冲突了。</p>
-<p>BASE理论</p>
+<p><strong>BASE理论</strong></p>
 <p>也就是牺牲数据的一致性来满足系统的高可用性，系统中一部分数据不可用或者不一致时，仍需要保持系统整体“主要可用”。</p>
 <ul>
 <li><strong>Basically Available（基本可用）</strong> ：指分布式系统在出现不可预知故障的时候，允许损失部分可用性。<ul>
@@ -1689,16 +1690,16 @@ SQL1<span class="token punctuation">,</span>SQL2<span class="token punctuation">
 </ul>
 <p><strong>表级锁和行级锁对比</strong> ：</p>
 <ul>
-<li><strong>表级锁：</strong> MySQL 中锁定粒度最大的一种锁（全局锁除外），是针对非索引字段加的锁，对当前操作的整张表加锁，实现简单，资源消耗也比较少，加锁快，不会出现死锁。不过，触发锁冲突的概率最高，高并发下效率极低。表级锁和存储引擎无关，MyISAM 和 InnoDB 引擎都支持表级锁。</li>
+<li><strong>表级锁：</strong> MySQL 中锁定粒度最大的一种锁（全局锁除外），是针对<strong>非索引字段加的锁</strong>，对当前操作的整张表加锁，实现简单，资源消耗也比较少，加锁快，不会出现死锁。不过，触发锁冲突的概率最高，高并发下效率极低。表级锁和存储引擎无关，MyISAM 和 InnoDB 引擎都支持表级锁。</li>
 <li><strong>行级锁：</strong> MySQL 中锁定粒度最小的一种锁，是 <strong>针对索引字段加的锁</strong> ，只针对当前操作的行记录进行加锁。 行级锁能大大减少数据库操作的冲突。其加锁粒度最小，并发度高，但加锁的开销也最大，加锁慢，会出现死锁。行级锁和存储引擎有关，是在存储引擎层面实现的。</li>
 </ul>
 <h2 id="🌟行级锁的使用有什么注意事项？"><a href="#🌟行级锁的使用有什么注意事项？" class="headerlink" title="🌟行级锁的使用有什么注意事项？"></a>🌟行级锁的使用有什么注意事项？</h2><p>InnoDB 的行锁是针对索引字段加的锁，表级锁是针对非索引字段加的锁。当我们执行 <code>UPDATE</code>、<code>DELETE</code> 语句时，如果 <code>WHERE</code>条件中字段没有命中唯一索引或者索引失效的话，就会导致扫描全表对表中的所有行记录进行加上 next-key 锁（记录锁 + 间隙锁），相当于把整个表锁住了。</p>
 <p><strong>那 update 语句的 where 带上索引就能避免全表记录加锁了吗？</strong></p>
-<p>并不是。关键还得看这条语句在执行过程种，优化器最终选择的是索引扫描，还是全表扫描，如果走了全表扫描，就会对全表的记录加锁了。</p>
+<p>并不是。关键还得看这条语句在执行过程中，优化器最终选择的是索引扫描，还是全表扫描，如果走了全表扫描，就会对全表的记录加锁了。</p>
 <p><strong>解决办法</strong></p>
 <p>当我们要执行 update 语句的时候，确保 where 条件中带上了索引列，并且在测试机确认该语句是否走的是索引扫描，防止因为扫描全表，而对表中的所有记录加上锁。</p>
 <p>我们可以打开 MySQL <code>sql_safe_updates</code> 参数，这样可以预防 update 操作时 where 条件没有带上索引列。</p>
-<p>如果发现即使在 where 条件中带上了列索引列，优化器走的还是全标扫描，这时我们就要使用 <code>force index([index_name])</code> 可以告诉优化器使用哪个索引。</p>
+<p>如果发现即使在 where 条件中带上了列索引列，优化器走的还是全表扫描，这时我们就要使用 <code>force index([index_name])</code> 可以告诉优化器使用哪个索引。</p>
 <h2 id="🌟select-…-for-update加什么锁"><a href="#🌟select-…-for-update加什么锁" class="headerlink" title="🌟select … for update加什么锁"></a>🌟select … for update加什么锁</h2><p>如果 <code>WHERE</code>条件中字段命中唯一索引，即当查询用到索引时是行锁</p>
 <p>如果 <code>WHERE</code>条件中字段没有命中唯一索引，即当查询没用到索引时是表锁</p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32565537/article/details/126439743">select … for update学习</a></p>
