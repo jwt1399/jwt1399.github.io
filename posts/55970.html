@@ -866,14 +866,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-08-02
+                    2023-08-10
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    6.3k
+                    8.1k
                 </div>
                 
 
@@ -958,7 +958,7 @@
 <p>存储指定节点和事件回调函数的对应关系。</p>
 <p>当服务端指定被watch 的节点发生变化后，就会找到这个节点对应的会话，把变化的事件和节点信息发给这个客户端。</p>
 <p>客户端收到请求以后，从ZkWatcherManager 里面对应的回调方法进行调用，完成事件变更的通知。</p>
-<img src="../images/Q-A-分布式/image-20230723201850175.png" style="zoom: 33%;" />
+<img data-src="../images/Q-A-分布式/image-20230723201850175.png" style="zoom: 33%;" />
 
 <h3 id="Zookeeper-在-Kafka-中的作用知道吗？"><a href="#Zookeeper-在-Kafka-中的作用知道吗？" class="headerlink" title="Zookeeper 在 Kafka 中的作用知道吗？"></a>Zookeeper 在 Kafka 中的作用知道吗？</h3><p>ZooKeeper 主要为 Kafka 提供元数据的管理的功能。Zookeeper 主要为 Kafka 做了下面这些事情：</p>
 <ol>
@@ -966,7 +966,14 @@
 <li><strong>Topic 注册</strong>：在 Kafka 中，同一个<strong>Topic 的消息会被分成多个分区</strong>并将其分布在多个 Broker 上，<strong>这些分区信息及与 Broker 的对应关系</strong>也都是由 Zookeeper 在维护。比如我创建了一个名字为 my-topic 的主题并且它有两个分区，对应到 zookeeper 中会创建这些文件夹：<code>/brokers/topics/my-topic/Partitions/0</code>、<code>/brokers/topics/my-topic/Partitions/1</code></li>
 <li><strong>负载均衡</strong>：上面也说过了 Kafka 通过给特定 Topic 指定多个 Partition, 而各个 Partition 可以分布在不同的 Broker 上, 这样便能提供比较好的并发能力。 对于同一个 Topic 的不同 Partition，Kafka 会尽力将这些 Partition 分布到不同的 Broker 服务器上。当生产者产生消息后也会尽量投递到不同 Broker 的 Partition 里面。当 Consumer 消费的时候，Zookeeper 可以根据当前的 Partition 数量以及 Consumer 数量来实现动态负载均衡。</li>
 </ol>
-<h2 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h2><h3 id="Kafka-是什么？主要应用场景有哪些？"><a href="#Kafka-是什么？主要应用场景有哪些？" class="headerlink" title="Kafka 是什么？主要应用场景有哪些？"></a>Kafka 是什么？主要应用场景有哪些？</h3><p>Kafka 是一个分布式流式处理平台。流平台具有三个关键功能：</p>
+<h2 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h2><h3 id="消息队列常见的使用场景"><a href="#消息队列常见的使用场景" class="headerlink" title="消息队列常见的使用场景"></a>消息队列常见的使用场景</h3><p>场景有很多，但是比较核心的有 3 个：<strong>解耦</strong>、<strong>异步</strong>、<strong>削峰</strong>。</p>
+<p>缺点有以下几个：</p>
+<ul>
+<li>系统可用性降低<br>系统引入的外部依赖越多，越容易挂掉。本来你就是 A 系统调用 BCD 三个系统的接口就好了，人 ABCD 四个系统好好的，没啥问题，你偏加个 MQ 进来，万一 MQ 挂了咋整，MQ 一挂，整套系统崩溃的，你不就完了？如何保证消息队列的高可用，可以<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoaXNoYW4xMDAvSmF2YS1JbnRlcnZpZXctQWR2YW5jZWQvYmxvYi9tYXN0ZXIvZG9jcy9oaWdoLWNvbmN1cnJlbmN5L2hvdy10by1lbnN1cmUtaGlnaC1hdmFpbGFiaWxpdHktb2YtbWVzc2FnZS1xdWV1ZXMubWQ=">点击这里查看</span>。</li>
+<li>系统复杂度提高<br>硬生生加个 MQ 进来，你怎么<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoaXNoYW4xMDAvSmF2YS1JbnRlcnZpZXctQWR2YW5jZWQvYmxvYi9tYXN0ZXIvZG9jcy9oaWdoLWNvbmN1cnJlbmN5L2hvdy10by1lbnN1cmUtdGhhdC1tZXNzYWdlcy1hcmUtbm90LXJlcGVhdGVkbHktY29uc3VtZWQubWQ=">保证消息没有重复消费</span>？怎么<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NoaXNoYW4xMDAvSmF2YS1JbnRlcnZpZXctQWR2YW5jZWQvYmxvYi9tYXN0ZXIvZG9jcy9oaWdoLWNvbmN1cnJlbmN5L2hvdy10by1lbnN1cmUtdGhlLXJlbGlhYmxlLXRyYW5zbWlzc2lvbi1vZi1tZXNzYWdlcy5tZA==">处理消息丢失的情况</span>？怎么保证消息传递的顺序性？</li>
+<li>一致性问题<br>A 系统处理完了直接返回成功了，人都以为你这个请求就成功了；但是问题是，要是 BCD 三个系统那里，BD 两个系统写库成功了，结果 C 系统写库失败了，咋整？你这数据就不一致了。</li>
+</ul>
+<h3 id="Kafka-是什么？主要应用场景有哪些？"><a href="#Kafka-是什么？主要应用场景有哪些？" class="headerlink" title="Kafka 是什么？主要应用场景有哪些？"></a>Kafka 是什么？主要应用场景有哪些？</h3><p>Kafka 是一个分布式流式处理平台。流平台具有三个关键功能：</p>
 <ol>
 <li><strong>消息队列</strong>：发布和订阅消息流，这个功能类似于消息队列，这也是 Kafka 也被归类为消息队列的原因。</li>
 <li><strong>容错的持久方式存储记录消息流</strong>：Kafka 会把消息持久化到磁盘，有效避免了消息丢失的风险。</li>
@@ -1001,7 +1008,23 @@
 <li><strong>Topic（主题）</strong> : Producer 将消息发送到特定的主题，Consumer 通过订阅特定的 Topic(主题) 来消费消息。</li>
 <li><strong>Partition（分区）</strong> : Partition 属于 Topic 的一部分。一个 Topic 可以有多个 Partition ，并且同一 Topic 下的 Partition 可以分布在不同的 Broker 上，这也就表明一个 Topic 可以横跨多个 Broker 。这正如我上面所画的图一样。</li>
 </ul>
-<h3 id="Kafka-怎么避免重复消费"><a href="#Kafka-怎么避免重复消费" class="headerlink" title="Kafka 怎么避免重复消费"></a>Kafka 怎么避免重复消费</h3><p><strong>kafka 出现消息重复消费的原因：</strong></p>
+<h3 id="如何保证Kafka的高可用？"><a href="#如何保证Kafka的高可用？" class="headerlink" title="如何保证Kafka的高可用？"></a>如何保证Kafka的高可用？</h3><blockquote>
+<p>Kafka 的多副本机制了解吗？好处？</p>
+</blockquote>
+<p>Kafka 为分区（Partition）引入了多副本（Replica）机制。</p>
+<p>分区（Partition）中的多个副本之间会有一个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进行同步。</p>
+<blockquote>
+<p>生产者和消费者只与 leader 副本交互。你可以理解为其他副本只是 leader 副本的拷贝，它们的存在只是为了保证消息存储的安全性。当 leader 副本发生故障时会从 follower 中选举出一个 leader,但是 follower 中如果有和 leader 同步程度达不到要求的参加不了 leader 的竞选。</p>
+</blockquote>
+<p><strong>Kafka 的多分区（Partition）以及多副本（Replica）机制有什么好处呢？</strong></p>
+<ol>
+<li>Kafka 通过给特定 Topic 指定多个 Partition, 而各个 Partition 可以分布在不同的 Broker 上, 这样便能提供比较好的并发能力（负载均衡）。</li>
+<li>Partition 可以指定对应的 Replica 数, 这也极大地提高了消息存储的安全性, 提高了容灾能力，不过也相应的增加了所需要的存储空间。</li>
+</ol>
+<h3 id="Kafka-怎么避免重复消费"><a href="#Kafka-怎么避免重复消费" class="headerlink" title="Kafka 怎么避免重复消费"></a>Kafka 怎么避免重复消费</h3><blockquote>
+<p>如何保证消息消费的幂等性？</p>
+</blockquote>
+<p><strong>kafka 出现消息重复消费的原因：</strong></p>
 <ul>
 <li>服务端侧已经消费的数据没有成功提交 offset（根本原因）。</li>
 <li>Kafka 侧 由于服务端处理业务时间长或者网络链接等等原因让 Kafka 认为服务假死，触发了分区 rebalance。</li>
@@ -1014,6 +1037,7 @@
 <li>拉取到消息即提交：会有消息丢失的风险。允许消息延时的场景，一般会采用这种方式。然后，通过定时任务在业务不繁忙（比如凌晨）的时候做数据兜底。</li>
 </ul>
 </li>
+<li>基于数据库的唯一键来保证重复数据不会重复插入多条。因为有唯一键约束了，重复数据插入只会报错，不会导致数据库中出现脏数据。</li>
 </ul>
 <h3 id="Kafka-如何保证消息的消费顺序"><a href="#Kafka-如何保证消息的消费顺序" class="headerlink" title="Kafka 如何保证消息的消费顺序"></a>Kafka 如何保证消息的消费顺序</h3><blockquote>
 <p>我们在使用消息队列的过程中经常有业务场景需要严格保证消息的消费顺序。比如开通会员再以会员优惠结账</p>
@@ -1028,7 +1052,10 @@
 </ul>
 </li>
 </ol>
-<h3 id="Kafka-如何保证消息不丢失"><a href="#Kafka-如何保证消息不丢失" class="headerlink" title="Kafka 如何保证消息不丢失"></a>Kafka 如何保证消息不丢失</h3><p>Kafka存在丢消息的问题，消息丢失会发生在Broker，Producer和Consumer三种。</p>
+<h3 id="Kafka-如何保证消息不丢失"><a href="#Kafka-如何保证消息不丢失" class="headerlink" title="Kafka 如何保证消息不丢失"></a>Kafka 如何保证消息不丢失</h3><blockquote>
+<p>如何保证消息的可靠性传输？</p>
+</blockquote>
+<p>Kafka存在丢消息的问题，消息丢失会发生在Broker，Producer和Consumer三种。</p>
 <p><strong>Producer</strong></p>
 <p>导致 Producer 端消息没有发送成功有以下原因：</p>
 <ul>
@@ -1053,17 +1080,14 @@
 <p>在剖析 Consumer 端丢失场景的时候，我们得出其拉取完消息后是需要提交 Offset 位移信息的，因此为了不丢数据，正确的做法是：<strong>拉取数据、业务逻辑处理、提交消费 Offset 位移信息。</strong></p>
 <p>我们还需要设置参数<strong>enable.auto.commit &#x3D; false, 采用手动提交位移的方式。</strong></p>
 <p>另外对于消费消息重复的情况，业务自己保证幂等性, <strong>保证只成功消费一次即可</strong>。</p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/459610418">进阶，Kafka 如何保证消息不丢失？ - 知乎 (zhihu.com)</a></p>
-<h3 id="Kafka-的多副本机制了解吗？好处？"><a href="#Kafka-的多副本机制了解吗？好处？" class="headerlink" title="Kafka 的多副本机制了解吗？好处？"></a>Kafka 的多副本机制了解吗？好处？</h3><p>Kafka 为分区（Partition）引入了多副本（Replica）机制。</p>
-<p>分区（Partition）中的多个副本之间会有一个叫做 leader 的家伙，其他副本称为 follower。我们发送的消息会被发送到 leader 副本，然后 follower 副本才能从 leader 副本中拉取消息进行同步。</p>
-<blockquote>
-<p>生产者和消费者只与 leader 副本交互。你可以理解为其他副本只是 leader 副本的拷贝，它们的存在只是为了保证消息存储的安全性。当 leader 副本发生故障时会从 follower 中选举出一个 leader,但是 follower 中如果有和 leader 同步程度达不到要求的参加不了 leader 的竞选。</p>
-</blockquote>
-<p><strong>Kafka 的多分区（Partition）以及多副本（Replica）机制有什么好处呢？</strong></p>
-<ol>
-<li>Kafka 通过给特定 Topic 指定多个 Partition, 而各个 Partition 可以分布在不同的 Broker 上, 这样便能提供比较好的并发能力（负载均衡）。</li>
-<li>Partition 可以指定对应的 Replica 数, 这也极大地提高了消息存储的安全性, 提高了容灾能力，不过也相应的增加了所需要的存储空间。</li>
-</ol>
+<p><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC80NTk2MTA0MTg=">进阶，Kafka 如何保证消息不丢失？ - 知乎 (zhihu.com)</span></p>
+<h3 id="让你写一个消息队列，该如何进行架构设计？"><a href="#让你写一个消息队列，该如何进行架构设计？" class="headerlink" title="让你写一个消息队列，该如何进行架构设计？"></a>让你写一个消息队列，该如何进行架构设计？</h3><ul>
+<li>首先这个 mq 得支持可伸缩性吧，就是需要的时候快速扩容，就可以增加吞吐量和容量，那怎么搞？设计个分布式的系统呗，参照一下 kafka 的设计理念，broker -&gt; topic -&gt; partition，每个 partition 放一个机器，就存一部分数据。如果现在资源不够了，简单啊，给 topic 增加 partition，然后做数据迁移，增加机器，不就可以存放更多数据，提供更高的吞吐量了？</li>
+<li>其次你得考虑一下这个 mq 的数据要不要落地磁盘吧？那肯定要了，落磁盘才能保证别进程挂了数据就丢了。那落磁盘的时候怎么落啊？顺序写，这样就没有磁盘随机读写的寻址开销，磁盘顺序读写的性能是很高的，这就是 kafka 的思路。</li>
+<li>其次你考虑一下你的 mq 的可用性啊？这个事儿，具体参考之前可用性那个环节讲解的 kafka 的高可用保障机制。多副本 -&gt; leader &amp; follower -&gt; broker 挂了重新选举 leader 即可对外服务。</li>
+<li>能不能支持数据 0 丢失啊？可以的，参考我们之前说的那个 kafka 数据零丢失方案。</li>
+</ul>
+<p>mq 肯定是很复杂的，面试官问你这个问题，其实是个开放题，他就是看看你有没有从架构角度整体构思和设计的思维以及能力。确实这个问题可以刷掉一大批人，因为大部分人平时不思考这些东西。</p>
 <h2 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h2><blockquote>
 <p>在我们进行单机应用开发，涉及并发同步的时候，我们往往采用synchronized或者Lock的方式来解决多线程间的代码同步问题，这时多线程的运行都是在同一个JVM之下，没有任何问题。但当我们的应用是分布式集群工作的情况下，属于多JVM下的工作环境，跨JVM之间已经无法通过多线程的锁解决同步问题。</p>
 <p>那么就需要一种更加高级的锁机制，来处理种跨机器的进程之间的数据同步问题——这就是分布式锁。</p>
@@ -1084,7 +1108,7 @@
 <li><p>4.如果发现比自己小的那个节点被删除，则客户端的监听器Watcher会收到相应通知，此时再次判断自己创建的节点是否是lock子节点中序号最小的，如果是则获取到了锁，如果不是则重复以上步骤继续获取到比自己小的一个节点，并注册监听。</p>
 </li>
 </ul>
-<img src="https://img.jwt1399.top/img/202307222127328.png" style="zoom:50%;" />
+<img data-src="https://img.jwt1399.top/img/202307222127328.png" style="zoom:50%;" />
 
 
 
@@ -1095,7 +1119,51 @@
 </blockquote>
 <p>同一时间段内，可能会有很多客户端同时获取锁，但只有一个可以获取成功。如果获取锁失败，则说明有其他的客户端已经成功获取锁。获取锁失败的客户端并不会不停地循环去尝试加锁，而是在前一个节点注册一个事件监听器。</p>
 <p>这个事件监听器的作用是：<strong>当前一个节点对应的客户端释放锁之后（也就是前一个节点被删除之后，监听的是删除事件），通知获取锁失败的客户端（唤醒等待的线程，Java 中的 <code>wait/notifyAll</code> ），让它尝试去获取锁，然后就成功获取锁了。</strong></p>
-<h3 id="Redis-分布式锁原理"><a href="#Redis-分布式锁原理" class="headerlink" title="Redis 分布式锁原理"></a>Redis 分布式锁原理</h3><h3 id="Zookeeper-和Redis-哪种更好？"><a href="#Zookeeper-和Redis-哪种更好？" class="headerlink" title="Zookeeper 和Redis 哪种更好？"></a>Zookeeper 和Redis 哪种更好？</h3><h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><h2 id=""><a href="#" class="headerlink" title="- "></a>- </h2><h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
+<h3 id="Redis-分布式锁原理"><a href="#Redis-分布式锁原理" class="headerlink" title="Redis 分布式锁原理"></a>Redis 分布式锁原理</h3><p>官方叫做 <code>RedLock</code> 算法，是 redis 官方支持的分布式锁算法。</p>
+<p>这个分布式锁有 3 个重要的考量点：</p>
+<ul>
+<li>互斥（只能有一个客户端获取锁）</li>
+<li>不能死锁</li>
+<li>容错（只要大部分 redis 节点创建了这把锁就可以）</li>
+</ul>
+<h4 id="redis-最普通的分布式锁"><a href="#redis-最普通的分布式锁" class="headerlink" title="redis 最普通的分布式锁"></a>redis 最普通的分布式锁</h4><p>第一个最普通的实现方式，就是在 redis 里使用 <code>setnx</code> 命令创建一个 key，这样就算加锁。</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">SET</span> resource_name my_random_value NX PX <span class="token number">30000</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li><code>NX</code>：表示只有 <code>key</code> 不存在的时候才会设置成功。（如果此时 redis 中存在这个 key，那么设置失败，返回 <code>nil</code>）</li>
+<li><code>PX 30000</code>：意思是 30s 后锁自动释放。别人创建的时候如果发现已经有了就不能加锁了。</li>
+</ul>
+<p>释放锁就是删除 key ，但是一般可以用 <code>lua</code> 脚本删除，判断 value 一样才删除：</p>
+<pre class="line-numbers language-lua"><code class="language-lua"><span class="token comment" spellcheck="true">-- 删除锁的时候，找到 key 对应的 value，跟自己传过去的 value 做比较，如果是一样的才删除。</span>
+<span class="token keyword">if</span> redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">"get"</span><span class="token punctuation">,</span>KEYS<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> ARGV<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token keyword">then</span>
+    <span class="token keyword">return</span> redis<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token string">"del"</span><span class="token punctuation">,</span>KEYS<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">else</span>
+    <span class="token keyword">return</span> <span class="token number">0</span>
+<span class="token keyword">end</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="RedLock-算法"><a href="#RedLock-算法" class="headerlink" title="RedLock 算法"></a>RedLock 算法</h4><p>这个场景是假设有一个 redis cluster，有 5 个 redis master 实例。然后执行如下步骤获取一把锁：</p>
+<ol>
+<li>获取当前时间戳，单位是毫秒；</li>
+<li>跟上面类似，轮流尝试在每个 master 节点上创建锁，过期时间较短，一般就几十毫秒；</li>
+<li>尝试在<strong>大多数节点</strong>上建立一个锁，比如 5 个节点就要求是 3 个节点 <code>n / 2 + 1</code>；</li>
+<li>客户端计算建立好锁的时间，如果建立锁的时间小于超时时间，就算建立成功了；</li>
+<li>要是锁建立失败了，那么就依次之前建立过的锁删除；</li>
+<li>只要别人建立了一把分布式锁，你就得<strong>不断轮询去尝试获取锁</strong>。</li>
+</ol>
+<h3 id="Zookeeper-和Redis-哪种更好？"><a href="#Zookeeper-和Redis-哪种更好？" class="headerlink" title="Zookeeper 和Redis 哪种更好？"></a>Zookeeper 和Redis 哪种更好？</h3><ul>
+<li>redis 分布式锁，其实<strong>需要自己不断去尝试获取锁</strong>，比较消耗性能。</li>
+<li>zk 分布式锁，获取不到锁，注册个监听器即可，不需要不断主动尝试获取锁，性能开销较小。</li>
+</ul>
+<p>另外一点就是，如果是 redis 获取锁的那个客户端 出现 bug 挂了，那么只能等待超时时间之后才能释放锁；而 zk 的话，因为创建的是临时 znode，只要客户端挂了，znode 就没了，此时就自动释放锁。</p>
+<p>个人实践认为 zk 的分布式锁比 redis 的分布式锁牢靠、而且模型简单易用。</p>
+<h2 id="分布式-session"><a href="#分布式-session" class="headerlink" title="分布式 session"></a>分布式 session</h2><h3 id="完全不用-session"><a href="#完全不用-session" class="headerlink" title="完全不用 session"></a>完全不用 session</h3><p>使用 JWT Token 储存用户身份，然后再从数据库或者 cache 中获取其他的信息。这样无论请求分配到哪个服务器都无所谓。</p>
+<h3 id="tomcat-redis"><a href="#tomcat-redis" class="headerlink" title="tomcat + redis"></a>tomcat + redis</h3><p>这个其实还挺方便的，就是使用 session 的代码，跟以前一样，还是基于 tomcat 原生的 session 支持即可，然后就是用一个叫做 <code>Tomcat  RedisSessionManager</code> 的东西，让所有我们部署的 tomcat 都将 session 数据存储到 redis 即可。</p>
+<p>还可以用上面这种方式基于 redis 哨兵支持的 redis 高可用集群来保存 session 数据，都是 ok 的。</p>
+<p>这种方式会与 tomcat 容器重耦合，如果我要将 web 容器迁移成 jetty，难道还要重新把 jetty 都配置一遍？</p>
+<h3 id="spring-session-redis"><a href="#spring-session-redis" class="headerlink" title="spring session + redis"></a>spring session + redis</h3><p>因为上面那种 tomcat + redis 的方式好用，但是会<strong>严重依赖于web容器</strong>，不好将代码移植到其他 web 容器上去，尤其是你要是换了技术栈咋整？比如换成了 spring cloud 或者是 spring boot 之类的呢？</p>
+<p>所以现在比较好的还是基于 Java 一站式解决方案，也就是 spring。spring 基本上承包了大部分我们需要使用的框架，spirng cloud 做微服务，spring boot 做脚手架，所以用 sping session 是一个很好的选择。</p>
+<p>给 sping session 配置基于 redis 来存储 session 数据，然后配置了一个 spring session 的过滤器，这样的话，session 相关操作都会交给 spring session 来管了。接着在代码中，就用原生的 session 操作，就是直接基于 spring sesion 从 redis 中获取数据了。</p>
+<h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><h2 id=""><a href="#" class="headerlink" title="- "></a>- </h2><h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
 <table>
   <tbody>
      <tr>
@@ -1103,8 +1171,8 @@
          <td style="text-align:center;">微信</td>
      </tr>
    <tr>
-    <td style="text-align:center;" ><img width="200" src="https://jwt1399.top/medias/reward/alipay.png"></td>    
-      <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/sponor_wechat.png"></td>     
+    <td style="text-align:center;" ><img width="200" data-src="https://jwt1399.top/medias/reward/alipay.png"></td>    
+      <td style="text-align:center;"><img width="200" data-src="https://jwt1399.top/medias/reward/sponor_wechat.png"></td>     
   </tr>
 </tbody></table>
 
@@ -1921,7 +1989,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1106.7k</span>&nbsp;字
+                class="white-color">1111.1k</span>&nbsp;字
             
             
             
