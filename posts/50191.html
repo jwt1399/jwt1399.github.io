@@ -862,14 +862,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-08-07
+                    2023-08-21
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    30.1k
+                    31.7k
                 </div>
                 
 
@@ -1213,11 +1213,23 @@
 <td align="center"><img src="https://img.jwt1399.top/img/202308061049469.png"  style="zoom:50%;" /></td>
 </tr>
 </tbody></table>
+<p>B+树的特点有两个：</p>
+<ul>
+<li>1.非叶子节点]仅具有索引作用，也就是说，非叶子节点只能存储Key,不能存储value</li>
+<li>2.树的所有叶节点构成一个有序链表，可以按照key排序的次序依次遍历全部数据。</li>
+</ul>
 <p> 但是 Innodb 使用的 B+ 树有一些特别的点，比如：</p>
 <ul>
 <li>B+ 树的叶子节点之间是用「双向链表」进行连接，这样的好处是既能向右遍历，也能向左遍历。</li>
 <li>B+ 树点节点内容是数据页，数据页里存放了用户的记录以及各种信息，每个数据页默认大小是 16 KB。</li>
 </ul>
+<h2 id="🌟B-树有几层，最大可以存放多少条数据"><a href="#🌟B-树有几层，最大可以存放多少条数据" class="headerlink" title="🌟B+树有几层，最大可以存放多少条数据"></a>🌟B+树有几层，最大可以存放多少条数据</h2><p>B+树一般是1～3层。</p>
+<p>InnoDB页的大小<strong>默认是16KB</strong>：</p>
+<ul>
+<li>假设一条记录大小为1KB，则一个数据页中可以存16条数据（忽略页中的其他数据结构）</li>
+<li>假设主键为int 4B，指针大小为6B，则一个索引页中可以存储<code>16KB/(4B+6B)≈1638</code>个索引</li>
+</ul>
+<p>所以，两层的B+树可以存储：<code>16*1638=26208</code>条数据（2 万）；三层的B+树可以存储：<code>16*1638*1638=42928704</code>条数据（4 千万）。</p>
 <h2 id="🌟MySQL-为什么使用-B-树来作索引"><a href="#🌟MySQL-为什么使用-B-树来作索引" class="headerlink" title="🌟MySQL 为什么使用 B+ 树来作索引"></a>🌟MySQL 为什么使用 B+ 树来作索引</h2><p>B 树和 B+ 都是通过多叉树的方式，会将树的高度变矮，所以这两个数据结构非常适合检索存于磁盘中的数据。</p>
 <p>但是 MySQL 默认的存储引擎 InnoDB 采用的是 B+ 作为索引的数据结构，原因有：</p>
 <ul>
@@ -1225,6 +1237,13 @@
 <li>B+ 树有大量的冗余节点（所有非叶子节点都是冗余索引），这些冗余索引让 B+ 树在插入、删除的效率都更高，比如删除根节点的时候，不会像 B 树那样会发生复杂的树的变化；</li>
 <li>B+ 树叶子节点之间用链表连接了起来，有利于范围查询，而 B 树要实现范围查询，因此只能通过树的遍历来完成范围查询，这会涉及多个节点的磁盘 I&#x2F;O 操作，范围查询效率不如 B+ 树。</li>
 </ul>
+<h2 id="🌟MySQL的索引为什么使用B-树而不使用跳表？"><a href="#🌟MySQL的索引为什么使用B-树而不使用跳表？" class="headerlink" title="🌟MySQL的索引为什么使用B+树而不使用跳表？"></a>🌟MySQL的索引为什么使用B+树而不使用跳表？</h2><p><strong>B+树</strong>是多叉树结构，每个结点都是一个16k的数据页，能存放较多索引信息。<strong>三层</strong>左右就可以存储<code>2kw</code>左右的数据。也就是说查询一次数据，如果这些数据页都在磁盘里，那么最多需要查询<strong>三次磁盘IO</strong>。</p>
+<p><strong>跳表</strong>是链表结构，一条数据一个结点，如果最底层要存放<code>2kw</code>数据，且每次查询都要能达到<strong>二分查找</strong>的效果，<code>2kw</code>大概在<code>2的24次方</code>左右，所以，跳表大概高度在<strong>24层</strong>左右。最坏情况下，这24层数据会分散在不同的数据页里，也即是查一次数据会经历<strong>24次磁盘IO</strong>。</p>
+<p>因此存放同样量级的数据，B+树的高度比跳表的要少，如果放在MySQL数据库上来说，就是<strong>磁盘IO次数更少，因此B+树查询更快</strong>。</p>
+<p>而针对<strong>写操作</strong>，B+树需要拆分合并索引数据页，跳表则独立插入，并根据随机函数确定层数，没有旋转和维持平衡的开销，因此<strong>跳表的写入性能会比B+树要好。</strong></p>
+<p>其实，MySQL的<strong>存储引擎是可以换的</strong>，以前mysql 5.5是<code>myisam</code>，后来才有的<code>innodb</code>，它们底层索引用的都是<strong>B+树</strong>。也就是说，你完全可以造一个索引为跳表的存储引擎装到MySQL里。事实上，<code>facebook</code>造了个<code>rocksDB</code>的存储引擎，里面就用了<strong>跳表</strong>。直接说结论，它的<strong>写入性能</strong>确实是比innodb要好，但<strong>读性能</strong>确实比innodb要差不少。</p>
+<h2 id="🌟Redis为什么使用跳表而不使用B-树或二叉树呢？"><a href="#🌟Redis为什么使用跳表而不使用B-树或二叉树呢？" class="headerlink" title="🌟Redis为什么使用跳表而不使用B+树或二叉树呢？"></a>🌟Redis为什么使用跳表而不使用B+树或二叉树呢？</h2><p>因为数据在内存中读取耗费的时间是从磁盘的IO读取的百万分之一，而Redis是内存中操作数据，不涉及IO，因此使用了跳表；</p>
+<p>B+树的原理是叶子节点存储数据，非叶子节点存储索引，B+树的每个节点可以存储多个关键字，它将节点大小设置为磁盘页的大小，充分利用了磁盘预读的功能。每次读取磁盘页时就会读取一整个节点，每个叶子节点还有指向前后节点的指针，为的是最大限度的降低磁盘的IO。</p>
 <h2 id="🌟B-tree优点"><a href="#🌟B-tree优点" class="headerlink" title="🌟B+-tree优点"></a>🌟B+-tree优点</h2><ol>
 <li><strong>I&#x2F;O次数更少</strong>：B+-tree 的内部结点没有存储关键字，所以同样大小的磁盘页能容纳更多结点。一次性读入内存中的也就越多，相对来说IO读写次数也就降低了</li>
 <li><strong>查询速度更稳定</strong>：B+-tree 所有关键字数据地址都存在<strong>叶子结点</strong>上，所以每次查找的次数都相同所以查询速度要比B树更稳定;</li>
@@ -1842,7 +1861,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 </li>
 </ul>
 <p>在发生回滚时，就读取 undo log 里的数据，然后做原先相反操作。比如当 delete 一条记录时，undo log 中会把记录中的内容都记下来，然后执行回滚操作的时候，就读取 undo log 里的数据，然后进行 insert 操作。</p>
-<h2 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h2><h3 id="🌟什么是redo-log"><a href="#🌟什么是redo-log" class="headerlink" title="🌟什么是redo log"></a>🌟什么是redo log</h3><p>redo log （重做日志）是物理日志，记录了某个数据页做了什么修改，它保证了事务的持久性。</p>
+<h2 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h2><h3 id="🌟什么是redo-log"><a href="#🌟什么是redo-log" class="headerlink" title="🌟什么是redo log"></a>🌟什么是redo log</h3><p>redo log （重做日志）是物理日志，记录数据被修改后的样子，它保证了事务的持久性。</p>
 <p>在我们执行CRUD操作时，首先会在buffer pool中更新缓存页，更新完buffer pool中的缓存页之后，必须要写一条redo log，这样才能记录下来我们对数据库做的修改</p>
 <p><strong>redo log本质是保证事务提交之后，修改的数据绝对不会丢失</strong></p>
 <h3 id="🌟为什么要用redo-log"><a href="#🌟为什么要用redo-log" class="headerlink" title="🌟为什么要用redo log"></a>🌟为什么要用redo log</h3><p>redo log可以保证我们事务提交之后，如果事务中的增删改SQL语句更新的缓存页还没有刷到磁盘上去，此时MySQL宕机了，就可以把redo log重做一遍，恢复出来事务当前更新的缓存页，然后再把缓存页刷到磁盘就可以了</p>
@@ -1908,7 +1927,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>redo log 记录了此次事务「<strong>完成后</strong>」的数据状态，记录的是更新<strong>之后</strong>的值；<strong>事务提交之后</strong>发生了崩溃，重启后会通过 redo log 恢复事务</li>
 <li>undo log 记录了此次事务「<strong>开始前</strong>」的数据状态，记录的是更新<strong>之前</strong>的值；<strong>事务提交之前</strong>发生了崩溃，重启后会通过 undo log 回滚事务</li>
 </ul>
-<h2 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h2><h3 id="🌟什么是binlog"><a href="#🌟什么是binlog" class="headerlink" title="🌟什么是binlog"></a>🌟什么是binlog</h3><p><code>binlogbinlog</code> 是逻辑日志，binlog 文件是记录了所有数据库表结构变更和表数据修改的日志，不会记录查询类的操作，比如 SELECT 和 SHOW 操作。</p>
+<h2 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h2><h3 id="🌟什么是binlog"><a href="#🌟什么是binlog" class="headerlink" title="🌟什么是binlog"></a>🌟什么是binlog</h3><p><code>binlog</code> 是逻辑日志，binlog 文件是记录了所有数据库表结构变更和表数据修改的日志，不会记录查询类的操作，比如 SELECT 和 SHOW 操作。</p>
 <p><code>MySQL</code>数据库的<strong>数据备份、主备、主主、主从</strong>都离不开<code>binlog</code>，需要依靠<code>binlog</code>来同步数据，保证数据一致性</p>
 <h3 id="🌟binlog的三种格式？"><a href="#🌟binlog的三种格式？" class="headerlink" title="🌟binlog的三种格式？"></a>🌟binlog的三种格式？</h3><p>STATEMENT(默认格式)、ROW、 MIXED：</p>
 <ul>
@@ -1930,7 +1949,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>binlog 是 MySQL 的 Server 层实现的日志，所有存储引擎都可使用；binlog 是追加写，写满一个文件，就创建一个新的文件继续写，不会覆盖以前的日志，保存的是全量的日志。binlog 用于备份恢复、主从复制。</li>
 <li>redo log 是 Innodb 存储引擎实现的日志；redo log 是循环写，日志空间大小是固定，全部写满就从头开始，保存未被刷入磁盘的脏页日志。redo log 用于掉电等故障恢复。</li>
 </ul>
-<h3 id="🌟主从复制是怎么实现？"><a href="#🌟主从复制是怎么实现？" class="headerlink" title="🌟主从复制是怎么实现？"></a>🌟主从复制是怎么实现？</h3><p>MySQL 的主从复制依赖于 binlog 。复制的过程就是将 binlog 中的数据从主库传输到从库上。这个过程一般是<strong>异步</strong>的</p>
+<h3 id="🌟主从复制是怎么实现？"><a href="#🌟主从复制是怎么实现？" class="headerlink" title="🌟主从复制是怎么实现？"></a>🌟主从复制是怎么实现？</h3><p>MySQL 主从复制依赖于 binlog 。复制的过程就是将 binlog 中的数据从主库传输到从库上。这个过程一般是<strong>异步</strong>的</p>
 <p>MySQL 集群的主从复制过程梳理成 3 个阶段：</p>
 <ul>
 <li><strong>写入 Binlog</strong>：主库写 binlog 日志，提交事务，并更新本地存储数据。</li>
@@ -1969,18 +1988,38 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <p><img src="https://img.jwt1399.top/img/202308061459157.png" alt="两阶段提交"></p>
 <h1 id="⑥性能优化"><a href="#⑥性能优化" class="headerlink" title="⑥性能优化"></a>⑥性能优化</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/rODTq69p0NjIG-tWmJfIBg">SQL优化13连问</a></p>
 <h2 id="🌟日常工作中，你是怎么优化SQL的？"><a href="#🌟日常工作中，你是怎么优化SQL的？" class="headerlink" title="🌟日常工作中，你是怎么优化SQL的？"></a>🌟日常工作中，你是怎么优化SQL的？</h2><ul>
-<li>分析慢查询日志</li>
-<li>使用explain查看执行计划</li>
-<li>索引优化</li>
-<li>深分页优化t</li>
-<li>避免全表扫描</li>
-<li>避免返回不必要的数据（如<code>select</code>具体字段而不是<code>select*</code>）</li>
-<li>使用合适的数据类型（如可以使用<code>int</code>类型的话，就不要设计为<code>varchar</code>）</li>
-<li>优化sql结构（如<code>join</code>优化等等）</li>
-<li>适当分批量进行 (如批量更新、删除)</li>
-<li>定期清理无用的数据</li>
-<li>适当分库分表</li>
-<li>读写分离</li>
+<li><p>分析慢查询日志</p>
+</li>
+<li><p>使用explain查看执行计划</p>
+</li>
+<li><p>索引优化</p>
+<ul>
+<li>最适合索引的列是出现在 <code>WHERE</code> 子句中的列，或连接子句中的列，而不是出现在 <code>SELECT</code> 关键字后的列。</li>
+<li>索引列的基数越大，索引效果越好。</li>
+<li>根据情况创建复合索引，复合索引可以提高查询效率。</li>
+<li>避免创建过多的索引，索引会额外占用磁盘空间，降低写操作效率。</li>
+<li>主键尽可能选择较短的数据类型，可以有效减少索引的磁盘占用提高查询效率。</li>
+<li>对字符串进行索引，应该定制一个前缀长度，可以节省大量的索引空间。</li>
+</ul>
+</li>
+<li><p>避免全表扫描</p>
+</li>
+<li><p>避免返回不必要的数据（如<code>select</code>具体字段而不是<code>select*</code>）</p>
+</li>
+<li><p>使用合适的数据类型（如可以使用<code>int</code>类型的话，就不要设计为<code>varchar</code>）</p>
+</li>
+<li><p>优化sql结构（如<code>join</code>优化等等）</p>
+</li>
+<li><p>适当分批量进行 (如批量更新、删除)</p>
+</li>
+<li><p>定期清理无用的数据</p>
+</li>
+<li><p>适当分库分表</p>
+</li>
+<li><p>读写分离</p>
+</li>
+<li><p>深分页优化</p>
+</li>
 </ul>
 <h2 id="🌟聊聊explain执行计划"><a href="#🌟聊聊explain执行计划" class="headerlink" title="🌟聊聊explain执行计划"></a>🌟聊聊explain执行计划</h2><p>当<code>explain</code>与<code>SQL</code>一起使用时，MySQL将显示来自优化器的有关语句执行计划的信息。即<code>MySQL</code>解释了它将如何处理该语句，包括有关如何连接表以及以何种顺序连接表等信息。</p>
 <p>一般来说，我们需要重点关注<code>type、rows、filtered、extra、key</code>。</p>
@@ -2023,17 +2062,9 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li><code>explain</code>查看<code>SQL</code>的执行计划，确认是否会命中索引。</li>
 <li>注意索引并不是越多越好，<strong>通常建议在单个表中不要超过5个索引</strong>。因为索引会占用磁盘空间，索引更新代价高。</li>
 </ul>
-<h2 id="🌟MySQL-问题排查都有哪些手段？"><a href="#🌟MySQL-问题排查都有哪些手段？" class="headerlink" title="🌟MySQL 问题排查都有哪些手段？"></a>🌟MySQL 问题排查都有哪些手段？</h2><ol>
-<li><p>使用 show processlist 命令查看当前所有连接信息；</p>
-</li>
-<li><p>使用 Explain 命令查询 SQL 语句执行计划；</p>
-</li>
-<li><p>开启慢查询日志，查看慢查询的 SQL。</p>
-</li>
-</ol>
 <h2 id="🌟sql查询很慢怎么排查"><a href="#🌟sql查询很慢怎么排查" class="headerlink" title="🌟sql查询很慢怎么排查"></a>🌟sql查询很慢怎么排查</h2><blockquote>
 <p>聊聊慢SQL的优化思路</p>
-<p>先检查sql语句，看看是否命中索引，是否符合最左前缀原则，用explain查看sql的执行情况</p>
+<p>MySQL 问题排查都有哪些手段？</p>
 </blockquote>
 <ol>
 <li>查看慢查询日志记录，分析慢SQL，看看是否命中索引，是否符合最左前缀原则</li>
@@ -2078,7 +2109,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li><strong>MySQL版本过低</strong>：较老版本的MySQL可能性能较差，升级到较新版本的MySQL可能会提高查询性能。</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3NzU5NTIwNg==&mid=2247499624&idx=1&sn=561b9cb7fe831ca7cb2d9fd65691e85e&chksm=cf222041f855a957ac50c0a53baaec6d26be32427259b2974450620f33a8c834419fe535e83d&token=767319274&lang=zh_CN&scene=21#wechat_redirect">盘点MySQL慢查询的12个原因</a></p>
-<h2 id="🌟了解慢日志查询吗？对慢查询如何优化？"><a href="#🌟了解慢日志查询吗？对慢查询如何优化？" class="headerlink" title="🌟了解慢日志查询吗？对慢查询如何优化？"></a>🌟了解慢日志查询吗？对慢查询如何优化？</h2><p>慢查询日志一般用于记录执行时间超过某个临界值的SQL语句的日志。</p>
+<h2 id="🌟了解慢查询日志吗？对慢查询如何优化？"><a href="#🌟了解慢查询日志吗？对慢查询如何优化？" class="headerlink" title="🌟了解慢查询日志吗？对慢查询如何优化？"></a>🌟了解慢查询日志吗？对慢查询如何优化？</h2><p>慢查询日志一般用于记录执行时间超过某个临界值的SQL语句的日志。</p>
 <p>慢查询日志记录了执行时间超过阈值 long_query_time（默认是 10s，通常设置为1s）的所有查询语句，在解决 SQL 慢查询（SQL 执行时间过长）问题的时候经常会用到。</p>
 <p>在MySQL中有一个变量专门记录当前慢查询语句的个数，可以通过 <code>show global status like &#39;%Slow_queries%&#39;;</code> 命令查看。</p>
 <p>相关参数：</p>
@@ -2099,6 +2130,18 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 <li>如果SQL语句只是偶尔执行很慢，可能是执行的时候遇到了锁，也可能是redo log日志写满了，要将redo log中的数据同步到磁盘中去。</li>
 <li>如果SQL语句一直都很慢，可能是字段上没有索引或者字段有索引但是没用上索引。</li>
 </ul>
+<h2 id="如果单表数据量过千万，怎么优化？"><a href="#如果单表数据量过千万，怎么优化？" class="headerlink" title="如果单表数据量过千万，怎么优化？"></a>如果单表数据量过千万，怎么优化？</h2><p>1、数据库设计和表创建时，考虑性能问题，比如：单表不要有太多字段，建议在20以内、索引并不是越多越好，要根据查询有针对性的创建，考虑在WHERE和ORDER BY命令上涉及的列建立索引，可根据EXPLAIN来查看是否用了索引还是全表扫描、选择合适的数据类型、选择合适索引类型等。</p>
+<p>2、SQL编写时需要注意，比如：列表数据不要拿全表，要使用LIMIT来分页，每页数量也不要太大、可通过开启慢查询日志来找出较慢的SQL、避免select *，将需要查找的字段列出来等。</p>
+<p>3，存储引擎选择，<strong>MyISAM适合SELECT密集型的表，而InnoDB适合INSERT和UPDATE密集型的表</strong> 。</p>
+<p>4、分库分表，比如：<strong>分库</strong>把一个数据库分成多个，建议做个读写分离就行了，真正的做分库也会带来大量的开发成本，得不偿失！<strong>分表</strong>就是把一张大表，按照如上过程都优化了，还是查询卡死，那就把这个表分成多张表，把一次查询分成多次查询，然后把结果组合返回给用户。分表分为垂直拆分和水平拆分，通常以某个字段做拆分项。比如以id字段拆分为100张表：表名为 tableName_id%100。但：分表需要修改源程序代码，会给开发带来大量工作，极大的增加了开发成本，故：只适合在开发初期就考虑到了大量数据存在，做好了分表处理，不适合应用上线了再做修改，成本太高等。</p>
+<p>5、硬件升级，这办法是最简单的，相对的成本也高，老板就不愿意了。</p>
+<p>6、数据库升级，比如：把MySQL数据库换成大数据引擎处理数据、换成阿里云POLARDB，POLARDB 是阿里云自研的下一代关系型分布式云原生数据库，100%兼容MySQL，存储容量最高可达 100T，性能最高提升至 MySQL 的 6 倍。</p>
+<h2 id="🌟一个500w条数据的表-a，一个300w数据的表-b，通过外键-tid-关联，如何最快的查询出满足条件的第50000到第50200中的这200条数据记录？"><a href="#🌟一个500w条数据的表-a，一个300w数据的表-b，通过外键-tid-关联，如何最快的查询出满足条件的第50000到第50200中的这200条数据记录？" class="headerlink" title="🌟一个500w条数据的表 a，一个300w数据的表 b，通过外键 tid 关联，如何最快的查询出满足条件的第50000到第50200中的这200条数据记录？"></a>🌟一个500w条数据的表 a，一个300w数据的表 b，通过外键 tid 关联，如何最快的查询出满足条件的第50000到第50200中的这200条数据记录？</h2><p>方法一：如果 a 表 tid 是自增长，并且是连续的，b表的id为索引。SQL语句如下。</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token number">a</span><span class="token punctuation">,</span><span class="token number">b</span> <span class="token keyword">where</span> <span class="token number">a</span><span class="token punctuation">.</span>tid <span class="token operator">=</span> <span class="token number">b</span><span class="token punctuation">.</span>id <span class="token operator">and</span> <span class="token number">a</span><span class="token punctuation">.</span>tid<span class="token operator">></span><span class="token number">500000</span> <span class="token keyword">limit</span> <span class="token number">200</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>方法二：如果 a 表的 tid 不是连续的，那么就需要使用覆盖索引，tid 要么是主键，要么是辅助索引，b 表 id 也需要有索引。SQL语句如下。</p>
+<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token number">b</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">select</span> tid <span class="token keyword">from</span> <span class="token number">a</span> <span class="token keyword">limit</span> <span class="token number">50000</span><span class="token punctuation">,</span><span class="token number">200</span><span class="token punctuation">)</span> <span class="token number">a</span> <span class="token keyword">where</span> <span class="token number">b</span><span class="token punctuation">.</span>id <span class="token operator">=</span> <span class="token number">a</span><span class="token punctuation">.</span>tid<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="🌟大表数据查询如何进行优化？"><a href="#🌟大表数据查询如何进行优化？" class="headerlink" title="🌟大表数据查询如何进行优化？"></a>🌟大表数据查询如何进行优化？</h2><ul>
 <li><strong>数据库设计优化</strong></li>
 </ul>
@@ -2270,7 +2313,7 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
 </ul>
 <p>主从复制的作用：</p>
 <ul>
-<li>高可用和故障转移</li>
+<li>高可用和故障转移  </li>
 <li>负载均衡</li>
 <li>数据备份</li>
 <li>升级测试</li>
@@ -2911,10 +2954,12 @@ mysql <span class="token operator">></span> <span class="token keyword">select</
                     <div class="summary block-with-text">
                         
                             数据结构
-简单动态字符串-SDS
-String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 512M。
+redisObject// from Redis 5.0.5
+#define LRU_BITS 24
 
-String 底层数据结构为 SDS（Simple Dyn
+typedef struct redisObject {
+  unsigned type:4; 
+  unsigned enc
                         
                     </div>
                     <div class="publish-info">
@@ -3177,7 +3222,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1111.1k</span>&nbsp;字
+                class="white-color">1119k</span>&nbsp;字
             
             
             

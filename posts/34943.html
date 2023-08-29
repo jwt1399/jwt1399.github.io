@@ -6,10 +6,12 @@
     <meta charset="utf-8">
     <meta name="keywords" content="Q&amp;A：Redis, 简简,简简博客,网络安全,计算机,Java开发">
     <meta name="description" content="数据结构
-简单动态字符串-SDS
-String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 512M。
+redisObject// from Redis 5.0.5
+#define LRU_BITS 24
 
-String 底层数据结构为 SDS（Simple Dyn">
+typedef struct redisObject {
+  unsigned type:4; 
+  unsigned enc">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Type" content="text/html;charset=gb2312" />
@@ -862,14 +864,14 @@ String 底层数据结构为 SDS（Simple Dyn">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-07-22
+                    2023-08-22
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    16.9k
+                    21.8k
                 </div>
                 
 
@@ -888,10 +890,73 @@ String 底层数据结构为 SDS（Simple Dyn">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><p><img src="https://img.jwt1399.top/img/202303231236751.png"></p>
-<h2 id="简单动态字符串-SDS"><a href="#简单动态字符串-SDS" class="headerlink" title="简单动态字符串-SDS"></a>简单动态字符串-SDS</h2><blockquote>
-<p>String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 <code>512M</code>。</p>
-</blockquote>
-<p>String 底层数据结构为 SDS（Simple Dynamic String，简单动态字符串）。</p>
+<h2 id="redisObject"><a href="#redisObject" class="headerlink" title="redisObject"></a>redisObject</h2><pre class="line-numbers language-c"><code class="language-c"><span class="token comment" spellcheck="true">// from Redis 5.0.5</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> LRU_BITS 24</span>
+
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> redisObject <span class="token punctuation">{</span>
+  <span class="token keyword">unsigned</span> type<span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">;</span> 
+  <span class="token keyword">unsigned</span> encoding<span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">;</span>
+  <span class="token keyword">unsigned</span> lru<span class="token punctuation">:</span>LRU_BITS<span class="token punctuation">;</span> 
+    <span class="token keyword">int</span> refcount<span class="token punctuation">;</span>
+    <span class="token keyword">void</span> <span class="token operator">*</span>ptr<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> robj<span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>大小</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>type：对象类型</td>
+<td>4bits</td>
+<td>当前值对象的数据类型（String、List、Set…）</td>
+</tr>
+<tr>
+<td>encoding：底层编码</td>
+<td>4bits</td>
+<td>当前值对象的底层存储编码（String [int、embstr、raw]）</td>
+</tr>
+<tr>
+<td>lru：空转时长</td>
+<td>24bits</td>
+<td>记录对象最后一次被命令程序访问的时间</td>
+</tr>
+<tr>
+<td>refcount：引用计数</td>
+<td>32bits</td>
+<td>用来描述有多少个指针，指向该对象</td>
+</tr>
+<tr>
+<td>ptr：内容指针</td>
+<td>64bits</td>
+<td>指向实际内容</td>
+</tr>
+</tbody></table>
+<p>总计：128bit&#x3D;16字节</p>
+<p><strong>对象删除策略</strong></p>
+<ul>
+<li><p>惰性删除</p>
+<ul>
+<li>只会在取出 key 的时候才对数据进行过期检查</li>
+<li>这样对 CPU 最友好，但是可能会造成太多过期 key 没有被删除。</li>
+</ul>
+</li>
+<li><p>定期删除</p>
+<ul>
+<li>info 查看频率 1s 10次</li>
+<li>每次20个，过期key占比25%，再抽出20个检查，如此循环</li>
+<li>定期删除过程默认不能超过25ms，防止循环过度</li>
+</ul>
+</li>
+</ul>
+<p>定期删除对内存更加友好，惰性删除对 CPU 更加友好。两者各有千秋，所以 Redis 采用的是 <strong>定期删除+惰性&#x2F;懒汉式删除</strong> 。</p>
+<p>但是，仅仅通过给 key 设置过期时间还是有问题的。因为还是可能存在定期删除和惰性删除漏掉了很多过期 key 的情况。这样就导致大量过期 key 堆积在内存里，然后就 Out of memory 了。</p>
+<p>怎么解决这个问题呢？答案就是：<strong>Redis 内存淘汰机制。</strong></p>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>String 是最基本的 key-value 结构，key 是唯一标识，value 是具体的值，value 最多可以容纳的数据长度是 <code>512M</code>。</p>
+<h3 id="SDS-简单动态字符串"><a href="#SDS-简单动态字符串" class="headerlink" title="SDS-简单动态字符串"></a>SDS-简单动态字符串</h3><p>String 底层数据结构为 SDS（Simple Dynamic String，简单动态字符串）。</p>
 <p>包含了下面这 4 个属性：</p>
 <ul>
 <li><code>len</code> ：字符串的长度也就是已经使用的字节数</li>
@@ -899,13 +964,63 @@ String 底层数据结构为 SDS（Simple Dyn">
 <li><code>buf[]</code> ：实际存储字符串的数组</li>
 <li><code>flags</code> ：低三位保存类型标志</li>
 </ul>
-<p><strong>SDS 相比于 C 语言中的字符串提升</strong></p>
-<ol>
+<h3 id="SDS-相比于-C-语言中的字符串提升"><a href="#SDS-相比于-C-语言中的字符串提升" class="headerlink" title="SDS 相比于 C 语言中的字符串提升"></a><strong>SDS 相比于 C 语言中的字符串提升</strong></h3><ol>
 <li><strong>可以避免缓冲区溢出</strong> ：C 语言中的字符串被修改（比如拼接）时，一旦没有分配足够长度的内存空间，就会造成缓冲区溢出。SDS 被修改时，会先根据 len 属性检查空间大小是否满足要求，如果不满足，则先扩展至所需大小再进行修改操作。</li>
 <li><strong>获取字符串长度的复杂度较低</strong> ： C 语言中的字符串的长度通常是经过遍历计数来实现的，时间复杂度为 O(n)。SDS 的长度获取直接读取 len 属性即可，时间复杂度为 O(1)。</li>
 <li><strong>减少内存分配次数</strong> ： 为了避免修改（增加&#x2F;减少）字符串时，每次都需要重新分配内存（C 语言的字符串是这样的），SDS 实现了<strong>空间预分配</strong>和<strong>惰性空间释放</strong>两种优化策略。当 SDS 需要增加字符串时，Redis 会为 SDS 分配好内存，并且根据特定的算法分配多余的内存，这样可以减少连续执行字符串增长操作所需的内存重分配次数。当 SDS 需要减少字符串时，这部分内存不会立即被回收，会被记录下来，等待后续使用（支持手动释放，有对应的 API）。</li>
 <li><strong>二进制安全</strong> ：C 语言中的字符串以空字符 <code>\0</code> 作为字符串结束的标识，这存在一些问题，像一些二进制文件（比如图片、视频、音频）就可能包括空字符，C 字符串无法正确保存。SDS 使用 len 属性判断字符串是否结束，不存在这个问题。</li>
 </ol>
+<h3 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h3><p>​	字节数据、文本数据、序列化后的对象、常规计数、分布式锁、共享Session</p>
+<h3 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h3><ul>
+<li><p>set、mset、setnx、setex</p>
+</li>
+<li><p>get、mget、strlen、getrange</p>
+</li>
+<li><p>del</p>
+</li>
+<li><p>incr、decr、incrby、decrby</p>
+</li>
+</ul>
+<h3 id="底层"><a href="#底层" class="headerlink" title="底层"></a>底层</h3><h4 id="三种编码"><a href="#三种编码" class="headerlink" title="三种编码"></a>三种编码</h4><ul>
+<li><p>int：当字符串是整数使用，能存储8个字节的整数</p>
+</li>
+<li><p>embstr：当字符串小于等于阈值时使用</p>
+<ul>
+<li>EMBSTR下redisObject和SDS是连续的内存</li>
+<li><img src="https://img.jwt1399.top/img/202308170159580.png"></li>
+</ul>
+</li>
+<li><p>raw：当字符串大于阈值时使用</p>
+<ul>
+<li>RAW编码下redisObject和SDS的内存是分开的</li>
+<li><img src="https://img.jwt1399.top/img/202308170200555.png"></li>
+</ul>
+</li>
+</ul>
+<h4 id="阈值"><a href="#阈值" class="headerlink" title="阈值"></a>阈值</h4><p>3.2版本之前是39字节、3.2版本之后是44字节</p>
+<p><strong>为什么阈值是44字节？</strong></p>
+<ul>
+<li><p>Redis采用jemalloc作为内存分配器</p>
+</li>
+<li><p>jemalloc分配内存时，当申请空间大于64字节，使用raw编码；反之使用embstr编码</p>
+</li>
+<li><p>Redis字符串对象由redisObject+sdshdr组成，所以能用的大小为：64-16（redisObject）-4（sdshdr非内容属性）&#x3D;44</p>
+</li>
+</ul>
+<p><strong>为什么3.2之前阈值是39字节？</strong></p>
+<p>3.2之前，sds只要一种类型，能使用的大小：64-16（redisObject）-9（字符串长度4字节，分配大小4字节，“\0”1字节）</p>
+<h4 id="SDS"><a href="#SDS" class="headerlink" title="SDS"></a>SDS</h4><p>sdshdr8、16、32、64</p>
+<ul>
+<li>len：字符串长度、1字节</li>
+<li>alloc：分配的空间长度、1字节</li>
+<li>flags：sds类型、1字节</li>
+<li>buf[]：字节数组，存储实际数据，末尾有“\0”占用1字节</li>
+</ul>
+<p>预留空间规则</p>
+<ul>
+<li>len小于1M，alloc是len的一倍，即预留大小为len</li>
+<li>len大于1M，alloc是1M+len，即预留大小为1M</li>
+</ul>
 <h2 id="压缩列表-ZipList"><a href="#压缩列表-ZipList" class="headerlink" title="压缩列表 - ZipList"></a>压缩列表 - ZipList</h2><p><img src="https://pdai.tech/images/db/redis/db-redis-ds-x-6.png"></p>
 <ul>
 <li><code>zlbytes</code>存储的是整个ziplist所占用的内存的字节数</li>
@@ -1009,7 +1124,7 @@ String 底层数据结构为 SDS（Simple Dyn">
 <h2 id="SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？"><a href="#SET-a之后，调用EXPIRE-a-60，此时这个过期信息是存储在哪里的？" class="headerlink" title="SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？"></a>SET a之后，调用EXPIRE a 60，此时这个过期信息是存储在哪里的？</h2><p>如果添加了对键a添加了ttl，则会立马将其key添加到过期字典中，并存储毫秒精度的时间戳</p>
 <h2 id="过期的数据的删除策略了解么？"><a href="#过期的数据的删除策略了解么？" class="headerlink" title="过期的数据的删除策略了解么？"></a>过期的数据的删除策略了解么？</h2><ol>
 <li><strong>惰性删除</strong> ：只会在取出 key 的时候才对数据进行过期检查。这样对 CPU 最友好，但是可能会造成太多过期 key 没有被删除。</li>
-<li><strong>定期删除</strong> ： 每隔一段时间（1s10次）抽取一批 key （20个）执行删除过期 key 操作。并且，Redis 底层会通过限制删除操作执行的时长和频率来减少删除操作对 CPU 时间的影响。INFO查看频率，如果删除后过期key的占比还是大于25%，则再抽取20个检查，往复循环，为了防止卡死，定期删除循环时间不超过25ms</li>
+<li><strong>定期删除</strong> ： 每隔一段时间（1s&#x2F;10次）抽取一批 key （20个）执行删除过期 key 操作。并且，Redis 底层会通过限制删除操作执行的时长和频率来减少删除操作对 CPU 时间的影响。INFO查看频率，如果删除后过期key的占比还是大于25%，则再抽取20个检查，往复循环，为了防止卡死，定期删除循环时间不超过25ms</li>
 </ol>
 <p>定期删除对内存更加友好，惰性删除对 CPU 更加友好。两者各有千秋，所以 Redis 采用的是 <strong>定期删除+惰性删除</strong> </p>
 <h1 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h1><h2 id="Redis是单线程还是多线程的？"><a href="#Redis是单线程还是多线程的？" class="headerlink" title="Redis是单线程还是多线程的？"></a>Redis是单线程还是多线程的？</h2><p>核心处理逻辑，Redis一直是单线程的；</p>
@@ -1054,9 +1169,22 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p><strong>虽然文件事件处理器以单线程方式运行，但通过使用 I&#x2F;O 多路复用程序来监听多个套接字</strong>，文件事件处理器既实现了高性能的网络通信模型，又可以很好地与 Redis 服务器中其他同样以单线程方式运行的模块进行对接，这保持了 Redis 内部单线程设计的简单性。</p>
 <h1 id="内存淘汰"><a href="#内存淘汰" class="headerlink" title="内存淘汰"></a>内存淘汰</h1><h2 id="Redis有几种内存回收策略"><a href="#Redis有几种内存回收策略" class="headerlink" title="Redis有几种内存回收策略"></a>Redis有几种内存回收策略</h2><p>8种</p>
 <ul>
-<li>no-eviction</li>
-<li>volatile-lru、volatile-lfu、volatile-random、volatile-ttl</li>
-<li>Allkeys- lru、Allkeys-lfu、Allkeys-random</li>
+<li><p>no-eviction 禁止驱逐数据，当内存不足以容纳新写入数据时，新写入操作会报错。这个应该没人使用吧！</p>
+</li>
+<li><p>volatile-lru 从已设置过期时间的数据集中挑选最近最少使用的数据淘汰。</p>
+</li>
+<li><p>volatile-lfu 从已设置过期时间的数据集中挑选最不经常使用的数据淘汰。</p>
+</li>
+<li><p>volatile-random 从已设置过期时间的数据集中任意选择数据淘汰。</p>
+</li>
+<li><p>volatile-ttl 从已设置过期时间的数据集中挑选将要过期的数据淘汰。</p>
+</li>
+<li><p>Allkeys- lru 当内存不足以容纳新写入数据时，在键空间中，移除最不经常使用的 key。</p>
+</li>
+<li><p>Allkeys-lfu 从数据集中任意选择数据淘汰。</p>
+</li>
+<li><p>Allkeys-random 从数据集中任意选择数据淘汰。</p>
+</li>
 </ul>
 <h2 id="内存回收是什么时候发起"><a href="#内存回收是什么时候发起" class="headerlink" title="内存回收是什么时候发起"></a>内存回收是什么时候发起</h2><p>每次运行读写命令的时候，就会尝试去释放一定内存，策略就按我们上述配置的策略。</p>
 <h2 id="介绍下Redis-LRU回收算法"><a href="#介绍下Redis-LRU回收算法" class="headerlink" title="介绍下Redis LRU回收算法"></a>介绍下Redis LRU回收算法</h2><p>Redis采用近似LRU算法，redisObject对象种lru字段存储的就是key被访问时Redis的时钟server.lrulock，当key被访问的时候，Redis会更新这个key的redisObject的lru字段。</p>
@@ -1165,9 +1293,9 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>就是这样，Redis 使用 bgsave 对当前内存中的所有数据做快照，这个操作是由 bgsave 子进程在后台完成的，执行时不会阻塞主线程，这就使得主线程同时可以修改数据。</p>
 <p>细心的同学，肯定发现了，bgsave 快照过程中，如果主线程修改了共享数据，<strong>发生了写时复制后，RDB 快照保存的是原本的内存数据</strong>，而主线程刚修改的数据，是没办法在这一时间写入 RDB 文件的，只能交由下一次的 bgsave 快照。</p>
 <h2 id="AOF对主流程有什么影响？"><a href="#AOF对主流程有什么影响？" class="headerlink" title="AOF对主流程有什么影响？"></a>AOF对主流程有什么影响？</h2><ul>
-<li><p>当AOF写入日志压力过大 会 导致主进程 无法继续 处理其他请求</p>
+<li><p>当AOF写入日志压力过大会导致主进程无法继续处理其他请求</p>
 </li>
-<li><p>当AOF重写发生时，如果数据量比较大，会导致fork子进程 这个操作比较耗时，从而阻塞主进程</p>
+<li><p>当AOF重写发生时，如果数据量比较大，会导致fork子进程这个操作比较耗时，从而阻塞主进程</p>
 </li>
 </ul>
 <h2 id="AOF混合持久化方案是什么？"><a href="#AOF混合持久化方案是什么？" class="headerlink" title="AOF混合持久化方案是什么？"></a>AOF混合持久化方案是什么？</h2><p>如果把混合持久化打开，AOF 重写的时候就直接把 RDB 的内容写到 AOF 文件开头。这样做的好处是可以结合 RDB 和 AOF 的优点, 快速加载同时避免丢失过多的数据。当然缺点也是有的， AOF 里面的 RDB 部分是压缩格式不再是 AOF 格式，可读性较差。</p>
@@ -1228,12 +1356,74 @@ String 底层数据结构为 SDS（Simple Dyn">
 <p>如果我们用了 RDB快照，由于在事务执行的时候，是不会进行 RDB 快照的，所以，如果Redis实例故障，事务操作的命令是不会记录到 RDB 快照的，所以和上面一样，实例重启之后，数据库是一致的。</p>
 <p>如果我们使用了 AOF 日志，当事务操作还没有被记录到 AOF 日志时，实例就发生了故障，那么，使用 AOF 日志恢复的数据库数据是一致的。如果只有部分操作被记录到了 AOF 日志，我们可以使用 redis-check-aof 清除事务中已经完成的操作，数据库恢复后也是一致的。</p>
 <p>所以，综上，Redis 事务机制对一致性属性是有保证的。</p>
-<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&mid=2247483815&idx=1&sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&scene=178&cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
+<h1 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h1><h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg5ODU2ODczMQ==&mid=2247483815&idx=1&sn=f3fefccf7b2ef7aa3ce7ac7c27f421cd&chksm=c061c6d3f7164fc5a8cd209499a849d497516e590df5b6be692708aec3bfa116eed41bfb1f0c&scene=178&cur_album_id=1777086011286536199#rd">【字节二面】缓存一致性如何保证？ (qq.com)</a></p>
 <p>先更新数据库，再删除缓存，并配合消息队列来解决缓存一直性的问题</p>
-<p>大的方向有三：</p>
-<p>1.更新MySQL即可，不管Redis，以过期时间兜底</p>
-<p>2.更新MySQL之后，操作Redis</p>
-<p>3.异步将MySQL的更新同步到Redis</p>
+<p>大的方向有四：</p>
+<ol>
+<li><strong>更新MySQL即可，不管Redis，以过期时间兜底</strong></li>
+</ol>
+<p>使用redis的过期时间，mysql更新时，redis不做处理，等待缓存过期失效，再从mysql拉取缓存。</p>
+<p>这种方式实现简单，但不一致的时间会比较明显，具体由你的业务来配置。如果读请求非常频繁，且过期时间设置较长，则会产生很多脏数据。</p>
+<p>优点：</p>
+<ul>
+<li>redis原生接口，开发成本低，易于实现；</li>
+<li>管理成本低，出问题的概率会比较小。</li>
+</ul>
+<p>不足：</p>
+<ul>
+<li>完全依赖过期时间，时间太短容易造成缓存频繁失效，太长容易有较长时间不一致，对编程者的业务能力，有一定要求。</li>
+</ul>
+<ol start="2">
+<li><strong>更新MySQL之后，操作Redis</strong></li>
+</ol>
+<p>在方案一的基础上扩展，不光通过key的过期时间兜底，还需要在更新mysql时，同时尝试删除redis，如果删除成功，下次访问该数据，则会直接查询mysql的数据，此时再写入redis，就完成了数据同步。这里为什么说是尝试删除呢？因为有了key本身的过期时间作为保障，最终一致性是一定达成的，主动删除redis数据只是为了减少不一致的时间，但不能让其成为一个关键路径，影响核心流程。</p>
+<p>优点：</p>
+<ul>
+<li>相对方案一，达成最终一致性的延迟更小；</li>
+<li>实现成本较低，只是在方案一的基础上，增加了删除逻辑。</li>
+</ul>
+<p>不足：</p>
+<ul>
+<li>如果更新mysql成功，删除redis却失败，就退化到了方案一；</li>
+<li>在高并发场景，业务server需要和mysql、redis同时进行连接，这样是损耗双倍的连接资源，容易造成连接数过多的问题。</li>
+</ul>
+<ol start="3">
+<li><strong>异步将MySQL的更新同步到Redis</strong></li>
+</ol>
+<p>从被动防守，到主动进攻，在更新mysql之后，redis也要更新，用消息队列！具体来说，是将更新操作交给消息队列，由消息队列保证可靠性，此外再搭建一个消费服务订阅消息队列，来异步更新redis数据。</p>
+<p>优点：</p>
+<ul>
+<li>使用消息队列，就相当于将请求投递至信箱，只要投递成功即完成任务，不用关心结果，实现了进一步解耦；</li>
+<li>消息队列本身具有可靠性，在投递成功的前提下，通过手动提交等手段去消费，可以保证更新操作至少在redis中执行一次。</li>
+</ul>
+<p>不足：</p>
+<ul>
+<li>有时序性问题。举个栗子🌰，两台业务服务器在同一时间发出a &#x3D; 1和a &#x3D; 5两条请求，若mysql中先执行a&#x3D;1再执行a&#x3D;5，则mysql中a的值最终为5；但由于网络传输本身有延迟，所以无法保证两条请求谁先进入消息队列，最终redis的结果可能是1也可能是5，如果是1，mysql和redis中的数据就会产生不一致；</li>
+<li>引入了消息队列，同时要增加消费服务，成本较高；</li>
+<li>依旧要消耗更多客户端连接数的问题。</li>
+</ul>
+<ol start="4">
+<li><strong>订阅日志，完全解耦</strong></li>
+</ol>
+<p>把我们搭建的消费服务作为mysql的一个slave，订阅mysql的binlog日志，解析日志内容，再更新到redis。此方案和业务完全解耦，redis的更新对业务方透明，可以减少心智成本。</p>
+<p>优点：</p>
+<ul>
+<li>在同步服务压力不大情况下，延迟较低；</li>
+<li>和业务完全解耦，在更新mysql时，不需要做额外操作；</li>
+<li>解决了时序性问题，可靠性强。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>要单独搭建一个同步服务，并且引入binlog同步机制，成本较大；</li>
+<li>同步服务如果压力比较大，或者崩溃了，那么在较长时间内，redis中都是老旧数据。</li>
+</ul>
+<p> <strong>方案选型</strong></p>
+<ol>
+<li>首先确认产品上对延迟性的要求，如果要求极高，且数据有可能变化，别用缓存。</li>
+<li>通常来说，方案1就够了。牛牛咨询过4、5个团队，基本都是用方案1，因为使用缓存方案，通常是读多写少场景，同时业务上对延迟具有一定的包容性。方案1虽然有一定延时，但比较实用。</li>
+<li>如果想增加更新时的即时性，就选择方案2，不过一定要注意，针对redis老数据的删除操作不要作为关键路径，影响核心流程。</li>
+<li>方案3、方案4均适用于对延时要求比较高的业务，其区别为前者是推模式，后者是拉模式，而后者具有更强的可靠性，且无时序性问题。既然都愿意花功夫做处理消息的逻辑，不如一步到位，用方案4！</li>
+</ol>
 <h2 id="Cache-Aside-Pattern：旁路缓存模式"><a href="#Cache-Aside-Pattern：旁路缓存模式" class="headerlink" title="Cache-Aside Pattern：旁路缓存模式"></a>Cache-Aside Pattern：旁路缓存模式</h2><p>应用服务把缓存当作数据库的旁路，直接和缓存进行交互，<strong>适合读请求比较多的场景</strong>。</p>
 <p><strong>读：</strong>从 cache 中读取数据，读取到就直接返回，cache 中读取不到的话，就从 db 中读取数据返回，再把数据放到 cache 中。</p>
 <p><strong>写</strong> ：先更新 db，然后直接删除 cache 。</p>
@@ -1407,7 +1597,9 @@ OK
 <li><code>SPOP key count</code> ： 随机移除并获取指定集合中一个或多个元素，适合不允许重复中奖的场景。</li>
 <li><code>SRANDMEMBER key count</code> : 随机获取指定集合中指定数量的元素，适合允许重复中奖的场景。</li>
 </ul>
-<h2 id="使用-Redis-共同关注？"><a href="#使用-Redis-共同关注？" class="headerlink" title="使用 Redis 共同关注？"></a>使用 Redis 共同关注？</h2><h2 id="使用-Redis-实现排行榜怎么做？"><a href="#使用-Redis-实现排行榜怎么做？" class="headerlink" title="使用 Redis 实现排行榜怎么做？"></a>使用 Redis 实现排行榜怎么做？</h2><blockquote>
+<h2 id="使用-Redis-共同关注？"><a href="#使用-Redis-共同关注？" class="headerlink" title="使用 Redis 共同关注？"></a>使用 Redis 共同关注？</h2><p>举例：共同好友(交集)、共同粉丝(交集)、共同关注(交集)、好友推荐（差集）、音乐推荐（差集）、订阅号推荐（差集+交集） 等场景。</p>
+<p>相关命令：<code>SINTER</code>（交集）、<code>SINTERSTORE</code> （交集）、<code>SUNION</code> （并集）、<code>SUNIONSTORE</code>（并集）、<code>SDIFF</code>（差集）、<code>SDIFFSTORE</code> （差集）。</p>
+<h2 id="使用-Redis-实现排行榜怎么做？"><a href="#使用-Redis-实现排行榜怎么做？" class="headerlink" title="使用 Redis 实现排行榜怎么做？"></a>使用 Redis 实现排行榜怎么做？</h2><blockquote>
 <p>通过 Zset 来实现</p>
 <p>Zset经常被用在各种排行榜的场景，比如直播间送礼物的排行榜、朋友圈的微信步数排行榜、王者荣耀中的段位排行榜、话题热度排行榜等等。</p>
 </blockquote>
@@ -1432,7 +1624,8 @@ OK
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>假设今天是10号，那么我们就可以从当前月的第一天开始，获得到当前这一天的位数，是10号，那么就是10位，去拿这段时间的数据，就能拿到所有的数据了，那么这10天里边签到了多少次呢？统计有多少个1即可。</p>
 <p><strong>问题3：如何从后向前遍历每个bit位？</strong></p>
-<p>注意：BITFIELD返回的数据是10进制，假如说返回一个数字8，那么我哪儿知道到底哪些是0，哪些是1呢？我们只需要让得到的10进制数字和1做与运算就可以了，因为1只有遇见1 才是1，其他数字都是0 ，我们把签到结果和1进行与操作，每与一次，就把签到结果向右移动一位，依次内推，我们就能完成逐个遍历的效果了。</p>
+<p>注意：BITFIELD返回的数据是10进制，假如说返回一个数字8，那么我哪儿知道到底哪些是0，哪些是1呢？</p>
+<p>我们只需要让得到的10进制数字<strong>和1做与运算</strong>就可以了，因为1只有遇见1 才是1，其他数字都是0 ，我们把签到结果和1进行与操作，每与一次，就把签到结果向右移动一位，依次内推，我们就能完成逐个遍历的效果了。</p>
 <p>BitMap的操作命令有：</p>
 <ul>
 <li>SETBIT：向指定位置（offset）存入一个0或1</li>
@@ -1468,7 +1661,21 @@ OK
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="实现分布式锁"><a href="#实现分布式锁" class="headerlink" title="实现分布式锁"></a>实现分布式锁</h2><p>setnx+过期时间+owner检测(分布式锁需要满足谁申请谁释放原则，不能释放别人的锁，也就是说，分布式锁，是要有归属的)+Lua(解决owner检测原子性)+主从容灾和多级部署</p>
 <p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/y8kAflIenRpa4zIwCP_8iA?notreplace=true">支付宝一面：如何基于Redis实现分布式锁？ (qq.com)</a></p>
-<h2 id="秒杀"><a href="#秒杀" class="headerlink" title="秒杀"></a>秒杀</h2><ul>
+<h2 id="秒杀"><a href="#秒杀" class="headerlink" title="秒杀"></a>秒杀</h2><blockquote>
+<p>“秒杀系统需要保证：</p>
+<ul>
+<li>高可用：服务器不因为大流量而崩溃，同时秒杀业务不影响其他业务。</li>
+<li>高扩展，架构适合水平扩展，在特殊活动前能够迅速扩容。</li>
+<li>一致性：商品不出现超卖和少卖的问题。”</li>
+</ul>
+<p>“要保证上述三个性质，主要方案有三个：</p>
+<ul>
+<li>合理使用消息队列，既可以解决并发安全问题，也可以进行业务解耦，方便水平扩展。</li>
+<li>前后端的流量限制，将大部分的无效流量拦在服务器之前。</li>
+<li>热门资源隔离，针对热门商品进行独立处理以及资源分配。</li>
+</ul>
+</blockquote>
+<ul>
 <li>第一点，海量请求，服务要能扛住。</li>
 </ul>
 <p>秒杀活动的主要思路是削峰、限流、异步、补偿。</p>
@@ -1495,6 +1702,134 @@ OK
 <p>针对IP做限制也是常见做的做法，但这样容易误杀，主要考虑到使用同一个网络的用户，可能都是一个出口IP。限制IP，会导致正常用户也受到影响。</p>
 <p>更好用的方案是加上一个验证码验证。验证码符合91原则，90%的时间，都用在验证码输入上，所以使用脚本点击的影响会降到很低。</p>
 <p><a target="_blank" rel="noopener" href="https://osjobs.net/system/posts/spike-system/">海外兔是如何设计秒杀系统的 | 系统设计课程 (osjobs.net)</a></p>
+<h3 id="消息队列解决"><a href="#消息队列解决" class="headerlink" title="消息队列解决"></a>消息队列解决</h3><p><img src="/../images/Q-A%EF%BC%9ARedis/%E6%9E%B6%E6%9E%842.svg"></p>
+<p>发现普通架构  有 3 个潜在问题：</p>
+<ol>
+<li>当一款商品库存只有 10 件却有 1 万名用户下单的时候，只有前 10 名客户可以下单成功，其他用户都浪费时间在队列等待以及无意义地查询库存，既牺牲了用户体验也增加了消息队列以及数据库的压力。</li>
+<li>由于库存过少，有大量的请求（例如非法用户的请求，超过秒杀活动开始一定时间的请求）其实是没有机会抢到商品的，所以没有必要到达服务器，更不用说数据库了。</li>
+<li>大量的客户端在下单前同时请求同一个商品的秒杀页面，导致服务器压力骤升。</li>
+</ol>
+<p>针对这三个问题我们可以考虑两个方案：流量控制和资源隔离。</p>
+<h5 id="流量限制"><a href="#流量限制" class="headerlink" title="流量限制"></a>流量限制</h5><p>第三个问题相对简单，可以将秒杀页面使用 CDN 缓存起来，客户端就可以直接从 CDN 获取到秒杀页面，不需要重复请求服务器。</p>
+<p>另外两个问题可以通过流量限制来解决，可以通过限流器，负载均衡以及安全验证组件实现：</p>
+<ul>
+<li>限流器分为前端限流与后端限流：<ul>
+<li>前端限流包括验证答题，防止重复点击按钮等常见机制。</li>
+<li>后端限流使用限流算法进行流量限制，简单情况下可以使用固定限流算法，<ul>
+<li>例如秒杀商品的库存是 10 件，只要限流器接收到 10 * k（k 可以根据业务进行调整）个请求之后，就停止接受该商品的所有请求。</li>
+<li>这样无论有多少个下单请求，最终到达服务器的单个商品请求数量都不超过 10 * k。</li>
+<li>实际工程中，因为有客户可能会出现支付超时导致释放库存的情况，系统需要通知限流器接受新的请求。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>负载均衡负责将下单请求通过负载均衡算法转发到最合适的服务器。</li>
+<li>安全验证组件分为前端安全验证以及后端安全验证：<ul>
+<li>后端安全验证包括黑名单校验，IP 地址校验等机制。</li>
+<li>前端安全验证包括：客户端账户验证（确保客户有资格参考秒杀活动），客户端版本安全验证（防止反编译以及修改客户端代码），秒杀接口动态生成（防止使用刷单脚本）等机制。</li>
+</ul>
+</li>
+</ul>
+<p>这时候系统的整体架构如下：</p>
+<p><img src="/../images/Q-A%EF%BC%9ARedis/%E6%B5%81%E9%87%8F%E9%99%90%E5%88%B6.svg"></p>
+<h5 id="热门资源隔离"><a href="#热门资源隔离" class="headerlink" title="热门资源隔离"></a>热门资源隔离</h5><p>既然大部分流量集中在少量商品中，我们能不能针对这些商品进行特殊处理呢？这样既可以防止秒杀活动影响其他业务功能，也可以针对热门商品进行资源分配，答案是可以的，首先我们需要识别出热门商品，这里有两种常见的方法：</p>
+<ul>
+<li>静态识别：包括京东在内的一些电商平台，客户在参加秒杀活动之前需要先进行预约，只有预约过的客户才能参考秒杀活动。这样系统可以提早识别热门商品以及进行流量预估。</li>
+<li>动态识别：通过实时数据分析系统在秒杀活动前统计出现在较多客户浏览的热门商品，针对预估结果进行资源分配。</li>
+</ul>
+<p>识别出热门商品之后，我们可以将热门商品的资源进行隔离，并且设置独立的策略，例如</p>
+<ul>
+<li>使用特殊的限流器，由于秒杀系统的库存很少，在下单请求开始阶段就可以随机丢弃大部分请求。</li>
+<li>使用单独的数据库，在架构 2 中，下单请求的处理速度受限于消费者的处理速度，也就是数据库的处理速度。我们可以对热门商品进行分库分表，这样可以将请求处理的压力分摊到多个数据库中。下图中，我们将秒杀系统的一些组件独立开来：</li>
+</ul>
+<p><img src="/../images/Q-A%EF%BC%9ARedis/%E8%B5%84%E6%BA%90%E9%9A%94%E7%A6%BB.svg" alt="资源隔离"></p>
+<p>根据以上两个方案，我们可以设计出最后的架构 ：</p>
+<p><img src="/../images/Q-A%EF%BC%9ARedis/%E6%9E%B6%E6%9E%843.svg"></p>
+<ol>
+<li>客户端从 CDN 获取到秒杀页面</li>
+<li>客户端发送下单请求给网关</li>
+<li>在网关或者服务器前进行流量控制以及负载均衡等策略</li>
+<li>服务端将请求发送到消息队列</li>
+<li>数据库每次从消息队列取出请求<ul>
+<li>若该商品库存大于零，将库存减一</li>
+<li>若该商品库存等于零的话，不做操作</li>
+</ul>
+</li>
+<li>服务端根据消息队列里的消息状态返回下单结果</li>
+</ol>
+<h3 id="秒杀问题合集"><a href="#秒杀问题合集" class="headerlink" title="秒杀问题合集"></a>秒杀问题合集</h3><p>1.“应该在什么时候扣除库存，是下单后扣除库存还是支付后扣除库存呢？为什么？”</p>
+<blockquote>
+<p>应该在下单的时候扣除库存，如果在支付成功再扣除库存的话会出现下单请求成功数量大于库存的情况。</p>
+</blockquote>
+<p>2.“对秒杀商品进行分库分表之后可能导致某个分表库存为零，但其他分表还有库存，如何解决这个问题？”</p>
+<blockquote>
+<p>“有三种解决方案：</p>
+<ul>
+<li>如果当前分表没有库存的话，到其他分表进行重试，缺点是会放大流量。</li>
+<li>通过路由组件记录每个分表的库存情况，将下单请求转发到有库存的分表中。</li>
+<li>使用分布式缓存记录每个分表的库存情况，并且每次下单请求只更新缓存，缓存后续再更新到数据库中，缺点是可能出现缓存和数据库不一致的问题。”</li>
+</ul>
+</blockquote>
+<p>3.“客户下单后可能支付超时并释放库存，这时候有哪些要注意的？”</p>
+<blockquote>
+<p>“服务器能够通知限流器以及前端库存发生变化，限流器能够重新接收请求，前端页面显示可下单的页面，确保后续的用户能继续购买商品。”</p>
+</blockquote>
+<p>“消息队列方案有什么潜在问题吗？”</p>
+<blockquote>
+<p>“秒杀系统下，可能 80% 的流量都指向同一个热门商品，那么消息队列中的分区会特别大，影响了两个方面 1）消息队列本身的稳定性，吞吐量会受单个分区限制，也可能影响其他业务。2）下单请求受到消费者消费能力的限制，即使消息队列每秒可以处理大量消息，但是数据库每秒处理的数量有限。可以使用以下几种方案：</p>
+<ul>
+<li>压力测试：在前期压力测试的时候，模拟流量极端分布的情况，确保现有架构能够支持服务。</li>
+<li>资源隔离：对秒杀商品使用独立的消息队列，使用特殊的流量限流策略，配置更好的资源。</li>
+<li>合并下单请求：将多个下单请求合并成一个请求，再交给数据库处理。不过在实际工程中，下单业务可能比较复杂，不只包含扣减库存。所以合并逻辑会影响后续业务的可扩展性。</li>
+<li>合并事务：将多个事务合并成一个事务执行，这样能有效减少数据库压力，缺点是逻辑会比较复杂，而且一个事务执行失败会影响多个订单。</li>
+</ul>
+</blockquote>
+<p>“消息队列怎么保证消息有且仅生效一次（Exactly Once）？”</p>
+<blockquote>
+<ul>
+<li>为了保证最少一次生效, 消费者需要下单成功后才能返回确认 ACK，否则有可能会丢失消息。</li>
+<li>为了防止消息重复消费的问题，需要使下单逻辑变为幂等操作，常见的解决方案是保证下单请求有全局唯一的 ID，并在消息队列中对 ID 进行持久化，在发送给消费者之前先检查 ID 是否已经消费过。要注意中间层的重试机制不要修改这个全局唯一的 ID，不然会导致消息队列误以为该消息没有消费过。</li>
+</ul>
+</blockquote>
+<p>“消息队列如何保证消息有序&#x2F;分布式事务一致性&#x2F;高可用？”</p>
+<blockquote>
+<p>请参考国内外云平台文档的使用场景以及最佳实践：<a target="_blank" rel="noopener" href="https://cloud.tencent.com/product/tdmq">https://cloud.tencent.com/product/tdmq</a></p>
+</blockquote>
+<p>“如何正确地实现分布式锁？”</p>
+<blockquote>
+<p>了解 SETNX 的局限性以及 RedLock 的基本原理，具体请参考 <a target="_blank" rel="noopener" href="https://redis.io/topics/distlock">https://redis.io/topics/distlock</a></p>
+</blockquote>
+<p>“分布式锁和数据库悲观锁相比有什么优势？有什么共同的缺点？”</p>
+<blockquote>
+<ul>
+<li>优点：加锁的操作不依赖数据库，降低数据库资源冲突的概率和压力。</li>
+<li>共同缺点：可扩展性差，对于单个商品都是串行操作，假如每个订单执行要 100ms，每秒只能执行 10 个对应的订单，可能会出现大量请求阻塞的情况。</li>
+</ul>
+</blockquote>
+<p>“如何保证缓存和数据库的一致性？”</p>
+<blockquote>
+<p>请参考：<a target="_blank" rel="noopener" href="https://www.pixelstech.net/article/1562504974-Consistency-between-Redis-Cache-and-SQL-Database">https://www.pixelstech.net/article/1562504974-Consistency-between-Redis-Cache-and-SQL-Database</a></p>
+</blockquote>
+<p>“如果电商系统流量过大，如何进行降级服务？”</p>
+<blockquote>
+<ul>
+<li>暂停非核心业务：例如淘宝在双十一会暂时关闭退款功能。</li>
+<li>拒绝服务：当系统压力到达一个阈值的的时候，随机丢弃部分秒杀请求。</li>
+<li>减少重试：将重试次数降低甚至设置为0，否则容易造成雪崩效应，系统陷入负反馈循环，无法正常恢复。</li>
+</ul>
+</blockquote>
+<p>“怎么测试你的方案，使用最小的资源实现一个稳定的秒杀系统？”</p>
+<blockquote>
+<p>需要分析系统可能出现的瓶颈，并提出优化手段。</p>
+</blockquote>
+<p>“上面的方案有哪些是需要人工运营的，有没有办法将它自动化？”</p>
+<blockquote>
+<p>可以从自己熟悉的领域回答，例如分库分表，自动扩容，自动化测试等方向。</p>
+</blockquote>
+<p>“你的方案还有哪些可以优化的地方？”</p>
+<blockquote>
+<p>首先需要了解不同方案的优缺点，例如乐观锁与悲观锁的优缺点，锁机制与消息队列的优缺点。然后根据不同的基础架构，流量分布以及业务读写比例调整方案。</p>
+</blockquote>
 <h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><blockquote>
 <p>单机 Redis 存在单点风险问题，也就是说，如果唯一的一个 Redis 节点宕机的话，就会导致大量的请求直接被打到数据库，严重的情况下，数据库很可能会直接被干宕机了。</p>
 </blockquote>
@@ -1531,7 +1866,7 @@ SLAVEOF <span class="token keyword">no</span> one
 <li><strong>配置提供</strong> ：客户端连接 sentinel 请求 master 的地址，如果发生故障转移，sentinel 会通知新的 master 链接信息给客户端。</li>
 </ul>
 <h3 id="为什么建议部署多个-sentinel-节点（哨兵集群）？"><a href="#为什么建议部署多个-sentinel-节点（哨兵集群）？" class="headerlink" title="为什么建议部署多个 sentinel 节点（哨兵集群）？"></a>为什么建议部署多个 sentinel 节点（哨兵集群）？</h3><ul>
-<li>多个 sentinel 节点通过投票的方式来确定 节点是否真的不可用，避免误判（比如网络问题可能会导致误判）。  </li>
+<li>多个 sentinel 节点通过投票的方式来确定节点是否真的不可用，避免误判（比如网络问题可能会导致误判）。  </li>
 <li>Sentinel 自身就是高可用。</li>
 </ul>
 <h3 id="Sentinel-如何检测节点是否下线？主观下线与客观下线的区别"><a href="#Sentinel-如何检测节点是否下线？主观下线与客观下线的区别" class="headerlink" title="Sentinel 如何检测节点是否下线？主观下线与客观下线的区别?"></a>Sentinel 如何检测节点是否下线？主观下线与客观下线的区别?</h3><p><strong>主观下线(SDOWN)</strong> ：sentinel 节点认为某个 Redis 节点已经下线了（主观下线），但还不是很确定，需要其他 sentinel 节点的投票。  </p>
@@ -1588,7 +1923,7 @@ SLAVEOF <span class="token keyword">no</span> one
 <p>Redis Cluster 中的数据是如何分布的？</p>
 <p>如何确定给定 key 的应该分布到哪个哈希槽中？</p>
 </blockquote>
-<p>Redis Cluster 并没有使用一致性哈希，采用的是 哈希槽分区 ，每一个键值对都属于一个 hash slot（哈希槽） 。  </p>
+<p>Redis Cluster 并没有使用一致性哈希，采用的是哈希槽分区 ，每一个键值对都属于一个 hash slot（哈希槽） 。  </p>
 <p>Redis Cluster 通常有 16384 个哈希槽 ，要计算给定 key 应该分布到哪个哈希槽中，我们只需要先对每个 key 计算 CRC-16（XMODEM） 校验码，然后再对这个校验码对 16384(哈希槽的总数) 取模，得到的值即是 key 对应的哈希槽。  </p>
 <p>哈希槽的计算公式如下：  </p>
 <pre><code>HASH_SLOT = CRC16(key) mod NUMER_OF_SLOTS
@@ -1637,6 +1972,8 @@ SLAVEOF <span class="token keyword">no</span> one
       <td style="text-align:center;"><img width="200" src="https://jwt1399.top/medias/reward/sponor_wechat.png"></td>     
   </tr>
 </tbody></table>
+
+
 
             </div>
             <hr/>
@@ -2440,7 +2777,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1111.1k</span>&nbsp;字
+                class="white-color">1119k</span>&nbsp;字
             
             
             

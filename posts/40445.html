@@ -869,14 +869,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-08-13
+                    2023-08-14
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    79.9k
+                    80.9k
                 </div>
                 
 
@@ -7980,6 +7980,11 @@ lRUCache<span class="token punctuation">.</span><span class="token function">get
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <hr>
 <p><strong>暴力破解</strong></p>
+<p>枚举原串 haystack 中的每个字符作为「发起点」，每次从原串的「发起点」和匹配串的「首位」开始尝试匹配：</p>
+<ul>
+<li>匹配成功：返回本次匹配的原串「发起点」。</li>
+<li>匹配失败：枚举原串的下一个「发起点」，重新尝试匹配。</li>
+</ul>
 <pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
     <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">strStr</span><span class="token punctuation">(</span>String haystack<span class="token punctuation">,</span> String needle<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">int</span> n <span class="token operator">=</span> haystack<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> m <span class="token operator">=</span> needle<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -8413,6 +8418,147 @@ M             1000
     <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="58-最后一个单词的长度"><a href="#58-最后一个单词的长度" class="headerlink" title="58. 最后一个单词的长度"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/length-of-last-word/description/?envType=study-plan-v2&envId=top-interview-150">58. 最后一个单词的长度</a></h3><p>给你一个字符串 <code>s</code>，由若干单词组成，单词前后用一些空格字符隔开。返回字符串中 <strong>最后一个</strong> 单词的长度。</p>
+<p><strong>单词</strong> 是指仅由字母组成、不包含任何空格字符的最大子字符串。</p>
+<p><strong>示例 1：</strong></p>
+<pre><code>输入：s = &quot;Hello World&quot;
+输出：5
+解释：最后一个单词是“World”，长度为5。
+</code></pre>
+<p><strong>示例 2：</strong></p>
+<pre><code>输入：s = &quot;   fly me   to   the moon  &quot;
+输出：4
+解释：最后一个单词是“moon”，长度为4。
+</code></pre>
+<p><strong>示例 3：</strong></p>
+<pre><code>输入：s = &quot;luffy is still joyboy&quot;
+输出：6
+解释：最后一个单词是长度为6的“joyboy”。
+</code></pre>
+<hr>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">lengthOfLastWord</span><span class="token punctuation">(</span>String s<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 正则匹配连续的空白字符作为分隔符分割</span>
+        String<span class="token punctuation">[</span><span class="token punctuation">]</span> arr <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"\\s+"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String str <span class="token operator">=</span> arr<span class="token punctuation">[</span>arr<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">lengthOfLastWord</span><span class="token punctuation">(</span>String s<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> end <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span>end <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> s<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span>end<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">' '</span><span class="token punctuation">)</span> end<span class="token operator">--</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>end <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> start <span class="token operator">=</span> end<span class="token punctuation">;</span>
+        <span class="token keyword">while</span><span class="token punctuation">(</span>start <span class="token operator">>=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> s<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span>start<span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token string">' '</span><span class="token punctuation">)</span> start<span class="token operator">--</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> end <span class="token operator">-</span> start<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="14-最长公共前缀"><a href="#14-最长公共前缀" class="headerlink" title="14. 最长公共前缀"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/longest-common-prefix/description/?envType=study-plan-v2&envId=top-interview-150">14. 最长公共前缀</a></h3><p>编写一个函数来查找字符串数组中的最长公共前缀。</p>
+<p>如果不存在公共前缀，返回空字符串 <code>&quot;&quot;</code>。</p>
+<p><strong>示例 1：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：strs</span> <span class="token punctuation">=</span> <span class="token attr-value">["flower","flow","flight"]</span>
+输出："fl"
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：strs</span> <span class="token punctuation">=</span> <span class="token attr-value">["dog","racecar","car"]</span>
+输出：""
+解释：输入不存在公共前缀。
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<hr>
+<p>把字符串列表看成一个二维数组，然后用一个嵌套 for 循环计算这个二维数组前面有多少列的元素完全相同即可。</p>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> String <span class="token function">longestCommonPrefix</span><span class="token punctuation">(</span>String<span class="token punctuation">[</span><span class="token punctuation">]</span> strs<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">int</span> m <span class="token operator">=</span> strs<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 以第一行的列数为基准</span>
+        <span class="token keyword">int</span> n <span class="token operator">=</span> strs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> col <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> col <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> col<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> row <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> row <span class="token operator">&lt;</span> m<span class="token punctuation">;</span> row<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                String thisStr <span class="token operator">=</span> strs<span class="token punctuation">[</span>row<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                String prevStr <span class="token operator">=</span> strs<span class="token punctuation">[</span>row <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+                <span class="token comment" spellcheck="true">// 判断每个字符串的 col 索引是否都相同</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>col <span class="token operator">>=</span> thisStr<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> col <span class="token operator">>=</span> prevStr<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span>
+                        thisStr<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span>col<span class="token punctuation">)</span> <span class="token operator">!=</span> prevStr<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span>col<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment" spellcheck="true">// 发现不匹配的字符，只有 strs[row][0..col-1] 是公共前缀</span>
+                    <span class="token keyword">return</span> strs<span class="token punctuation">[</span>row<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> col<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> strs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="6-Z-字形变换"><a href="#6-Z-字形变换" class="headerlink" title="6. Z 字形变换"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/zigzag-conversion/?envType=study-plan-v2&envId=top-interview-150">6. Z 字形变换</a></h4><p>将一个给定字符串 <code>s</code> 根据给定的行数 <code>numRows</code> ，以从上往下、从左到右进行 Z 字形排列。</p>
+<p>比如输入字符串为 <code>&quot;PAYPALISHIRING&quot;</code> 行数为 <code>3</code> 时，排列如下：</p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">P</span> <span class="token attr-value">  A   H   N</span>
+<span class="token attr-name">A</span> <span class="token attr-value">P L S I I G</span>
+<span class="token attr-name">Y</span> <span class="token attr-value">  I   R</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>之后，你的输出需要从左往右逐行读取，产生出一个新的字符串，比如：<code>&quot;PAHNAPLSIIGYIR&quot;</code>。</p>
+<p>请你实现这个将字符串进行指定行数变换的函数：</p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">string</span> <span class="token attr-value">convert(string s, int numRows);</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>示例 1：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：s</span> <span class="token punctuation">=</span> <span class="token attr-value">"PAYPALISHIRING", numRows = 3</span>
+输出："PAHNAPLSIIGYIR"
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p><strong>示例 2：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：s</span> <span class="token punctuation">=</span> <span class="token attr-value">"PAYPALISHIRING", numRows = 4</span>
+输出："PINALSIGYAHRPI"
+解释：
+<span class="token attr-name">P</span> <span class="token attr-value">    I    N</span>
+<span class="token attr-name">A</span> <span class="token attr-value">  L S  I G</span>
+<span class="token attr-name">Y</span> <span class="token attr-value">A   H R</span>
+<span class="token attr-name">P</span> <span class="token attr-value">    I</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>示例 3：</strong></p>
+<pre class="line-numbers language-properties"><code class="language-properties"><span class="token attr-name">输入：s</span> <span class="token punctuation">=</span> <span class="token attr-value">"A", numRows = 1</span>
+输出："A"
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<hr>
+<p><strong>题目理解：</strong></p>
+<ul>
+<li>字符串 <code>s</code> 是以 Z 字形为顺序存储的字符串，目标是按行打印。</li>
+<li>设 <code>numRows</code> 行字符串分别为 rowStr[1] , rowStr[2] ,…, rowStr[n]，则容易发现：按顺序遍历字符串 <code>s</code> 时，每个字符 <code>c</code> 在 Z 字形中对应的 <strong>行索引</strong> 先从 rowStr[1] 增大至 rowStr[n]，再从 rowStr[n] 减小至 rowStr[1] …… 如此反复。</li>
+<li>因此，解决方案为：模拟这个行索引的变化，在遍历 <code>s</code> 中把每个字符填到正确的行 <code>rowStr[i]</code> 。</li>
+</ul>
+<p><strong>算法流程：</strong> 按顺序遍历字符串 <code>s</code>；</p>
+<ol>
+<li><strong><code>res[i] += c</code>：</strong> 把每个字符 <code>c</code> 填入对应行 rowStr；</li>
+<li><strong><code>i += flag</code>：</strong> 更新当前字符 <code>c</code> 对应的行索引；</li>
+<li><strong><code>flag = - flag</code>：</strong> 在达到 Z 字形转折点时，执行反向。</li>
+</ol>
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">{</span>
+    <span class="token keyword">public</span> String <span class="token function">convert</span><span class="token punctuation">(</span>String s<span class="token punctuation">,</span> <span class="token keyword">int</span> numRows<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>numRows <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token keyword">return</span> s<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 存放行字符串的列表</span>
+        List<span class="token operator">&lt;</span>StringBuilder<span class="token operator">></span> rowStr <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 创建 numRows 个行字符串</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> numRows<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            rowStr<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">int</span> row <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> flag <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 遍历字符串 s 时，把每个字符 c 在放入对应行字符串</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">char</span> c <span class="token operator">:</span> s<span class="token punctuation">.</span><span class="token function">toCharArray</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 把每个字符 c 填入对应行字符串</span>
+            rowStr<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>row<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// 更新当前字符 c 对应的行索引</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>row <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> row <span class="token operator">==</span> numRows <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                flag <span class="token operator">=</span> <span class="token operator">-</span>flag<span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            row <span class="token operator">+=</span> flag<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">// 拼接行字符串</span>
+        StringBuilder res <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span>StringBuilder str<span class="token operator">:</span> rowStr<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            res<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="⑥双指针"><a href="#⑥双指针" class="headerlink" title="⑥双指针"></a>⑥双指针</h2><h3 id="344-反转字符串"><a href="#344-反转字符串" class="headerlink" title="344. 反转字符串"></a><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/reverse-string/">344. 反转字符串</a></h3><p>编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 <code>s</code> 的形式给出。</p>
 <p>不要给另外的数组分配额外的空间，你必须<strong>原地修改输入数组</strong>、使用 O(1) 的额外空间解决这一问题。</p>
 <p><strong>示例 1：</strong></p>
@@ -13823,7 +13969,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">1111.1k</span>&nbsp;字
+                class="white-color">1119k</span>&nbsp;字
             
             
             
