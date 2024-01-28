@@ -872,7 +872,7 @@ Prime Inner Product Encoding for EffectiveWildcard-based Multi-Keyword Fuzzy">
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2023-03-02
+                    2024-01-21
                 </div>
                 
 
@@ -1529,7 +1529,7 @@ i2 <span class="token operator">=</span> <span class="token punctuation">(</span
 <p><img src="https://img.jwt1399.top/img/202206211855143.png"></p>
 <p>由于普通的 Bloom Filter 不支持动态更新。所以我们引入了 CBF，CBF 是一个 Counting Bloom Filter，本文中用它存储所有 token</p>
 <p>假设数据所有者有三个令牌，服务器通过四个散列函数将其散列到 Bloom Filter。</p>
-<p>假设用户给查询一个令牌。服务器检查 CBF 中是否有一个 τ<sub>ω<sub>i</sub></sub>对应，云服务器只需要检查对应的位置是否都是 1。如果全为 1，则要查询的 τ<sub>ω<sub>i</sub></sub> 存在，否则不存在。</p>
+<p>假设用户查询一个令牌。服务器检查 CBF 中是否有一个 τ<sub>ω<sub>i</sub></sub>对应，云服务器只需要检查对应的位置是否都是 1。如果全为 1，则要查询的 τ<sub>ω<sub>i</sub></sub> 存在，否则不存在。</p>
 <p>如下图所示，如果有两个关键字，被 3 个哈希函数散列到 Bloom Filter，CBF 对于加法操作，相应的位增加 1，删除操作对应的位减少 1</p>
 <h4 id="查询过程"><a href="#查询过程" class="headerlink" title="查询过程"></a>查询过程</h4><p>当授权用户需要查询云服务器的数据时，用户首先为关键字生成一个陷门 token，然后用户将 token 发送到云服务器，云服务器执行搜索算法，具体算法如下图所示</p>
 <img src="https://img.jwt1399.top/img/202206211855595.png" style="zoom:50%;" />
@@ -1543,7 +1543,8 @@ i2 <span class="token operator">=</span> <span class="token punctuation">(</span
 </ul>
 <p>注意，对于内部节点，我们还需要返回不在搜索路径 σ 中的 token。然后，服务器需要找到验证器 π<sup>t</sup><sub>q</sub> 和校验点 π<sub>c</sub>，且校验点 π<sub>c</sub> 与查询时间相近。服务器发送 ρ，π<sup>t</sup><sub>q</sub>，π<sub>c</sub>，C<sub>ωi</sub> 给用户</p>
 <h4 id="验证结果"><a href="#验证结果" class="headerlink" title="验证结果"></a>验证结果</h4><p>为了验证数据完整性，我们使用哈希函数将 B<sup>+</sup>-Tree 的每个节点从叶节点逐层哈希到根节点。用户可以根据根节点验证查询结果的完整性。另一种方法是，数据所有者只对所有叶节点进行散列。本文采用时间戳机制来验证数据的新鲜度。</p>
-<p>时间戳机制如图7所示。它包括更新间隔和验证者π。更新间隔由数据所有者根据更新频率设置。验证器由根和 B<sup>+</sup>-Tree 的时间戳组成。</p>
+<p>时间戳机制如下图所示。它包括更新间隔和验证者π。更新间隔由数据所有者根据更新频率设置。验证器由根和 B<sup>+</sup>-Tree 的时间戳组成。</p>
+<p><img src="https://img.jwt1399.top/img/202401161656143.png"></p>
 <p>为了防止服务器返回查询结果的部分版本或历史版本。授权用户在收到云服务器发来的查询结果后，执行验证算法。同样，在两种情况下，结果得到了验证。一种是关键字不存在，另一种是关键字存在</p>
 <p>当查询到的关键字不存在时，可以通过πbf验证器验证该关键字是否真的不存在。通过验证算法，用户可以验证服务器是否是恶意的。</p>
 <p>CBF验证器由带时间戳的CBF Bloom Filter和数据所有者的相应签名组成。<br>用户可以通过CBF检查token是否存在。<br>通过时间戳机制可以检测CBF的新鲜度。<br>如果验证算法返回1，则用户接受服务器的结果。否则，它将拒绝返回的结果。用户可以证明该服务器是否是恶意的。验证的复杂度为O(1)。用户的成本可以忽略不计。</p>
