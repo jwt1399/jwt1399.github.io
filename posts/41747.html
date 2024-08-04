@@ -20,6 +20,8 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="/assets/algolia/algoliasearchLite.min.js" async></script>
+    <meta property="algolia:search" data-application-id="E9ZV23QUNX" data-api-key="091fe3a39a7bcb639aebaab3ed078165" data-index-name="hexo_search">
     <title>SpringBoot-原理篇 | 简言之</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 	<!--变灰-->
@@ -39,7 +41,7 @@
     <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
     <link rel="stylesheet" type="text/css" href="/css/matery.css">
     <link rel="stylesheet" type="text/css" href="/css/my.css">
-    
+   
     <script src="https://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
 	<!--valine_人机验证-->
 	<script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
@@ -2901,15 +2903,56 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     <div class="modal-content">
         <div class="search-header">
             <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
-            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
-                   class="search-input">
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字" class="search-input">
         </div>
         <div id="searchResult"></div>
     </div>
 </div>
+<!-- Algolia搜索 -->
+<!-- <script type="text/javascript">
+    // 初始化Algolia搜索客户端
+    const searchClient = algoliasearch('E9ZV23QUNX', '091fe3a39a7bcb639aebaab3ed078165');
+    const index = searchClient.initIndex('hexo_search');
 
-<script src="/js/search.js"></script>
-<script type="text/javascript">
+    // 搜索函数
+    const searchFunc = function(search_id, content_id) {
+        const $input = document.getElementById(search_id);
+        const $resultContent = document.getElementById(content_id);
+        $input.addEventListener('input', function() {
+            const query = this.value.trim();
+            $resultContent.innerHTML = "";
+
+            if (query.length > 0) {
+                index.search(query).then(({ hits }) => {
+                    let str = '<ul class="search-result-list">';
+                    hits.forEach(hit => {
+                        str += `<li>
+                            <a href="${hit.permalink}" class="search-result-title">${hit.title}</a>
+                        </li>`;
+                    });
+                    str += '</ul>';
+                    $resultContent.innerHTML = str;
+                }).catch(err => {
+                    console.error(err);
+                });
+            }
+        });
+    };
+
+    // 调用搜索函数
+    searchFunc('searchInput', 'searchResult');
+
+     // 初始化 Materialize CSS 的 modal
+     document.addEventListener('DOMContentLoaded', function() {
+        M.Modal.init(document.querySelectorAll('.modal'));
+    });
+</script> -->
+
+
+
+<!-- 老版搜索 -->
+<script src="/js/search_old.js"></script>
+ <script type="text/javascript">
 $(function () {
     searchFunc("/" + "search.json", 'searchInput', 'searchResult');
 });

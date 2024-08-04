@@ -49,30 +49,58 @@ var searchFunc = function (path, search_id, content_id) {
                         });
                     }
                     // show search results
+                    // if (isMatch) {
+                    //     str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                    //     var content = data.content.trim().replace(/<[^>]+>/g, "");
+                    //     if (first_occur >= 0) {
+                    //         // cut out 100 characters
+                    //         var start = first_occur - 20;
+                    //         var end = first_occur + 80;
+                    //         if (start < 0) {
+                    //             start = 0;
+                    //         }
+                    //         if (start == 0) {
+                    //             end = 100;
+                    //         }
+                    //         if (end > content.length) {
+                    //             end = content.length;
+                    //         }
+                    //         var match_content = content.substr(start, end);
+                    //         // highlight all keywords
+                    //         keywords.forEach(function (keyword) {
+                    //             var regS = new RegExp(keyword, "gi");
+                    //             match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                    //         });
+
+                    //         str += "<p class=\"search-result\">" + match_content + "...</p>"
+                    //     }
+                    //     str += "</li>";
+                    // }
                     if (isMatch) {
                         str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
-                        var content = data.content.trim().replace(/<[^>]+>/g, "");
+                        // var content = data.content.trim().replace(/<[^>]+>/g, "");
+                        var content = data.content.trim();
+
+                        // 去除 HTML 标签和 Markdown 符号
+                        content = content.replace(/<[^>]+>/g, ''); // 去除 HTML 标签
                         if (first_occur >= 0) {
-                            // cut out 100 characters
-                            var start = first_occur - 20;
-                            var end = first_occur + 80;
-                            if (start < 0) {
-                                start = 0;
-                            }
-                            if (start == 0) {
-                                end = 100;
-                            }
+                            // 截取搜索关键词前后各20个字符的内容
+                            var start = Math.max(0, first_occur - 50); // 确保不会超出字符串开头
+                            var end = first_occur + 50; // 确定结束位置
+                    
+                            // 如果结束位置超出了字符串的末尾，则进行调整
                             if (end > content.length) {
                                 end = content.length;
                             }
-                            var match_content = content.substr(start, end);
-                            // highlight all keywords
-                            keywords.forEach(function (keyword) {
-                                var regS = new RegExp(keyword, "gi");
-                                match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
-                            });
-
-                            str += "<p class=\"search-result\">" + match_content + "...</p>"
+                    
+                            var match_content = content.substring(start, end); // 获取截取的内容片段
+                    
+                            // 关键词高亮
+                            var keyword = keywords[0]; // 假设只处理单个关键词的情况
+                            var regS = new RegExp(keyword, "gi");
+                            match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                    
+                            str += "<p class=\"search-result\">" + match_content + "...</p>";
                         }
                         str += "</li>";
                     }
