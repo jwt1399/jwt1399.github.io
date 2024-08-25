@@ -865,14 +865,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-08-18
+                    2024-08-25
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    2.4k
+                    4.5k
                 </div>
                 
 
@@ -937,7 +937,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="SSO-原理"><a href="#SSO-原理" class="headerlink" title="SSO 原理"></a>SSO 原理</h2><h3 id="sso-登录"><a href="#sso-登录" class="headerlink" title="sso-登录"></a>sso-登录</h3><p><img src="https://fhfirehuo.github.io/Attacking-Java-Rookie/image/c15-cas1-1.png" alt="login"></p>
+<h2 id="SSO-原理"><a href="#SSO-原理" class="headerlink" title="SSO 原理"></a>SSO 原理</h2><h3 id="SSO-登录"><a href="#SSO-登录" class="headerlink" title="SSO-登录"></a>SSO-登录</h3><p><img src="https://fhfirehuo.github.io/Attacking-Java-Rookie/image/c15-cas1-1.png" alt="login"></p>
 <p>上面是一张SSO登录原理图，下面我们来分析一下具体的流程：</p>
 <ol>
 <li>首先用户访问系统1受保护的资源，系统1发现未登陆，跳转至SSO认证中心，并将自己的参数传递过去</li>
@@ -961,7 +961,7 @@
 <li>全局会话存在，局部会话不一定存在</li>
 <li>全局会话销毁，局部会话必须销毁</li>
 </ul>
-<h3 id="sso-注销"><a href="#sso-注销" class="headerlink" title="sso-注销"></a>sso-注销</h3><p>既然有登陆那么就自然有注销，单点登录也要单点注销，在一个子系统中注销，所有子系统的会话都将被销毁。原理图如下：</p>
+<h3 id="SSO-注销"><a href="#SSO-注销" class="headerlink" title="SSO-注销"></a>SSO-注销</h3><p>既然有登陆那么就自然有注销，单点登录也要单点注销，在一个子系统中注销，所有子系统的会话都将被销毁。原理图如下：</p>
 <p><img src="https://fhfirehuo.github.io/Attacking-Java-Rookie/image/c15-cas1-2.png" alt="logout"></p>
 <p>SSO认证中心一直监听全局会话的状态，一旦全局会话销毁，监听器将通知所有注册系统执行注销操作</p>
 <p>同样的我们也来分析一下具体的流程：</p>
@@ -974,7 +974,81 @@
 <li>SSO认证中心引导用户至登录页面</li>
 </ol>
 <h2 id="SSO-安全风险"><a href="#SSO-安全风险" class="headerlink" title="SSO 安全风险"></a>SSO 安全风险</h2><p>虽然单点登录为用户带来了便利，但它也给企业安全带来了风险。控制了用户 SSO 凭证的攻击者将获得访问用户有权访问的所有应用程序的权限，这增加了潜在损害的程度。</p>
-<p>为了避免恶意访问，SSO 应与身份管理相结合。企业可以使用双因素身份验证 ( <a target="_blank" rel="noopener" href="https://www.techtarget.com/searchsecurity/definition/two-factor-authentication">2FA</a> ) 或<a target="_blank" rel="noopener" href="https://www.techtarget.com/searchsecurity/definition/multifactor-authentication-MFA">多因素身份验证</a>与 SSO 来提高安全性。</p>
+<p>保证单点登录安全性的方式：</p>
+<ol>
+<li>安全协议和标准：使用安全协议和标准，如OAuth 2.0、OpenID Connect和SAML等，这些协议提供了身份认证、令牌管理和令牌传输的安全机制。</li>
+<li>强密码策略：要求用户使用强密码，并实施密码策略，例如密码长度、复杂性要求、定期更改密码等。</li>
+<li>双因素认证：引入双因素认证，结合密码和其他因素（如短信验证码、指纹识别等）进行身份验证，提高安全性。企业可以使用双因素身份验证 ( <a target="_blank" rel="noopener" href="https://www.techtarget.com/searchsecurity/definition/two-factor-authentication">2FA</a> ) 或<a target="_blank" rel="noopener" href="https://www.techtarget.com/searchsecurity/definition/multifactor-authentication-MFA">多因素身份验证</a>与 SSO 来提高安全性。</li>
+<li>令牌的安全传输和存储：确保令牌在传输过程中进行加密，并在存储时进行安全保存，防止令牌泄漏或篡改。</li>
+<li>会话管理：实施严格的会话管理机制，包括会话过期时间、会话注销和强制重新认证等，以减少会话劫持和会话固定攻击。</li>
+<li>防止跨站脚本攻击（XSS）：采用适当的输入验证和输出编码，以防止XSS攻击，确保用户提交的数据不包含恶意脚本。</li>
+<li>安全审计和监控：实施日志记录、监控和审计机制，及时检测并响应异常活动和安全事件。(踢蹬，溯源)</li>
+</ol>
+<p>常见的安全风险：</p>
+<ol>
+<li>令牌泄漏：令牌在传输或存储过程中被未授权的人员获取，导致身份被冒用。</li>
+<li>会话劫持：攻击者获取有效会话的控制权，从而冒充合法用户进行操作。</li>
+<li>跨站脚本攻击（XSS）：攻击者通过注入恶意脚本，从用户浏览器中窃取会话令牌或其他敏感信息。</li>
+<li>令牌篡改：攻击者在传输过程中修改令牌的内容，以获取额外权限或冒充其他用户。</li>
+<li>错误配置和漏洞利用：不正确的配置或漏洞导致攻击者绕过认证流程或访问未授权的资源。</li>
+<li>社会工程学攻击：攻击者通过欺骗用户获取其凭据或其他敏感信息，例如钓鱼攻击、假冒网站等。</li>
+</ol>
+<h2 id="SSO-安全审计"><a href="#SSO-安全审计" class="headerlink" title="SSO 安全审计"></a>SSO 安全审计</h2><p>方案简述：消费边界日志（NIDS）和SSO登录日志，从「报文」和「行为」上计算特征（比如UA异常、异地登录&#x2F;访问是从报文的UA和IP来计算；登录没有权限的系统、短时间登录大量之前没有登录过的系统是从行为上计算），然后通过特征组合形成规则，命中规则后执行踢Token和告警。</p>
+<p><strong>审计链路</strong></p>
+<p>-&gt; 从NIDS日志中筛选SSO域名（sso.xxx.com）流量，从ResponseHeader、ResponseBody、Cookie中查找TGCX，并解析TGT结构体，同时关联ES中的历史登录日志，找出生成此TGT的IP，UA和登录接口（action）。</p>
+<p>-&gt; 从SSO登录日志离线数据(ES)中提取用户过去历史访问过的应用集合，为用户历史应用访问行为基线（如xx时间内访问了xx个新应用）提供数据。</p>
+<p>-&gt; 消费SSO登录Kafka日志，进行SSO单点登录审计（TGT盗用审计），主要逻辑：</p>
+<ul>
+<li><p>SSO登录日志写入Mysql，为审计任务提供历史数据（小时级别的），比如同一个TGT在前后不同的IP下使用，要对比其前后设备ID。注：之所以不直接使用ES的数据是因为ES查询稳定性和速度相比Mysql要差，Mysql的数据只存储1天。</p>
+</li>
+<li><p>逐条审计SSO登录日志，检查是否违反：</p>
+<ul>
+<li><p>a.TGT生成和TGT使用的环境信息不一致 </p>
+</li>
+<li><p>b. TGT最近两次使用的环境信息不一致</p>
+</li>
+<li><p>c.出现行为异常（如访问非目标岗位应用，没有IAM权限…）</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>（如果上面审计捕获到任意异常）则 </p>
+<ul>
+<li><p>a.将异常登录日志写入Mysql </p>
+</li>
+<li><p>b.过单个日志异常规则，判断是否是违反某个盗用规则</p>
+</li>
+<li><p>c.根据同一个IP、dfpid(设备唯一 id)回溯历史异常登录日志，按滑动窗口计算是否满足异常聚集阈值</p>
+</li>
+<li><p>d. 如果b&#x2F;c有命中，则下发票据处置决策（如果开启自动下发决策的话）</p>
+</li>
+</ul>
+<p>当识别到一个票据命中盗用规则，或者产生异常特征聚集，则判断该票据被盗用，会通知SSO对票据做过期处置。</p>
+<p>在实际场景中需要考虑误报对用户产生的干扰，特别是要防止短时间大量误报伤害大量用户体验，因此要考虑熔断。</p>
+<h2 id="金银票据传递攻击"><a href="#金银票据传递攻击" class="headerlink" title="金银票据传递攻击"></a>金银票据传递攻击</h2><h3 id="Kerberos协议"><a href="#Kerberos协议" class="headerlink" title="Kerberos协议"></a>Kerberos协议</h3><p>Kerberos是一种计算机的认证协议，在域中使用kerberos作为认证手段。他提供了一种单点登录（SSO）的方法，比如打印服务器、邮件服务器和文件服务器。这些服务器都有认证的需求，很自然的，不可能让每个服务器自己实现一套认证系统，而是提供一个中心认证服务器（CAS）供这些服务器使用，这样任何客户端就只需要维护一个密码就能登录所有服务器。</p>
+<p>角色：客户端（Client）、身份认证服务（AS）、票据授予服务（TGS）、普通服务器（Server）</p>
+<p>Kerberos协议的基本流程是Client先通过AS（身份认证服务）进行身份认证，认证通过后AS会给Client一个TGT（票据授权票），Client将获取到的TGT发送到TGS（票据授予服务）进行身份验证，验证通过后TGS会给Client一个ST（服务票据），Client通过这个ST去访问指定Server上的服务。</p>
+<img src="https://img.jwt1399.top/img/202408251018050.png" style="zoom: 33%;" />
+
+<h3 id="金银票据攻击"><a href="#金银票据攻击" class="headerlink" title="金银票据攻击"></a>金银票据攻击</h3><p>黄金票据、白银票据攻击是基于kerberos认证协议的攻击方式，常用来做后渗透域控权限维持。由于用户正常访问资源是也会请求服务票证，因此黄金、白银票据攻击具备很高的隐蔽性。</p>
+<p>在kerberos认证中，主要解决两个问题</p>
+<p>第一个问题：如何证明你本人是XXX用户的问题。（身份问题，黄金票据所在的问题，AS负责）</p>
+<p>第二个问题：提供服务的服务器如何知道你有权限访问它提供的服务。当一个Client去访问Server服务器上的服务时，Server如何判断Client是否有权限来访问自己主机上的服务。（白银票据所在的问题，TGS负责）</p>
+<h3 id="伪造黄金票据"><a href="#伪造黄金票据" class="headerlink" title="伪造黄金票据"></a>伪造黄金票据</h3><p>在kerberos认证中，Client通过AS认证后，AS会给Client一个TGT，而TGT是通过域控服务器上krbtgt账户的Hash进行加密的，所以只有得到krbtgt的Hash，就可以伪造TGT来进入下一步Client与TGS的交互。而在有了黄金票据后，就跳过AS验证，不用验证账户和密码，所以也不担心域管来修改密码。意思就是，当攻击者能够获得krbtgt的Hash后，攻击者就可以伪造一张票据授权票，去伪造成域内的任意用户访问域内kerberos认证的所有服务。</p>
+<img src="https://img.jwt1399.top/img/202408251026591.png" style="zoom: 33%;" />
+
+<h3 id="伪造白银票据"><a href="#伪造白银票据" class="headerlink" title="伪造白银票据"></a>伪造白银票据</h3><p>黄金票据攻击是伪造TGT，白银票据攻击是伪造ST，在kerberos认证协议的第三步，Client带着ST向Server上的某个服务进行请求，Server接收Client的请求，验证通过后允许Client使用Server上的指定服务。所以只要有了服务器管理员账户的Hash，就能跳过向TGS请求ST的过程，可以直接伪造ST使用Server上的服务。</p>
+<img src="https://img.jwt1399.top/img/202408251028999.png" style="zoom:33%;" />
+
+<h3 id="金银票据区别"><a href="#金银票据区别" class="headerlink" title="金银票据区别"></a>金银票据区别</h3><p>1.访问权限不同</p>
+<p>黄金票据：伪造票据授权票（TGT），可以获取任何kerberos服务权限。</p>
+<p>白银票据：伪造服务票据，只能访问指定的服务。</p>
+<p>2.加密方式不同</p>
+<p>黄金票据：由krbtgt的NTLM Hash加密。</p>
+<p>白银票据：由服务账号（通常为计算机账户）的NTLM Hash加密。</p>
+<p>3.认证流程不同</p>
+<p>黄金票据：利用过程需要访问域控。</p>
+<p>白银票据：不需要访问域控。</p>
 <h1 id="📚参考资料"><a href="#📚参考资料" class="headerlink" title="📚参考资料"></a>📚参考资料</h1><ul>
 <li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZeRtcloxrNC6wtozFkCkEQ">聊聊单点登录(SSO)中的CAS认证 (qq.com)</a></p>
 </li>
@@ -987,6 +1061,8 @@
 <li><p><a target="_blank" rel="noopener" href="https://fhfirehuo.github.io/Attacking-Java-Rookie/Chapter15/cas1.html">https://fhfirehuo.github.io/Attacking-Java-Rookie/Chapter15/cas1.html</a></p>
 </li>
 <li><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6945277725066133534">https://juejin.cn/post/6945277725066133534</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ZC5SFMgh8Zkitixp-aajUw">韭要学金银票据传递攻击(Pass The Ticket) (qq.com)</a></p>
 </li>
 </ul>
 <h1 id="❤️Sponsor"><a href="#❤️Sponsor" class="headerlink" title="❤️Sponsor"></a>❤️Sponsor</h1><p>您的支持是我不断前进的动力，如果您感觉本文对您有所帮助的话，可以考虑打赏一下本文，用以维持本博客的运营费用，拒绝白嫖，从你我做起！🥰🥰🥰</p>
@@ -1780,7 +1856,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;Word:&nbsp;<span
-                class="white-color">1135.8k</span>&nbsp;字
+                class="white-color">1141.2k</span>&nbsp;字
             
             
             
