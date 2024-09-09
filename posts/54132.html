@@ -804,14 +804,14 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2024-08-17
+                    2024-09-07
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.3k
+                    4.1k
                 </div>
                 
 
@@ -951,18 +951,39 @@
 <p>存在问题：公有桶遍历、公有桶爆破、私有桶签名未过期</p>
 </blockquote>
 <p>网络配置完成，就是让合理的账户具有合理的权限，此时就是做好授权访问。通过这三步，基本完成企业业务使用方的诉求。</p>
-<p> <strong>如何授权其他账号访问数据？</strong></p>
+<p><strong>如何授权其他账号访问数据？</strong></p>
+<p>常见对象存储 OSS 支持访问控制列表（ACL）和 授权策略（Policy）两种授权方式。 </p>
+<ul>
+<li><strong>ACL 包含 Bucket 级和 Object 级，按资源设置权限</strong> 。可以设置 ACL 为公共读写、公共读、私有、缺省 4 种类型。</li>
+<li><strong>Policy 提供丰富的语义，可控制用户访问资源的路径和具体操作</strong> 。为某个用户 ID 可以访问那些资源，或者为某个桶可以被那些用户访问，使用哪些 API 来访问。</li>
+<li><strong>除了ACL和Policy外，还提供防盗链为不同网站（或 IP 地址）的跨域访问设置权限</strong> 。通过白名单限制能够跨域访问的来源，实现数据共享。</li>
+</ul>
 <p><strong>如何授权匿名用户访问？</strong></p>
+<p>通常应用都有把数据共享给公众的诉求， 因此如何授权匿名用户访问数据？</p>
+<ul>
+<li><strong>ACL 支持匿名访问设置</strong> 。可以设置桶级、对象级的公共读写、公共读，从而任何人都可以直接访问数据。</li>
+<li><strong>签名URL</strong> 。为匿名用户生成签名 URL，并设置过期时间，匿名用户使用该签名URL可访问资源，从而实现指定时间范围内的数据共享。</li>
+</ul>
+<p>提供匿名访问能力，可能会带来数据泄漏、攻击植入、费用激增甚至欠费等问题，此时对象存储应提供一键停止公网访问能力，从而实现快速止血。</p>
 <p><strong>如何让相同数据支持不同用户、不同权限的访问？</strong></p>
+<p>对象存储支持多租户，典型是桶对应 1 个域名，通过 1 个 Bucket Policy 配置文件提供同一数据授权给不同用户不同权限访问。由于只有 1 个配置文件，每次修改某租户权限，运行生效都要加载整个文件，粒度过大。</p>
+<p>为了解决该问题，<strong>对象存储应提供 Access Point（AP）实现细粒度用户权限</strong>。该功能可以为每个用户创建 AP，配置不同的 AP Policy，修改某用户的 AP Policy，对其他用户无影响。</p>
+<p>Policy 都采用相同语法，助力实现灵活的多用户权限。通过操作、資源在一定条件下的权限，可实现丰富的用户权限管理。</p>
 <p><strong>如何支持数据湖场景的细粒度授权？</strong></p>
-<h3 id="④数据加密"><a href="#④数据加密" class="headerlink" title="④数据加密"></a>④数据加密</h3><p>OSS提供服务器端加密和客户端加密，并支持基于SSL&#x2F;TLS的HTTPS加密传输，有效防止数据在云端的潜在安全风险。</p>
-<p>但是企业数据管理人员会要求数据加密，保证数据在拥有密钥的情况下才能被访问。</p>
+<h3 id="④数据加密"><a href="#④数据加密" class="headerlink" title="④数据加密"></a>④数据加密</h3><p>提供服务器端加密和客户端加密，并支持基于SSL&#x2F;TLS的HTTPS加密传输，有效防止数据在云端的潜在安全风险。</p>
 <p><strong>如何避免提供云服务的厂家访问到数据？</strong></p>
-<h3 id="⑤日志审计"><a href="#⑤日志审计" class="headerlink" title="⑤日志审计"></a>⑤日志审计</h3><p>OSS提供访问日志的存储和查询功能，可满足您对企业数据的监控审计需求。</p>
-<p>同时，企业安全风险人员会要求开启日志审计，在必要时审核数据是否有泄漏风险。</p>
+<ul>
+<li><strong>客户不信任云厂家，选择客户端加密（CSE），数据上传前就已加密，无需担心云服务厂家访问到数据</strong> 。</li>
+<li><strong>客户对云产品信任，可选择服务端加密</strong></li>
+</ul>
+<h3 id="⑤日志审计"><a href="#⑤日志审计" class="headerlink" title="⑤日志审计"></a>⑤日志审计</h3><p>提供访问日志的存储和查询功能，可满足您对企业数据的监控审计需求。同时，企业安全风险人员会要求开启日志审计，在必要时审核数据是否有泄漏风险。</p>
 <p><strong>如何监控审计数据被访问日志？</strong></p>
-<h3 id="⑥合规认证"><a href="#⑥合规认证" class="headerlink" title="⑥合规认证"></a>⑥合规认证</h3><p>OSS通过Cohasset Associates审计认证、FINRA 4511、CFTC 1.31、ISO、BS10012、CSA STAR等多项合规认证，能够满足您的多种合规要求。</p>
-<p>企业管理层会则非常关注数据安全，保证业务高可靠、高可用、合规设计等方面有良好的功能支撑。</p>
+<p>作为企业安全风险管理人员，通常都需要通过日志、监控、审计等来查看数据是否有泄漏风险，审核企业人员行为，对象存储如何支持这些需求呢？</p>
+<ul>
+<li><strong>提供访问日志持久化存储和实时查询</strong> 。访问对象存储 OSS 的过程中会产生大量的访问日志，可以转存到 OSS 自身进行成本优化；同时通过实时查询能力，帮助完成访问统计、异常事件回溯和问题定位等工作。</li>
+<li><strong>监控告警</strong> 。提供系统基本运行状态、性能以及计量等方面的监控数据指标，并提供自定义报警服务，帮助跟踪请求、分析使用情况、统计业务趋势，及时发现以及诊断系统的相关问题。</li>
+</ul>
+<h3 id="⑥合规认证"><a href="#⑥合规认证" class="headerlink" title="⑥合规认证"></a>⑥合规认证</h3><p>通过Cohasset Associates审计认证、FINRA 4511、CFTC 1.31、ISO、BS10012、CSA STAR等多项合规认证，能够满足您的多种合规要求。企业管理层会则非常关注数据安全，保证业务高可靠、高可用、合规设计等方面有良好的功能支撑。</p>
 <p><strong>如何做到数据安全的数据不丢不错的高可靠？</strong></p>
 <p> <strong>如何做到数据安全的访问高可用？</strong></p>
 <p><strong>如何做到全面的数据保护功能？</strong></p>
@@ -1769,7 +1790,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             <br>
             
             &nbsp;<i class="fas fa-chart-area"></i>&nbsp;Word:&nbsp;<span
-                class="white-color">1141.9k</span>&nbsp;字
+                class="white-color">1143.6k</span>&nbsp;字
             
             
             
